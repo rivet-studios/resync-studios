@@ -484,6 +484,61 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Manual rank assignment (for staff roles only)
+  const STAFF_RANKS = [
+    'company_director',
+    'leadership_council', 
+    'operations_manager',
+    'rs_trust_safety_director',
+    'administrator',
+    'senior_administrator',
+    'moderator',
+    'community_moderator',
+    'community_senior_moderator',
+    'community_developer',
+    'customer_relations',
+    'rs_volunteer_staff'
+  ];
+
+  // TODO: Replace with actual admin check - for now requires ADMIN_USER_ID env var
+  function isAdmin(userId: string): boolean {
+    return userId === process.env.ADMIN_USER_ID;
+  }
+
+  app.post("/api/admin/assign-rank", requireAuth, async (req, res) => {
+    try {
+      const adminId = (req.user as any).id;
+      
+      // Verify admin access
+      if (!isAdmin(adminId)) {
+        return res.status(403).json({ message: "Only admins can assign ranks" });
+      }
+
+      const { userId, rank } = req.body;
+
+      // Validate rank is a staff rank or member/none
+      const validRanks = ['member', 'none', ...STAFF_RANKS];
+      if (!validRanks.includes(rank)) {
+        return res.status(400).json({ message: "Invalid rank", validRanks });
+      }
+
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update rank
+      const updatedUser = await storage.updateUser(userId, { userRank: rank });
+      res.json({ 
+        message: `User rank updated to ${rank}`,
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error assigning rank:", error);
+      res.status(500).json({ message: "Failed to assign rank" });
+    }
+  });
+
   // Roblox verification routes (placeholder)
   app.post("/api/roblox/verify", requireAuth, async (req, res) => {
     try {

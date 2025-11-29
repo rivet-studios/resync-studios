@@ -56,3 +56,4 @@ integrations = [
 DISCORD_CLIENT_ID = ""
 DISCORD_CLIENT_SECRET = ""
 DISCORD_CALLBACK_URL = "https://resync-studios--sharkyowlskv.replit.app/auth/discord/callback"
+ADMIN_USER_ID = ""
