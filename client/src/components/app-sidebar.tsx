@@ -39,6 +39,7 @@ import {
   FileText,
   UsersRound,
   Megaphone,
+  BookOpen,
 } from "lucide-react";
 
 const mainNavItems = [
@@ -59,6 +60,7 @@ const accountNavItems = [
   { title: "Privacy Policy", url: "/privacy", icon: Shield },
   { title: "Terms of Service", url: "/terms", icon: FileText },
   { title: "DMCA Policy", url: "/dmca", icon: Shield },
+  { title: "Project Reimagined Rules", url: "/project-reimagined-rules", icon: BookOpen },
 ];
 
 export function AppSidebar() {
