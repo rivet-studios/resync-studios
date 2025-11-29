@@ -84,7 +84,7 @@ export default function Announcements() {
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">Announcements</h1>
         <p className="text-lg text-muted-foreground">
-          Stay updated with the latest news and roadmap for REACT Studios™
+          Stay updated with the latest news and roadmap for Resync Studios™
         </p>
       </div>
 

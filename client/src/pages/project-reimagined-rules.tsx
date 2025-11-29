@@ -165,7 +165,7 @@ export default function ProjectReimaginedrules() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               All players must be 13+ years old with prior serious RP experience. Lying about age results in permanent bans 
-              from all REACT Studios games.
+              from all Resync Studios games.
             </CardContent>
           </Card>
 
