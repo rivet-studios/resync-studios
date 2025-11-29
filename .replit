@@ -49,3 +49,10 @@ integrations = [
   "javascript_database:1.0.0",
   "javascript_log_in_with_replit:1.0.0",
 ]
+
+[userenv]
+
+[userenv.shared]
+DISCORD_CLIENT_ID = ""
+DISCORD_CLIENT_SECRET = ""
+DISCORD_CALLBACK_URL = "https://resync-studios--sharkyowlskv.replit.app/auth/discord/callback"

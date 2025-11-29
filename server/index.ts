@@ -2,6 +2,10 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import session from "express-session";
+import passport from "./auth";
+import ConnectPgSimple from "connect-pg-simple";
+import { pool } from "./db";
 
 const app = express();
 const httpServer = createServer(app);
@@ -9,8 +13,46 @@ const httpServer = createServer(app);
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
+    user?: any;
+    isAuthenticated?(): boolean;
   }
 }
+
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      email?: string;
+      username?: string;
+      discordId?: string;
+      userRank?: string;
+      vipTier?: string;
+    }
+  }
+}
+
+// Session store
+const PgSession = ConnectPgSimple(session);
+const sessionStore = new PgSession({
+  pool,
+  createTableIfMissing: true,
+});
+
+// Session middleware
+app.use(
+  session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    },
+  })
+);
 
 app.use(
   express.json({
@@ -21,6 +63,10 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

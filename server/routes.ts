@@ -423,12 +423,44 @@ export async function registerRoutes(
     }
   });
 
-  // Discord linking routes (placeholder)
+  // Discord OAuth routes
+  app.get("/auth/discord", (req, res, next) => {
+    const passport = require("passport");
+    passport.authenticate("discord")(req, res, next);
+  });
+
+  app.get(
+    "/auth/discord/callback",
+    (req, res, next) => {
+      const passport = require("passport");
+      passport.authenticate("discord", {
+        failureRedirect: "/?error=discord_auth_failed",
+      })(req, res, next);
+    },
+    (req, res) => {
+      res.redirect("/");
+    }
+  );
+
+  app.get("/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.redirect("/");
+    });
+  });
+
+  // Discord linking routes
   app.post("/api/discord/link", requireAuth, async (req, res) => {
     try {
+      const user = req.user as any;
+      if (user.discordId) {
+        return res.status(400).json({ message: "Discord already linked" });
+      }
       res.json({ 
-        message: "Discord OAuth would be initiated here",
-        url: null
+        message: "Discord linking started",
+        url: `/auth/discord`
       });
     } catch (error) {
       console.error("Error linking Discord:", error);
