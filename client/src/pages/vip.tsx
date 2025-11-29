@@ -306,7 +306,7 @@ export default function VIP() {
               <div>
                 <h4 className="font-semibold">In-Game Perks</h4>
                 <p className="text-sm text-muted-foreground">
-                  Exclusive perks in all REACT Studios games when linked.
+                  Exclusive perks in all Resync Studios games when linked.
                 </p>
               </div>
             </div>
