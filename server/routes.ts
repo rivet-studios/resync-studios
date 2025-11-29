@@ -423,6 +423,11 @@ export async function registerRoutes(
     }
   });
 
+  // Login redirect to Discord OAuth
+  app.get("/api/login", (req, res) => {
+    res.redirect("/auth/discord");
+  });
+
   // Discord OAuth routes
   app.get("/auth/discord", (req, res, next) => {
     const passport = require("passport");
