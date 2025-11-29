@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import passport from "./auth";
 import { 
   insertLfgPostSchema, 
   insertClanSchema, 
@@ -430,14 +431,12 @@ export async function registerRoutes(
 
   // Discord OAuth routes
   app.get("/auth/discord", (req, res, next) => {
-    const passport = require("passport");
     passport.authenticate("discord")(req, res, next);
   });
 
   app.get(
     "/auth/discord/callback",
     (req, res, next) => {
-      const passport = require("passport");
       passport.authenticate("discord", {
         failureRedirect: "/?error=discord_auth_failed",
       })(req, res, next);
