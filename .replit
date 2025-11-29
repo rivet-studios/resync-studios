@@ -1,6 +1,6 @@
 modules = ["nodejs-20", "web", "postgresql-16"]
 run = "npm run dev"
-hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
+hidden = [".config", ".git", "generated-icon.png", "node_modules"]
 
 [nix]
 channel = "stable-24_05"
@@ -54,6 +54,6 @@ integrations = [
 
 [userenv.shared]
 DISCORD_CLIENT_ID = ""
-DISCORD_CLIENT_SECRET = ""
+DISCORD_CLIENT_SECRET = "sMgovmhFASsE384emLSdtisKk2Zw4YLU"
 DISCORD_CALLBACK_URL = "https://resync-studios--sharkyowlskv.replit.app/auth/discord/callback"
 ADMIN_USER_ID = ""
