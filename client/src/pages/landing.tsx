@@ -382,7 +382,7 @@ export default function Landing() {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-border/50">
             <a href="/api/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-signin">Sign In</a>
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
+            <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-privacy">Privacy Policy</a>
             <a href="/guidelines" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-guidelines">Community Guidelines</a>
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Support</a>
           </div>

@@ -1,0 +1,125 @@
+Registration Terms
+TERMS AND CONDITIONS FOR METRO INTERACTIVE
+Last Updated: November 11, 2025
+
+IMPORTANT NOTICE: THIS IS A BINDING LEGAL AGREEMENT. BY CLICKING "I AGREE," CREATING AN ACCOUNT, OR BY DOWNLOADING, ACCESSING, OR USING THE SERVICES IN ANY MANNER, YOU AFFIRM THAT YOU HAVE READ, UNDERSTOOD, AND UNCONDITIONALLY AGREE TO BE LEGALLY BOUND BY ALL TERMS AND CONDITIONS CONTAINED HEREIN. IF YOU DO NOT AGREE, YOU ARE PROHIBITED FROM USING THE SERVICES.
+
+THIS AGREEMENT CONTAINS PROVISIONS THAT MATERIALLY AFFECT YOUR LEGAL RIGHTS, INCLUDING, WITHOUT LIMITATION: (I) A MANDATORY BINDING ARBITRATION CLAUSE WHICH REQUIRES YOU TO SUBMIT CLAIMS TO BINDING AND FINAL ARBITRATION ON AN INDIVIDUAL BASIS; (II) A WAIVER OF YOUR RIGHT TO A JURY TRIAL; (III) AN IRREVOCABLE WAIVER OF YOUR RIGHT TO PARTICIPATE IN ANY FORM OF CLASS ACTION LAWSUIT OR ARBITRATION; (IV) A LIMITED REFUND POLICY AND A WAIVER OF YOUR RIGHT TO INITIATE IMPROPER PAYMENT CHARGEBACKS; (V) A LIQUIDATED DAMAGES CLAUSE FOR VIOLATIONS OF OUR PAYMENT POLICY; and (VI) a one-year statute of limitations on all claims. IT IS YOUR RESPONSIBILITY TO REVIEW THIS AGREEMENT PERIODICALLY FOR CHANGES.
+
+This Terms and Conditions document and all documents incorporated herein by reference, including but not limited to our Privacy Policy and any official Code of Conduct (collectively, the “Agreement”), constitute a legally binding contract between the individual or entity accessing the Services (“User,” “you,” or “your”) and Metro Interactive (“Operator,” “we,” “us,” or “our”). This Agreement governs your access to, use of, and all interactions with any and all Metro Interactive websites, software, mobile applications, games, digital products, virtual items, application programming interfaces (APIs), downloadable content, forums, and other services offered now or in the future by the Operator (collectively, the “Services”).
+
+1. YOUR RELATIONSHIP WITH US
+1.1. The Services. Welcome to the Metro Interactive community. The Services are provided by the Operator and are intended for your personal, non-commercial entertainment. You acknowledge that the Services are an evolving platform. We may, in our sole discretion, change, modify, update, suspend, or discontinue features, content, or specifications of the Services at any time, with or without notice and without liability to you.
+
+1.2. Equipment and Costs. You are solely responsible for providing, at your own expense, all equipment, software (other than the software we provide), and internet or mobile access necessary to use the Services. You are also responsible for all fees charged by third parties in connection with your use of the Services (e.g., internet service provider or mobile carrier fees).
+
+1.3. Service Availability. You acknowledge that access to the Services is not guaranteed to be continuous or uninterrupted. The Services may be unavailable for scheduled or emergency maintenance, for reasons beyond our reasonable control (Force Majeure events), or for any other business reason. To the fullest extent permitted by law, we will have no liability to you for any inability to access or use the Services.
+
+2. YOUR ACCOUNT WITH US
+2.1. Account Creation and Eligibility. To access most features of the Services, you must register for an account. By creating an account, you represent and warrant that: (a) all information you submit is truthful and accurate, and you will maintain its accuracy; (b) you are at least thirteen (13) years of age; and (c) your use of the Services does not violate any applicable law or regulation. If you are between the ages of thirteen (13) and seventeen (17), you represent that your parent or legal guardian has reviewed and agreed to this Agreement on your behalf. A parent or legal guardian who permits a minor to use the Services is personally and fully bound by this Agreement and is held jointly and severally liable for all acts, omissions, and financial obligations of the minor.
+
+2.2. Account Security. You are responsible for maintaining the confidentiality of your account password and are strictly prohibited from sharing, selling, or otherwise transferring your account. You are solely and exclusively responsible for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account or any other breach of security.
+
+2.3. Account Suspension and Termination.
+
+Termination by Operator for Cause. We reserve the right to suspend or permanently terminate your account and your access to the Services, in whole or in part, without prior notice or liability, if we determine in our sole and final discretion that you have breached this Agreement or engaged in prohibited conduct. Such conduct includes, but is not limited to: (a) violating the Code of Conduct; (b) providing false registration information; (c) infringing intellectual property rights; (d) initiating an improper chargeback; (e) harassing other users or our staff; or (f) using cheats, exploits, or any other unauthorized means to interact with the Services. If your account is terminated for cause, you will immediately forfeit all rights to your account, including any pre-paid subscription time, virtual goods, and in-game currency, and you will not be entitled to any refund or compensation whatsoever.
+
+Termination by Operator for Convenience. We reserve the right to terminate your account for any other reason or no reason at our convenience (e.g., as a result of discontinuing a Service). If we terminate your account for convenience, we will provide you with a prorated refund for any unused, pre-paid subscription fees.
+
+Termination by User. You may terminate your account at any time. Termination by you will not entitle you to any refund for any unused subscription terms or virtual goods.
+
+3. END USER LICENSE AGREEMENT (EULA) AND INTELLECTUAL PROPERTY
+3.1. Ownership. You acknowledge and agree that all content, software, images, text, graphics, illustrations, logos, patents, trademarks, service marks, copyrights, photographs, audio, videos, music on and “look and feel” of the Services, and all intellectual property rights related thereto (the “Operator Content”), are either owned or licensed by the Operator. Use of the Operator Content for any purpose not expressly permitted by this Agreement is strictly prohibited.
+
+3.2. Limited License Grant. The Services, and all software components thereof, are licensed, not sold, to you. Subject to your strict and ongoing compliance with this Agreement, we grant you a limited, non-exclusive, non-transferable, non-sublicensable, personal, and revocable license to install and use one copy of the software on a device that you own or control, for your personal, non-commercial entertainment purposes only.
+
+3.3. License Restrictions. The license granted herein is conditioned upon your adherence to the following restrictions. You shall not, and shall not assist others to:
+
+(a) Commercial Use: Use, sell, lease, or otherwise exploit the Services for any commercial purpose.
+
+(b) Technical Misuse: Modify, adapt, translate, reverse-engineer, decompile, disassemble, or otherwise attempt to derive the source code of the Services.
+
+(c) Unauthorized Connections: Use, or facilitate the use of, any unauthorized third-party software that interacts with or intercepts data from the Services, including cheats, bots, hacks, or mods.
+
+(d) Data Mining: Use any unauthorized process or software to scrape, collect, or mine data from the Services.
+
+(e) Proprietary Notices: Remove, alter, or obscure any copyright, trademark, or other proprietary rights notices.
+
+4. VIRTUAL GOODS, IN-GAME CURRENCY, AND GAME ECONOMY
+4.1. Nature of Virtual Goods. The Services may include fictional virtual goods, items, points, credits, or currency ("Virtual Goods"). You acknowledge that Virtual Goods have no real-world monetary value, are not personal property, and cannot be redeemed for "real world" money or items of monetary value. The price and availability of Virtual Goods are subject to change without notice.
+
+4.2. Limited License to Virtual Goods. Your purchase or acquisition of Virtual Goods grants you only a limited, non-transferable, non-sublicensable, personal, and revocable license to use those Virtual Goods within the Services. You have no ownership, title, or other property interest in any Virtual Goods. This license will terminate upon the termination of your account.
+
+4.3. Prohibition on Unsanctioned Transfers. Any attempt to sell, trade, gift, or otherwise transfer Virtual Goods or your account outside of the official mechanisms provided within the Services is strictly prohibited and may result in the termination of your account for cause.
+
+4.4. Operator's Right to Manage. We reserve the right, in our sole and absolute discretion, to manage, regulate, control, modify, re-price, or eliminate any and all Virtual Goods at any time, with or without notice. The Operator shall have no liability to you or any third party for the exercise of such rights.
+
+5. USER-GENERATED CONTENT (UGC) AND FEEDBACK
+5.1. Responsibility for UGC. You are solely responsible for any content, including text, images, communications, in-game creations, or modifications you create or upload (“UGC”). You represent and warrant that your UGC does not infringe on any third-party rights, is not illegal, and does not violate our Code of Conduct.
+
+5.2. License Grant to Operator. By submitting UGC, you grant the Operator a perpetual, irrevocable, worldwide, royalty-free, fully paid-up, and sublicensable license to use, host, reproduce, modify, create derivative works from, and commercially exploit your UGC in any and all media for any purpose whatsoever, without any compensation to you. This license survives the termination of your account.
+
+5.3. Waiver of Rights. By posting UGC, you waive any rights to prior inspection or approval of any marketing or promotional materials. To the extent any moral rights are not transferable or assignable, you hereby waive and agree never to assert any and all moral rights in connection with your UGC.
+
+5.4. Feedback. Any suggestions, ideas, or feedback you provide to us shall be our sole and exclusive property. You hereby irrevocably assign all right, title, and interest in such feedback to us.
+
+6. FINANCIAL TERMS, PAYMENTS, AND SUBSCRIPTIONS
+6.1. Payment Authorization. You authorize us and our designated third-party payment processors to charge your chosen payment method for all fees you incur. You are responsible for all charges incurred under your account.
+
+6.2. Subscriptions and Auto-Renewal. If you purchase a recurring subscription, you authorize us to charge your payment method automatically at the start of each billing period. YOUR SUBSCRIPTION WILL AUTOMATICALLY RENEW UNTIL YOU CANCEL IT. You may cancel at any time through your account settings. Your cancellation will be effective at the end of the current billing period.
+
+6.3. Refund Policy. YOU ACKNOWLEDGE THAT ALL PAYMENTS ARE FINAL AND NON-REFUNDABLE, EXCEPT AS EXPRESSLY PROVIDED IN THIS AGREEMENT OR AS REQUIRED BY APPLICABLE LAW. No refunds will be issued for user dissatisfaction, accidental purchases, or account termination for cause.
+
+6.4. Liquidated Damages for Improper Chargebacks. You agree not to initiate a chargeback except in cases of legitimate, unauthorized fraud. Initiating an improper chargeback is a material breach of this Agreement. You agree that the damages resulting from an improper chargeback are difficult to quantify. You therefore agree to pay the Operator liquidated damages of $250.00 AUD per improper chargeback, which you acknowledge is a reasonable pre-estimate of our administrative costs and processor fees.
+
+6.5. Taxes. You are responsible for all applicable sales, use, or other governmental taxes associated with your purchases.
+
+7. CODE OF CONDUCT AND ENFORCEMENT
+Your use of the Services is conditioned upon your compliance with our Code of Conduct, which is incorporated herein by reference, and prohibits, among other things: harassment, abuse, hate speech, impersonation, cheating, exploitation of bugs, illegal activity, and any action that disrupts the Services. We reserve the right to investigate and take appropriate disciplinary action, including warnings, temporary suspensions, or permanent account termination, in our sole discretion.
+
+8. RISK ALLOCATION: DISCLAIMERS, LIABILITY, AND INDEMNIFICATION
+8.1. DISCLAIMER OF WARRANTIES. THE SERVICES ARE PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS. WE AND OUR LICENSORS EXPRESSLY DISCLAIM ALL WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+8.2. LIMITATION OF LIABILITY. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE OPERATOR, ITS AFFILIATES, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES. OUR TOTAL AGGREGATE LIABILITY TO YOU FOR ALL CLAIMS IS LIMITED TO THE GREATER OF: (A) THE TOTAL AMOUNT PAID BY YOU TO US IN THE SIX (6) MONTHS PRECEDING THE EVENT GIVING RISE TO LIABILITY, OR (B) ONE HUNDRED AUSTRALIAN. DOLLARS ($100.00 AUD). NOTHING IN THIS AGREEMENT IS INTENDED TO EXCLUDE OR LIMIT ANY LIABILITY THAT CANNOT BE EXCLUDED OR LIMITED BY APPLICABLE LAW, SUCH AS LIABILITY ARISING FROM OUR GROSS NEGLIGENCE, FRAUD, OR WILLFUL MISCONDUCT.
+
+8.3. Indemnification. You agree to defend, indemnify, and hold harmless the Operator from any and all claims, liabilities, and expenses (including reasonable attorneys' fees) arising out of your use of the Services or your breach of this Agreement.
+
+9. DISPUTE RESOLUTION
+9.1. Governing Law and Venue. This Agreement is governed by the laws of the City of Canberra & the Australian Capital Territory (ACT), without regard to its conflict of law principles. Any legal action shall be brought exclusively in the state or federal courts in Canberra, Australian Capital Territory.
+
+9.2. Mandatory Informal Dispute Resolution. Before arbitration, you must first send a written "Notice of Dispute," containing a detailed description of your claim and your contact information, to us via certified mail to resolve the issue through good-faith negotiation for sixty (60) days.
+
+9.3. MANDATORY BINDING ACICA ARBITRATION RULES. Any dispute, controversy or claim arising out of, relating to or in connection with this Agreement, including any question regarding its existence, validity or termination, shall be resolved by arbitration in accordance with the ACICA Arbitration Rules. The seat of arbitration shall be Canberra, Australia. The language of the arbitration shall be English. The number of arbitrators shall rely on Article 11 of the ACICA Arbitration Rules.
+
+9.4. UNCITRAL ARBITRATION CLAUSE. Any dispute, controversy or claim arising out of or relating to this Agreement, or the breach, termination or invalidity thereof, shall be settled by arbitration in accordance with the UNCITRAL Arbitration Rules as at present in force. The arbitration shall be administered by the Australian Centre for International Commercial Arbitration (ACICA). The appointing authority shall be ACICA. The number of arbitrators shall rely on Article 11 of the ACICA Arbitration Rules. The place of arbitration shall be Canberra, Australia. The language(s) to be used in the arbitral proceedings shall be English.
+
+9.5. ONE YEAR LIMITATION PERIOD. YOU AGREE THAT YOU MUST INITIATE ANY PROCEEDING OR ACTION WITHIN ONE (1) YEAR OF THE DATE OF THE OCCURRENCE OF THE EVENT OR FACTS GIVING RISE TO A DISPUTE. OTHERWISE, YOU FOREVER WAIVE THE RIGHT TO PURSUE ANY CLAIM BASED ON SUCH EVENTS OR FACTS.
+
+10. GENERAL PROVISIONS
+10.1. Changes to Agreement. We reserve the right to modify this Agreement at any time by posting the revised version. Your continued use of the Services thereafter constitutes your acceptance.
+
+10.2. Assignment. You may not assign this Agreement. We may freely assign this Agreement without restriction.
+
+10.3. Severability. If any provision of this Agreement is held to be invalid or unenforceable, that provision will be limited or eliminated to the minimum extent necessary, and the remaining provisions will remain in full force and effect.
+
+10.4. Entire Agreement. This Agreement constitutes the entire and exclusive understanding and agreement between you and us regarding the Services.
+
+10.5. Canberra Consumer Rights Notice. Under the Australian Consumer Law (ACL), users in the Australian Capital Territory (ACT) are entitled to certain rights and guarantees when acquiring goods and services. These consumer guarantees cannot be excluded, restricted, or modified by Agreement.
+
+If a product or service you purchase fails to meet one of these guarantees, you may be entitled to a remedy — including repair, replacement, refund, cancellation, or compensation — depending on the circumstances.
+
+If you have concerns about your consumer rights under this Agreement, or would like to lodge a complaint, you may contact:
+
+Access Canberra ––– Consumer Protection
+
+Website: https://www.accesscanberra.act.gov.au
+
+Phone: 13 22 81 (within Australia)
+
+Address: GPO Box 158, Canberra ACT 2601
+
+Online complaints: https://www.accesscanberra.act.gov.au/app/forms/consumer-complaint
+
+10.6. We encourage you to contact us first at support@metrointeractive.com so we can attempt to resolve your issue directly. If the matter is not resolved to your satisfaction, you may seek external resolution through Access Canberra or other appropriate legal channels.
+
+10.6(a). Contact Information. For any questions, concerns, or legal notices, please contact us at: support@metrointeractive.com.

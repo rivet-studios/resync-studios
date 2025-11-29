@@ -51,6 +51,7 @@ const accountNavItems = [
   { title: "Profile", url: "/profile", icon: User },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Community Guidelines", url: "/guidelines", icon: Shield },
+  { title: "Privacy Policy", url: "/privacy", icon: Shield },
 ];
 
 export function AppSidebar() {
