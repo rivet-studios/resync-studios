@@ -42,6 +42,7 @@ import {
   BookOpen,
   Handshake,
   Radio,
+  Heart,
 } from "lucide-react";
 
 const mainNavItems = [
@@ -58,6 +59,7 @@ const accountNavItems = [
   { title: "VIP Membership", url: "/vip", icon: Crown },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Community Rules", url: "/community-rules", icon: Heart },
   { title: "Community Guidelines", url: "/guidelines", icon: Shield },
   { title: "Privacy Policy", url: "/privacy", icon: Shield },
   { title: "Terms of Service", url: "/terms", icon: FileText },
