@@ -132,7 +132,7 @@ export default function StaffDirectory() {
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">Staff Directory</h1>
         <p className="text-lg text-muted-foreground">
-          Meet the passionate team behind REACT Studios™
+          Meet the passionate team behind Resync Studios™
         </p>
       </div>
 
@@ -186,7 +186,7 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining the REACT Studios team? Visit our careers page or contact us for more information.
+            Interested in joining the Resync Studios team? Visit our careers page or contact us for more information.
           </p>
         </CardContent>
       </Card>
