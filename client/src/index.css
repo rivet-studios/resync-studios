@@ -43,9 +43,10 @@
   --chart-3: 217 91% 60%;
   --chart-4: 173 58% 39%;
   --chart-5: 43 96% 56%;
-  --font-sans: Open Sans, sans-serif;
+  --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
+  --font-mono: JetBrains Mono, monospace;
+  --font-display: Space Grotesk, sans-serif;
   --radius: .5rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(240 6% 10% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(240 6% 10% / 0.00);
@@ -173,6 +174,66 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* VIP tier badge colors */
+.vip-bronze {
+  background: linear-gradient(135deg, #cd7f32, #b8860b);
+  color: white;
+}
+
+.vip-sapphire {
+  background: linear-gradient(135deg, #0f52ba, #1e90ff);
+  color: white;
+}
+
+.vip-diamond {
+  background: linear-gradient(135deg, #b9f2ff, #e0ffff);
+  color: #1a1a2e;
+}
+
+.vip-founders {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #1a1a2e;
+}
+
+/* Animated gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--chart-3)), hsl(var(--primary)));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated counter */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-count-up {
+  animation: count-up 0.6s ease-out forwards;
+}
+
+/* Glow effects for gaming theme */
+.glow-primary {
+  box-shadow: 0 0 20px hsla(var(--primary), 0.3);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 30px hsla(var(--primary), 0.5);
 }
 
 /**
