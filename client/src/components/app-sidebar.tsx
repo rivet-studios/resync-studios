@@ -43,10 +43,12 @@ import {
   Handshake,
   Radio,
   Heart,
+  Info,
 } from "lucide-react";
 
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: Home },
+  { title: "About Metro Interactive", url: "/about", icon: Info },
   { title: "Announcements", url: "/announcements", icon: Megaphone },
   { title: "LFG Matchmaking", url: "/lfg", icon: Target },
   { title: "Clans", url: "/clans", icon: Users },

@@ -30,6 +30,7 @@ import ProjectReimaginedrules from "@/pages/project-reimagined-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
 import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
+import AboutMetro from "@/pages/about-metro";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const style = {
@@ -77,6 +78,7 @@ function AuthenticatedRoutes() {
         <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
         <Route path="/leo-guidelines" component={LEOGuidelines} />
         <Route path="/community-rules" component={CommunityRules} />
+        <Route path="/about" component={AboutMetro} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
