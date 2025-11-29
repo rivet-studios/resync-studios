@@ -23,7 +23,7 @@ export default function CommunityGuidelines() {
             <div>
               <p className="font-semibold mb-2">Our Foundation</p>
               <p className="text-muted-foreground">
-                REACT Studios creates an open gaming environment accessible to everyone. Our community is built on two core pillars: 
+                Resync Studios creates an open gaming environment accessible to everyone. Our community is built on two core pillars: 
                 being a vibrant gaming hub and a Christian fellowship. We are committed to maintaining a safe, welcoming, and 
                 constructive place for all members.
               </p>
@@ -171,7 +171,7 @@ export default function CommunityGuidelines() {
               <CardTitle className="text-base">No Impersonation</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Do not impersonate any member of the REACT Studios staff, another community member, or any real-world person.
+              Do not impersonate any member of the Resync Studios staff, another community member, or any real-world person.
             </CardContent>
           </Card>
         </div>
@@ -204,7 +204,7 @@ export default function CommunityGuidelines() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Breaking these rules can lead to content removal, a formal warning, temporary suspension from the forums, 
-              or a permanent ban from all REACT Studios services, as determined by our moderation staff.
+              or a permanent ban from all Resync Studios services, as determined by our moderation staff.
             </CardContent>
           </Card>
 
@@ -224,7 +224,7 @@ export default function CommunityGuidelines() {
       <Card className="bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
         <CardContent className="p-6 text-center">
           <p className="text-lg">
-            Thank you for being part of the REACT Studios community and for helping us make this a great place 
+            Thank you for being part of the Resync Studios community and for helping us make this a great place 
             for everyone. We're glad you're here!
           </p>
         </CardContent>

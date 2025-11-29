@@ -63,7 +63,7 @@ const features = [
 
 const testimonials = [
   {
-    quote: "The REACT Studios\u2122 platform revolutionized our community management. The high-fidelity game development tools are exceptional and our players love the seamless experience.",
+    quote: "The Resync Studios™ platform revolutionized our community management. The high-fidelity game development tools are exceptional and our players love the seamless experience.",
     company: "GameForge Studios",
     rating: 5
   },
@@ -90,7 +90,7 @@ export default function Landing() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Gamepad2 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-bold text-xl">REACT Studios</span>
+              <span className="font-display font-bold text-xl">RESYNC Studios</span>
               <Badge variant="secondary" className="hidden sm:inline-flex">Beta</Badge>
             </div>
             
@@ -127,7 +127,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            REACT Studios\u2122 creates an open gaming environment accessible to everyone, 
+            Resync Studios™ creates an open gaming environment accessible to everyone, 
             delivering high-fidelity games through exceptional development expertise and 
             building online communities.
           </p>
@@ -342,7 +342,7 @@ export default function Landing() {
             Ready to build your gaming community?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Join thousands of members who trust REACT Studios\u2122 to deliver exceptional 
+            Join thousands of members who trust Resync Studios™ to deliver exceptional 
             high-fidelity gaming experiences in our open, accessible environment.
           </p>
           <Button size="lg" className="glow-primary-hover px-8" asChild data-testid="button-cta-join">
@@ -362,7 +362,7 @@ export default function Landing() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Gamepad2 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-bold">REACT Studios\u2122</span>
+              <span className="font-display font-bold">Resync Studios™</span>
             </div>
             
             <p className="text-sm text-muted-foreground text-center">
