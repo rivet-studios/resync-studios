@@ -311,22 +311,22 @@ export const VIP_TIERS = {
   none: { name: 'Free', price: 0, features: [] },
   bronze: { 
     name: 'Bronze VIP', 
-    price: 499, 
-    features: ['Bronze VIP Badge', 'Priority LFG Matching', 'Custom Profile Banner', 'Bronze Discord Role']
+    price: 1299, 
+    features: ['Exclusive Discord Role & Privileges', 'Priority HelpDesk Support', 'Priority Moderation Appeals', 'XP Boost (20%)', 'Paychecks Boost (20%)', 'Save 20% on Vehicle Insurance', 'ATM Fees Waived']
   },
   sapphire: { 
     name: 'Sapphire VIP', 
-    price: 999, 
-    features: ['Sapphire VIP Badge', 'Priority LFG Matching', 'Custom Profile Banner', 'Sapphire Discord Role', 'Exclusive Builds Access', 'Ad-Free Experience']
+    price: 2999, 
+    features: ['Exclusive Discord Role & Privileges', 'High Priority HelpDesk Support', 'High Priority Moderation Appeals', 'XP Boost (35%)', 'Paychecks Boost (30%)', 'Save 25% on Vehicle Insurance', 'Exclusive Vehicles', 'ATM Fees Waived']
   },
   diamond: { 
     name: 'Diamond VIP', 
-    price: 1999, 
-    features: ['Diamond VIP Badge', 'Priority LFG Matching', 'Custom Profile Banner', 'Diamond Discord Role', 'Exclusive Builds Access', 'Ad-Free Experience', 'Clan Creation (100 members)', 'Priority Support']
+    price: 4499, 
+    features: ['Exclusive Discord Role & Privileges', 'High Priority HelpDesk Support', 'High Priority Moderation Appeals', 'Audi RS3 Given Monthly', 'XP Boost (45%)', 'Medical Bills 50% Off', 'No Wallet Limit', 'Save 35% on Vehicles', 'Perma-Knife on Civilian Team', 'ATM Fees Waived']
   },
   founders: { 
     name: 'Founders Edition', 
-    price: 4999, 
-    features: ['Founders Badge (Limited)', 'All Diamond Features', 'Founders Discord Role', 'Early Access Features', 'Direct Dev Communication', 'Unlimited Clan Size', 'Custom In-Game Perks']
+    price: 12000, 
+    features: ['Exclusive Founders Discord Role', 'Urgent Priority HelpDesk Support', 'Instant VBI Access & Arrest Authority', 'All Team-Queue & Team Count Bypass', 'Hellcat Given Monthly', 'XP Boost (55%)', 'Medical Bills 55% Off', 'No Wallet Limit', 'Save 50% on Vehicles', 'Perma-Glock on Civilian Team', 'ATM Fees Waived']
   },
 } as const;
