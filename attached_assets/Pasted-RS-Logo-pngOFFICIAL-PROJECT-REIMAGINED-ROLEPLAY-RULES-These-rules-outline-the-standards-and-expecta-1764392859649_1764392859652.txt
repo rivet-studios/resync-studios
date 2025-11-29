@@ -1,0 +1,752 @@
+RS Logo.pngOFFICIAL PROJECT REIMAGINED ROLEPLAY RULES
+These rules outline the standards and expectations for all players participating in Project Reimagined. This is a serious roleplay environment with a strong focus on realism, immersive storytelling, and consistent character portrayal. Project Reimagined operates under a higher roleplay standard than casual or semi-serious servers.
+
+All rules are enforced using a common-sense approach—if an action is clearly disruptive, unrealistic, or breaks immersion, it will be treated as a violation even if not explicitly listed here. Ignorance of the rules is never an excuse.
+
+I. General Roleplay Rules & Player Guidelines
+[1] Player Conduct
+Rule
+
+Description
+
+Violation Class & Punishments
+
+Serious Roleplay Standard
+
+All actions must be grounded in realism. Low-quality RP (killing without reason, VDM, cop baiting, trolling, non-serious dialogue, meme behavior) is prohibited.
+
+(NITRP, VDM, PB, TR) • Class A: Warning/Kick • Class B: Temporary Ban • Class C: Permanent Ban
+
+Responsibility for Rules
+
+Players are responsible for knowing and following the most current rules. “I didn’t know” is not a valid excuse.
+
+Governed by the specific rule broken. (AD - Administrative Discretion)
+
+Encouraging Rule Breaks
+
+Encouraging or pressuring another player to break rules will result in the same punishment as the violation itself.
+
+Same punishment as the primary offense. (AD - Administrative Discretion)
+
+Staying In Character
+
+You must remain in-character (IC) at all times. Finish the RP scene even if a rule is broken and report it afterward.
+
+(FRP) • Class A: Up to 4 Warnings/Kicks • Class B: Temporary Ban
+
+Avoiding Drama
+
+OOC drama, harassment, toxicity, and personal conflicts are prohibited on all platforms related to Project Delta.
+
+(PD, SD) • Class B: Temporary Ban • Class C: Permanent Ban for severe cases
+
+Trolling & Disruption
+
+Deliberately disrupting gameplay, ruining RP, or baiting staff is considered trolling and will be severely punished.
+
+(TR) • Class C: Permanent Ban
+
+Metagaming (MG)
+
+Using OOC information (streams, Discord) to influence your IC decisions is strictly forbidden.
+
+(P/MG) • No Class A/B; staff will handle directly. Severe cases can lead to permanent bans.
+
+Powergaming (PG)
+
+Forcing actions on others without a chance to respond or performing unrealistic/impossible actions is not allowed.
+
+(P/MG) • No Class A/B; staff will handle directly. Severe cases can lead to permanent bans.
+
+Combat Logging
+
+Leaving the game or disconnecting to avoid RP, arrest, injury, or consequences is strictly prohibited.
+
+(LTAA, LTAP) • Class B: Temporary Ban (up to 10 days for LTAP)
+
+Fail RP (FRP)
+
+Actions that break immersion or make no sense (e.g., ignoring major injuries, unrealistic escapes) are considered Fail RP.
+
+(FRP) • Class A: Up to 4 Warnings/Kicks • Class B: Temporary Ban
+
+Exploiting & Glitch Abuse
+
+Using bugs, exploits, or third-party mods for an advantage is not allowed and must be reported immediately.
+
+(AOB, GL, EXP) • Class C: Permanent Ban
+
+Fear RP ((F)RP)
+
+You must realistically fear for your life in threatening situations (e.g., complying at gunpoint).
+
+((F)RP) • Class A: Up to 2 Warnings/Kicks
+
+Random/Unrealistic Acts
+
+Committing serious crimes without motive or build-up ("chaos RP") is prohibited. All actions need a logical IC reason.
+
+(NITRP, FRP) • Class A/B: Warning/Temp Ban • Class C: Permanent Ban for mass casualty acts
+
+Staff Interaction
+
+You must follow all lawful instructions from staff. Arguing or refusing to comply will lead to immediate action.
+
+(IWS, SD) • Class A: Warning/Kick • Class B/C: Ban depending on severity
+
+Voice & Chat Etiquette
+
+Mic spamming, playing loud audio, or being disruptive in voice/text chat is prohibited. OOC chat must be used sparingly.
+
+(AoR, ICU) • Class A: Up to 4 Warnings/Kicks
+
+Stream Sniping
+
+Using a live stream to gain an advantage over another player is strictly prohibited and will be punished immediately.
+
+(MG) • Class C: Permanent Ban
+
+Impersonation
+
+Impersonating another player, staff member, or public figure IC or OOC is prohibited.
+
+(SIM) • Class C: Permanent Ban
+
+AFK in Roleplay Areas
+
+Do not remain idle in active RP areas. Move to a safe, non-RP location if you need to go AFK.
+
+(FRP) • Class A: Warning/Kick
+
+[2] Character Requirements
+Rule
+
+Description
+
+Violation Class & Punishments
+
+Age Requirement
+
+All players must be 13+ years old with prior serious RP experience. Lying about age will result in a permanent ban from all RESYNC Studios games.
+
+(V-TOS) • Class C: Permanent Ban
+
+Realistic Names
+
+Characters must have a realistic "First Last" name. Meme names, pop culture references, or offensive names are prohibited.
+
+(FRP) • Class A: Warning/Kick to change name.
+
+Character Backgrounds
+
+Characters must have a plausible and consistent backstory. Overpowered or unrealistic backgrounds are not allowed without approval.
+
+(FRP) • Class A: Warning/Kick to adjust character.
+
+Character Restrictions
+
+Unrealistic clothing, cat ears/tails, or "cute & aesthetic" faces that conflict with the serious RP tone are prohibited.
+
+(FRP) • Class A: Warning/Kick
+
+Multiple Characters
+
+Each character must be unique. You cannot transfer items, knowledge, or use alternate characters to avoid consequences.
+
+(AA) • Class C: Permanent Ban on all accounts.
+
+Character Deaths (Perma-Death)
+
+If a character dies in a confirmed perma-death scenario, they cannot return. Bypassing this will result in disciplinary action.
+
+(FRP, NLR) • Class B/C: Ban depending on severity.
+
+[3] Out-of-Character (OOC) Behavior
+Rule
+
+Description
+
+Violation Class & Punishments
+
+Respectful Communication
+
+All OOC communication must be respectful. Insults, harassment, threats, or discrimination will not be tolerated.
+
+(PD, SD, V-TOS) • Class B: Temporary Ban • Class C: Permanent Ban
+
+No Doxxing / Privacy Violations
+
+Sharing another player's personal information (real name, address, etc.) is strictly forbidden.
+
+(PI) • Class C: Permanent Ban
+
+No OOC Retaliation
+
+Do not retaliate against a player OOC for something that happened IC. Keep gameplay and personal feelings separate.
+
+(PD) • Class B: Temporary Ban
+
+Recording & Streaming Conduct
+
+Streams/recordings cannot be used to harass, shame, or target other players. Stream sniping is a bannable offense.
+
+(MG, V-TOS) • Class C: Permanent Ban
+
+Report Process
+
+Use the proper reporting channels for issues. Do not argue with staff or players in public OOC chats.
+
+(IWS, FRTS) • Class A/B: Warning or Temp Ban
+
+
+(Note: Most OOC violations on Discord follow a separate moderation scale, also detailed at the end of this document.)
+
+II. Law Enforcement Rules & Standards
+(Violations of LEO rules often result in removal from the department and an LEO blacklist in addition to standard server punishments.)
+
+[4] Code of Conduct – Law Enforcement
+Guideline
+
+Description
+
+Violation Class & Punishments
+
+Professionalism
+
+LEOs must maintain the highest level of professionalism on and off duty. Unprofessional conduct will result in misconduct charges.
+
+(AD) Governed by internal department policy and staff oversight.
+
+Abuse of Power
+
+Using your LEO position for harassment, personal gain, or unfair advantage is strictly prohibited.
+
+(AoT) • Class B: Temporary Ban + LEO Blacklist • Class C: Permanent Ban + LEO Blacklist
+
+Corruption RP Approval
+
+All corruption RP (bribes, planting evidence) must be pre-approved by a Corporate Member. Unauthorized corruption is a severe violation.
+
+(AoT, FRP) • Class C: Permanent Ban + Permanent LEO Blacklist.
+
+Escalation Control
+
+LEOs must attempt to de-escalate situations whenever possible. Unnecessary escalation is considered misconduct.
+
+(FRP) Governed by internal department policy.
+
+Radio Discipline
+
+LEO radio channels must remain professional, clear, and free of OOC chatter.
+
+(AoR) • Class A: Up to 4 Warnings/Kicks
+
+[5] Arrest & Detainment Rules – Law Enforcement
+Guideline
+
+Description
+
+Violation Class & Punishments
+
+Probable Cause Requirement
+
+All arrests must be based on valid, verifiable IC probable cause. Arresting without cause is abuse of authority.
+
+(AoT, FRP) • Class B: Temp Ban + LEO Blacklist
+
+False Charges
+
+Applying false or fabricated charges without approved corruption RP is a severe violation.
+
+(AoT, FRP) • Punishment: Minimum 7-day LEO blacklist up to permanent LEO blacklist and community ban.
+
+Excessive Detainment
+
+Holding suspects for an excessive amount of time without progressing RP is prohibited.
+
+(FRP) • Class A/B: Warning or Temp Ban + LEO action.
+
+[6] Use of Force – Law Enforcement
+Guideline
+
+Description
+
+Violation Class & Punishments
+
+Proportional Response
+
+Force must be proportional to the threat. Using more force than necessary is a violation.
+
+(FRP, AoT) • Penalty Scale: Retraining, 7-30 day LEO Blacklist, or Permanent LEO Blacklist.
+
+Lethal Force Standard
+
+Lethal force is only justified when there is a direct and immediate threat to human life.
+
+(AoT, FRP) • Punishment: Permanent LEO Blacklist and possible community ban.
+
+Dead Checking Prohibited
+
+Firing on or striking a downed, incapacitated, or restrained suspect is forbidden.
+
+(AoT, FRP) • Punishment: Minimum 30-day LEO Blacklist up to Permanent LEO Blacklist.
+
+Execution-Style Acts
+
+Harming a compliant or restrained suspect is strictly forbidden and results in immediate permanent removal from LEO roles.
+
+(AoT, FRP) • Punishment: Permanent LEO Blacklist and community ban.
+
+Vehicle as a Weapon
+
+Ramming or striking a person with a vehicle is prohibited unless there is a lethal threat or staff approval.
+
+(VDM, AoT) • Class B/C: Ban + LEO Blacklist.
+
+Duty to Intervene
+
+Officers must stop and report clear excessive force used by another officer. Failure to do so is misconduct.
+
+(AD) Governed by internal department policy.
+
+III. Emergency Services Rules & Standards
+(Violations by EMS/Fire personnel may result in removal from the department and a role blacklist.)
+
+[7-10] EMS & Fire Conduct
+Guideline
+
+Description
+
+Violation Class & Punishments
+
+Role Responsibilities
+
+EMS handles medical; Fire handles fires/rescues. Neither role may act as law enforcement (no arrests, searches, etc.).
+
+(FRP, IWFD) • Class A/B: Warning/Temp Ban + Role Blacklist.
+
+Scene Safety
+
+EMS/Fire must wait for law enforcement to declare a scene "safe" before entering active crime scenes.
+
+(FRP) • Class A/B: Warning/Temp Ban + Role Blacklist.
+
+Neutrality
+
+EMS and Fire must remain neutral parties in criminal situations, providing aid to anyone regardless of their role.
+
+(FRP) Governed by internal department policy.
+
+Realistic Treatment (RP)
+
+All medical care must be fully and realistically roleplayed. "One-line revives" are prohibited.
+
+(FRP, NITRP) • Class A/B: Warning/Temp Ban.
+
+Equipment Use
+
+EMS/Fire may not carry weapons. Issued equipment may only be used for its intended purpose.
+
+(TA, FRP) • Class A/B: Warning/Temp Ban + Role Blacklist.
+
+IV. Criminal Roleplay Rules & Standards
+[11-13] Criminal Conduct
+Guideline
+
+Description
+
+Violation Class & Punishments
+
+Realistic Crime RP
+
+All criminal acts must be plausible, well-planned, and have a clear IC motive. "Chaos for chaos's sake" is not allowed.
+
+(FRP, NITRP) • Class A/B: Warning/Temp Ban.
+
+Revenge & NLR
+
+After death, you cannot return to the same scene or retaliate against your killer (New Life Rule).
+
+(NLR) • Class A: Up to 2 Warnings/Kicks • Class B: Temporary Ban
+
+Hostage & Robbery Rules
+
+Hostages must be treated realistically. Demands must be reasonable. Killing hostages without a strong IC reason is prohibited.
+
+(FRP) • Class A/B: Warning/Temp Ban.
+
+Illegal Items & Activities
+
+Possession and use of illegal items (weapons, drugs) must be tied to a realistic RP scenario.
+
+(FRP) Governed by staff discretion.
+
+Explosives & Heavy Weapons
+
+Use of explosives or heavy weapons is strictly forbidden unless part of a staff-approved event.
+
+(TA, V-TOS) • Class C: Permanent Ban.
+
+Moderation Guide & Violation Reference
+This section details the specific violation codes and punishment classes used by the moderation team.
+
+Punishment Classes
+Class A (Warning/Kick/Timeout): For minor offenses. Reaching the maximum count leads to a Class B punishment.
+
+Class B (Temporary Ban): For moderate or repeated offenses. Duration depends on severity.
+
+Class C (Permanent Ban): For the most severe violations (exploiting, harassment, etc.).
+
+In-Game Violation Codes
+Term
+
+Scope
+
+Class A
+
+Class B
+
+Class C
+
+AoT
+
+Abuse of Teams
+
+╳
+
+✔
+
+-
+
+AoR
+
+Abuse of Radio
+
+x4 Max
+
+-
+
+-
+
+BH
+
+Body Humping
+
+╳
+
+x2 Max
+
+-
+
+NITRP
+
+No Intent To RP
+
+-
+
+x2 Max
+
+-
+
+S/TK
+
+Spawn/Team Killing
+
+╳
+
+x2 Max
+
+-
+
+AOB
+
+Abuse of Bugs
+
+╳
+
+╳
+
+✔
+
+SC
+
+Spawn/Seller Camping
+
+✔
+
+✔
+
+✔
+
+FE
+
+Farming EXP
+
+✔
+
+x3 Max
+
+✔
+
+UM
+
+Unrealistic Movement
+
+x2 Max
+
+x2 Max
+
+✔
+
+VDM
+
+Vehicle Deathmatch
+
+-
+
+✔
+
+-
+
+GTA-D
+
+GTA Driving
+
+x1 Max
+
+x3 Max
+
+-
+
+PB
+
+Police Baiting
+
+x2 Max
+
+✔
+
+╳
+
+HS
+
+Horn Spamming
+
+x2 Max
+
+✔
+
+╳
+
+IWFD
+
+Interfering with FD/EMS
+
+x1 Max
+
+✔
+
+╳
+
+RTAA
+
+Reset To Avoid Arrest
+
+x2 Max
+
+✔
+
+-
+
+LTAA
+
+Leave To Avoid Arrest
+
+╳
+
+✔
+
+-
+
+LTAP
+
+Leave To Avoid Punishment
+
+╳
+
+10 Days
+
+-
+
+FRTS
+
+False Report to Staff
+
+╳
+
+x3 Max
+
+-
+
+IWS
+
+Interfering With Staff
+
+x1 Max
+
+-
+
+-
+
+PD
+
+Player Disrespect
+
+╳
+
+✔
+
+-
+
+SD
+
+Staff Disrespect
+
+╳
+
+✔
+
+-
+
+SIM
+
+Staff Impersonation
+
+╳
+
+╳
+
+✔
+
+GL
+
+Glitching
+
+╳
+
+╳
+
+✔
+
+TR
+
+Trolling
+
+╳
+
+╳
+
+✔
+
+AA
+
+Alternative Accounts
+
+╳
+
+╳
+
+✔
+
+EXP
+
+(Conspiring with) Exploiter
+
+╳
+
+╳
+
+✔
+
+AD
+
+Administrative Discretion
+
+╳
+
+╳
+
+✔
+
+V-TOS
+
+Violation of TOS
+
+╳
+
+╳
+
+✔
+
+NLR
+
+New Life Rule
+
+x2 Max
+
+✔
+
+-
+
+FRP
+
+Fail Roleplay
+
+x4 Max
+
+✔
+
+-
+
+(F)RP
+
+Fear Roleplay
+
+x2 Max
+
+-
+
+-
+
+CR
+
+Cuff Rushing
+
+x3 Max
+
+✔
+
+-
+
+TA
+
+Tool Abuse
+
+x2 Max
+
+✔
+
+-
+
+PI
+
+Personal Information
+
+╳
+
+╳
+
+✔
+
+CEO & Managing Director at Metro Interactive
