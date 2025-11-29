@@ -17,7 +17,26 @@ import { z } from "zod";
 export const vipTierEnum = pgEnum('vip_tier', ['none', 'bronze', 'sapphire', 'diamond', 'founders']);
 export const skillLevelEnum = pgEnum('skill_level', ['beginner', 'intermediate', 'advanced', 'expert', 'pro']);
 export const gameRoleEnum = pgEnum('game_role', ['tank', 'dps', 'support', 'healer', 'flex', 'any']);
-export const userRankEnum = pgEnum('user_rank', ['member', 'moderator', 'administrator', 'team_member', 'supporter', 'contributor']);
+export const userRankEnum = pgEnum('user_rank', [
+  'member',
+  'company_director',
+  'leadership_council',
+  'operations_manager',
+  'rs_trust_safety_director',
+  'team_member',
+  'administrator',
+  'senior_administrator',
+  'moderator',
+  'community_moderator',
+  'community_senior_moderator',
+  'community_developer',
+  'bronze_vip',
+  'sapphire_vip',
+  'diamond_vip',
+  'founders_edition_vip',
+  'customer_relations',
+  'rs_volunteer_staff'
+]);
 
 // Session storage table (mandatory for Replit Auth)
 export const sessions = pgTable(
