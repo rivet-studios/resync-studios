@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VipBadge } from "@/components/vip-badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserRankBadge, FormattedUsername } from "@/components/user-rank-badge";
 import { Link } from "wouter";
 import {
   User,
@@ -85,12 +86,15 @@ export default function Profile() {
             <div className="flex-1 pt-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold">{getDisplayName()}</h1>
+                {user?.userRank && user.userRank !== 'member' && (
+                  <UserRankBadge rank={user.userRank} />
+                )}
                 {user?.vipTier && user.vipTier !== 'none' && (
                   <VipBadge tier={user.vipTier as any} />
                 )}
               </div>
               {user?.username && (
-                <p className="text-muted-foreground mb-2">@{user.username}</p>
+                <FormattedUsername rank={user?.userRank} username={`@${user.username}`} className="mb-2" />
               )}
               {user?.bio && (
                 <p className="text-muted-foreground mb-4 max-w-2xl">{user.bio}</p>

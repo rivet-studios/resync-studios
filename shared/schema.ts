@@ -17,6 +17,7 @@ import { z } from "zod";
 export const vipTierEnum = pgEnum('vip_tier', ['none', 'bronze', 'sapphire', 'diamond', 'founders']);
 export const skillLevelEnum = pgEnum('skill_level', ['beginner', 'intermediate', 'advanced', 'expert', 'pro']);
 export const gameRoleEnum = pgEnum('game_role', ['tank', 'dps', 'support', 'healer', 'flex', 'any']);
+export const userRankEnum = pgEnum('user_rank', ['member', 'moderator', 'administrator', 'team_member', 'supporter', 'contributor']);
 
 // Session storage table (mandatory for Replit Auth)
 export const sessions = pgTable(
@@ -59,6 +60,8 @@ export const users = pgTable("users", {
   // Clan membership
   clanId: varchar("clan_id"),
   clanRole: varchar("clan_role"),
+  // User rank/role
+  userRank: userRankEnum("user_rank").default('member'),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
