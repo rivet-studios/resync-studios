@@ -37,6 +37,7 @@ import {
   BarChart3,
   Shield,
   FileText,
+  UsersRound,
 } from "lucide-react";
 
 const mainNavItems = [
@@ -45,6 +46,7 @@ const mainNavItems = [
   { title: "Clans", url: "/clans", icon: Users },
   { title: "Builds & Meta", url: "/builds", icon: Swords },
   { title: "Forums", url: "/forums", icon: MessageSquare },
+  { title: "Staff Directory", url: "/staff", icon: UsersRound },
 ];
 
 const accountNavItems = [
