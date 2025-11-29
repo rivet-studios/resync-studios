@@ -15,6 +15,10 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
+localPort = 33319
+externalPort = 3001
+
+[[ports]]
 localPort = 34457
 externalPort = 3000
 
@@ -53,7 +57,7 @@ integrations = [
 [userenv]
 
 [userenv.shared]
-DISCORD_CLIENT_ID = ""
+DISCORD_CLIENT_ID = "1428644505317412884"
 DISCORD_CLIENT_SECRET = "sMgovmhFASsE384emLSdtisKk2Zw4YLU"
 DISCORD_CALLBACK_URL = "https://resync-studios--sharkyowlskv.replit.app/auth/discord/callback"
 ADMIN_USER_ID = ""
