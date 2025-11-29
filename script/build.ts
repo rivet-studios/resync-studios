@@ -36,22 +36,19 @@ async function buildAll() {
   await rm("dist", { recursive: true, force: true });
 
   console.log("building client...");
-  const buildConfig = {
-    ...((await import("./vite.config")).default.build || {}),
-    sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
-    reportCompressedSize: false,
-    chunkSizeWarningLimit: 1000,
-  };
-  
   await viteBuild({
-    build: buildConfig,
+    build: {
+      sourcemap: false,
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
+      reportCompressedSize: false,
+      chunkSizeWarningLimit: 1000,
+    },
   });
 
   console.log("building server...");
