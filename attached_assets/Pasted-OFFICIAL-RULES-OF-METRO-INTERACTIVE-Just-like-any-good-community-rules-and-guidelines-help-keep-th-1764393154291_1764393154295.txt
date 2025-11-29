@@ -1,0 +1,1364 @@
+OFFICIAL RULES OF METRO INTERACTIVE
+Just like any good community, rules and guidelines help keep things running well. At Metro Interactive, we want a respectful, kind, and friendly space for everyone. To help make that happen, we watch over our platforms. Please follow our Rules and Terms of Use whenever you're part of the community. This helps keep things good for both members and guests.
+
+We may stop or remove your access at any time if you break the rules or Terms. Our game servers are regulated by our server rules which are incorporated into these Rules by this reference. The server rules are not exhaustive and will be modified over time as necessary. You are responsible for staying up to date with additions and amendments.
+
+
+
+Table of Contents
+
+Updated Table of Contents
+I. COMMUNITY RULES – Page 3
+[1] Global Rules – Page 3
+[2] Abuse of Power & Drama Rules (NEW) – Page 5
+[3] Internal Staff Conduct Guidelines (NEW) – Page 6
+
+II. SERVER RULES – Page 6
+[0] Terminology – Page 6
+[1] General Rules – Page 8
+
+III. ROLEPLAY RULES – Page 10
+[2.1] General – Page 10
+[2.2] Player versus Player (PvP) – Page 11
+[2.3] Metagaming / Powergaming – Page 13
+[2.4] Base Building – Page 13
+[2.5] Fail Roleplay (FailRP) – Page 14
+
+IV. COMMUNICATION RULES – Page 14
+[3] Chat & Voice Rules – Page 14
+
+V. CRIMINAL RULES – Page 15
+[4.1] Mugging – Page 15
+[4.1.2] Kidnapping – Page 16
+[4.1.3] Robbing – Page 16
+[4.2] Criminal Raiding – Page 17
+[4.3] Organizations – Page 18
+
+VI. GOVERNMENTAL RULES – Page 18
+[5.1] General – Page 18
+[5.2] Law Enforcement – Page 19
+[5.2.2] SWAT Rules – Page 19
+[5.2.3] Law Enforcement Raid Rules – Page 19
+[5.2.4] Police Detective Rules – Page 20
+[5.2.5] Department of Corrections – Page 20
+[5.3] Mayor – Page 21
+[5.4] Emergency Services – Page 21
+[5.5] Secret Service – Page 22
+[5.6] Security Guard – Page 22
+
+
+[I. COMMUNITY RULES]
+Rule
+
+Details
+
+1. Respectful Content Only
+
+No excessive profanity, sexual/illicit content, threats, hate speech, or copyright infringement.
+
+2. No Discrimination
+
+Discrimination based on race, gender, religion, disability, or orientation is never allowed.
+
+3. Be Respectful
+
+No personal attacks or passive-aggressive behavior. If needed, ignore and report users.
+
+4. Constructive Posts
+
+Keep posts on-topic. If you disagree, explain why. Don’t just say “search it up.”
+
+5. Don't Retaliate
+
+Report harassment to staff. Don’t reply publicly or engage back and forth.
+
+6. English Only
+
+All posts must be in English unless otherwise permitted with translation.
+
+7. Don’t Bump Threads
+
+Only bump if adding meaningful input. Avoid posting in old threads without good reason.
+
+8. No Advertising or Trading
+
+Selling, advertising, or promoting products/services is not allowed.
+
+9. Privacy First
+
+Don’t post personal info or private discussions without consent.
+
+10. Follow Staff Instructions
+
+If a staff member tells you to stop, do so immediately or delete the message.
+
+11. Staff Disputes
+
+Contact staff privately or through Internal Affairs. Public staff complaints will be removed.
+
+12. One Account Policy
+
+Only one account per person. Alts will be banned.
+
+13. No Drama or Flame Wars
+
+Take complaints to staff privately. Don’t stir up public conflicts.
+
+14. Political Discussion
+
+Allowed if respectful, relevant, and not dominant. Keep it civil.
+
+15. Thread Participation
+
+Only post in threads you started, were tagged in, or have evidence for.
+
+16. No Spoilers Without Tags
+
+No major spoilers for 14 days after release unless clearly tagged.
+
+17. Account Responsibility
+
+You are responsible for all activity on your account. Keep it secure.
+
+Example: "My cousin was using my account" is not acceptable.
+
+18. No Impersonation
+
+Don’t pretend to be staff or misrepresent your role.
+
+NEW RULE ADDITIONS
+
+VIEW RULES BELOW, THESE HAVE BEEN ADDED TO SAFEGUARD FAIRNESS AND EQUALITY.
+
+19. Abuse of Position / Influence
+
+Those in staff or leadership roles may not use their rank to manipulate, intimidate, or retaliate against other community members.
+This includes:
+
+Using your role to silence others or steer conversations unfairly.
+
+Threatening to remove roles, perks, or access due to personal issues.
+
+Coordinating group exclusion, harassment, or mockery.
+
+20. Passive-Aggressive Behavior
+
+Messages meant to mock, embarrass, or provoke others without directly breaking rules are still punishable.
+Examples:
+
+Sarcastic responses aimed at escalating drama.
+
+Saying things like “ignore them” or “we don’t talk to them” in public chat.
+
+Creating a hostile vibe through indirect jabs or coded messages.
+
+Intent matters more than specific words. If your actions consistently stir tension, staff may step in.
+
+21. No Grouping to Isolate Others (Cliquing)
+
+Creating cliques that exclude or target others is not allowed.
+This includes:
+
+Only helping or interacting with a specific friend group while ignoring others.
+
+Making inside jokes that intentionally exclude or mock other players.
+
+Turning staff decisions into “us vs. them” disputes.
+
+We want an open, welcoming community—not one ruled by favoritism or division.
+
+22. Public Role/Rank Complaints Prohibited
+
+Questions or complaints about staff roles, assignments, or promotions must go through proper channels.
+Do not:
+
+Publicly ask about someone’s promotion or demotion.
+
+Complain about favoritism or rank changes in chat.
+
+Joke about role assignments to stir up reactions.
+
+Use the Internal Affairs or Staff Feedback form if needed. Keep the drama out of public areas.
+
+23. Staff Conduct Applies 24/7
+
+Staff are expected to uphold community standards at all times—even when “off duty.”
+This means:
+
+No trash-talking members or other staff in side chats.
+
+No stirring drama in casual channels, servers, or DMs.
+
+Staff influence doesn’t turn off when the shift ends.
+
+If you hold a leadership title, your actions reflect the community. You’ll be held to that standard.
+
+24. Indirect Harassment / Dogpiling
+
+Encouraging others to isolate, mock, or target a member—whether directly or through suggestion—is considered harassment.
+This includes:
+
+“Soft” callouts or vague posting meant to stir others against someone.
+
+Sending friends to argue on your behalf.
+
+Creating pressure in side conversations (e.g., “we’re all muting them”).
+
+You are accountable for the impact of your words, even if you don’t say it outright.
+
+25. Undermining Staff Decisions
+
+Questioning or criticizing moderation outcomes in public chat is not allowed.
+You may not:
+
+Stir doubt or gossip about staff bans, removals, or investigations.
+
+Say things like “they got banned for nothing” or “staff are soft.”
+
+Spread one-sided or incomplete info that escalates drama.
+
+Appeals and questions must go through formal tickets or staff reports.
+
+26. Reputation Farming & Popularity Abuse
+
+Do not exploit your status or popularity to manipulate decisions, staff outcomes, or community discussions.
+This includes:
+
+Posting in a way that pressures staff due to your follower count, donations, or role.
+
+Starting “support threads” to reverse actions taken against you or friends.
+
+Using group chats or discords to stir community outrage or protest decisions.
+
+Your position does not place you above the rules. This applies to staff, contributors, and large creators.
+
+27. Excessive Public Roleplay of Real Conflict
+
+Turning real staff conflict into roleplay jokes or in-character events is not allowed.
+Examples:
+
+Making an “organization” or group named after drama.
+
+Roleplaying “bans” or “takeovers” based on real community events.
+
+Using RP as a loophole to mock staff decisions or bans.
+
+Keep real issues out of roleplay. It blurs the line and increases tension.
+
+28. Staff Cliques May Be Investigated
+
+If staff behavior shows consistent favoritism, groupthink, or retaliation, we may open an internal review—even without a public report.
+Signs include:
+
+Only certain staff enforcing rules or backing each other in reports.
+
+Disproportionate bans or warnings against certain players.
+
+“Look the other way” patterns for friends.
+
+We are committed to fairness, not just rule compliance.
+
+29. Off-Duty Doesn’t Mean Off-Limits
+
+Staff are expected to maintain professionalism in all community spaces, even when "off-duty" or using alt accounts.
+You may not:
+
+Stir drama, gossip, or argue in public while claiming to be "off shift."
+
+Use a personal or alternate account to avoid accountability.
+
+Act differently in other channels or servers connected to MI.
+
+What you do in Metro spaces—official or related—still falls under these rules.
+
+30. Weaponizing Mental Health or Personal Issues
+
+You may not use sensitive topics like mental health, trauma, or real-life situations to manipulate decisions or gain special treatment.
+This includes:
+
+Using those topics in arguments to avoid consequences.
+
+Guilt-tripping staff or players over moderation actions.
+
+Pressuring others into silence or pity.
+
+We support mental health—but not when it's used as a shield to avoid accountability.
+
+31. Community Stirring via Third-Party Servers
+
+Creating or using third-party discords or groups to discuss drama, organize harassment, or protest decisions is not allowed.
+This includes:
+
+Private group chats meant to stir tension or coordinate “callouts.”
+
+Using unofficial servers to undermine MI leadership or staff.
+
+Inviting others to offsite convos that continue public drama.
+
+We’ll moderate third-party drama if it affects our platform.
+
+32. Staff Interpersonal Drama Must Be Reported, Not Played Out
+
+If you’re a staff member having repeated tension or disagreement with another staffer, it must be taken to management or IA—not to chat, team channels, or members.
+Examples:
+
+Posting vague messages about “certain people.”
+
+Competing over roles or responsibilities in front of members.
+
+Rallying support for your “side.”
+
+You are held to a higher standard when handling conflict.
+
+33. No Chain Retaliation or Loyalty Voting
+
+Once a disciplinary action is taken—like a demotion, ban, or warning—you may not retaliate, especially by:
+
+Quitting in mass.
+
+Threatening to "take your team with you."
+
+Refusing to cooperate in protest of a single punishment.
+
+Each situation is handled individually. Chain loyalty pressure is unacceptable.
+
+34. Roleplay Rank Does Not Equal Real Authority
+
+Holding a high in-game rank (e.g., Chief, Commander) does not grant real-world authority over other players. All players must treat each other with respect, regardless of in-game hierarchy. Misusing in-game rank to intimidate, control, or belittle others is prohibited.
+
+35. No Gatekeeping or Elitism
+
+Disparaging players for their experience level, playstyle, or adherence to specific roleplay standards is not allowed. Comments like "You're not a real role-player" or "This isn't how it's done in serious milsim" are considered gatekeeping and will be moderated.
+
+36. Respect for Out-of-Character (OOC) Boundaries
+
+All players must respect others' OOC boundaries. Forcing players into uncomfortable scenarios, ignoring safe words, or pressuring them to participate in certain roleplays is strictly prohibited. Consent is paramount in all interactions.
+
+37. No Off-Platform Harassment
+
+Harassing, stalking, or bullying players outside of the game platform (e.g., on social media, forums) is strictly forbidden. This includes creating or sharing content that targets or mocks other community members.
+
+38. Accountability for All Members
+
+All community members, regardless of their role or status, are held to the same standards. Favoritism, nepotism, or shielding individuals from consequences due to their position is not tolerated.
+
+39. Clear Separation Between In-Character (IC) and Out-of-Character (OOC) Interactions
+
+Players must distinguish between IC and OOC actions. Using IC scenarios to justify OOC hostility or vice versa is unacceptable. Maintain professionalism and respect in all interactions.
+
+40. Mandatory Training for Leadership Roles
+
+Individuals seeking leadership positions (e.g., department heads, moderators) must undergo training to understand community guidelines, conflict resolution, and proper conduct. This ensures leaders are equipped to handle their responsibilities ethically.
+
+41. Regular Community Feedback Sessions
+
+The community will hold periodic feedback sessions to address concerns, gather suggestions, and ensure transparency. This promotes an inclusive environment where all voices are heard.
+
+43. Reporting Mechanisms and Whistleblower Protection
+
+Establish clear channels for reporting misconduct, with assurances that whistleblowers will be protected from retaliation. Encourage members to speak up about issues without fear.
+
+44. No Interdepartmental Rivalries or Turf Wars
+
+Departments (e.g., LAPD, LASD, SWAT, EMS) must work together and respect each other’s roles.
+You may not:
+
+Start or escalate conflict between departments in or out of RP.
+
+Discredit or mock other departments publicly or in private chats.
+
+Claim superiority or authority over another agency unless it’s part of a structured RP scene.
+
+We are one unified community—not a competition.
+
+45. In-Character Rank Does Not Equal Real Authority
+
+Your RP rank (Chief, Captain, Commander, etc.) does not give you authority outside of structured roleplay.
+You may not:
+
+Use your in-character title to intimidate, override staff, or control others OOC.
+
+Attempt to lead or discipline people in Discord or community channels based on RP rank.
+
+Staff decisions override RP hierarchy.
+
+46. Over-Enforcement and “Mini-Staffing” by RP Leaders Is Not Allowed
+
+Department leaders may not act like staff or enforce rules outside of what’s written for their RP department.
+You may not:
+
+Issue OOC threats like demotions, removals, or bans.
+
+Use chain of command to punish others for OOC behavior.
+
+Enforce RP policies as if they are official community-wide rules.
+
+Report issues to staff or Internal Affairs instead.
+
+47. Do Not Weaponize Department Structure for Ego or Control
+
+Leadership roles should be about helping others—not using power for personal pride.
+You may not:
+
+Create rules, hierarchies, or policies that make people feel excluded or disrespected.
+
+Flex your rank or “remind” others of your power during disagreements.
+
+Build cult-like loyalty groups based on favoritism or popularity contests.
+
+We value healthy leadership—not control.
+
+48. All Departments Must Follow Community Chain of Command
+
+Every department falls under Metro Interactive’s official hierarchy.
+If staff, senior management, or community admins give an instruction, you must comply—even if it conflicts with your department SOPs.
+
+If there is confusion, submit a department clarification request.
+
+49. Training and Evaluations Must Be Fair and Not Abusive
+
+Department trainings must not humiliate, shame, or “haze” participants.
+You may not:
+
+Set impossible standards or intentionally fail others.
+
+Use sarcastic, hostile, or demeaning feedback during evaluations.
+
+Rank people based on favoritism, inside jokes, or clique behavior.
+
+Trainings are about community improvement, not gatekeeping.
+
+50. Roleplay Hierarchy Ends at OOC Respect
+
+You must treat all players with equal respect—regardless of RP rank.
+You may not:
+
+Ignore, mock, or dismiss lower-ranked players just because of their RP role.
+
+Tell someone they’re “just a cadet” or “not worth responding to.”
+
+Use RP rank to deny help or support in official channels.
+
+Your character may have power—but you as a player do not.
+
+Prohibited Content Includes:
+
+Additional Guidelines:
+
+- Defamatory, hateful, or abusive posts
+
+Use common sense at all times.
+
+- Harassment or excessive insults
+
+Rules apply even if not listed here.
+
+- Spam or spam-like behavior
+
+Staff judgment is final pending appeal.
+
+- Non-constructive offense
+
+Abuse of staff or members = instant termination.
+
+- Explicit, adult, or gory content
+
+Violations lead to penalties, regardless of who was using the account.
+
+- Doxing or sharing private info
+
+- Copyright/IP violations
+
+- Anything illegal or promoting illegal acts
+
+
+[II. SERVER RULES]
+These rules apply to all Metro Interactive roleplay games on Roblox and other platforms. Stay informed of all updates.
+
+[0] Terminology & Key Concepts
+Term
+
+Definition
+
+RP
+
+Roleplay – Acting as your character in a realistic setting.
+
+IC
+
+In-Character – Your character’s behavior and actions.
+
+OOC
+
+Out-of-Character – Player input not part of the roleplay.
+
+NLR
+
+New-Life Rule – Forget all events before death. Do not return to the area of death or use info from your past life.
+
+SI
+
+Scene Interference – Entering a scene without valid RP reason.
+
+Police
+
+Can radio for authorized backup into a scene. Cannot show up without authorization.
+
+Civilian
+
+Can only involve others from their organization. Cannot intervene unless affiliated with the person involved.
+
+Rule Term
+
+Definition
+
+Metagaming
+
+Using OOC info in IC or vice versa.
+
+Meta-Baiting
+
+Using OOC to bait people into RP traps.
+
+Powergaming
+
+Forcing actions on others without giving them a chance to resist.
+
+RDM
+
+Killing without RP reason.
+
+RDA
+
+Arresting without RP reason.
+
+VDM
+
+Using vehicles to kill without RP reason.
+
+Fail Driving
+
+Driving without RP consideration.
+
+FailRP
+
+Doing unrealistic actions not fitting your RP role.
+
+FTVL
+
+Failure To Value Life – Not caring about survival in dangerous RP.
+
+ERP
+
+Erotic Roleplay – Strictly prohibited.
+
+Voiding
+
+Ignoring RP events – typically done by staff.
+
+Stalling
+
+Not complying in RP to delay for advantage.
+
+Kidnapping
+
+Illegally detaining someone for ransom or leverage.
+
+Raid
+
+Illegally entering property for crime.
+
+Mugging/Robbery
+
+Stealing personal property during RP.
+
+Cop Baiting
+
+Provoking law enforcement to trigger a response.
+
+Heist
+
+Major robbery event at a high-value location.
+
+Police Raid
+
+Police entering property to apprehend suspects.
+
+[1] General Rules
+Rule
+
+Description
+
+Common Sense
+
+If in doubt, it’s probably not allowed. Ask staff.
+
+Respect Others
+
+Always show respect. Everyone deserves a fair experience.
+
+Don’t Self-Enforce
+
+Let staff handle violations. Don’t take action on your own.
+
+Slander
+
+Don't Slander, Report them through our forums section dedicated for reporting.
+
+No Illegal/Malicious Acts
+
+No Doxing, DDoSing, malware, scams, or real-world threats.
+
+No Hate Speech
+
+No slurs, racism, homophobia, etc. Applies IC and OOC.
+
+Exploits/Hacking
+
+Don’t abuse bugs or exploits. Report them.
+
+Suspicious Behavior
+
+Staff can issue cheating infractions if activity appears suspicious.
+
+ERP/Explicit Content
+
+Strictly prohibited. Includes sexual or non-consensual roleplay.
+
+No Spam
+
+Do not spam chats, voice, or in-game commands.
+
+Advertising
+
+Only advertise official MI-related projects.
+
+Real-World Trades
+
+No trading in-game money for real-world currency. Donator scams = permanent ban.
+
+Anti-AFK/Automation
+
+No scripts, bots, or macroing. Must respond to staff checks.
+
+Trolling/Griefing
+
+Disruptive RP (e.g., fake tow truck role) not allowed. All actions must support gameplay.
+
+Staff Harassment
+
+Don’t DM staff about appeals, refunds, etc. You will be moderated.
+
+Reporting
+
+Report violations when they happen. Don’t delay or stall RP.
+
+Backseat Moderating
+
+Don’t call out rulebreakers publicly – use our report section on our forums.
+
+[2.1] Roleplay Rules – General (LA / PERRIS)
+Rule
+
+Description
+
+Realistic Behavior
+
+Act in-character at all times. No random running, jumping, or trolling.
+
+Character Naming
+
+You must use a proper character name. Offensive or troll names are not allowed.
+
+NLR
+
+Do not return to your death location for 15 minutes or if the situation is ongoing. Forget all previous life knowledge.
+
+Respawn Location
+
+If you respawn at your death location, you must leave immediately.
+
+Suicide to Escape RP
+
+You may not suicide or AFK to avoid RP. Suicide is only allowed if both parties agree.
+
+Property Damage
+
+Don’t destroy someone’s property without a valid roleplay reason.
+
+Item Disposal
+
+Do not throw or hide stolen items where they can't be recovered.
+
+Adverts
+
+Only advertise businesses or events using the in-game phone. No need to announce crimes.
+
+Disconnecting
+
+You must ask in-game staff before leaving during active roleplay.
+
+Item/Weapon Removal
+
+After robbery/theft or drawing a weapon, you must wait 10 minutes before removing items from inventory.
+
+Boosting
+
+Only one player may be boosted at a time. Boosting is allowed using vehicles.
+
+Boost Limits
+
+You may not boost into areas that are otherwise inaccessible without boosting.
+
+Combat Boosting
+
+Boosting over fences or to gain height for shooting is allowed.
+
+RP Scamming Limit
+
+You may scam for up to $50,000 (cash or items). You cannot scam for both. Organization membership scams are not allowed.
+
+Loans
+
+Loans are not protected by rules. Metro Interactive will not enforce unpaid loan disputes unless other rules are broken.
+
+[2.2] Roleplay Rules – Player versus Player (PvP) (LA / PERRIS)
+Rule
+
+Description
+
+Valid Kills
+
+You must have a valid In-Character (IC) reason to kill or knock someone out.
+
+VDM
+
+Vehicle Deathmatch is only allowed if you or a party member is in immediate danger.
+
+Lethal Force
+
+Killing should be a last resort unless you have a strong reason for immediate action.
+
+Kill Timers
+
+Your reason to kill another player lasts 20 minutes, until they die, or until you die. You must re-initiate the roleplay.
+
+Surrendered Players
+
+You may not kill someone who has surrendered unless they are yelling for help, insulting, threatening, or otherwise escalating.
+
+Raid Conduct
+
+During raids, you must give enough time for players to comply before taking lethal action.
+
+Killing Law Enforcement
+
+You may only kill Law Enforcement Officers if you have a valid RP reason and no other options.
+
+Helping Others
+
+You can only assist other players in PvP if they are in your party or organization. Pretending doesn’t count. They must be officially added.
+
+Tickets / Confiscation
+
+You may not attack officers for writing tickets, arresting you in the past, or seizing items.
+
+Tow Drivers
+
+You may not attack tow truck drivers for towing or impounding vehicles.
+
+Instanced Properties
+
+You may not enter teleport-based interiors while being chased or searched for by another player.
+
+LE Escalation
+
+You may only attack Law Enforcement if they clearly escalate a situation (e.g., drawing weapons or giving arrest commands). Passing by due to NLR does not count as initiation.
+
+Looting During Gunfights
+
+You may not loot bodies during a fight unless you are directly involved in that fight.
+
+LE Looting
+
+Law Enforcement may confiscate illegal items from bodies.
+
+Command Response Time
+
+You must give enough time for the other party to respond to your commands. Account for voice chat delays.
+
+FearRP
+
+If two or more players are actively aiming weapons at you, you must comply realistically.
+
+Drawing Under FearRP
+
+You may not draw a weapon when under FearRP if two or more players are holding weapons at you.
+
+Single Gunpoint
+
+If only one player is threatening you, you may try to run or fight back.
+
+Defensive Readiness
+
+If your weapon is already out and someone aims at you, you may fight back regardless of how many there are.
+
+[2.3] Roleplay Rules – Metagaming / Powergaming (LA / PERRIS)
+Rule
+
+Description
+
+Metagaming
+
+You may not use Out-of-Character (OOC) information in-character (IC), or vice versa.
+
+For example, using the scoreboard to identify an undercover cop is not allowed.
+
+Helping New Players
+
+Assisting new players in OOC chat with basic guidance is allowed. This is the only exception to metagaming.
+
+Meta-Baiting
+
+You may not lure people into RP using OOC bait. For example, saying “free money in the alley” in OOC to mug people is not
+
+allowed.
+
+Drop Point Camping
+
+Watching a robbery unfold and intercepting based on what you see IC is allowed.
+
+However, camping drop-off points using knowledge from past robberies is considered metagaming.
+
+Powergaming
+
+Forcing roleplay actions on someone else without giving them a chance to resist is not allowed.
+
+For example, /me Tackles Daniel without letting them respond is powergaming.
+
+[2.4] Roleplay Rules – Housing / Businesses (LA)
+Rule
+
+Description
+
+Prop Blocking
+
+You may not place props (furniture/items) that make your house or business inaccessible. All entrances and exits must be usable at all times.
+
+Prop Support
+
+All props must be realistically supported. Don’t float items or defy physics.
+
+Property Rights
+
+You may only build or place props on property you own. Organization members must be added to the allowlist to build or modify.
+
+Prop Access
+
+Do not use props to access other properties or unreachable areas.
+
+Disruptive Layouts
+
+Don’t build maze-like interiors designed to confuse or slow players. Keep layouts reasonable.
+
+Entrance Access
+
+All entry points to a building must remain open and usable during normal roleplay.
+
+Fair Defenses
+
+Defenses must allow both sides to shoot fairly. You may not use cover that allows you to shoot without being vulnerable in return.
+
+No Indestructible Props
+
+You may not use indestructible placeable or prop items for defense purposes in homes or businesses.
+
+[2.5] Roleplay Rules – Fail Roleplay (FailRP) (LA / PERRIS)
+Rule
+
+Description
+
+Realism Required
+
+Your actions must make sense in a real-life scenario. If it’s something you couldn’t logically do in real life, don’t do it in-game.
+
+Warning Spam
+
+You may only use the “Leave or I will end your life in 10 seconds” warning once per roleplay situation. Spamming it is not allowed.
+
+Entering Vehicles While Restrained
+
+If a player is handcuffed, someone must open the door for them to enter a vehicle. Law enforcement must follow this too. You can’t just “throw them in.”
+
+Cop Baiting
+
+Purposely trying to get police attention by doing stupid or suspicious things (like burnouts in front of a station) is not allowed.
+
+Escaping While Restrained
+
+You may not jump into a body of water or otherwise escape unrealistically while handcuffed or tied up.
+
+[3] Chat & Voice Rules (LA / PERRIS)
+Rule
+
+Description
+
+Voice Chat (OOC Use)
+
+Do not use voice chat for Out-of-Character (OOC) communication if it disrupts or affects roleplay in any way.
+
+Stay In Character
+
+You must remain in character at all times unless you're in an administrative sit.
+
+Reporting Others
+
+Do not complain about players in OOC chat. Use the !help command and provide as much detail as possible.
+
+Voice Modifiers & Music
+
+You may not play music or use a voice changer in voice chat. It breaks immersion. (However, if you have a roleplay reason behind it, it's okay)
+
+Language
+
+English must be used as your main language in public areas. You may speak other languages on your own property.
+
+[4.1] Criminal Rules – Mugging, Kidnapping, and Robbing (LA / PERRIS)
+[4.1.1] Mugging
+Rule
+
+Description
+
+Mugging Cooldown
+
+You must wait 30 minutes between mugging attempts, whether successful or not. This cooldown applies to all involved party members.
+
+Items You Can Mug
+
+You may mug any drop-on-death items including Weapons, Cash Drops, Supplies, Kevlar, and Attachments.
+
+Mugging Limit
+
+You may take up to $10,000 in cash. You may not force players to withdraw bank money.
+
+Killing Over Money
+
+You may not kill someone just because they don’t have enough money on them.
+
+Public Muggings
+
+You may not mug someone near an NPC or in a public area. It must be private and away from populated zones.
+(A good rule is to be on the other side of the city or in a separate neighborhood.)
+Updated
+
+[4.1.2] Criminal Rules – Kidnapping (LA / PERRIS)
+Rule
+
+Description
+
+Kidnapping Cooldown
+
+You must wait out NLR before attempting another kidnapping, whether successful or not. This applies to all involved party members.
+Updated
+
+Hostage Limit
+
+You may no longer take up to 4 hostages
+
+Removed
+
+Reasonable Duration
+
+You may not hold someone hostage for an excessive amount of time unless active negotiations with Law Enforcement are ongoing. Staff may override if it drags too long.
+
+Ransom Cap
+
+You may not demand more than $10,000 per hostage.
+
+Forfeiture of Funds
+
+If caught or arrested, any money gained from the kidnapping must be returned if requested by officers.
+
+Removed
+
+No Inside Hostages
+
+You may not take hostages from your own party or organization. They also may not receive any money from the situation.
+
+Removed
+
+Ending Negotiations
+
+You may not end negotiations if Law Enforcement is actively complying with your demands and they follow server rules.
+
+Public Kidnapping
+
+You may not kidnap players near NPCs or in public zones. (Must be far from NPCs—other side of the city or another neighborhood.)
+Updated
+
+[4.1.2] Criminal Rules – Kidnapping (LA / PERRIS)
+Rule
+
+Description
+
+Max Participants
+
+A robbery or raid may include no more than 8 active participants at any given time. This limit includes players inside or outside the property. Hostages do not count toward this limit.
+
+Active Participants
+
+These players must remain within the bounds of the targeted property and are allowed to engage in combat.
+
+Passive Participants
+
+Players like informants can stay outside but may not engage in combat. They still count toward the 8-player cap.
+
+Combined Count
+
+Both active and passive participants count toward the 8-player maximum.
+
+Keys to Property
+
+You may not rob someone for keys to their vehicle or property. However, you can force them to unlock a vehicle or property at gunpoint.
+
+[4.2] Criminal Rules – Criminal Raiding (LA)
+Rule
+
+Description
+
+Raid Cooldown
+
+You may only perform one raid/heist, hostage/kidnap situation, or both combined every 30 minutes—regardless of success. Survivors may bypass cooldown only to retrieve gear or free party members from law enforcement.
+
+Government Employees
+
+Government employees are not allowed to participate in criminal raids or heists.
+
+No Double Hitting
+
+You may not wait for cooldowns to expire or for crops (e.g., weed) to finish growing to raid again. Once the raid is done, you must leave.
+
+Broken Locks
+
+If your door was broken open by lockpick or forced entry, do not re-lock it until the situation has ended.
+
+Who Can Defend
+
+Only those already inside the base at the start of the raid may defend it. Players may not join the defense mid-raid.
+
+Prop Placement
+
+You may not place props during raids, heists, or gunfights. Law Enforcement is exempt if placing roadblocks or defensive barriers for public safety.
+
+Staying Inside Property
+
+Defenders must remain within the property unless fleeing. You may not leave the base and return to reengage.
+
+Third-Person Cameras
+
+You may not use 3rd person in vehicles to scout ahead, check defenses, or gain info unfairly.
+
+No Spawn-Area Defense
+
+You may not use spawn areas like the casino or hospital for defense or hostage setups.
+
+Counter-Raids
+
+May only happen at player-owned buildings. You may not counter-raid a government building or any building currently being raided by police. Law Enforcement is exempt from this rule.
+
+[4.3] Criminal Rules – Organizations (LA)
+Rule
+
+Description
+
+Organization Names
+
+Crew names must be appropriate. Names referencing real-world hate groups, slurs, or sensitive topics (e.g., “Isis”, “Nazi”, etc.) are not allowed. This includes bypassing filters.
+
+Killing Within Orgs
+
+Being in the same organization does not give you valid reason to kill others. You still need proper roleplay cause.
+
+Declaring War
+
+You may not declare war over small issues (e.g., car accidents). Wars must be based on major conflicts like drugs, weapons, or turf disputes.
+
+Roleplay During Wars
+
+Even during org wars, all normal RP rules (RDM, FearRP, etc.) still apply. War is not an excuse to kill on sight.
+
+Group Activity
+
+You may only commit crimes (e.g., mugging, raiding, heists) with members of your active organization or party—not both at the same time.
+
+Org vs. Party
+
+If you’re in a party, it takes precedence over your organization. The two groups must be kept separate and may not assist each other during active RP.
+
+[5.1] Governmental Rules – General (LA / PERRIS)
+Rule
+
+Description
+
+Traffic Laws
+
+All government personnel must obey traffic laws unless responding to an emergency with lights or sirens. Even during emergencies, safe driving is required.
+
+Illegal Activity
+
+Government workers may not engage in illegal activities. The only exception is undercover detectives, and only for maintaining cover during investigations.
+
+Business Ownership
+
+Government employees may not run or own businesses while on duty.
+
+RP Corruption
+
+Corruption RP may only occur with prior approval from an Official Team Member, Developer, or higher. Authorization is void if that staff member leaves the server.
+
+Civilian Tow Drivers
+
+Civilian tow truck drivers may only tow if asked by a vehicle owner or Law Enforcement. They cannot act on their own.
+
+[5.2.1] Governmental Rules – General Law Enforcement Rules (LA / PERRIS)
+Rule
+
+Description
+
+Use of Lethal Force
+
+Officers may only escalate to deadly force if a suspect poses a direct and immediate threat. Simply being at a crime scene is not justification. They must observe hostile actions like drawing a weapon, firing shots, or issuing threats.
+
+De-escalation First
+
+Officers should attempt verbal engagement or de-escalation unless doing so places themselves or others at immediate risk.
+
+Policy Compliance
+
+All Law Enforcement personnel in Perris and Los Angeles must follow the Mountain Interactive Law Enforcement Roleplay Policy Manual. Violations are considered corruption.
+
+Identification
+
+When engaging the public, officers must identify themselves by name and department.
+
+Taser Use
+
+A taser may only be deployed in combat if the suspect is facing away from the officer.
+
+[5.2.2] SWAT Rules (LA / PERRIS)
+Rule
+
+Description
+
+Scene Oversight
+
+During a shootout or hostage situation, the SWAT Commander or a high-ranking officer must help oversee the scene alongside the highest-ranking Law Enforcement member present.
+
+SWAT Standby
+
+SWAT officers may not remain “on standby” for long periods unless they have authorization from the highest-ranking online member of their agency.
+
+[5.2.3] Governmental Rules – Law Enforcement Raid Rules (LA / PERRIS)
+Rule
+
+Description
+
+Raid Requirements
+
+Police raids must be based on clear evidence (e.g., video, screenshots, or direct observation). A 911 call alone is not sufficient.
+
+Immediate Threat Exception
+
+Law Enforcement may raid without evidence if their life or others’ lives are in immediate danger (e.g., being shot at or chasing an armed suspect into a building).
+
+Raid Report Timing
+
+If you believe a raid was unjust, you must file a report before it ends. After the raid, it is considered handled in-character.
+
+No Repeat Raids
+
+Once a raid is completed—successful or not—you cannot raid the same property again unless new rule-based conditions are met.
+
+Two-Life Rule
+
+If an officer dies during a raid, they may return one time only if called back by active units.
+
+Robbery Override
+
+If no high-ranking LE is online, staff may approve bank robberies at their discretion.
+
+[5.2.3] Governmental Rules – Law Enforcement Raid Rules (LA / PERRIS)
+Rule
+
+Description
+
+Raid Requirements
+
+Police raids must be based on clear evidence (e.g., video, screenshots, or direct observation). A 911 call alone is not sufficient.
+
+Immediate Threat Exception
+
+Law Enforcement may raid without evidence if their life or others’ lives are in immediate danger (e.g., being shot at or chasing an armed suspect into a building).
+
+Raid Report Timing
+
+If you believe a raid was unjust, you must file a report before it ends. After the raid, it is considered handled in-character.
+
+No Repeat Raids
+
+Once a raid is completed—successful or not—you cannot raid the same property again unless new rule-based conditions are met.
+
+Two-Life Rule
+
+If an officer dies during a raid, they may return one time only if called back by active units.
+
+Robbery Override
+
+If no high-ranking LE is online, staff may approve bank robberies at their discretion.
+
+[5.2.4] Governmental Rules – Police Detective Rules (LA)
+Rule
+
+Description
+
+Role of Detective
+
+Detectives are undercover Law Enforcement Officers and may perform normal police duties while blending in.
+
+ID Requirement
+
+Detectives must identify themselves to Law Enforcement when asked. Refusing to show ID is not allowed.
+
+No Baiting
+
+Detectives may not bait civilians into committing crimes. Criminals must act on their own initiative—not because of detective manipulation.
+
+[5.2.5] Governmental Rules – Department of Corrections (LA)
+Rule
+
+Description
+
+Jurisdiction Limits
+
+Corrections cadets, officers, and the warden may only operate within the Penitentiary and the road leading to it. They must remain in that area unless actively chasing an escaped prisoner.
+
+Releasing Prisoners
+
+Prisoners may not be released unless at least two of the following approve it: the Mayor, the Chief, or the Warden.
+
+Release Conditions
+
+A prisoner must have a valid reason to be released. Corrections staff cannot release someone without cause.
+
+[5.3] Governmental Rules – Mayor (LA)
+Rule
+
+Description
+
+Role & Permissions
+
+As Mayor, you represent the city. With staff approval, you may oversee illegal operations (observe only), but may not participate in criminal activity (e.g., growing drugs or crafting weapons).
+
+Realistic Laws
+
+You may not pass unrealistic laws. If staff deems a law unreasonable, they may order you to revoke it.
+
+Permanent Laws
+
+You may not override permanent laws already set by the system. These laws stay active when no custom laws are in effect.
+
+Weapons
+
+The Mayor may only carry a handgun for self-defense and may only use it when in danger. Illegal weapons are not permitted.
+
+Equal Accountability
+
+The Mayor is not above the law and can be ticketed or arrested like any other citizen.
+
+Mayor Assassination
+
+You may kill the Mayor if their approval rating drops below 30% and you have a valid RP reason.
+
+[5.4.1] Governmental Rules – Emergency Services General Rules (LA)
+Rule
+
+Description
+
+No Private Hiring
+
+Medics may not be hired by organizations or players for on-call service. You must remain a public, neutral role.
+
+Firefighter Limits
+
+Firefighters may not be privately hired to extinguish fires related to drug operations or other criminal setups.
+
+No Weapons
+
+Emergency Services may not carry weapons. If in danger, you must call Law Enforcement—you are not allowed to fight.
+
+Combat Restriction
+
+You cannot heal players who are actively in combat. Wait until the fight is clearly over.
+
+Scene Entry Timing
+
+Do not enter active scenes for revival or healing until the RP situation is completely over. This includes raids, shootouts, or chases.
+
+[5.5] Governmental Rules – Secret Service (LA)
+Rule
+
+Description
+
+Role Limits
+
+Secret Service agents do not have the same responsibilities or authority as police. You may not perform police duties (e.g., arrests, patrols).
+
+Assignment
+
+Your role is to protect the Mayor only. You may not offer protection services to others or leave the Mayor unattended.
+
+Accountability
+
+You are not above the law. Secret Service agents can be ticketed or arrested like any other player.
+
+No Intra-Gov Conflict
+
+You may not harm other government officials, including officers in the Police Department or Sheriff's Department.
+
+[5.6] Governmental Rules – Security Guard (LA)
+Rule
+
+Description
+
+Patrol Limits
+
+You may only patrol inside public buildings (banks, gas stations, neighborhoods, etc.).
+
+Business Patrols
+
+You may patrol inside public businesses if given permission by both the Acting Head of Security and the business owner.
+
+Jurisdiction
+
+You do not share authority with law enforcement. You may act within your assigned zone, but cannot perform arrests or law enforcement tasks.
+
+Civilian Assistance
+
+You may protect and assist civilians within your zone, but must contact law enforcement for any investigations or criminal issues.
+
+No Police Support
+
+You may not assist in police chases or shootouts unless they occur inside your patrol area.
+
+Equipment Use
+
+You may only use your loadout for self-defense or to stop criminal activity inside your patrol zone.
+
+Raid Situations
+
+You may only help defend an area if you were already on-scene when the raid began. You may not join mid-raid.
+
+
+Last Updated: 24/11/2025 @ 2231 hours Australian Eastern Standard Time.
+
+CEO & Managing Director at Metro Interactive
