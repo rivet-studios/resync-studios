@@ -35,6 +35,7 @@ export async function registerRoutes(
   // Email-based signup
   app.post("/api/auth/signup", async (req, res) => {
     try {
+      console.log("📧 Signup request received for email:", req.body.email);
       const { email, username } = req.body;
       
       if (!email || !username) {
@@ -57,17 +58,21 @@ export async function registerRoutes(
         : "http://localhost:5000";
       const confirmLink = `${appUrl}/auth/verify-token?token=${token}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`;
       
+      console.log("📧 Sending signup email to:", email);
       await sendSignupEmail(email, confirmLink);
+      console.log("✅ Signup email sent successfully");
       res.json({ message: "Signup email sent" });
     } catch (error) {
-      console.error("Error in signup:", error);
-      res.status(500).json({ message: "Failed to process signup" });
+      console.error("❌ Error in signup:", error instanceof Error ? error.message : error);
+      console.error("Full error:", error);
+      res.status(500).json({ message: "Failed to process signup", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
   // Email-based login
   app.post("/api/auth/email-login", async (req, res) => {
     try {
+      console.log("📧 Login request received for email:", req.body.email);
       const { email } = req.body;
       
       if (!email) {
@@ -80,11 +85,14 @@ export async function registerRoutes(
         : "http://localhost:5000";
       const loginLink = `${appUrl}/auth/verify-token?token=${token}&email=${encodeURIComponent(email)}`;
       
+      console.log("📧 Sending login email to:", email);
       await sendLoginLinkEmail(email, loginLink);
+      console.log("✅ Login email sent successfully");
       res.json({ message: "Login email sent" });
     } catch (error) {
-      console.error("Error in email login:", error);
-      res.status(500).json({ message: "Failed to send login email" });
+      console.error("❌ Error in email login:", error instanceof Error ? error.message : error);
+      console.error("Full error:", error);
+      res.status(500).json({ message: "Failed to send login email", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
