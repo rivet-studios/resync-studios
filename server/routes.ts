@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, sendSignupEmail, sendLoginLinkEmail } from "./storage";
 import passport from "./auth";
 import { 
   insertLfgPostSchema, 
@@ -30,6 +30,112 @@ export async function registerRoutes(
       return res.status(401).json({ message: "401: Not authenticated. Unauthorized." });
     }
     res.json(req.user);
+  });
+
+  // Email-based signup
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { email, username } = req.body;
+      
+      if (!email || !username) {
+        return res.status(400).json({ message: "Email and username required" });
+      }
+
+      const existing = await storage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
+
+      const token = await storage.createMagicLinkToken(email);
+      const appUrl = process.env.NODE_ENV === "production" 
+        ? "https://resync-studios.onrender.com"
+        : "http://localhost:5000";
+      const confirmLink = `${appUrl}/auth/verify-token?token=${token}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`;
+      
+      await sendSignupEmail(email, confirmLink);
+      res.json({ message: "Signup email sent" });
+    } catch (error) {
+      console.error("Error in signup:", error);
+      res.status(500).json({ message: "Failed to process signup" });
+    }
+  });
+
+  // Email-based login
+  app.post("/api/auth/email-login", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email required" });
+      }
+
+      const token = await storage.createMagicLinkToken(email);
+      const appUrl = process.env.NODE_ENV === "production" 
+        ? "https://resync-studios.onrender.com"
+        : "http://localhost:5000";
+      const loginLink = `${appUrl}/auth/verify-token?token=${token}&email=${encodeURIComponent(email)}`;
+      
+      await sendLoginLinkEmail(email, loginLink);
+      res.json({ message: "Login email sent" });
+    } catch (error) {
+      console.error("Error in email login:", error);
+      res.status(500).json({ message: "Failed to send login email" });
+    }
+  });
+
+  // Verify magic link token
+  app.get("/api/auth/verify-token", async (req, res) => {
+    try {
+      const { token, email, username } = req.query;
+      
+      if (!token) {
+        return res.status(400).json({ message: "Token required" });
+      }
+
+      const verifiedEmail = await storage.verifyMagicLinkToken(token as string);
+      
+      if (!verifiedEmail) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      await storage.markMagicLinkTokenAsUsed(token as string);
+
+      // If signup (username provided), create user
+      if (username) {
+        const user = await storage.upsertUser({
+          email: email as string,
+          username: username as string,
+          userRank: "member",
+          vipTier: "none",
+        });
+        req.login(user, (err) => {
+          if (err) {
+            return res.status(500).json({ message: "Login failed" });
+          }
+          res.redirect("/dashboard");
+        });
+      } else {
+        // If login, find user and log them in
+        const user = await storage.getUserByEmail(verifiedEmail);
+        if (!user) {
+          return res.status(400).json({ message: "User not found" });
+        }
+        req.login(user, (err) => {
+          if (err) {
+            return res.status(500).json({ message: "Login failed" });
+          }
+          res.redirect("/dashboard");
+        });
+      }
+    } catch (error) {
+      console.error("Error verifying token:", error);
+      res.status(500).json({ message: "Token verification failed" });
+    }
   });
 
   // Stats

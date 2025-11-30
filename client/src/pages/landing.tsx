@@ -134,7 +134,7 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Button size="lg" className="glow-primary-hover px-8" asChild data-testid="button-get-started">
-              <a href="/login">
+              <a href="/signup">
                 Get Started Free
                 <ChevronRight className="ml-2 w-4 h-4" />
               </a>
