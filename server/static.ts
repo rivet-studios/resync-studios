@@ -5,9 +5,7 @@ import path from "path";
 export function serveStatic(app: Express) {
   // Try multiple paths for the public directory
   const possiblePaths = [
-    path.resolve(__dirname, "./public"), // After bundling: dist/public
-    path.resolve(__dirname, "../dist/public"), // If running from root
-    path.join(process.cwd(), "dist/public"), // Fallback to cwd
+    path.join(process.cwd(), "dist/public"), // dist/public
     path.join(process.cwd(), "public"), // Direct public folder
   ];
   

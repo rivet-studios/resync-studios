@@ -111,8 +111,8 @@ app.use((req, res, next) => {
   await registerRoutes(httpServer, app);
 
   // Check if dist/public exists (built production files)
-  const publicPath = path.resolve(__dirname, "./public");
-  const hasDistFiles = fs.existsSync(publicPath);
+  const distPublicPath = path.join(process.cwd(), "dist", "public", "index.html");
+  const hasDistFiles = fs.existsSync(distPublicPath);
   
   if (process.env.NODE_ENV === "production" || hasDistFiles) {
     console.log("🚀 Serving static files (production or dist files detected)");
