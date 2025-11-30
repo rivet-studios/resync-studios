@@ -8,6 +8,7 @@ const CALLBACK_URL = process.env.DISCORD_CALLBACK_URL || "http://localhost:5000/
 
 if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   console.warn("⚠️ Discord OAuth not configured. Set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET to enable Discord login.");
+}
 
 // Passport user serialization
 passport.serializeUser((user: any, done) => {
@@ -44,7 +45,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
           if (!user) {
             // Create new user with Discord info
             user = await storage.upsertUser({
-              id: undefined, // Will be auto-generated
+              id: undefined,
               email,
               firstName: profile.username || undefined,
               lastName: undefined,
