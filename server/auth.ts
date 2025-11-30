@@ -4,7 +4,9 @@ import { storage } from "./storage";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const CALLBACK_URL = process.env.DISCORD_CALLBACK_URL || "http://localhost:5000/auth/discord/callback";
+const CALLBACK_URL = process.env.NODE_ENV === "production" 
+  ? (process.env.DISCORD_CALLBACK_URL || "http://localhost:5000/auth/discord/callback")
+  : "http://localhost:5000/auth/discord/callback";
 
 if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   console.warn("⚠️ Discord OAuth not configured. Set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET to enable Discord login.");
