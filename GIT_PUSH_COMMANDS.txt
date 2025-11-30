@@ -1,0 +1,17 @@
+COPY AND PASTE THESE COMMANDS INTO YOUR REPLIT TERMINAL
+(One by one or all together)
+
+---
+
+cd /home/runner/workspace
+git remote remove origin
+git remote add origin https://github.com/sharkyowlskv-lab/resync-studios.git
+git branch -M main
+git push -u origin main
+
+---
+
+After these complete, your code will be on GitHub at:
+https://github.com/sharkyowlskv-lab/resync-studios
+
+Then go to Render.com or Railway.com and connect that repository!
