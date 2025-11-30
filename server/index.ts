@@ -112,7 +112,7 @@ app.use((req, res, next) => {
 
   // Diagnostic middleware to log all requests
   app.use((req, res, next) => {
-    console.log(`📨 [${new Date().toISOString()}] ${req.method} ${req.path}`);
+    console.log(`📨 [${new Date().toISOString()}] ${req.method} ${req.path} | Accept: ${req.get('accept') || 'none'}`);
     next();
   });
 
@@ -143,8 +143,15 @@ app.use((req, res, next) => {
         return res.status(404).json({ error: "Not found" });
       }
       // Everything else gets index.html (React SPA routing)
-      console.log(`✅ Serving index.html for route: ${req.path}`);
-      res.sendFile(indexHtmlPath);
+      console.log(`✅ Serving index.html for route: ${req.path} from: ${indexHtmlPath}`);
+      console.log(`📂 File exists: ${fs.existsSync(indexHtmlPath)}`);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.sendFile(indexHtmlPath, (err) => {
+        if (err) {
+          console.error(`❌ Error sending index.html: ${err.message}`);
+          res.status(500).send('Error loading app');
+        }
+      });
     });
   } else {
     console.log("🔧 DEV MODE: dist/public not found, using Vite dev server");
