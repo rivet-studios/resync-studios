@@ -3,9 +3,9 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import session from "express-session";
+import MemoryStore from "memorystore";
 import passport from "./auth";
-import ConnectPgSimple from "connect-pg-simple";
-import { pool, initializeDatabase } from "./db";
+import { initializeDatabase } from "./db";
 import { initializeDiscordBot } from "./discord-bot";
 import fs from "fs";
 import path from "path";
@@ -34,12 +34,10 @@ declare global {
   }
 }
 
-// Session store
-const PgSession = ConnectPgSimple(session);
-const sessionStore = new PgSession({
-  pool,
-  tableName: "sessions",
-  createTableIfMissing: true,
+// Session store - using MemoryStore for stability
+const SessionStore = MemoryStore(session);
+const sessionStore = new SessionStore({
+  checkPeriod: 86400000, // prune expired entries every 24h
 });
 
 // Session middleware
