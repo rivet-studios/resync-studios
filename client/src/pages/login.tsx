@@ -17,10 +17,7 @@ export default function Login() {
 
   const emailLoginMutation = useMutation({
     mutationFn: async (emailAddr: string) => {
-      const response = await apiRequest("/api/auth/email-login", {
-        method: "POST",
-        body: JSON.stringify({ email: emailAddr }),
-      });
+      const response = await apiRequest("POST", "/api/auth/email-login", { email: emailAddr });
       return response.json();
     },
     onSuccess: () => {
