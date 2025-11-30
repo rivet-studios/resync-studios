@@ -680,6 +680,31 @@ export async function registerRoutes(
     return userId === process.env.ADMIN_USER_ID;
   }
 
+  app.get("/api/admin/users", requireAuth, async (req, res) => {
+    try {
+      const adminId = (req.user as any).id;
+      
+      // Verify admin access
+      if (!isAdmin(adminId)) {
+        return res.status(403).json({ message: "Only admins can access this" });
+      }
+
+      const users = await storage.getAllUsers();
+      const sanitizedUsers = users.map(user => ({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        userRank: user.userRank,
+        createdAt: user.createdAt,
+      }));
+      
+      res.json(sanitizedUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   app.post("/api/admin/assign-rank", requireAuth, async (req, res) => {
     try {
       const adminId = (req.user as any).id;
