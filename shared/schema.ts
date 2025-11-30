@@ -224,6 +224,168 @@ export const magicLinkTokens = pgTable("magic_link_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Friends System
+export const friendships = pgTable("friendships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId1: varchar("user_id_1").notNull(),
+  userId2: varchar("user_id_2").notNull(),
+  status: varchar("status").notNull().default('pending'), // pending, accepted, blocked
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Notifications
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  type: varchar("type").notNull(), // friend_request, achievement, message, etc
+  relatedUserId: varchar("related_user_id"),
+  message: text("message"),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Achievements
+export const achievements = pgTable("achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull().unique(),
+  description: text("description"),
+  icon: varchar("icon"),
+  criteria: varchar("criteria").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User Achievements
+export const userAchievements = pgTable("user_achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  achievementId: varchar("achievement_id").notNull(),
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+});
+
+// Daily Rewards
+export const dailyRewards = pgTable("daily_rewards", {
+  userId: varchar("user_id").primaryKey(),
+  lastClaimedAt: timestamp("last_claimed_at"),
+  streak: integer("streak").default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Reputation Points
+export const reputationPoints = pgTable("reputation_points", {
+  userId: varchar("user_id").primaryKey(),
+  totalPoints: integer("total_points").default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Marketplace Items
+export const marketplaceItems = pgTable("marketplace_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  price: integer("price").notNull(),
+  category: varchar("category").notNull(),
+  imageUrl: varchar("image_url"),
+  isFeatured: boolean("is_featured").default(false),
+  salesCount: integer("sales_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Creator Analytics
+export const creatorAnalytics = pgTable("creator_analytics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").notNull(),
+  totalViews: integer("total_views").default(0),
+  totalEarnings: integer("total_earnings").default(0),
+  totalSales: integer("total_sales").default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Referral Program
+export const referrals = pgTable("referrals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  referrerId: varchar("referrer_id").notNull(),
+  referredId: varchar("referred_id").notNull().unique(),
+  rewardEarned: integer("reward_earned").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Community Challenges
+export const challenges = pgTable("challenges", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  objective: text("objective"),
+  reward: integer("reward").default(0),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  participantCount: integer("participant_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Challenge Participants
+export const challengeParticipants = pgTable("challenge_participants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  challengeId: varchar("challenge_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  progress: integer("progress").default(0),
+  completed: boolean("completed").default(false),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+// Reports
+export const reports = pgTable("reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reporterId: varchar("reporter_id").notNull(),
+  targetUserId: varchar("target_user_id"),
+  contentType: varchar("content_type"), // user, post, comment, etc
+  contentId: varchar("content_id"),
+  reason: text("reason").notNull(),
+  status: varchar("status").notNull().default('open'), // open, investigating, resolved
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Blocks
+export const blocks = pgTable("blocks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  blockedUserId: varchar("blocked_user_id").notNull(),
+  blockedAt: timestamp("blocked_at").defaultNow(),
+});
+
+// Knowledge Base Articles
+export const knowledgeBase = pgTable("knowledge_base", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  category: varchar("category").notNull(),
+  viewCount: integer("view_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Meta Database (Game Builds/Guides)
+export const metaDatabase = pgTable("meta_database", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  game: varchar("game").notNull(),
+  character: varchar("character"),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  tier: varchar("tier"), // S, A, B, C
+  winRate: integer("win_rate"),
+  viewCount: integer("view_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User Testimonials
+export const testimonials = pgTable("testimonials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  text: text("text").notNull(),
+  rating: integer("rating").notNull(), // 1-5
+  isFeatured: boolean("is_featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   clan: one(clans, { fields: [users.clanId], references: [clans.id] }),
