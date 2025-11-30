@@ -471,6 +471,74 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   isRead: true
 });
 
+export const insertFriendshipSchema = createInsertSchema(friendships).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export const insertNotificationSchema = createInsertSchema(notifications).omit({ 
+  id: true, 
+  createdAt: true,
+  isRead: true
+});
+export const insertAchievementSchema = createInsertSchema(achievements).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export const insertUserAchievementSchema = createInsertSchema(userAchievements).omit({ 
+  id: true, 
+  unlockedAt: true
+});
+export const insertDailyRewardSchema = createInsertSchema(dailyRewards).omit({ 
+  updatedAt: true
+});
+export const insertReputationPointSchema = createInsertSchema(reputationPoints).omit({ 
+  updatedAt: true
+});
+export const insertMarketplaceItemSchema = createInsertSchema(marketplaceItems).omit({ 
+  id: true, 
+  createdAt: true,
+  salesCount: true
+});
+export const insertCreatorAnalyticsSchema = createInsertSchema(creatorAnalytics).omit({ 
+  id: true, 
+  updatedAt: true
+});
+export const insertReferralSchema = createInsertSchema(referrals).omit({ 
+  id: true, 
+  createdAt: true
+});
+export const insertChallengeSchema = createInsertSchema(challenges).omit({ 
+  id: true, 
+  createdAt: true,
+  participantCount: true
+});
+export const insertChallengeParticipantSchema = createInsertSchema(challengeParticipants).omit({ 
+  id: true, 
+  joinedAt: true
+});
+export const insertReportSchema = createInsertSchema(reports).omit({ 
+  id: true, 
+  createdAt: true
+});
+export const insertBlockSchema = createInsertSchema(blocks).omit({ 
+  id: true, 
+  blockedAt: true
+});
+export const insertKnowledgeBaseSchema = createInsertSchema(knowledgeBase).omit({ 
+  id: true, 
+  createdAt: true,
+  viewCount: true
+});
+export const insertMetaDatabaseSchema = createInsertSchema(metaDatabase).omit({ 
+  id: true, 
+  createdAt: true,
+  viewCount: true
+});
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({ 
+  id: true, 
+  createdAt: true
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -500,6 +568,54 @@ export type InsertForumReply = z.infer<typeof insertForumReplySchema>;
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export type Friendship = typeof friendships.$inferSelect;
+export type InsertFriendship = z.infer<typeof insertFriendshipSchema>;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+
+export type DailyReward = typeof dailyRewards.$inferSelect;
+export type InsertDailyReward = z.infer<typeof insertDailyRewardSchema>;
+
+export type ReputationPoint = typeof reputationPoints.$inferSelect;
+export type InsertReputationPoint = z.infer<typeof insertReputationPointSchema>;
+
+export type MarketplaceItem = typeof marketplaceItems.$inferSelect;
+export type InsertMarketplaceItem = z.infer<typeof insertMarketplaceItemSchema>;
+
+export type CreatorAnalytics = typeof creatorAnalytics.$inferSelect;
+export type InsertCreatorAnalytics = z.infer<typeof insertCreatorAnalyticsSchema>;
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = z.infer<typeof insertReferralSchema>;
+
+export type Challenge = typeof challenges.$inferSelect;
+export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
+
+export type ChallengeParticipant = typeof challengeParticipants.$inferSelect;
+export type InsertChallengeParticipant = z.infer<typeof insertChallengeParticipantSchema>;
+
+export type Report = typeof reports.$inferSelect;
+export type InsertReport = z.infer<typeof insertReportSchema>;
+
+export type Block = typeof blocks.$inferSelect;
+export type InsertBlock = z.infer<typeof insertBlockSchema>;
+
+export type KnowledgeBaseArticle = typeof knowledgeBase.$inferSelect;
+export type InsertKnowledgeBaseArticle = z.infer<typeof insertKnowledgeBaseSchema>;
+
+export type MetaGuide = typeof metaDatabase.$inferSelect;
+export type InsertMetaGuide = z.infer<typeof insertMetaDatabaseSchema>;
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
 
 // VIP tier configuration
 export const VIP_TIERS = {
