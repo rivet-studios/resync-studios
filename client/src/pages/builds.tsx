@@ -93,8 +93,8 @@ export default function Builds() {
   const { toast } = useToast();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterGame, setFilterGame] = useState<string>("");
-  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterGame, setFilterGame] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
 
   const { data: builds, isLoading } = useQuery<BuildWithAuthor[]>({
     queryKey: ["/api/builds"],
@@ -144,8 +144,8 @@ export default function Builds() {
   const filteredBuilds = builds?.filter((build) => {
     const matchesSearch = build.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       build.game.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGame = !filterGame || build.game === filterGame;
-    const matchesCategory = !filterCategory || build.category === filterCategory;
+    const matchesGame = filterGame === "all" || build.game === filterGame;
+    const matchesCategory = filterCategory === "all" || build.category === filterCategory;
     return matchesSearch && matchesGame && matchesCategory;
   });
 
@@ -318,7 +318,7 @@ export default function Builds() {
                 <SelectValue placeholder="All Games" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Games</SelectItem>
+                <SelectItem value="all">All Games</SelectItem>
                 {games.map((game) => (
                   <SelectItem key={game} value={game}>{game}</SelectItem>
                 ))}
@@ -330,7 +330,7 @@ export default function Builds() {
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}

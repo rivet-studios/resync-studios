@@ -90,8 +90,8 @@ export default function LFG() {
   const { toast } = useToast();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterGame, setFilterGame] = useState<string>("");
-  const [filterSkill, setFilterSkill] = useState<string>("");
+  const [filterGame, setFilterGame] = useState<string>("all");
+  const [filterSkill, setFilterSkill] = useState<string>("all");
 
   const { data: lfgPosts, isLoading } = useQuery<LfgPostWithAuthor[]>({
     queryKey: ["/api/lfg"],
@@ -144,8 +144,8 @@ export default function LFG() {
   const filteredPosts = lfgPosts?.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.game.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGame = !filterGame || post.game === filterGame;
-    const matchesSkill = !filterSkill || post.skillLevel === filterSkill;
+    const matchesGame = filterGame === "all" || post.game === filterGame;
+    const matchesSkill = filterSkill === "all" || post.skillLevel === filterSkill;
     return matchesSearch && matchesGame && matchesSkill;
   });
 
@@ -395,7 +395,7 @@ export default function LFG() {
                 <SelectValue placeholder="All Games" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Games</SelectItem>
+                <SelectItem value="all">All Games</SelectItem>
                 {games.map((game) => (
                   <SelectItem key={game} value={game}>{game}</SelectItem>
                 ))}
@@ -407,7 +407,7 @@ export default function LFG() {
                 <SelectValue placeholder="All Skills" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Skills</SelectItem>
+                <SelectItem value="all">All Skills</SelectItem>
                 {skillLevels.map((skill) => (
                   <SelectItem key={skill} value={skill} className="capitalize">{skill}</SelectItem>
                 ))}
