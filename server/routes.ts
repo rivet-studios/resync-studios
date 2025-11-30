@@ -680,9 +680,10 @@ export async function registerRoutes(
 
   // TODO: Replace with actual admin check - for now requires ADMIN_USER_ID env var
   function isAdmin(userId: string): boolean {
-    const adminId = process.env.ADMIN_USER_ID;
-    const result = userId === adminId;
-    console.log(`🔐 Admin check: userId="${userId}" vs ADMIN_USER_ID="${adminId}" => ${result}`);
+    const adminId = (process.env.ADMIN_USER_ID || "").trim();
+    const trimmedUserId = (userId || "").trim();
+    const result = trimmedUserId === adminId;
+    console.log(`🔐 Admin check: userId="${trimmedUserId}" vs ADMIN_USER_ID="${adminId}" => ${result}`);
     return result;
   }
 
