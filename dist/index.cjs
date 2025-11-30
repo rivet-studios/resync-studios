@@ -299,6 +299,7 @@ memory, and will not scale past a single process.`,YF=typeof setImmediate=="func
       CREATE TABLE IF NOT EXISTS users (
         id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         email varchar UNIQUE,
+        password varchar,
         first_name varchar,
         last_name varchar,
         profile_image_url varchar,
