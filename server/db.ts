@@ -26,6 +26,7 @@ export async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS users (
         id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         email varchar UNIQUE,
+        password varchar,
         first_name varchar,
         last_name varchar,
         profile_image_url varchar,

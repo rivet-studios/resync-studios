@@ -1,0 +1,50 @@
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.cjs
+🔐 Discord OAuth Callback URL: https://resync-studios.onrender.com/auth/discord/callback
+✅ Discord OAuth configured with Client ID: 14286445...
+🗄️ Initializing database schema...
+✅ Database schema initialized successfully
+✅ Discord bot logged in as resyncstudios.com#8667
+📍 CWD: /opt/render/project/src
+📍 Index.html path: /opt/render/project/src/dist/public/index.html
+📍 Index.html exists: true
+✅ PRODUCTION MODE: Serving from dist/public
+5:44:19 PM [express] serving on port 5000
+     ==> Your service is live 🎉
+     ==> 
+     ==> ///////////////////////////////////////////////////////////
+     ==> 
+     ==> Available at your primary URL https://resync-studios.onrender.com
+     ==> 
+     ==> ///////////////////////////////////////////////////////////
+5:45:44 PM [express] GET /api/auth/user 401 in 2ms :: {"message":"401: Not authenticated. Unauthorized."}
+5:45:46 PM [express] GET /api/auth/user 401 in 0ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔑 Login request received for email: kiamlol41@gmail.com
+❌ Error in login: column "password" does not exist
+Full error: error: column "password" does not exist
+    at /opt/render/project/src/dist/index.cjs:298:46463
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async JP.execute (/opt/render/project/src/dist/index.cjs:298:71449)
+    at async kq.getUserByEmail (/opt/render/project/src/dist/index.cjs:342:285)
+    at async /opt/render/project/src/dist/index.cjs:342:9321 {
+  length: 108,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '23',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3716',
+  routine: 'errorMissingColumn'
+}
+5:45:49 PM [express] POST /api/auth/email-login 500 in 588ms :: {"message":"Failed to login"}
