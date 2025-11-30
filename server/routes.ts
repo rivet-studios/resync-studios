@@ -96,15 +96,11 @@ export async function registerRoutes(
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Use passport's login method to establish session
-      req.login(user, (err) => {
-        if (err) {
-          console.error("❌ Session creation failed:", err);
-          return res.status(500).json({ message: "Failed to create session" });
-        }
-        console.log("✅ User logged in:", user.id);
-        res.json({ message: "Logged in successfully", user });
-      });
+      // Manually set user in session
+      (req.session as any).passport = { user: user.id };
+      req.user = user;
+      console.log("✅ User logged in:", user.id);
+      res.json({ message: "Logged in successfully", user });
     } catch (error) {
       console.error("❌ Error in login:", error instanceof Error ? error.message : error);
       console.error("Full error:", error);
