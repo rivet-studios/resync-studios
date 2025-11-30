@@ -42,15 +42,17 @@ const sessionStore = new PgSession({
   createTableIfMissing: true,
 });
 
+console.log("✅ Session store initialized with PostgreSQL");
+
 // Session middleware
 app.use(
   session({
     store: sessionStore,
     secret: process.env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: false,
       httpOnly: true,
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days

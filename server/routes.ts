@@ -28,6 +28,7 @@ export async function registerRoutes(
   
   // Auth routes
   app.get("/api/auth/user", (req, res) => {
+    console.log("🔍 Auth check - isAuth:", req.isAuthenticated(), "user:", req.user?.id, "sessionID:", req.sessionID);
     if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ message: "401: Not authenticated. Unauthorized." });
     }
