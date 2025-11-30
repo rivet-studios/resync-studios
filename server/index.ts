@@ -38,7 +38,7 @@ declare global {
 const PgSession = ConnectPgSimple(session);
 const sessionStore = new PgSession({
   pool,
-  createTableIfMissing: false,
+  createTableIfMissing: true,
 });
 
 // Session middleware
