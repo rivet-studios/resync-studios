@@ -20,6 +20,15 @@ import { eq, desc, and, sql, or, ilike, lt } from "drizzle-orm";
 let connectionSettings: any;
 
 async function getResendClient() {
+  // Try environment variable first (for Render.com deployment)
+  if (process.env.RESEND_API_KEY) {
+    return {
+      client: new Resend(process.env.RESEND_API_KEY),
+      fromEmail: process.env.RESEND_FROM_EMAIL || 'noreply@resync.community'
+    };
+  }
+
+  // Fall back to Replit connectors API
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -27,23 +36,37 @@ async function getResendClient() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL 
     : null;
 
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  if (!hostname || !xReplitToken) {
+    console.error('⚠️ Resend API not configured. Set RESEND_API_KEY environment variable or configure Resend integration.');
+    throw new Error('Resend API key not configured. Please set RESEND_API_KEY environment variable or configure the Resend integration in Replit.');
   }
 
   if (!connectionSettings) {
-    connectionSettings = await fetch(
-      'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-      {
-        headers: {
-          'Accept': 'application/json',
-          'X_REPLIT_TOKEN': xReplitToken
+    try {
+      const response = await fetch(
+        'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+        {
+          headers: {
+            'Accept': 'application/json',
+            'X_REPLIT_TOKEN': xReplitToken
+          }
         }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Resend connection: ${response.status}`);
       }
-    ).then(res => res.json()).then(data => data.items?.[0]);
+      
+      const data = await response.json();
+      connectionSettings = data.items?.[0];
 
-    if (!connectionSettings || !connectionSettings.settings?.api_key) {
-      throw new Error('Resend not connected');
+      if (!connectionSettings || !connectionSettings.settings?.api_key) {
+        console.error('⚠️ Resend integration not connected. Please configure it in Replit.');
+        throw new Error('Resend not connected in Replit. Please set up the Resend integration.');
+      }
+    } catch (error) {
+      console.error('Failed to get Resend connection:', error);
+      throw error;
     }
   }
 
