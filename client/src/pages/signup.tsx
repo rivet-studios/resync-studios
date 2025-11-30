@@ -5,43 +5,79 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Gamepad2, Mail, AlertCircle } from "lucide-react";
-import { SiDiscord } from "react-icons/si";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-export default function Login() {
+export default function Signup() {
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const emailLoginMutation = useMutation({
-    mutationFn: async (emailAddr: string) => {
-      const response = await apiRequest("/api/auth/email-login", {
+  const signupMutation = useMutation({
+    mutationFn: async (data: { email: string; username: string }) => {
+      const response = await apiRequest("/api/auth/signup", {
         method: "POST",
-        body: JSON.stringify({ email: emailAddr }),
+        body: JSON.stringify(data),
       });
       return response.json();
     },
     onSuccess: () => {
-      setSuccessMessage("Check your email for a login link!");
+      setSuccess(true);
       setError("");
-      setEmail("");
+      setTimeout(() => navigate("/login"), 3000);
     },
     onError: (err: any) => {
-      setError(err.message || "Failed to send email. Please try again.");
+      setError(err.message || "Signup failed. Please try again.");
     },
   });
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!email) {
-      setError("Please enter your email");
+    if (!email || !username) {
+      setError("Please fill in all fields");
       return;
     }
-    emailLoginMutation.mutate(email);
+    signupMutation.mutate({ email, username });
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex flex-col">
+        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                  <Gamepad2 className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <span className="font-display font-bold text-xl">RESYNC Studios</span>
+              </div>
+              <ThemeToggle />
+            </div>
+          </div>
+        </nav>
+
+        <div className="flex-1 flex items-center justify-center px-4 pt-20">
+          <Card className="w-full max-w-md border border-border/50 shadow-xl text-center">
+            <CardHeader className="space-y-2 pb-8">
+              <div className="flex justify-center mb-4">
+                <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-bold">Check your email!</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
+                We've sent a confirmation link to <strong>{email}</strong>. Redirecting to login...
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex flex-col">
@@ -69,12 +105,12 @@ export default function Login() {
                 <Gamepad2 className="w-6 h-6 text-primary-foreground" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Log in to your account</CardTitle>
+            <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Choose your login method
+              Join the Resync Studios gaming community
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {error && (
               <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3 flex gap-2">
@@ -83,41 +119,19 @@ export default function Login() {
               </div>
             )}
 
-            {successMessage && (
-              <div className="bg-green-500/10 border border-green-500/20 rounded-md p-3 flex gap-2">
-                <Mail className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-green-500">{successMessage}</p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Username</label>
+                <Input
+                  type="text"
+                  placeholder="Choose your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  data-testid="input-username"
+                  className="bg-background border-border/50"
+                />
               </div>
-            )}
 
-            {/* Discord Sign In */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase">Discord</p>
-              <Button 
-                asChild
-                size="lg"
-                className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white"
-                data-testid="button-login-discord"
-              >
-                <a href="/api/login" className="flex items-center justify-center gap-2">
-                  <SiDiscord className="w-5 h-5" />
-                  Login with Discord
-                </a>
-              </Button>
-            </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/50"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="px-2 bg-card text-muted-foreground">Or email</span>
-              </div>
-            </div>
-
-            {/* Email Login Form */}
-            <form onSubmit={handleEmailSubmit} className="space-y-3">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Email</label>
                 <Input
@@ -125,34 +139,32 @@ export default function Login() {
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={emailLoginMutation.isPending}
                   data-testid="input-email"
                   className="bg-background border-border/50"
                 />
               </div>
-              <Button 
+
+              <Button
                 type="submit"
                 size="lg"
-                variant="outline"
-                className="w-full"
-                disabled={emailLoginMutation.isPending}
-                data-testid="button-email-link"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={signupMutation.isPending}
+                data-testid="button-signup"
               >
-                <Mail className="w-4 h-4 mr-2" />
-                {emailLoginMutation.isPending ? "Sending..." : "Email me a login link"}
+                {signupMutation.isPending ? "Creating account..." : "Create account"}
               </Button>
             </form>
 
-            {/* Sign Up Link */}
+            {/* Already have account */}
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <button 
-                  onClick={() => navigate("/signup")}
+                Already have an account?{" "}
+                <button
+                  onClick={() => navigate("/login")}
                   className="text-primary hover:underline font-medium"
-                  data-testid="link-signup"
+                  data-testid="button-back-to-login"
                 >
-                  Sign up
+                  Log in
                 </button>
               </p>
             </div>

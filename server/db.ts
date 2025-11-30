@@ -62,6 +62,18 @@ export async function initializeDatabase() {
       );
     `);
 
+    // Create magic_link_tokens table if it doesn't exist
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS magic_link_tokens (
+        id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        email varchar NOT NULL,
+        token varchar UNIQUE NOT NULL,
+        expires_at timestamp NOT NULL,
+        used_at timestamp,
+        created_at timestamp DEFAULT now()
+      );
+    `);
+
     console.log("✅ Database schema initialized successfully");
   } catch (error) {
     console.error("⚠️ Database initialization error (may be expected):", error);
