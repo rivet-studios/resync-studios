@@ -680,7 +680,10 @@ export async function registerRoutes(
 
   // TODO: Replace with actual admin check - for now requires ADMIN_USER_ID env var
   function isAdmin(userId: string): boolean {
-    return userId === process.env.ADMIN_USER_ID;
+    const adminId = process.env.ADMIN_USER_ID;
+    const result = userId === adminId;
+    console.log(`🔐 Admin check: userId="${userId}" vs ADMIN_USER_ID="${adminId}" => ${result}`);
+    return result;
   }
 
   app.get("/api/admin/users", requireAuth, async (req, res) => {

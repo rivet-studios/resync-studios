@@ -10,6 +10,8 @@ import { initializeDiscordBot } from "./discord-bot";
 import fs from "fs";
 import path from "path";
 
+console.log("🔐 ADMIN_USER_ID at startup:", process.env.ADMIN_USER_ID);
+
 const app = express();
 const httpServer = createServer(app);
 
