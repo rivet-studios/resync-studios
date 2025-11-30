@@ -3,34 +3,36 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  // Try multiple possible paths for the public folder
-  let distPath: string;
+  // Determine the public directory path
+  // When bundled, __dirname = /path/to/dist, so ./public = /path/to/dist/public
+  const distPath = path.resolve(__dirname, "./public");
   
-  const possiblePaths = [
-    // When bundled and deployed by Replit
-    path.resolve(__dirname, "./public"),
-    // When bundled but in workspace
-    path.resolve(__dirname, "../dist/public"),
-    // When running from workspace root in production
-    path.resolve(process.cwd(), "dist/public"),
-  ];
+  console.log(`📁 Looking for static files at: ${distPath}`);
+  console.log(`📁 __dirname: ${__dirname}`);
+  console.log(`📁 process.cwd(): ${process.cwd()}`);
   
-  // Find the first path that exists
-  distPath = possiblePaths.find(p => fs.existsSync(p)) || possiblePaths[0];
-  
-  if (!fs.existsSync(distPath)) {
-    console.error(`Available paths checked: ${possiblePaths.join(", ")}`);
-    console.error(`CWD: ${process.cwd()}, __dirname: ${__dirname}`);
-    throw new Error(
-      `Could not find the build directory at ${distPath}. Ensure npm run build was executed.`,
-    );
+  // Check if index.html exists
+  const indexPath = path.resolve(distPath, "index.html");
+  if (!fs.existsSync(indexPath)) {
+    console.error(`❌ index.html not found at: ${indexPath}`);
+    console.error(`📁 Checking what's in ${distPath}:`);
+    try {
+      const contents = fs.readdirSync(distPath);
+      console.error(`   Contents: ${contents.join(", ")}`);
+    } catch (e) {
+      console.error(`   Directory doesn't exist or can't be read`);
+    }
+    throw new Error(`Static files directory not found at ${distPath}`);
   }
 
-  console.log(`📁 Serving static files from: ${distPath}`);
-  app.use(express.static(distPath));
+  console.log(`✅ Static files found. Serving from: ${distPath}`);
+  app.use(express.static(distPath, { 
+    maxAge: "1h",
+    etag: false 
+  }));
 
-  // Fallback to index.html for client-side routing
+  // Fallback to index.html for all routes (SPA routing)
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    res.sendFile(indexPath);
   });
 }
