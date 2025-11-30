@@ -708,34 +708,40 @@ export async function registerRoutes(
   app.post("/api/admin/assign-rank", requireAuth, async (req, res) => {
     try {
       const adminId = (req.user as any).id;
+      console.log(`🔐 Rank assignment request from admin: ${adminId}`);
       
       // Verify admin access
       if (!isAdmin(adminId)) {
+        console.log(`❌ Rank assignment denied - user ${adminId} is not admin (expected ${process.env.ADMIN_USER_ID})`);
         return res.status(403).json({ message: "Only admins can assign ranks" });
       }
 
       const { userId, rank } = req.body;
+      console.log(`📝 Assigning rank "${rank}" to user ${userId}`);
 
       // Validate rank is a staff rank or member/none
       const validRanks = ['member', 'none', ...STAFF_RANKS];
       if (!validRanks.includes(rank)) {
+        console.log(`❌ Invalid rank: ${rank}. Valid ranks: ${validRanks.join(', ')}`);
         return res.status(400).json({ message: "Invalid rank", validRanks });
       }
 
       const targetUser = await storage.getUser(userId);
       if (!targetUser) {
+        console.log(`❌ User not found: ${userId}`);
         return res.status(404).json({ message: "User not found" });
       }
 
       // Update rank
       const updatedUser = await storage.updateUser(userId, { userRank: rank });
+      console.log(`✅ Rank successfully updated for ${targetUser.username}: ${rank}`);
       res.json({ 
         message: `User rank updated to ${rank}`,
         user: updatedUser 
       });
     } catch (error) {
-      console.error("Error assigning rank:", error);
-      res.status(500).json({ message: "Failed to assign rank" });
+      console.error("❌ Error assigning rank:", error);
+      res.status(500).json({ message: `Failed to assign rank: ${(error as any).message}` });
     }
   });
 
