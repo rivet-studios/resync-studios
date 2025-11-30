@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Gamepad2, Mail, AlertCircle } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Login() {
   const [, navigate] = useLocation();
@@ -21,6 +21,7 @@ export default function Login() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       navigate("/");
     },
     onError: (err: any) => {
