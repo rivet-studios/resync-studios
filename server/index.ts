@@ -38,6 +38,7 @@ declare global {
 const PgSession = ConnectPgSimple(session);
 const sessionStore = new PgSession({
   pool,
+  tableName: "sessions",
   createTableIfMissing: true,
 });
 
