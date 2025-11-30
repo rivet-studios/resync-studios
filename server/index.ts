@@ -115,16 +115,24 @@ app.use((req, res, next) => {
   const distPublicPath = path.join(process.cwd(), "dist", "public");
   const indexHtmlPath = path.join(distPublicPath, "index.html");
   
+  console.log(`📍 CWD: ${process.cwd()}`);
+  console.log(`📍 Checking for index.html at: ${indexHtmlPath}`);
+  console.log(`📍 Exists: ${fs.existsSync(indexHtmlPath)}`);
+  
   if (fs.existsSync(indexHtmlPath)) {
-    console.log("✅ Serving static files from:", distPublicPath);
-    app.use(express.static(distPublicPath));
+    console.log("✅ PRODUCTION MODE: Serving static files from:", distPublicPath);
+    app.use(express.static(distPublicPath, { etag: false }));
     
-    // Serve index.html for all non-API routes
-    app.get("*", (_req, res) => {
-      res.sendFile(indexHtmlPath);
+    // Serve index.html for all non-API, non-auth routes (SPA routing)
+    app.use((req, res, next) => {
+      // Only serve index.html for HTML requests to non-API routes
+      if (!req.path.startsWith("/api") && !req.path.startsWith("/auth")) {
+        return res.sendFile(indexHtmlPath);
+      }
+      next();
     });
   } else {
-    console.log("🔧 dist/public not found, using Vite dev server");
+    console.log("🔧 DEV MODE: dist/public not found, using Vite dev server");
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
