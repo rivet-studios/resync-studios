@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
+import { updateDiscordNickname } from "./discord-bot";
 import { 
   insertLfgPostSchema, 
   insertClanSchema, 
@@ -587,13 +588,54 @@ export async function registerRoutes(
       }
       res.json({ 
         message: "Discord linking started",
-        url: `/auth/discord`
+        url: `/auth/discord/link`
       });
     } catch (error) {
       console.error("Error linking Discord:", error);
       res.status(500).json({ message: "Failed to start Discord linking" });
     }
   });
+
+  // Discord linking callback (for users who already have an account)
+  app.get("/auth/discord/link", (req, res, next) => {
+    passport.authenticate("discord", {
+      state: "link_account"
+    })(req, res, next);
+  });
+
+  app.get("/auth/discord/link/callback",
+    (req, res, next) => {
+      passport.authenticate("discord", {
+        failureRedirect: "/?error=discord_link_failed",
+      })(req, res, next);
+    },
+    async (req, res) => {
+      try {
+        const user = req.user as any;
+        const currentUser = req.session?.userId ? await storage.getUser(req.session.userId) : null;
+        
+        if (currentUser && user.discordId) {
+          // Link Discord account to existing user
+          await storage.updateUser(currentUser.id, {
+            discordId: user.discordId,
+            discordUsername: user.discordUsername,
+            discordAvatar: user.discordAvatar,
+            discordLinkedAt: new Date(),
+          });
+          
+          // Sync nickname to Discord
+          await updateDiscordNickname(user.discordId, currentUser.username || "Member");
+          
+          res.redirect("/?discord_linked=true");
+        } else {
+          res.redirect("/?error=link_failed");
+        }
+      } catch (error) {
+        console.error("Error linking Discord account:", error);
+        res.redirect("/?error=link_failed");
+      }
+    }
+  );
 
   app.post("/api/discord/unlink", requireAuth, async (req, res) => {
     try {

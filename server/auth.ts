@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as DiscordStrategy } from "passport-discord";
 import { storage } from "./storage";
+import { updateDiscordNickname } from "./discord-bot";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
@@ -48,13 +49,14 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
           
           if (!user) {
             // Create new user with Discord info
+            const newUsername = profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") || profile.id;
             user = await storage.upsertUser({
               id: undefined,
               email,
               firstName: profile.username || undefined,
               lastName: undefined,
               profileImageUrl: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
-              username: profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") || profile.id,
+              username: newUsername,
               discordId,
               discordUsername: profile.username,
               discordAvatar: profile.avatar,
@@ -62,6 +64,9 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
               userRank: "member",
               vipTier: "none",
             });
+            
+            // Sync nickname to Discord server
+            await updateDiscordNickname(discordId, newUsername);
           } else {
             // Update existing user with latest Discord info
             user = await storage.updateUser(user.id, {

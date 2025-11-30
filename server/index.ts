@@ -6,6 +6,7 @@ import session from "express-session";
 import passport from "./auth";
 import ConnectPgSimple from "connect-pg-simple";
 import { pool, initializeDatabase } from "./db";
+import { initializeDiscordBot } from "./discord-bot";
 import fs from "fs";
 import path from "path";
 
@@ -110,6 +111,9 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize database tables on startup
   await initializeDatabase();
+  
+  // Initialize Discord bot for nickname syncing
+  await initializeDiscordBot();
   
   await registerRoutes(httpServer, app);
 
