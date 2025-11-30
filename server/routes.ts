@@ -620,23 +620,30 @@ export async function registerRoutes(
     },
     async (req, res) => {
       try {
-        const user = req.user as any;
-        const currentUser = req.session?.userId ? await storage.getUser(req.session.userId) : null;
+        // Get the user who was logged in BEFORE Discord OAuth started
+        const discordProfile = req.user as any;
+        const currentUserId = (req.user as any)?.id;
         
-        if (currentUser && user.discordId) {
-          // Link Discord account to existing user
-          await storage.updateUser(currentUser.id, {
-            discordId: user.discordId,
-            discordUsername: user.discordUsername,
-            discordAvatar: user.discordAvatar,
-            discordLinkedAt: new Date(),
-          });
-          
+        if (!currentUserId || !discordProfile?.discordId) {
+          console.log("❌ Link failed: no currentUserId or no discordId", { currentUserId, discordId: discordProfile?.discordId });
+          return res.redirect("/?error=link_failed");
+        }
+        
+        // Link Discord account to the current user (not the Discord user)
+        const updatedUser = await storage.updateUser(currentUserId, {
+          discordId: discordProfile.discordId,
+          discordUsername: discordProfile.discordUsername,
+          discordAvatar: discordProfile.discordAvatar,
+          discordLinkedAt: new Date(),
+        });
+        
+        if (updatedUser) {
           // Sync nickname to Discord
-          await updateDiscordNickname(user.discordId, currentUser.username || "Member");
-          
+          await updateDiscordNickname(discordProfile.discordId, updatedUser.username || "Member");
+          console.log(`✅ Discord linked to user ${currentUserId}`);
           res.redirect("/?discord_linked=true");
         } else {
+          console.log("❌ Failed to update user with Discord info");
           res.redirect("/?error=link_failed");
         }
       } catch (error) {

@@ -48,26 +48,42 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
           let user = await storage.getUserByDiscordId(discordId);
           
           if (!user) {
-            // Create new user with Discord info
-            const newUsername = profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") || profile.id;
-            user = await storage.upsertUser({
-              id: undefined,
-              email,
-              password: null as any,
-              firstName: profile.username || undefined,
-              lastName: undefined,
-              profileImageUrl: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
-              username: newUsername,
-              discordId,
-              discordUsername: profile.username,
-              discordAvatar: profile.avatar,
-              discordLinkedAt: new Date(),
-              userRank: "member",
-              vipTier: "none",
-            });
+            // Check if a user already exists with this email
+            let existingUser = null;
+            if (email && !email.endsWith("@discord.local")) {
+              existingUser = await storage.getUserByEmail(email);
+            }
             
-            // Sync nickname to Discord server
-            await updateDiscordNickname(discordId, newUsername);
+            if (existingUser) {
+              // Link Discord to existing email account
+              user = await storage.updateUser(existingUser.id, {
+                discordId,
+                discordUsername: profile.username,
+                discordAvatar: profile.avatar,
+                discordLinkedAt: new Date(),
+              }) || existingUser;
+            } else {
+              // Create new user with Discord info
+              const newUsername = profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") || profile.id;
+              user = await storage.upsertUser({
+                id: undefined,
+                email,
+                password: null as any,
+                firstName: profile.username || undefined,
+                lastName: undefined,
+                profileImageUrl: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
+                username: newUsername,
+                discordId,
+                discordUsername: profile.username,
+                discordAvatar: profile.avatar,
+                discordLinkedAt: new Date(),
+                userRank: "member",
+                vipTier: "none",
+              });
+              
+              // Sync nickname to Discord server
+              await updateDiscordNickname(discordId, newUsername);
+            }
           } else {
             // Update existing user with latest Discord info
             user = await storage.updateUser(user.id, {
