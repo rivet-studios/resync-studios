@@ -1,0 +1,90 @@
+}
+7:12:14 PM [express] GET /api/lfg/recent 500 in 721ms :: {"message":"Failed to fetch LFG post"}
+7:12:14 PM [express] GET /api/stats 500 in 865ms :: {"message":"Failed to fetch stats"}
+7:12:15 PM [express] GET /api/builds/recent 500 in 718ms :: {"message":"Failed to fetch build"}
+7:12:29 PM [express] POST /api/discord/link 200 in 144ms :: {"message":"Discord linking started","url":"/auth/discord/link"}
+error: duplicate key value violates unique constraint "users_email_key"
+    at /opt/render/project/src/dist/index.cjs:283:46463
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Cq.execute (/opt/render/project/src/dist/index.cjs:283:71449)
+    at async tG.upsertUser (/opt/render/project/src/dist/index.cjs:324:735)
+    at async B0._verify (/opt/render/project/src/dist/index.cjs:324:7403)
+🔍 Auth check - isAuth: true user: 7970d4c4-d011-4e53-9daf-bce29a8ca076 sessionID: ApG7vLrG4mk3_vL1A0yRZDwvvGkXIhLd
+7:12:54 PM [express] GET /api/auth/user 304 in 143ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne.","bio":null,"vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T18:58:00.336Z"}
+Error fetching forum categories: error: relation "forum_categories" does not exist
+    at /opt/render/project/src/dist/index.cjs:283:46463
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Cq.execute (/opt/render/project/src/dist/index.cjs:283:71449)
+    at async /opt/render/project/src/dist/index.cjs:324:16563 {
+  length: 115,
+  severity: 'ERROR',
+  code: '42P01',
+  detail: undefined,
+  hint: undefined,
+  position: '97',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '1449',
+  routine: 'parserOpenTable'
+}
+Error fetching forum threads: error: relation "forum_threads" does not exist
+    at /opt/render/project/src/dist/index.cjs:283:46463
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Cq.execute (/opt/render/project/src/dist/index.cjs:283:71449)
+    at async /opt/render/project/src/dist/index.cjs:324:16804 {
+  length: 113,
+  severity: 'ERROR',
+  code: '42P01',
+  detail: undefined,
+  hint: undefined,
+  position: '177',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '1449',
+  routine: 'parserOpenTable'
+}
+7:13:00 PM [express] GET /api/forums/categories 500 in 718ms :: {"message":"Failed to fetch forum categories"}
+7:13:01 PM [express] GET /api/forums/threads/ 500 in 718ms :: {"message":"Failed to fetch forum threads"}
+7:13:25 PM [express] PATCH /api/users/profile 400 in 287ms :: {"message":"Username already taken"}
+7:13:31 PM [express] PATCH /api/users/profile 200 in 428ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne..","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:31.441Z"}
+🔍 Auth check - isAuth: true user: 7970d4c4-d011-4e53-9daf-bce29a8ca076 sessionID: ApG7vLrG4mk3_vL1A0yRZDwvvGkXIhLd
+7:13:32 PM [express] GET /api/auth/user 200 in 145ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne..","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:31.441Z"}
+🔐 Admin check: userId="7970d4c4-d011-4e53-9daf-bce29a8ca076" vs ADMIN_USER_ID="" => false
+7:13:38 PM [express] GET /api/admin/users 403 in 143ms :: {"message":"Only admins can access this"}
+7:13:45 PM [express] PATCH /api/users/profile 200 in 429ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne.","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:45.140Z"}
+🔍 Auth check - isAuth: true user: 7970d4c4-d011-4e53-9daf-bce29a8ca076 sessionID: ApG7vLrG4mk3_vL1A0yRZDwvvGkXIhLd
+7:13:46 PM [express] GET /api/auth/user 200 in 144ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne.","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:45.140Z"}
+🔐 Admin check: userId="7970d4c4-d011-4e53-9daf-bce29a8ca076" vs ADMIN_USER_ID="" => false
+7:13:47 PM [express] GET /api/admin/users 403 in 144ms :: {"message":"Only admins can access this"}
+🔍 Auth check - isAuth: true user: 7970d4c4-d011-4e53-9daf-bce29a8ca076 sessionID: ApG7vLrG4mk3_vL1A0yRZDwvvGkXIhLd
+7:13:52 PM [express] GET /api/auth/user 304 in 143ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne.","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:45.140Z"}
+🔐 Admin check: userId="7970d4c4-d011-4e53-9daf-bce29a8ca076" vs ADMIN_USER_ID="" => false
+7:13:53 PM [express] GET /api/admin/users 403 in 144ms :: {"message":"Only admins can access this"}
+7:14:52 PM [express] POST /api/discord/link 200 in 144ms :: {"message":"Discord linking started","url":"/auth/discord/link"}
+🔍 Auth check - isAuth: true user: 7970d4c4-d011-4e53-9daf-bce29a8ca076 sessionID: ApG7vLrG4mk3_vL1A0yRZDwvvGkXIhLd
+7:14:56 PM [express] GET /api/auth/user 304 in 143ms :: {"id":"7970d4c4-d011-4e53-9daf-bce29a8ca076","email":"kiamlol41@gmail.com","password":"4ceb13d0974b3011bbffeae4e592a5d96afedbefbb42d462a834737357dca011","firstName":null,"lastName":null,"profileImageUrl":null,"username":"cxiqlne.","bio":"","vipTier":"none","stripeCustomerId":null,"stripeSubscriptionId":null,"discordId":null,"discordUsername":null,"discordAvatar":null,"discordLinkedAt":null,"robloxId":null,"robloxUsername":null,"robloxDisplayName":null,"robloxLinkedAt":null,"gamesPlayed":0,"totalPosts":0,"reputation":0,"clanId":null,"clanRole":null,"userRank":"company_director","createdAt":"2025-11-30T18:05:23.007Z","updatedAt":"2025-11-30T19:13:45.140Z"}
+🔍 Auth check - isAuth: false user: undefined sessionID: RWD9LhhKP4sveCbhjYP8yrFVllYGXNge
+7:15:11 PM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: RWD9LhhKP4sveCbhjYP8yrFVllYGXNge
+7:15:15 PM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+7:15:16 PM [express] GET /api/login 302 in 145ms
+error: duplicate key value violates unique constraint "users_email_key"
+    at /opt/render/project/src/dist/index.cjs:283:46463
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Cq.execute (/opt/render/project/src/dist/index.cjs:283:71449)
+    at async tG.upsertUser (/opt/render/project/src/dist/index.cjs:324:735)
+    at async B0._verify (/opt/render/project/src/dist/index.cjs:324:7403)
