@@ -573,5 +573,10 @@ export async function registerRoutes(
     }
   });
 
+  // Catch-all route for unmatched requests - pass through to static file serving
+  app.use("*", (req, res, next) => {
+    next();
+  });
+
   return httpServer;
 }
