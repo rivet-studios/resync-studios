@@ -57,20 +57,33 @@ export default function AdminPanel() {
 
   const assignRankMutation = useMutation({
     mutationFn: async ({ userId, rank }: { userId: string; rank: string }) => {
-      const response = await apiRequest("POST", "/api/admin/assign-rank", { userId, rank });
-      return response.json();
+      console.log(`🔐 Assigning rank: user=${userId}, rank=${rank}`);
+      const response = await fetch("/api/admin/assign-rank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, rank }),
+        credentials: "include",
+      });
+      
+      const data = await response.json();
+      console.log(`📊 Response:`, response.status, data);
+      
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}`);
+      }
+      return data;
     },
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: `Rank assigned: ${data.message}`,
+        description: data.message,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to assign rank",
+        description: error.message,
         variant: "destructive",
       });
     },
