@@ -1,3 +1,3 @@
 #!/bin/bash
-npm install
+npm install --include=dev
 npx tsx script/build.ts
