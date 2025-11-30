@@ -103,7 +103,7 @@ export default function Landing() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <Button asChild data-testid="button-login">
-                <a href="/api/login">Sign In</a>
+                <a href="/login">Sign In</a>
               </Button>
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Button size="lg" className="glow-primary-hover px-8" asChild data-testid="button-get-started">
-              <a href="/api/login">
+              <a href="/login">
                 Get Started Free
                 <ChevronRight className="ml-2 w-4 h-4" />
               </a>
@@ -346,7 +346,7 @@ export default function Landing() {
             high-fidelity gaming experiences in our open, accessible environment.
           </p>
           <Button size="lg" className="glow-primary-hover px-8" asChild data-testid="button-cta-join">
-            <a href="/api/login">
+            <a href="/login">
               Join Now - It's Free
               <ChevronRight className="ml-2 w-4 h-4" />
             </a>
@@ -380,7 +380,7 @@ export default function Landing() {
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-border/50">
-            <a href="/api/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-signin">Sign In</a>
+            <a href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-signin">Sign In</a>
             <a href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-terms">Terms of Service</a>
             <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-privacy">Privacy Policy</a>
             <a href="/guidelines" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-guidelines">Community Guidelines</a>
