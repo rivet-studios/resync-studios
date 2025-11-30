@@ -37,6 +37,7 @@ import AboutMetro from "@/pages/about-metro";
 import FortLoredo from "@/pages/fort-loredo";
 import Chat from "@/pages/chat";
 import Admin from "@/pages/admin";
+import ModCP from "@/pages/modcp";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const style = {
@@ -89,6 +90,7 @@ function AuthenticatedRoutes() {
         <Route path="/about" component={AboutMetro} />
         <Route path="/fort-loredo" component={FortLoredo} />
         <Route path="/admin" component={Admin} />
+        <Route path="/modcp" component={ModCP} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>

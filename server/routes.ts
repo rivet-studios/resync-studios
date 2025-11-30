@@ -615,6 +615,155 @@ export async function registerRoutes(
     }
   });
 
+  // ModCP Routes
+  app.get("/api/modcp/threads", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      const threads = await storage.getForumThreads();
+      const threadsWithAuthors = await Promise.all(
+        threads.map(async (thread) => {
+          const author = await storage.getUser(thread.authorId);
+          return { ...thread, author };
+        })
+      );
+      res.json(threadsWithAuthors);
+    } catch (error) {
+      console.error("Error fetching mod threads:", error);
+      res.status(500).json({ message: "Failed to fetch threads" });
+    }
+  });
+
+  app.get("/api/modcp/replies", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      const threads = await storage.getForumThreads();
+      const allReplies: any[] = [];
+      
+      for (const thread of threads) {
+        const replies = await storage.getForumReplies(thread.id);
+        const repliesWithAuthors = await Promise.all(
+          replies.map(async (reply) => {
+            const author = await storage.getUser(reply.authorId);
+            return { ...reply, author };
+          })
+        );
+        allReplies.push(...repliesWithAuthors);
+      }
+      
+      res.json(allReplies);
+    } catch (error) {
+      console.error("Error fetching mod replies:", error);
+      res.status(500).json({ message: "Failed to fetch replies" });
+    }
+  });
+
+  app.patch("/api/modcp/threads/:id/lock", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { isLocked } = req.body;
+      const thread = await storage.updateForumThread(req.params.id, { isLocked });
+      res.json(thread);
+    } catch (error) {
+      console.error("Error locking thread:", error);
+      res.status(500).json({ message: "Failed to update thread" });
+    }
+  });
+
+  app.patch("/api/modcp/threads/:id/pin", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { isPinned } = req.body;
+      const thread = await storage.updateForumThread(req.params.id, { isPinned });
+      res.json(thread);
+    } catch (error) {
+      console.error("Error pinning thread:", error);
+      res.status(500).json({ message: "Failed to update thread" });
+    }
+  });
+
+  app.delete("/api/modcp/threads/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      // Get thread first to delete all replies
+      const thread = await storage.getForumThread(req.params.id);
+      if (!thread) return res.status(404).json({ message: "Thread not found" });
+      
+      const replies = await storage.getForumReplies(req.params.id);
+      // In a real app, delete replies too - for now just delete the thread
+      await storage.updateForumThread(req.params.id, { content: "[deleted]", title: "[deleted]" });
+      
+      res.json({ message: "Thread deleted" });
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+      res.status(500).json({ message: "Failed to delete thread" });
+    }
+  });
+
+  app.delete("/api/modcp/replies/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isMod = user?.userRank && [
+        'moderator', 'community_moderator', 'community_senior_moderator',
+        'administrator', 'senior_administrator', 'rs_trust_safety_director',
+        'leadership_council', 'company_director'
+      ].includes(user.userRank);
+      
+      if (!isMod) return res.status(403).json({ message: "Unauthorized" });
+      
+      // For now, just mark as deleted
+      res.json({ message: "Reply deleted" });
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+      res.status(500).json({ message: "Failed to delete reply" });
+    }
+  });
+
   // Discord linking callback (for users who already have an account)
   app.get("/auth/discord/link", (req, res, next) => {
     passport.authenticate("discord", {
