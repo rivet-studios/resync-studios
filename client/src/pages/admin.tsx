@@ -39,11 +39,27 @@ export default function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>({});
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading, error: queryError } = useQuery({
     queryKey: ["/api/admin/users"],
-    queryFn: () => apiRequest("/api/admin/users"),
+    queryFn: async () => {
+      const response = await apiRequest("/api/admin/users");
+      console.log("Admin users response:", response);
+      return response;
+    },
     retry: false,
   });
+
+  // Show error toast if there's a query error
+  useEffect(() => {
+    if (queryError) {
+      console.error("Query error:", queryError);
+      toast({
+        title: "Error",
+        description: `Failed to load users: ${(queryError as any).message}`,
+        variant: "destructive",
+      });
+    }
+  }, [queryError, toast]);
 
   const assignRankMutation = useMutation({
     mutationFn: async ({ userId, rank }: { userId: string; rank: string }) => {
