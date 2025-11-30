@@ -275,6 +275,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    // If id is undefined, create new user without upsert
+    if (!userData.id) {
+      const { id, ...dataWithoutId } = userData;
+      const [user] = await db.insert(users)
+        .values(dataWithoutId)
+        .returning();
+      return user;
+    }
+    
+    // Otherwise, use upsert for existing users
     const [user] = await db.insert(users)
       .values(userData)
       .onConflictDoUpdate({
