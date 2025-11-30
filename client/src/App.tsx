@@ -35,6 +35,7 @@ import CommunityRules from "@/pages/community-rules";
 import AboutMetro from "@/pages/about-metro";
 import FortLoredo from "@/pages/fort-loredo";
 import Chat from "@/pages/chat";
+import Admin from "@/pages/admin";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const style = {
@@ -85,6 +86,7 @@ function AuthenticatedRoutes() {
         <Route path="/community-rules" component={CommunityRules} />
         <Route path="/about" component={AboutMetro} />
         <Route path="/fort-loredo" component={FortLoredo} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
