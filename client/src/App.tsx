@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import LFG from "@/pages/lfg";
 import Clans from "@/pages/clans";
@@ -89,6 +90,7 @@ function AuthenticatedRoutes() {
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -103,6 +105,9 @@ function Router() {
   }
 
   if (!isAuthenticated) {
+    if (location === "/login") {
+      return <Login />;
+    }
     return <Landing />;
   }
 
