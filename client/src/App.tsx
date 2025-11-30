@@ -34,6 +34,7 @@ import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
 import AboutMetro from "@/pages/about-metro";
 import FortLoredo from "@/pages/fort-loredo";
+import Chat from "@/pages/chat";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const style = {
@@ -68,6 +69,7 @@ function AuthenticatedRoutes() {
         <Route path="/clans" component={Clans} />
         <Route path="/builds" component={Builds} />
         <Route path="/forums" component={Forums} />
+        <Route path="/chat" component={Chat} />
         <Route path="/vip" component={VIP} />
         <Route path="/profile" component={Profile} />
         <Route path="/settings" component={Settings} />
