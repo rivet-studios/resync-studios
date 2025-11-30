@@ -459,7 +459,19 @@ export class DatabaseStorage implements IStorage {
 
   // Forum Categories
   async getForumCategories(): Promise<ForumCategory[]> {
-    return db.select().from(forumCategories).orderBy(forumCategories.order);
+    try {
+      const categories = await db.select().from(forumCategories).orderBy(forumCategories.order);
+      console.log("📂 Forum categories retrieved:", categories.length, "categories");
+      if (categories.length === 0) {
+        console.warn("⚠️ No forum categories found in database. Checking raw SQL...");
+        const rawCategories = await db.execute(`SELECT * FROM forum_categories LIMIT 5`);
+        console.log("🔍 Raw SQL result:", rawCategories);
+      }
+      return categories;
+    } catch (error) {
+      console.error("❌ Error fetching forum categories:", error);
+      return [];
+    }
   }
 
   async getForumCategory(id: string): Promise<ForumCategory | undefined> {
