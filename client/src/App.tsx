@@ -90,7 +90,6 @@ function AuthenticatedRoutes() {
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -105,10 +104,12 @@ function Router() {
   }
 
   if (!isAuthenticated) {
-    if (location === "/login") {
-      return <Login />;
-    }
-    return <Landing />;
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route component={Landing} />
+      </Switch>
+    );
   }
 
   return <AuthenticatedRoutes />;
