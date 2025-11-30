@@ -11,8 +11,9 @@ import {
   type ForumThread, type InsertForumThread,
   type ForumReply, type InsertForumReply,
   type ChatMessage, type InsertChatMessage,
+  type Announcement, type InsertAnnouncement,
   users, clans, lfgPosts, lfgParticipants, builds, buildVotes,
-  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens
+  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens, announcements
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, or, ilike, lt } from "drizzle-orm";
@@ -243,6 +244,13 @@ export interface IStorage {
   // Chat Messages
   getChatMessages(recipientId?: string, clanId?: string): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  
+  // Announcements
+  getAnnouncements(): Promise<Announcement[]>;
+  getAnnouncement(id: string): Promise<Announcement | undefined>;
+  createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
+  updateAnnouncement(id: string, updates: Partial<Announcement>): Promise<Announcement | undefined>;
+  deleteAnnouncement(id: string): Promise<void>;
   
   // Stats
   getStats(): Promise<{ totalMembers: number; activeLfg: number; totalClans: number; totalBuilds: number }>;
@@ -550,6 +558,33 @@ export class DatabaseStorage implements IStorage {
   async createChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
     const [message] = await db.insert(chatMessages).values(messageData).returning();
     return message;
+  }
+
+  // Announcements
+  async getAnnouncements(): Promise<Announcement[]> {
+    return db.select().from(announcements).where(eq(announcements.isPublished, true)).orderBy(desc(announcements.createdAt));
+  }
+
+  async getAnnouncement(id: string): Promise<Announcement | undefined> {
+    const [announcement] = await db.select().from(announcements).where(eq(announcements.id, id));
+    return announcement;
+  }
+
+  async createAnnouncement(announcementData: InsertAnnouncement): Promise<Announcement> {
+    const [announcement] = await db.insert(announcements).values(announcementData).returning();
+    return announcement;
+  }
+
+  async updateAnnouncement(id: string, updates: Partial<Announcement>): Promise<Announcement | undefined> {
+    const [announcement] = await db.update(announcements)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(announcements.id, id))
+      .returning();
+    return announcement;
+  }
+
+  async deleteAnnouncement(id: string): Promise<void> {
+    await db.delete(announcements).where(eq(announcements.id, id));
   }
 
   // Stats

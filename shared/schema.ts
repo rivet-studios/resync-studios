@@ -386,6 +386,18 @@ export const testimonials = pgTable("testimonials", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Announcements
+export const announcements = pgTable("announcements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  type: varchar("type").notNull().default('update'), // launch, roadmap, feature, update
+  details: text("details"), // JSON array stored as text
+  isPublished: boolean("is_published").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   clan: one(clans, { fields: [users.clanId], references: [clans.id] }),
@@ -539,6 +551,12 @@ export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
   createdAt: true
 });
 
+export const insertAnnouncementSchema = createInsertSchema(announcements).omit({ 
+  id: true, 
+  createdAt: true,
+  updatedAt: true
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -616,6 +634,9 @@ export type InsertMetaGuide = z.infer<typeof insertMetaDatabaseSchema>;
 
 export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 
 // VIP tier configuration
 export const VIP_TIERS = {

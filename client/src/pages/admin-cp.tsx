@@ -34,7 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Shield, Users, BarChart3, AlertTriangle, Trash2, UserCheck } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Shield, Users, BarChart3, AlertTriangle, Trash2, UserCheck, Edit2, Plus } from "lucide-react";
+import { type Announcement } from "@shared/schema";
 
 interface User {
   id: string;
@@ -63,6 +65,90 @@ const RANK_OPTIONS = [
   { value: "leadership_council", label: "Leadership Council" },
   { value: "company_director", label: "Company Director" },
 ];
+
+function AnnouncementForm({ initialData, onSubmit, isLoading }: { initialData?: any; onSubmit: (data: any) => void; isLoading: boolean }) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [content, setContent] = useState(initialData?.content || "");
+  const [type, setType] = useState(initialData?.type || "update");
+  const [details, setDetails] = useState(initialData?.details ? JSON.parse(initialData.details) : [""]);
+  const [isPublished, setIsPublished] = useState(initialData?.isPublished !== false);
+
+  const handleAddDetail = () => setDetails([...details, ""]);
+  const handleRemoveDetail = (idx: number) => setDetails(details.filter((_: string, i: number) => i !== idx));
+  const handleDetailChange = (idx: number, value: string) => {
+    const newDetails = [...details];
+    newDetails[idx] = value;
+    setDetails(newDetails);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-sm font-medium">Title</label>
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Announcement title" data-testid="input-announcement-title" />
+      </div>
+      <div>
+        <label className="text-sm font-medium">Content</label>
+        <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Main announcement text" data-testid="input-announcement-content" />
+      </div>
+      <div>
+        <label className="text-sm font-medium">Type</label>
+        <Select value={type} onValueChange={setType}>
+          <SelectTrigger data-testid="select-announcement-type">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="launch">Launch</SelectItem>
+            <SelectItem value="roadmap">Roadmap</SelectItem>
+            <SelectItem value="feature">Feature</SelectItem>
+            <SelectItem value="update">Update</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <label className="text-sm font-medium">Key Features</label>
+          <Button size="sm" variant="ghost" onClick={handleAddDetail} data-testid="button-add-detail">
+            Add Detail
+          </Button>
+        </div>
+        <div className="space-y-2">
+          {details.map((detail: string, idx: number) => (
+            <div key={idx} className="flex gap-2">
+              <Input
+                value={detail}
+                onChange={(e) => handleDetailChange(idx, e.target.value)}
+                placeholder={`Detail ${idx + 1}`}
+                data-testid={`input-detail-${idx}`}
+              />
+              <Button size="sm" variant="ghost" onClick={() => handleRemoveDetail(idx)}>
+                Remove
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={isPublished}
+          onChange={(e) => setIsPublished(e.target.checked)}
+          id="publish"
+          data-testid="checkbox-publish"
+        />
+        <label htmlFor="publish" className="text-sm font-medium">Publish Immediately</label>
+      </div>
+      <Button
+        onClick={() => onSubmit({ title, content, type, details: details.filter((d: string) => d.trim()), isPublished })}
+        disabled={isLoading || !title || !content}
+        className="w-full"
+        data-testid="button-save-announcement"
+      >
+        {isLoading ? "Saving..." : "Save Announcement"}
+      </Button>
+    </div>
+  );
+}
 
 export default function AdminCP() {
   const { user } = useAuth();
@@ -105,6 +191,10 @@ export default function AdminCP() {
     queryKey: ["/api/admin/users"],
   });
 
+  const { data: announcements = [] } = useQuery<Announcement[]>({
+    queryKey: ["/api/announcements"],
+  });
+
   const assignRankMutation = useMutation({
     mutationFn: async ({ userId, rank }: { userId: string; rank: string }) => {
       const response = await fetch("/api/admin/assign-rank", {
@@ -138,6 +228,59 @@ export default function AdminCP() {
     },
   });
 
+  const createAnnouncementMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch("/api/admin/announcements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to create announcement");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Announcement created" });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create announcement", variant: "destructive" });
+    },
+  });
+
+  const updateAnnouncementMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await fetch(`/api/admin/announcements/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to update announcement");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Announcement updated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update announcement", variant: "destructive" });
+    },
+  });
+
+  const deleteAnnouncementMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/announcements/${id}`, {});
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Announcement deleted" });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete announcement", variant: "destructive" });
+    },
+  });
+
   const filteredUsers = users.filter(u => 
     u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -154,8 +297,9 @@ export default function AdminCP() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="announcements">Announcements</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="roles">Roles</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
@@ -223,6 +367,99 @@ export default function AdminCP() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="announcements" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Manage Announcements</h2>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button data-testid="button-create-announcement">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Announcement
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Create Announcement</DialogTitle>
+                </DialogHeader>
+                <AnnouncementForm 
+                  onSubmit={(data) => createAnnouncementMutation.mutate(data)}
+                  isLoading={createAnnouncementMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {announcements.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center text-muted-foreground">
+                No announcements. Create one to get started!
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {announcements.map((announcement) => (
+                <Card key={announcement.id} className="hover-elevate">
+                  <CardContent className="pt-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{announcement.title}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-1">{announcement.content}</p>
+                        <div className="flex gap-2 mt-2">
+                          <Badge variant="outline">{announcement.type}</Badge>
+                          {announcement.isPublished && <Badge variant="outline">Published</Badge>}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline">
+                              <Edit2 className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Edit Announcement</DialogTitle>
+                            </DialogHeader>
+                            <AnnouncementForm 
+                              initialData={announcement}
+                              onSubmit={(data) => updateAnnouncementMutation.mutate({ id: announcement.id, data })}
+                              isLoading={updateAnnouncementMutation.isPending}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div className="flex gap-2">
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteAnnouncementMutation.mutate(announcement.id)}
+                                className="bg-destructive"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </div>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="users" className="space-y-4">

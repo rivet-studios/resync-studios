@@ -973,5 +973,96 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Announcements Management
+  app.get("/api/announcements", async (req, res) => {
+    try {
+      const announcements = await storage.getAnnouncements();
+      res.json(announcements);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  app.post("/api/admin/announcements", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'rs_trust_safety_director',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { title, content, type, details, isPublished } = req.body;
+      const announcement = await storage.createAnnouncement({
+        title,
+        content,
+        type,
+        details: JSON.stringify(details || []),
+        isPublished
+      });
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error creating announcement:", error);
+      res.status(500).json({ message: "Failed to create announcement" });
+    }
+  });
+
+  app.patch("/api/admin/announcements/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'rs_trust_safety_director',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { title, content, type, details, isPublished } = req.body;
+      const announcement = await storage.updateAnnouncement(req.params.id, {
+        title,
+        content,
+        type,
+        details: details ? JSON.stringify(details) : undefined,
+        isPublished
+      });
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error updating announcement:", error);
+      res.status(500).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  app.delete("/api/admin/announcements/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'rs_trust_safety_director',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      await storage.deleteAnnouncement(req.params.id);
+      res.json({ message: "Announcement deleted" });
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      res.status(500).json({ message: "Failed to delete announcement" });
+    }
+  });
+
   return httpServer;
 }
