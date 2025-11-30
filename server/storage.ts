@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { randomUUID } from 'crypto';
 import { 
   type User, type InsertUser, type UpsertUser,
   type Clan, type InsertClan,
@@ -15,7 +16,6 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, or, ilike, lt } from "drizzle-orm";
-import { v4 as uuidv4 } from "crypto";
 
 let connectionSettings: any;
 
@@ -271,7 +271,7 @@ export class DatabaseStorage implements IStorage {
 
   // Magic Link Tokens
   async createMagicLinkToken(email: string): Promise<string> {
-    const token = uuidv4();
+    const token = randomUUID();
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await db.insert(magicLinkTokens).values({ email, token, expiresAt });
     return token;
