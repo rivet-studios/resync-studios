@@ -110,51 +110,34 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  // Diagnostic middleware to log all requests
-  app.use((req, res, next) => {
-    console.log(`📨 [${new Date().toISOString()}] ${req.method} ${req.path} | Accept: ${req.get('accept') || 'none'}`);
-    next();
-  });
-
-  // CRITICAL: Add static file serving middleware BEFORE error handler
-  // This serves index.html for all non-API routes (SPA routing)
+  // Static file serving for SPA
   const distPublicPath = path.join(process.cwd(), "dist", "public");
   const indexHtmlPath = path.join(distPublicPath, "index.html");
   
   console.log(`📍 CWD: ${process.cwd()}`);
-  console.log(`📍 Checking for index.html at: ${indexHtmlPath}`);
-  console.log(`📍 Exists: ${fs.existsSync(indexHtmlPath)}`);
+  console.log(`📍 Index.html path: ${indexHtmlPath}`);
+  console.log(`📍 Index.html exists: ${fs.existsSync(indexHtmlPath)}`);
   
+  // Health check endpoint
+  app.get("/_health", (req, res) => {
+    res.json({ status: "ok", mode: process.env.NODE_ENV });
+  });
+
   if (fs.existsSync(indexHtmlPath)) {
-    console.log("✅ PRODUCTION MODE: Serving static files from:", distPublicPath);
+    console.log("✅ PRODUCTION MODE: Serving from dist/public");
     
-    // Serve static files (CSS, JS, images, etc.)
+    // Serve all static assets with no caching
     app.use(express.static(distPublicPath, { 
       etag: false,
-      maxAge: 0,
-      fallthrough: true
+      maxAge: 0
     }));
     
-    // Final catch-all: serve index.html for any unmatched request
+    // Catch-all: serve index.html for all non-API routes (SPA routing)
     app.all("*", (req, res) => {
-      // Explicit check for API/auth - return 404 JSON
-      if (req.path.startsWith("/api") || req.path.startsWith("/auth")) {
-        console.log(`❌ API/auth route not found: ${req.path}`);
-        return res.status(404).json({ error: "Not found" });
-      }
-      // Everything else gets index.html (React SPA routing)
-      console.log(`✅ Serving index.html for route: ${req.path} from: ${indexHtmlPath}`);
-      console.log(`📂 File exists: ${fs.existsSync(indexHtmlPath)}`);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.sendFile(indexHtmlPath, (err) => {
-        if (err) {
-          console.error(`❌ Error sending index.html: ${err.message}`);
-          res.status(500).send('Error loading app');
-        }
-      });
+      res.sendFile(indexHtmlPath);
     });
   } else {
-    console.log("🔧 DEV MODE: dist/public not found, using Vite dev server");
+    console.log("🔧 DEV MODE: Using Vite dev server");
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
