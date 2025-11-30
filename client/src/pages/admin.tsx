@@ -41,12 +41,6 @@ export default function AdminPanel() {
 
   const { data: users = [], isLoading, error: queryError } = useQuery({
     queryKey: ["/api/admin/users"],
-    queryFn: async () => {
-      const response = await apiRequest("/api/admin/users");
-      console.log("Admin users response:", response);
-      return response;
-    },
-    retry: false,
   });
 
   // Show error toast if there's a query error
