@@ -59,7 +59,7 @@ export async function registerRoutes(
       }
 
       const hashedPassword = hashPassword(password);
-      const user = await storage.createUser({
+      const user = await storage.upsertUser({
         email,
         username,
         password: hashedPassword,
@@ -87,21 +87,27 @@ export async function registerRoutes(
 
       const user = await storage.getUserByEmail(email);
       if (!user || !user.password) {
+        console.log("❌ User not found or no password set for:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
       if (!verifyPassword(password, user.password)) {
+        console.log("❌ Password verification failed for:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Create session
-      req.session.userId = user.id;
-      req.session.user = user;
-
-      console.log("✅ User logged in:", user.id);
-      res.json({ message: "Logged in successfully", user });
+      // Use passport's login method to establish session
+      req.login(user, (err) => {
+        if (err) {
+          console.error("❌ Session creation failed:", err);
+          return res.status(500).json({ message: "Failed to create session" });
+        }
+        console.log("✅ User logged in:", user.id);
+        res.json({ message: "Logged in successfully", user });
+      });
     } catch (error) {
       console.error("❌ Error in login:", error instanceof Error ? error.message : error);
+      console.error("Full error:", error);
       res.status(500).json({ message: "Failed to login" });
     }
   });

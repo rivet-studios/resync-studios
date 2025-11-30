@@ -53,6 +53,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
             user = await storage.upsertUser({
               id: undefined,
               email,
+              password: null as any,
               firstName: profile.username || undefined,
               lastName: undefined,
               profileImageUrl: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
