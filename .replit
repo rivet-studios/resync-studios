@@ -75,5 +75,5 @@ integrations = ["discord:1.0.0", "javascript_websocket:1.0.0", "javascript_datab
 DISCORD_CLIENT_ID = "1428644505317412884"
 DISCORD_CLIENT_SECRET = "sMgovmhFASsE384emLSdtisKk2Zw4YLU"
 DISCORD_CALLBACK_URL = "https://resync-studios--sharkyowlskv.replit.app/auth/discord/callback"
-ADMIN_USER_ID = "5c708d95-6933-4754-830a-0b0c6ebf13a9"
+ADMIN_USER_ID = "7970d4c4-d011-4e53-9daf-bce29a8ca076"
 DISCORD_GUILD_ID = "1419115257753768031"
