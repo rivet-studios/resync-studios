@@ -100,9 +100,11 @@ export async function registerRoutes(
       req.login(user, (err) => {
         if (err) {
           console.error("❌ Failed to establish session:", err);
+          console.error("❌ Session Error Stack:", err instanceof Error ? err.stack : err);
+          console.error("❌ Session Info - userId:", user.id, "sessionID:", req.sessionID);
           return res.status(500).json({ message: "Failed to login" });
         }
-        console.log("✅ User logged in:", user.id);
+        console.log("✅ User logged in:", user.id, "SessionID:", req.sessionID);
         res.json({ message: "Logged in successfully", user });
       });
     } catch (error) {
