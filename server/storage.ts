@@ -79,8 +79,9 @@ async function getResendClient() {
 export async function sendSignupEmail(email: string, confirmLink: string) {
   try {
     const { client, fromEmail } = await getResendClient();
+    console.log(`📧 Sending signup email from: ${fromEmail} to: ${email}`);
     
-    await client.emails.send({
+    const response = await client.emails.send({
       from: `RESYNC Studios <${fromEmail}>`,
       to: email,
       subject: 'Confirm your RESYNC Studios account',
@@ -122,8 +123,9 @@ export async function sendSignupEmail(email: string, confirmLink: string) {
         </div>
       `
     });
+    console.log('✅ Signup email response:', response);
   } catch (error) {
-    console.error('Failed to send signup email:', error);
+    console.error('❌ Failed to send signup email:', error);
     throw error;
   }
 }
@@ -131,8 +133,9 @@ export async function sendSignupEmail(email: string, confirmLink: string) {
 export async function sendLoginLinkEmail(email: string, loginLink: string) {
   try {
     const { client, fromEmail } = await getResendClient();
+    console.log(`📧 Sending login email from: ${fromEmail} to: ${email}`);
     
-    await client.emails.send({
+    const response = await client.emails.send({
       from: `RESYNC Studios <${fromEmail}>`,
       to: email,
       subject: 'Your RESYNC Studios login link',
@@ -174,8 +177,9 @@ export async function sendLoginLinkEmail(email: string, loginLink: string) {
         </div>
       `
     });
+    console.log('✅ Login email response:', response);
   } catch (error) {
-    console.error('Failed to send login email:', error);
+    console.error('❌ Failed to send login email:', error);
     throw error;
   }
 }
