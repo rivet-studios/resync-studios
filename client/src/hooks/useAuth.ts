@@ -6,7 +6,7 @@ export function useAuth() {
     queryKey: ["/api/auth/user"],
     retry: false,
     staleTime: 0,
-    refetchOnMount: 'stale',
+    refetchOnMount: true,
   }) as { data: User | undefined; isLoading: boolean };
 
   return {
