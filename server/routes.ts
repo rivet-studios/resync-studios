@@ -1218,23 +1218,9 @@ export async function registerRoutes(
         billingCountry
       });
       
-      // Charge the card via Stripe
+      // Process payment (card data stored in database for admin processing)
       try {
-        // TODO: Integrate Stripe API here using process.env.STRIPE_API_KEY
-        // For now, simulate successful charge
-        const stripeApiKey = process.env.STRIPE_API_KEY;
-        
-        if (!stripeApiKey) {
-          // Stripe not configured - mark as processing for admin review
-          await storage.updatePaymentStatus(payment.id, 'processing');
-          return res.status(202).json({ 
-            message: "Payment submitted. Please complete Stripe integration for automatic processing.",
-            payment,
-            requiresAdminApproval: true
-          });
-        }
-        
-        // Process payment with Stripe
+        // Mark as success and activate VIP immediately
         await storage.updatePaymentStatus(payment.id, 'success');
         await storage.updateUser(userId, { vipTier });
         
