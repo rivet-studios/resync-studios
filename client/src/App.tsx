@@ -134,6 +134,7 @@ function AuthenticatedRoutes() {
     <AppLayout>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/landing" component={Landing} />
         <Route path="/clans" component={Clans} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
