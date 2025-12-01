@@ -23,15 +23,15 @@ import type { LfgPost, Build, ForumThread, Clan } from "@shared/schema";
 export default function Dashboard() {
   const { user } = useAuth();
 
-  const { data: recentLfg, isLoading: lfgLoading } = useQuery<LfgPost[]>({
-    queryKey: ["/api/lfg", "recent"],
+  const { data: recentLfg = [], isLoading: lfgLoading, error: lfgError } = useQuery<LfgPost[]>({
+    queryKey: ["/api/lfg/recent"],
   });
 
-  const { data: recentBuilds, isLoading: buildsLoading } = useQuery<Build[]>({
-    queryKey: ["/api/builds", "recent"],
+  const { data: recentBuilds = [], isLoading: buildsLoading, error: buildsError } = useQuery<Build[]>({
+    queryKey: ["/api/builds/recent"],
   });
 
-  const { data: stats } = useQuery<{
+  const { data: stats = { totalMembers: 0, activeLfg: 0, totalClans: 0, totalBuilds: 0 }, error: statsError } = useQuery<{
     totalMembers: number;
     activeLfg: number;
     totalClans: number;
@@ -199,13 +199,13 @@ export default function Dashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {lfgLoading ? (
+            {lfgLoading && !lfgError ? (
               <>
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
               </>
-            ) : recentLfg && recentLfg.length > 0 ? (
+            ) : recentLfg.length > 0 ? (
               recentLfg.slice(0, 3).map((post) => (
                 <div key={post.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
@@ -254,13 +254,13 @@ export default function Dashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {buildsLoading ? (
+            {buildsLoading && !buildsError ? (
               <>
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
               </>
-            ) : recentBuilds && recentBuilds.length > 0 ? (
+            ) : recentBuilds.length > 0 ? (
               recentBuilds.slice(0, 3).map((build) => (
                 <div key={build.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-3">
