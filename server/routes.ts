@@ -1537,6 +1537,69 @@ export async function registerRoutes(
     }
   });
 
+  // Account Management: Get Account Info
+  app.get("/api/account", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching account:", error);
+      res.status(500).json({ message: "Failed to fetch account" });
+    }
+  });
+
+  // Account Management: Delete Account
+  app.delete("/api/account", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { password } = req.body;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user.password || !verifyPassword(password, user.password)) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+      req.logout(() => {});
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
+  // Subscriptions: Get Available VIP Tiers
+  app.get("/api/subscriptions/tiers", async (req, res) => {
+    res.json({
+      tiers: [
+        { id: "bronze", name: "Bronze", price: 1399, priceText: "$13.99/month", benefits: ["Custom profile badge", "Priority support"] },
+        { id: "sapphire", name: "Sapphire", price: 2999, priceText: "$29.99/month", benefits: ["All Bronze benefits", "Exclusive cosmetics", "Priority matchmaking"] },
+        { id: "diamond", name: "Diamond", price: 4499, priceText: "$44.99/month", benefits: ["All Sapphire benefits", "VIP cosmetics", "Ad-free experience"] },
+        { id: "founders", name: "Founders", price: 6499, priceText: "$64.99/month", benefits: ["All Diamond benefits", "Founder title", "Lifetime status guarantee"] },
+      ]
+    });
+  });
+
+  // Subscriptions: Get User Subscription Status
+  app.get("/api/subscriptions/status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      const payments = await storage.getUserPayments(userId);
+      const activePayment = payments.find(p => p.status === "success");
+      res.json({
+        currentTier: user.vipTier,
+        hasActiveSubscription: user.vipTier !== "none",
+        lastPayment: activePayment,
+        allPayments: payments
+      });
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      res.status(500).json({ message: "Failed to fetch subscription status" });
+    }
+  });
+
   // Support: Submit Contact Form
   app.post("/api/support/contact", async (req, res) => {
     try {
