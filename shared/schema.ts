@@ -406,6 +406,19 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Projects
+export const projects = pgTable("projects", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  gameType: varchar("game_type").notNull(), // ROBLOX, FiveM, etc
+  location: varchar("location"),
+  imageUrl: varchar("image_url"),
+  status: varchar("status").default('active'), // active, discontinued, development
+  order: integer("order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   clan: one(clans, { fields: [users.clanId], references: [clans.id] }),
@@ -569,6 +582,11 @@ export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
   updatedAt: true
 });
 
+export const insertProjectSchema = createInsertSchema(projects).omit({ 
+  id: true,
+  createdAt: true
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -652,6 +670,9 @@ export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 
 export type SiteSettings = typeof siteSettings.$inferSelect;
 export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
+
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
 
 // VIP tier configuration
 export const VIP_TIERS = {

@@ -15,9 +15,7 @@ import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
-import LFG from "@/pages/lfg";
 import Clans from "@/pages/clans";
-import Builds from "@/pages/builds";
 import Forums from "@/pages/forums";
 import ForumThread from "@/pages/forums/thread";
 import VIP from "@/pages/vip";
@@ -28,6 +26,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import StaffDirectory from "@/pages/staff-directory";
 import Announcements from "@/pages/announcements";
+import Projects from "@/pages/projects";
 import DMCA from "@/pages/dmca";
 import ProjectReimaginedrules from "@/pages/project-reimagined-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
@@ -112,9 +111,7 @@ function AuthenticatedRoutes() {
     <AppLayout>
       <Switch>
         <Route path="/" component={Dashboard} />
-        <Route path="/lfg" component={LFG} />
         <Route path="/clans" component={Clans} />
-        <Route path="/builds" component={Builds} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
         <Route path="/chat" component={Chat} />
@@ -137,12 +134,12 @@ function PublicRoutes() {
         <Route path="/" component={Landing} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
-        <Route path="/builds" component={Builds} />
         <Route path="/staff" component={StaffDirectory} />
         <Route path="/guidelines" component={Guidelines} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
         <Route path="/announcements" component={Announcements} />
+        <Route path="/projects" component={Projects} />
         <Route path="/dmca" component={DMCA} />
         <Route path="/project-reimagined-rules" component={ProjectReimaginedrules} />
         <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
