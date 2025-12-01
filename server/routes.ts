@@ -833,10 +833,12 @@ export async function registerRoutes(
     'company_director',
     'leadership_council', 
     'operations_manager',
+    'team_member',
     'rs_trust_safety_director',
     'administrator',
     'senior_administrator',
     'moderator',
+    'trial_moderator',
     'community_moderator',
     'community_senior_moderator',
     'community_developer',
@@ -984,6 +986,19 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/announcements/:id", async (req, res) => {
+    try {
+      const announcement = await storage.getAnnouncement(req.params.id);
+      if (!announcement) {
+        return res.status(404).json({ message: "Announcement not found" });
+      }
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error fetching announcement:", error);
+      res.status(500).json({ message: "Failed to fetch announcement" });
+    }
+  });
+  
   app.post("/api/admin/announcements", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
@@ -1018,10 +1033,10 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
       const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
         'rs_trust_safety_director',
         'leadership_council',
+        'operations_manager',
+        'team_member',
         'company_director'
       ].includes(user.userRank);
       
@@ -1047,9 +1062,9 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
       const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
         'rs_trust_safety_director',
+        'operations_manager',
+        'team_member',
         'leadership_council',
         'company_director'
       ].includes(user.userRank);
@@ -1061,6 +1076,32 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting announcement:", error);
       res.status(500).json({ message: "Failed to delete announcement" });
+    }
+  });
+
+  app.get("/api/announcements/:id", async (req, res) => {
+    try {
+      const announcement = await storage.getAnnouncement(req.params.id);
+      if (!announcement) {
+        return res.status(404).json({ message: "Announcement not found" });
+      }
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error fetching announcement:", error);
+      res.status(500).json({ message: "Failed to fetch announcement" });
+    }
+  });
+
+  app.get("/api/staff-directory", async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      const staffUsers = allUsers.filter(u => 
+        ['administrator', 'senior_administrator', 'rs_trust_safety_director', 'leadership_council', 'company_director', 'moderator', 'community_moderator', 'customer_relations', 'operations_manager', 'team_member'].includes(u.userRank)
+      );
+      res.json(staffUsers);
+    } catch (error) {
+      console.error("Error fetching staff directory:", error);
+      res.status(500).json({ message: "Failed to fetch staff directory" });
     }
   });
 
@@ -1080,16 +1121,24 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
       const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
         'rs_trust_safety_director',
+        'operations_manager',
+        'team_member',
         'leadership_council',
         'company_director'
       ].includes(user.userRank);
       
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
       
-      const settings = await storage.updateSiteSettings(req.body);
+      const { isOffline, offlineMessage } = req.body;
+      const existingSettings = await storage.getSiteSettings();
+      
+      const settings = await storage.updateSiteSettings({
+        id: "main",
+        isOffline: isOffline !== undefined ? isOffline : existingSettings.isOffline,
+        offlineMessage: offlineMessage || existingSettings.offlineMessage,
+        updatedAt: new Date()
+      });
       res.json(settings);
     } catch (error) {
       console.error("Error updating site settings:", error);
@@ -1103,9 +1152,9 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
       const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
         'customer_relations',
+        'operations_manager',
+        'team_member',
         'leadership_council',
         'company_director'
       ].includes(user.userRank);
@@ -1131,8 +1180,8 @@ export async function registerRoutes(
       const user = await storage.getUser(userId);
       const isAllowed = user?.userRank && [
         'customer_relations',
-        'administrator',
-        'senior_administrator',
+        'operations_manager',
+        'team_member',
         'leadership_council',
         'company_director'
       ].includes(user.userRank);
@@ -1166,6 +1215,8 @@ export async function registerRoutes(
         'senior_administrator',
         'customer_relations',
         'leadership_council',
+        'operations_manager',
+        'team_member',
         'company_director'
       ].includes(user.userRank);
       
@@ -1184,6 +1235,20 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Staff Directory
+  app.get("/api/staff-directory", async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      const staffUsers = allUsers.filter(u => 
+        ['administrator', 'operations_manager', 'team_member', 'senior_administrator', 'rs_trust_safety_director', 'leadership_council', 'company_director', 'moderator', 'community_moderator', 'customer_relations'].includes(u.userRank)
+      );
+      res.json(staffUsers);
+    } catch (error) {
+      console.error("Error fetching staff directory:", error);
+      res.status(500).json({ message: "Failed to fetch staff directory" });
+    }
+  });
+  
   // Payments: Submit VIP Payment (Auto-charged via Stripe)
   app.post("/api/payments/submit", requireAuth, async (req, res) => {
     try {
@@ -1192,10 +1257,10 @@ export async function registerRoutes(
       const { vipTier, cardNumber, cardExpiry, cardCvc, cardLast4, cardBrand, billingName, billingEmail, billingAddress, billingCity, billingState, billingZip, billingCountry } = req.body;
       
       const tierPrices: Record<string, number> = {
-        bronze: 1299,
-        sapphire: 2999,
-        diamond: 4499,
-        founders: 12000
+        bronze: 1099,
+        sapphire: 2099,
+        diamond: 3465,
+        founders: 4599
       };
       
       const amount = tierPrices[vipTier];
