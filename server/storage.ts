@@ -628,9 +628,9 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(payments).where(eq(payments.userId, userId)).orderBy(desc(payments.createdAt));
   }
 
-  async updatePaymentStatus(id: string, status: string, adminNotes?: string): Promise<Payment | undefined> {
+  async updatePaymentStatus(id: string, status: string, errorMessage?: string): Promise<Payment | undefined> {
     const [payment] = await db.update(payments)
-      .set({ status, adminNotes, updatedAt: new Date() })
+      .set({ status, errorMessage, updatedAt: new Date() })
       .where(eq(payments.id, id))
       .returning();
     return payment;

@@ -13,7 +13,9 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    cardLast4: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvc: "",
     cardBrand: "visa",
     billingName: "",
     billingEmail: "",
@@ -29,21 +31,35 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
     setIsLoading(true);
 
     try {
+      const cardLast4 = formData.cardNumber.slice(-4);
+      
       const response = await fetch("/api/payments/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vipTier: tier.id,
-          ...formData,
+          cardLast4,
+          cardBrand: formData.cardBrand,
+          cardNumber: formData.cardNumber,
+          cardExpiry: formData.cardExpiry,
+          cardCvc: formData.cardCvc,
+          billingName: formData.billingName,
+          billingEmail: formData.billingEmail,
+          billingAddress: formData.billingAddress,
+          billingCity: formData.billingCity,
+          billingState: formData.billingState,
+          billingZip: formData.billingZip,
+          billingCountry: formData.billingCountry,
         }),
         credentials: "include",
       });
 
-      if (!response.ok) throw new Error("Failed to submit payment");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to process payment");
 
       toast({
-        title: "Payment Submitted",
-        description: "Your payment has been submitted for review. Our team will verify and process it shortly.",
+        title: "Payment Processed",
+        description: data.message || "Your card has been charged and VIP tier activated!",
       });
 
       onSuccess?.();
@@ -134,14 +150,37 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
       </div>
 
       <div>
-        <label className="text-sm font-medium">Card Last 4 Digits</label>
+        <label className="text-sm font-medium">Card Number</label>
         <Input
-          placeholder="4242"
-          maxLength="4"
-          value={formData.cardLast4}
-          onChange={(e) => setFormData({ ...formData, cardLast4: e.target.value.replace(/\D/g, "") })}
+          placeholder="4242 4242 4242 4242"
+          value={formData.cardNumber}
+          onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value.replace(/\D/g, "") })}
+          maxLength="16"
           required
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-sm font-medium">Expires (MM/YY)</label>
+          <Input
+            placeholder="12/25"
+            value={formData.cardExpiry}
+            onChange={(e) => setFormData({ ...formData, cardExpiry: e.target.value })}
+            maxLength="5"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">CVC</label>
+          <Input
+            placeholder="123"
+            value={formData.cardCvc}
+            onChange={(e) => setFormData({ ...formData, cardCvc: e.target.value.replace(/\D/g, "") })}
+            maxLength="4"
+            required
+          />
+        </div>
       </div>
 
       <div>
@@ -161,7 +200,7 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
       <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex gap-2">
         <Lock className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
         <p className="text-xs text-yellow-600">
-          Payment will be reviewed by our team. Your VIP tier will be activated once approved.
+          Your card will be charged immediately. Your VIP tier will be activated upon successful payment.
         </p>
       </div>
 

@@ -425,7 +425,8 @@ export const payments = pgTable("payments", {
   userId: varchar("user_id").notNull(),
   vipTier: varchar("vip_tier").notNull(), // bronze, sapphire, diamond, founders
   amount: integer("amount").notNull(), // in cents
-  status: varchar("status").default('pending'), // pending, approved, rejected, completed
+  status: varchar("status").default('processing'), // processing, success, failed, refunded
+  stripePaymentIntentId: varchar("stripe_payment_intent_id"),
   cardLast4: varchar("card_last_4"),
   cardBrand: varchar("card_brand"), // visa, mastercard, amex, discover
   billingName: varchar("billing_name"),
@@ -435,7 +436,7 @@ export const payments = pgTable("payments", {
   billingState: varchar("billing_state"),
   billingZip: varchar("billing_zip"),
   billingCountry: varchar("billing_country"),
-  adminNotes: text("admin_notes"),
+  errorMessage: text("error_message"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

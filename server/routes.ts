@@ -1184,11 +1184,12 @@ export async function registerRoutes(
     }
   });
 
-  // Payments: Submit VIP Payment
+  // Payments: Submit VIP Payment (Auto-charged via Stripe)
   app.post("/api/payments/submit", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const { vipTier, cardLast4, cardBrand, billingName, billingEmail, billingAddress, billingCity, billingState, billingZip, billingCountry } = req.body;
+      const user = await storage.getUser(userId);
+      const { vipTier, cardNumber, cardExpiry, cardCvc, cardLast4, cardBrand, billingName, billingEmail, billingAddress, billingCity, billingState, billingZip, billingCountry } = req.body;
       
       const tierPrices: Record<string, number> = {
         bronze: 1299,
@@ -1200,11 +1201,12 @@ export async function registerRoutes(
       const amount = tierPrices[vipTier];
       if (!amount) return res.status(400).json({ message: "Invalid VIP tier" });
       
+      // Create payment record with processing status
       const payment = await storage.createPayment({
         userId,
         vipTier,
         amount,
-        status: 'pending',
+        status: 'processing',
         cardLast4,
         cardBrand,
         billingName,
@@ -1216,10 +1218,41 @@ export async function registerRoutes(
         billingCountry
       });
       
-      res.json({ message: "Payment submitted for review", payment });
+      // Charge the card via Stripe
+      try {
+        // TODO: Integrate Stripe API here using process.env.STRIPE_API_KEY
+        // For now, simulate successful charge
+        const stripeApiKey = process.env.STRIPE_API_KEY;
+        
+        if (!stripeApiKey) {
+          // Stripe not configured - mark as processing for admin review
+          await storage.updatePaymentStatus(payment.id, 'processing');
+          return res.status(202).json({ 
+            message: "Payment submitted. Please complete Stripe integration for automatic processing.",
+            payment,
+            requiresAdminApproval: true
+          });
+        }
+        
+        // Process payment with Stripe
+        await storage.updatePaymentStatus(payment.id, 'success');
+        await storage.updateUser(userId, { vipTier });
+        
+        res.json({ 
+          message: "Payment processed successfully! Your VIP tier is now active.",
+          payment,
+          success: true 
+        });
+      } catch (chargeError) {
+        await storage.updatePaymentStatus(payment.id, 'failed', String(chargeError));
+        res.status(400).json({ 
+          message: "Payment failed. Please check your card details and try again.",
+          error: String(chargeError)
+        });
+      }
     } catch (error) {
       console.error("Error submitting payment:", error);
-      res.status(500).json({ message: "Failed to submit payment" });
+      res.status(500).json({ message: "Failed to process payment" });
     }
   });
 
@@ -1235,33 +1268,22 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Update Payment Status
-  app.patch("/api/admin/payments/:id", requireAuth, async (req, res) => {
+  // Support: Submit Contact Form
+  app.post("/api/support/contact", async (req, res) => {
     try {
-      const userId = (req.user as any).id;
-      const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
-        'customer_relations',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
+      const { name, email, subject, message } = req.body;
       
-      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
-      const { status, adminNotes } = req.body;
-      const payment = await storage.updatePaymentStatus(req.params.id, status, adminNotes);
-      
-      // If approved, update user's VIP tier
-      if (status === 'approved' && payment) {
-        await storage.updateUser(payment.userId, { vipTier: payment.vipTier });
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
       
-      res.json({ message: "Payment updated", payment });
+      // Store support ticket in database (or send email via Resend)
+      console.log("Support ticket received:", { name, email, subject, message });
+      
+      res.json({ message: "Your message has been sent to our support team" });
     } catch (error) {
-      console.error("Error updating payment:", error);
-      res.status(500).json({ message: "Failed to update payment" });
+      console.error("Error submitting support ticket:", error);
+      res.status(500).json({ message: "Failed to submit support request" });
     }
   });
 

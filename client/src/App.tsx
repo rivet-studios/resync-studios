@@ -27,6 +27,7 @@ import Terms from "@/pages/terms";
 import StaffDirectory from "@/pages/staff-directory";
 import Announcements from "@/pages/announcements";
 import Projects from "@/pages/projects";
+import Support from "@/pages/support";
 import DMCA from "@/pages/dmca";
 import ProjectReimaginedrules from "@/pages/project-reimagined-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
@@ -140,6 +141,7 @@ function PublicRoutes() {
         <Route path="/terms" component={Terms} />
         <Route path="/announcements" component={Announcements} />
         <Route path="/projects" component={Projects} />
+        <Route path="/support" component={Support} />
         <Route path="/dmca" component={DMCA} />
         <Route path="/project-reimagined-rules" component={ProjectReimaginedrules} />
         <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
