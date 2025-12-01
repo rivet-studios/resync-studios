@@ -1,0 +1,68 @@
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:15 AM [express] GET /api/auth/user 401 in 146ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:15 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:16 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:19 AM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:19 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:20 AM [express] GET /api/auth/user 401 in 146ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:20 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:24 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:24 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:25 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:25 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:26 AM [express] GET /api/auth/user 401 in 146ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:26 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:27 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:27 AM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:28 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:28 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:29 AM [express] GET /api/auth/user 401 in 148ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:29 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:30 AM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:31 AM [express] GET /api/auth/user 401 in 146ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:31 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:32 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:32 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:33 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:33 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:34 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:35 AM [express] GET /api/auth/user 401 in 151ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:35 AM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:36 AM [express] GET /api/auth/user 401 in 144ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:36 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:37 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:37 AM [express] GET /api/auth/user 401 in 147ms :: {"message":"401: Not authenticated. Unauthorized."}
+🔍 Auth check - isAuth: false user: undefined sessionID: wMPavUWLCmCJky1jgRoCiW4zRvWJFG23
+2:21:38 AM [express] GET /api/auth/user 401 in 145ms :: {"message":"401: Not authenticated. Unauthorized."}
