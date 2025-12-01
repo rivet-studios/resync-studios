@@ -1,6 +1,7 @@
 import { useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { VipBadge } from "@/components/vip-badge";
+import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -78,8 +79,9 @@ const accountNavItems = [
 ];
 
 export function AppSidebar() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const getInitials = () => {
     if (user?.firstName && user?.lastName) {
@@ -217,11 +219,28 @@ export function AppSidebar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </a>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("/api/auth/logout", {
+                        method: "POST",
+                        credentials: "include",
+                      });
+                      if (response.ok) {
+                        setLocation("/login");
+                      } else {
+                        toast({ title: "Error", description: "Logout failed", variant: "destructive" });
+                      }
+                    } catch (error) {
+                      console.error("Logout failed:", error);
+                      toast({ title: "Error", description: "Logout failed", variant: "destructive" });
+                    }
+                  }}
+                  className="cursor-pointer text-destructive"
+                  data-testid="button-logout"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

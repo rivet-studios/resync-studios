@@ -51,7 +51,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/auth/logout", { method: "GET", credentials: "include" });
+      const response = await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
       if (response.ok) {
         setLocation("/login");
       }
