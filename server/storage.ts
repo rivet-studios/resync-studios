@@ -340,8 +340,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async verifyMagicLinkToken(token: string): Promise<string | undefined> {
+    const { isNull } = require('drizzle-orm');
     const [record] = await db.select().from(magicLinkTokens)
-      .where(and(eq(magicLinkTokens.token, token), eq(magicLinkTokens.usedAt, null), lt(magicLinkTokens.expiresAt, new Date())));
+      .where(and(eq(magicLinkTokens.token, token), isNull(magicLinkTokens.usedAt), lt(magicLinkTokens.expiresAt, new Date())));
     return record?.email;
   }
 
@@ -409,7 +410,7 @@ export class DatabaseStorage implements IStorage {
 
   async joinLfgPost(postId: string, userId: string, role?: string): Promise<LfgParticipant> {
     const [participant] = await db.insert(lfgParticipants)
-      .values({ lfgPostId: postId, userId, role })
+      .values({ lfgPostId: postId, userId, role: (role as any) || undefined })
       .returning();
     await db.update(lfgPosts)
       .set({ playersJoined: sql`${lfgPosts.playersJoined} + 1` })

@@ -1257,7 +1257,7 @@ export async function registerRoutes(
     try {
       const allUsers = await storage.getAllUsers();
       const staffUsers = allUsers.filter((u) =>
-        [
+        u.userRank && [
           "administrator",
           "senior_administrator",
           "rs_trust_safety_director",
@@ -1422,30 +1422,7 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Staff Directory
-  app.get("/api/staff-directory", async (req, res) => {
-    try {
-      const allUsers = await storage.getAllUsers();
-      const staffUsers = allUsers.filter((u) =>
-        [
-          "administrator",
-          "operations_manager",
-          "team_member",
-          "senior_administrator",
-          "rs_trust_safety_director",
-          "leadership_council",
-          "company_director",
-          "moderator",
-          "community_moderator",
-          "customer_relations",
-        ].includes(u.userRank),
-      );
-      res.json(staffUsers);
-    } catch (error) {
-      console.error("Error fetching staff directory:", error);
-      res.status(500).json({ message: "Failed to fetch staff directory" });
-    }
-  });
+  // Admin: Staff Directory (duplicate removed - see earlier route)
 
   // Payments: Submit VIP Payment (Auto-charged via Stripe)
   app.post("/api/payments/submit", requireAuth, async (req, res) => {
