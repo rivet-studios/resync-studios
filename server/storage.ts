@@ -12,8 +12,9 @@ import {
   type ForumReply, type InsertForumReply,
   type ChatMessage, type InsertChatMessage,
   type Announcement, type InsertAnnouncement,
+  type SiteSettings, type InsertSiteSettings,
   users, clans, lfgPosts, lfgParticipants, builds, buildVotes,
-  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens, announcements
+  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens, announcements, siteSettings
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, or, ilike, lt } from "drizzle-orm";
@@ -251,6 +252,10 @@ export interface IStorage {
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
   updateAnnouncement(id: string, updates: Partial<Announcement>): Promise<Announcement | undefined>;
   deleteAnnouncement(id: string): Promise<void>;
+  
+  // Site Settings
+  getSiteSettings(): Promise<SiteSettings>;
+  updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings>;
   
   // Stats
   getStats(): Promise<{ totalMembers: number; activeLfg: number; totalClans: number; totalBuilds: number }>;
@@ -585,6 +590,20 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAnnouncement(id: string): Promise<void> {
     await db.delete(announcements).where(eq(announcements.id, id));
+  }
+
+  // Site Settings
+  async getSiteSettings(): Promise<SiteSettings> {
+    const [settings] = await db.select().from(siteSettings).where(eq(siteSettings.id, "main"));
+    return settings || { id: "main", isOffline: false, offlineMessage: "We're currently performing maintenance. We'll be back online shortly!", updatedAt: new Date() };
+  }
+
+  async updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings> {
+    const [settings] = await db.update(siteSettings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(siteSettings.id, "main"))
+      .returning();
+    return settings;
   }
 
   // Stats

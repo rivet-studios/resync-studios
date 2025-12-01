@@ -1064,5 +1064,125 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Site Settings & Offline Mode
+  app.get("/api/site-settings", async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching site settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.patch("/api/admin/site-settings", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'rs_trust_safety_director',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const settings = await storage.updateSiteSettings(req.body);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating site settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // Admin: Assign Subscription
+  app.post("/api/admin/assign-subscription", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'customer_relations',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { targetUsername, vipTier } = req.body;
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser) return res.status(404).json({ message: "User not found" });
+      
+      const updated = await storage.updateUser(targetUser.id, { vipTier });
+      res.json({ message: `Subscription set to ${vipTier}`, user: updated });
+    } catch (error) {
+      console.error("Error assigning subscription:", error);
+      res.status(500).json({ message: "Failed to assign subscription" });
+    }
+  });
+
+  // Admin: Create Account
+  app.post("/api/admin/create-account", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAllowed = user?.userRank && [
+        'customer_relations',
+        'administrator',
+        'senior_administrator',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAllowed) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { username, email } = req.body;
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) return res.status(400).json({ message: "Username already taken" });
+      
+      const newUser = await storage.upsertUser({
+        username,
+        email,
+        userRank: 'member',
+        vipTier: 'none'
+      });
+      res.json({ message: "Account created successfully", user: newUser });
+    } catch (error) {
+      console.error("Error creating account:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  // Admin: Search Users
+  app.get("/api/admin/search-users", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'customer_relations',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const query = req.query.q as string || "";
+      const allUsers = await storage.getAllUsers();
+      const filtered = allUsers
+        .filter(u => u.username?.toLowerCase().includes(query.toLowerCase()) || u.email?.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 20);
+      
+      res.json(filtered);
+    } catch (error) {
+      console.error("Error searching users:", error);
+      res.status(500).json({ message: "Failed to search users" });
+    }
+  });
+
   return httpServer;
 }

@@ -398,6 +398,14 @@ export const announcements = pgTable("announcements", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Site Settings
+export const siteSettings = pgTable("site_settings", {
+  id: varchar("id").primaryKey().default("main"),
+  isOffline: boolean("is_offline").default(false),
+  offlineMessage: text("offline_message").default("We're currently performing maintenance. We'll be back online shortly!"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   clan: one(clans, { fields: [users.clanId], references: [clans.id] }),
@@ -557,6 +565,10 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
   updatedAt: true
 });
 
+export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({ 
+  updatedAt: true
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -637,6 +649,9 @@ export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
 
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
 
 // VIP tier configuration
 export const VIP_TIERS = {
