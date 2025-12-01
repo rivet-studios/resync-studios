@@ -250,6 +250,23 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/lfg/recent", async (req, res) => {
+    try {
+      const posts = await storage.getLfgPosts();
+      const recentPosts = posts.slice(0, 5).reverse();
+      const postsWithAuthors = await Promise.all(
+        recentPosts.map(async (post) => {
+          const author = await storage.getUser(post.authorId);
+          return { ...post, author };
+        }),
+      );
+      res.json(postsWithAuthors);
+    } catch (error) {
+      console.error("Error fetching recent LFG posts:", error);
+      res.json([]);
+    }
+  });
+
   app.get("/api/lfg/:id", async (req, res) => {
     try {
       const post = await storage.getLfgPost(req.params.id);
@@ -437,6 +454,30 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching builds:", error);
       res.status(500).json({ message: "Failed to fetch builds" });
+    }
+  });
+
+  app.get("/api/builds/recent", async (req, res) => {
+    try {
+      const builds = await storage.getBuilds();
+      const recentBuilds = builds.slice(0, 5).reverse();
+      const userId = req.isAuthenticated() ? (req.user as any).id : null;
+
+      const buildsWithAuthors = await Promise.all(
+        recentBuilds.map(async (build) => {
+          const author = await storage.getUser(build.authorId);
+          let userVote = null;
+          if (userId) {
+            const vote = await storage.getBuildVote(build.id, userId);
+            userVote = vote ? vote.isUpvote : null;
+          }
+          return { ...build, author, userVote };
+        }),
+      );
+      res.json(buildsWithAuthors);
+    } catch (error) {
+      console.error("Error fetching recent builds:", error);
+      res.json([]);
     }
   });
 
