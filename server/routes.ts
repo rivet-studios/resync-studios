@@ -4,9 +4,9 @@ import { storage } from "./storage";
 import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
 import { updateDiscordNickname } from "./discord-bot";
-import { 
-  insertLfgPostSchema, 
-  insertClanSchema, 
+import {
+  insertLfgPostSchema,
+  insertClanSchema,
   insertBuildSchema,
   insertForumThreadSchema,
   insertForumReplySchema,
@@ -23,14 +23,22 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express
+  app: Express,
 ): Promise<Server> {
-  
   // Auth routes
   app.get("/api/auth/user", async (req, res) => {
-    console.log("🔍 Auth check - isAuth:", req.isAuthenticated(), "user:", req.user?.id, "sessionID:", req.sessionID);
+    console.log(
+      "🔍 Auth check - isAuth:",
+      req.isAuthenticated(),
+      "user:",
+      req.user?.id,
+      "sessionID:",
+      req.sessionID,
+    );
     if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "401: Not authenticated. Unauthorized." });
+      return res
+        .status(401)
+        .json({ message: "401: Not authenticated. Unauthorized." });
     }
     try {
       // Fetch fresh user data from database instead of using session cache
@@ -50,13 +58,17 @@ export async function registerRoutes(
     try {
       console.log("📝 Signup request received for email:", req.body.email);
       const { email, username, password } = req.body;
-      
+
       if (!email || !username || !password) {
-        return res.status(400).json({ message: "Email, username, and password required" });
+        return res
+          .status(400)
+          .json({ message: "Email, username, and password required" });
       }
 
       if (password.length < 6) {
-        return res.status(400).json({ message: "Password must be at least 6 characters" });
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters" });
       }
 
       const existing = await storage.getUserByEmail(email);
@@ -74,14 +86,17 @@ export async function registerRoutes(
         email,
         username,
         password: hashedPassword,
-        userRank: 'member',
-        vipTier: 'none'
+        userRank: "member",
+        vipTier: "none",
       });
 
       console.log("✅ Account created:", user.id);
       res.json({ message: "Account created successfully", user });
     } catch (error) {
-      console.error("❌ Error in signup:", error instanceof Error ? error.message : error);
+      console.error(
+        "❌ Error in signup:",
+        error instanceof Error ? error.message : error,
+      );
       res.status(500).json({ message: "Failed to create account" });
     }
   });
@@ -91,7 +106,7 @@ export async function registerRoutes(
     try {
       console.log("🔑 Login request received for email:", req.body.email);
       const { email, password } = req.body;
-      
+
       if (!email || !password) {
         return res.status(400).json({ message: "Email and password required" });
       }
@@ -111,15 +126,26 @@ export async function registerRoutes(
       req.login(user, (err) => {
         if (err) {
           console.error("❌ Failed to establish session:", err);
-          console.error("❌ Session Error Stack:", err instanceof Error ? err.stack : err);
-          console.error("❌ Session Info - userId:", user.id, "sessionID:", req.sessionID);
+          console.error(
+            "❌ Session Error Stack:",
+            err instanceof Error ? err.stack : err,
+          );
+          console.error(
+            "❌ Session Info - userId:",
+            user.id,
+            "sessionID:",
+            req.sessionID,
+          );
           return res.status(500).json({ message: "Failed to login" });
         }
         console.log("✅ User logged in:", user.id, "SessionID:", req.sessionID);
         res.json({ message: "Logged in successfully", user });
       });
     } catch (error) {
-      console.error("❌ Error in login:", error instanceof Error ? error.message : error);
+      console.error(
+        "❌ Error in login:",
+        error instanceof Error ? error.message : error,
+      );
       console.error("Full error:", error);
       res.status(500).json({ message: "Failed to login" });
     }
@@ -129,13 +155,13 @@ export async function registerRoutes(
   app.get("/api/auth/verify-token", async (req, res) => {
     try {
       const { token, email, username } = req.query;
-      
+
       if (!token) {
         return res.status(400).json({ message: "Token required" });
       }
 
       const verifiedEmail = await storage.verifyMagicLinkToken(token as string);
-      
+
       if (!verifiedEmail) {
         return res.status(400).json({ message: "Invalid or expired token" });
       }
@@ -191,14 +217,14 @@ export async function registerRoutes(
     try {
       const { username, bio } = req.body;
       const userId = (req.user as any).id;
-      
+
       if (username) {
         const existing = await storage.getUserByUsername(username);
         if (existing && existing.id !== userId) {
           return res.status(400).json({ message: "Username already taken" });
         }
       }
-      
+
       const user = await storage.updateUser(userId, { username, bio });
       res.json(user);
     } catch (error) {
@@ -215,7 +241,7 @@ export async function registerRoutes(
         posts.map(async (post) => {
           const author = await storage.getUser(post.authorId);
           return { ...post, author };
-        })
+        }),
       );
       res.json(postsWithAuthors);
     } catch (error) {
@@ -248,7 +274,9 @@ export async function registerRoutes(
       res.status(201).json(post);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Error creating LFG post:", error);
       res.status(500).json({ message: "Failed to create LFG post" });
@@ -260,16 +288,20 @@ export async function registerRoutes(
       const postId = req.params.id;
       const userId = (req.user as any).id;
       const post = await storage.getLfgPost(postId);
-      
+
       if (!post) {
         return res.status(404).json({ message: "LFG post not found" });
       }
-      
+
       if ((post.playersJoined || 0) >= (post.playersNeeded || 1)) {
         return res.status(400).json({ message: "Group is full" });
       }
-      
-      const participant = await storage.joinLfgPost(postId, userId, req.body.role);
+
+      const participant = await storage.joinLfgPost(
+        postId,
+        userId,
+        req.body.role,
+      );
       res.status(201).json(participant);
     } catch (error) {
       console.error("Error joining LFG post:", error);
@@ -302,7 +334,7 @@ export async function registerRoutes(
         clansList.map(async (clan) => {
           const owner = await storage.getUser(clan.ownerId);
           return { ...clan, owner };
-        })
+        }),
       );
       res.json(clansWithOwners);
     } catch (error) {
@@ -328,22 +360,26 @@ export async function registerRoutes(
   app.post("/api/clans", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      
-      if (user.vipTier !== 'diamond' && user.vipTier !== 'founders') {
-        return res.status(403).json({ message: "Diamond VIP or higher required to create clans" });
+
+      if (user.vipTier !== "diamond" && user.vipTier !== "founders") {
+        return res
+          .status(403)
+          .json({ message: "Diamond VIP or higher required to create clans" });
       }
-      
+
       const data = insertClanSchema.parse({
         ...req.body,
         ownerId: user.id,
       });
-      
+
       const clan = await storage.createClan(data);
-      await storage.updateUser(user.id, { clanId: clan.id, clanRole: 'owner' });
+      await storage.updateUser(user.id, { clanId: clan.id, clanRole: "owner" });
       res.status(201).json(clan);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Error creating clan:", error);
       res.status(500).json({ message: "Failed to create clan" });
@@ -355,22 +391,24 @@ export async function registerRoutes(
       const clanId = req.params.id;
       const userId = (req.user as any).id;
       const clan = await storage.getClan(clanId);
-      
+
       if (!clan) {
         return res.status(404).json({ message: "Clan not found" });
       }
-      
+
       if (!clan.isRecruiting) {
         return res.status(400).json({ message: "Clan is not recruiting" });
       }
-      
+
       if ((clan.memberCount || 1) >= (clan.maxMembers || 50)) {
         return res.status(400).json({ message: "Clan is full" });
       }
-      
-      await storage.updateUser(userId, { clanId, clanRole: 'member' });
-      await storage.updateClan(clanId, { memberCount: (clan.memberCount || 1) + 1 });
-      
+
+      await storage.updateUser(userId, { clanId, clanRole: "member" });
+      await storage.updateClan(clanId, {
+        memberCount: (clan.memberCount || 1) + 1,
+      });
+
       res.json({ message: "Joined clan successfully" });
     } catch (error) {
       console.error("Error joining clan:", error);
@@ -383,7 +421,7 @@ export async function registerRoutes(
     try {
       const buildsList = await storage.getBuilds();
       const userId = req.isAuthenticated() ? (req.user as any).id : null;
-      
+
       const buildsWithAuthors = await Promise.all(
         buildsList.map(async (build) => {
           const author = await storage.getUser(build.authorId);
@@ -393,7 +431,7 @@ export async function registerRoutes(
             userVote = vote ? vote.isUpvote : null;
           }
           return { ...build, author, userVote };
-        })
+        }),
       );
       res.json(buildsWithAuthors);
     } catch (error) {
@@ -408,9 +446,11 @@ export async function registerRoutes(
       if (!build) {
         return res.status(404).json({ message: "Build not found" });
       }
-      
-      await storage.updateBuild(build.id, { viewCount: (build.viewCount || 0) + 1 });
-      
+
+      await storage.updateBuild(build.id, {
+        viewCount: (build.viewCount || 0) + 1,
+      });
+
       const author = await storage.getUser(build.authorId);
       res.json({ ...build, author });
     } catch (error) {
@@ -429,7 +469,9 @@ export async function registerRoutes(
       res.status(201).json(build);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Error creating build:", error);
       res.status(500).json({ message: "Failed to create build" });
@@ -441,7 +483,7 @@ export async function registerRoutes(
       const buildId = req.params.id;
       const userId = (req.user as any).id;
       const { isUpvote } = req.body;
-      
+
       await storage.voteBuild(buildId, userId, isUpvote);
       res.json({ message: "Vote recorded" });
     } catch (error) {
@@ -465,13 +507,13 @@ export async function registerRoutes(
     try {
       const categoryId = req.query.categoryId as string | undefined;
       const threads = await storage.getForumThreads(categoryId);
-      
+
       const threadsWithAuthors = await Promise.all(
         threads.map(async (thread) => {
           const author = await storage.getUser(thread.authorId);
           const category = await storage.getForumCategory(thread.categoryId);
           return { ...thread, author, category };
-        })
+        }),
       );
       res.json(threadsWithAuthors);
     } catch (error) {
@@ -486,20 +528,22 @@ export async function registerRoutes(
       if (!thread) {
         return res.status(404).json({ message: "Thread not found" });
       }
-      
-      await storage.updateForumThread(thread.id, { viewCount: (thread.viewCount || 0) + 1 });
-      
+
+      await storage.updateForumThread(thread.id, {
+        viewCount: (thread.viewCount || 0) + 1,
+      });
+
       const author = await storage.getUser(thread.authorId);
       const category = await storage.getForumCategory(thread.categoryId);
       const replies = await storage.getForumReplies(thread.id);
-      
+
       const repliesWithAuthors = await Promise.all(
         replies.map(async (reply) => {
           const replyAuthor = await storage.getUser(reply.authorId);
           return { ...reply, author: replyAuthor };
-        })
+        }),
       );
-      
+
       res.json({ ...thread, author, category, replies: repliesWithAuthors });
     } catch (error) {
       console.error("Error fetching forum thread:", error);
@@ -517,7 +561,9 @@ export async function registerRoutes(
       res.status(201).json(thread);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Error creating forum thread:", error);
       res.status(500).json({ message: "Failed to create forum thread" });
@@ -530,11 +576,11 @@ export async function registerRoutes(
       if (!thread) {
         return res.status(404).json({ message: "Thread not found" });
       }
-      
+
       if (thread.isLocked) {
         return res.status(403).json({ message: "Thread is locked" });
       }
-      
+
       const data = insertForumReplySchema.parse({
         ...req.body,
         threadId: req.params.id,
@@ -544,7 +590,9 @@ export async function registerRoutes(
       res.status(201).json(reply);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Error creating forum reply:", error);
       res.status(500).json({ message: "Failed to create forum reply" });
@@ -555,11 +603,11 @@ export async function registerRoutes(
   app.post("/api/subscriptions/checkout", requireAuth, async (req, res) => {
     try {
       const { tierId } = req.body;
-      
-      res.json({ 
+
+      res.json({
         message: "Stripe checkout would be initiated here",
         tierId,
-        url: null
+        url: null,
       });
     } catch (error) {
       console.error("Error creating checkout session:", error);
@@ -586,7 +634,7 @@ export async function registerRoutes(
     },
     (req, res) => {
       res.redirect("/");
-    }
+    },
   );
 
   app.get("/auth/logout", (req, res) => {
@@ -605,9 +653,9 @@ export async function registerRoutes(
       if (user.discordId) {
         return res.status(400).json({ message: "Discord already linked" });
       }
-      res.json({ 
+      res.json({
         message: "Discord linking started",
-        url: `/auth/discord/link`
+        url: `/auth/discord/link`,
       });
     } catch (error) {
       console.error("Error linking Discord:", error);
@@ -620,20 +668,27 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const threads = await storage.getForumThreads();
       const threadsWithAuthors = await Promise.all(
         threads.map(async (thread) => {
           const author = await storage.getUser(thread.authorId);
           return { ...thread, author };
-        })
+        }),
       );
       res.json(threadsWithAuthors);
     } catch (error) {
@@ -646,28 +701,35 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const threads = await storage.getForumThreads();
       const allReplies: any[] = [];
-      
+
       for (const thread of threads) {
         const replies = await storage.getForumReplies(thread.id);
         const repliesWithAuthors = await Promise.all(
           replies.map(async (reply) => {
             const author = await storage.getUser(reply.authorId);
             return { ...reply, author };
-          })
+          }),
         );
         allReplies.push(...repliesWithAuthors);
       }
-      
+
       res.json(allReplies);
     } catch (error) {
       console.error("Error fetching mod replies:", error);
@@ -679,16 +741,25 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { isLocked } = req.body;
-      const thread = await storage.updateForumThread(req.params.id, { isLocked });
+      const thread = await storage.updateForumThread(req.params.id, {
+        isLocked,
+      });
       res.json(thread);
     } catch (error) {
       console.error("Error locking thread:", error);
@@ -700,16 +771,25 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { isPinned } = req.body;
-      const thread = await storage.updateForumThread(req.params.id, { isPinned });
+      const thread = await storage.updateForumThread(req.params.id, {
+        isPinned,
+      });
       res.json(thread);
     } catch (error) {
       console.error("Error pinning thread:", error);
@@ -721,22 +801,32 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       // Get thread first to delete all replies
       const thread = await storage.getForumThread(req.params.id);
       if (!thread) return res.status(404).json({ message: "Thread not found" });
-      
+
       const replies = await storage.getForumReplies(req.params.id);
       // In a real app, delete replies too - for now just delete the thread
-      await storage.updateForumThread(req.params.id, { content: "[deleted]", title: "[deleted]" });
-      
+      await storage.updateForumThread(req.params.id, {
+        content: "[deleted]",
+        title: "[deleted]",
+      });
+
       res.json({ message: "Thread deleted" });
     } catch (error) {
       console.error("Error deleting thread:", error);
@@ -748,14 +838,21 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isMod = user?.userRank && [
-        'moderator', 'community_moderator', 'community_senior_moderator',
-        'administrator', 'senior_administrator', 'rs_trust_safety_director',
-        'leadership_council', 'company_director'
-      ].includes(user.userRank);
-      
+      const isMod =
+        user?.userRank &&
+        [
+          "moderator",
+          "community_moderator",
+          "community_senior_moderator",
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isMod) return res.status(403).json({ message: "Unauthorized" });
-      
+
       // For now, just mark as deleted
       res.json({ message: "Reply deleted" });
     } catch (error) {
@@ -767,11 +864,12 @@ export async function registerRoutes(
   // Discord linking callback (for users who already have an account)
   app.get("/auth/discord/link", (req, res, next) => {
     passport.authenticate("discord", {
-      state: "link_account"
+      state: "link_account",
     })(req, res, next);
   });
 
-  app.get("/auth/discord/link/callback",
+  app.get(
+    "/auth/discord/link/callback",
     (req, res, next) => {
       passport.authenticate("discord", {
         failureRedirect: "/?error=discord_link_failed",
@@ -782,12 +880,15 @@ export async function registerRoutes(
         // Get the user who was logged in BEFORE Discord OAuth started
         const discordProfile = req.user as any;
         const currentUserId = (req.user as any)?.id;
-        
+
         if (!currentUserId || !discordProfile?.discordId) {
-          console.log("❌ Link failed: no currentUserId or no discordId", { currentUserId, discordId: discordProfile?.discordId });
+          console.log("❌ Link failed: no currentUserId or no discordId", {
+            currentUserId,
+            discordId: discordProfile?.discordId,
+          });
           return res.redirect("/?error=link_failed");
         }
-        
+
         // Link Discord account to the current user (not the Discord user)
         const updatedUser = await storage.updateUser(currentUserId, {
           discordId: discordProfile.discordId,
@@ -795,10 +896,13 @@ export async function registerRoutes(
           discordAvatar: discordProfile.discordAvatar,
           discordLinkedAt: new Date(),
         });
-        
+
         if (updatedUser) {
           // Sync nickname to Discord
-          await updateDiscordNickname(discordProfile.discordId, updatedUser.username || "Member");
+          await updateDiscordNickname(
+            discordProfile.discordId,
+            updatedUser.username || "Member",
+          );
           console.log(`✅ Discord linked to user ${currentUserId}`);
           res.redirect("/?discord_linked=true");
         } else {
@@ -809,17 +913,17 @@ export async function registerRoutes(
         console.error("Error linking Discord account:", error);
         res.redirect("/?error=link_failed");
       }
-    }
+    },
   );
 
   app.post("/api/discord/unlink", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      await storage.updateUser(userId, { 
-        discordId: null, 
-        discordUsername: null, 
+      await storage.updateUser(userId, {
+        discordId: null,
+        discordUsername: null,
         discordAvatar: null,
-        discordLinkedAt: null
+        discordLinkedAt: null,
       });
       res.json({ message: "Discord unlinked" });
     } catch (error) {
@@ -830,20 +934,20 @@ export async function registerRoutes(
 
   // Admin: Manual rank assignment (for staff roles only)
   const STAFF_RANKS = [
-    'company_director',
-    'leadership_council', 
-    'operations_manager',
-    'team_member',
-    'rs_trust_safety_director',
-    'administrator',
-    'senior_administrator',
-    'moderator',
-    'trial_moderator',
-    'community_moderator',
-    'community_senior_moderator',
-    'community_developer',
-    'customer_relations',
-    'rs_volunteer_staff'
+    "company_director",
+    "leadership_council",
+    "operations_manager",
+    "team_member",
+    "rs_trust_safety_director",
+    "administrator",
+    "senior_administrator",
+    "moderator",
+    "trial_moderator",
+    "community_moderator",
+    "community_senior_moderator",
+    "community_developer",
+    "customer_relations",
+    "rs_volunteer_staff",
   ];
 
   // TODO: Replace with actual admin check - for now requires ADMIN_USER_ID env var
@@ -851,21 +955,23 @@ export async function registerRoutes(
     const adminId = (process.env.ADMIN_USER_ID || "").trim();
     const trimmedUserId = (userId || "").trim();
     const result = trimmedUserId === adminId;
-    console.log(`🔐 Admin check: userId="${trimmedUserId}" vs ADMIN_USER_ID="${adminId}" => ${result}`);
+    console.log(
+      `🔐 Admin check: userId="${trimmedUserId}" vs ADMIN_USER_ID="${adminId}" => ${result}`,
+    );
     return result;
   }
 
   app.get("/api/admin/users", requireAuth, async (req, res) => {
     try {
       const adminId = (req.user as any).id;
-      
+
       // Verify admin access
       if (!isAdmin(adminId)) {
         return res.status(403).json({ message: "Only admins can access this" });
       }
 
       const users = await storage.getAllUsers();
-      const sanitizedUsers = users.map(user => ({
+      const sanitizedUsers = users.map((user) => ({
         id: user.id,
         username: user.username,
         email: user.email,
@@ -873,7 +979,7 @@ export async function registerRoutes(
         vipTier: user.vipTier,
         createdAt: user.createdAt,
       }));
-      
+
       res.json(sanitizedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -885,7 +991,9 @@ export async function registerRoutes(
     try {
       const adminId = (req.user as any).id;
       if (!isAdmin(adminId)) {
-        return res.status(403).json({ message: "Only admins can delete users" });
+        return res
+          .status(403)
+          .json({ message: "Only admins can delete users" });
       }
 
       const targetId = req.params.id;
@@ -893,9 +1001,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Cannot delete yourself" });
       }
 
-      await storage.updateUser(targetId, { 
-        username: `[deleted-${Date.now()}]`, 
-        email: null 
+      await storage.updateUser(targetId, {
+        username: `[deleted-${Date.now()}]`,
+        email: null,
       });
 
       res.json({ message: "User deleted successfully" });
@@ -909,20 +1017,26 @@ export async function registerRoutes(
     try {
       const adminId = (req.user as any).id;
       console.log(`🔐 Rank assignment request from admin: ${adminId}`);
-      
+
       // Verify admin access
       if (!isAdmin(adminId)) {
-        console.log(`❌ Rank assignment denied - user ${adminId} is not admin (expected ${process.env.ADMIN_USER_ID})`);
-        return res.status(403).json({ message: "Only admins can assign ranks" });
+        console.log(
+          `❌ Rank assignment denied - user ${adminId} is not admin (expected ${process.env.ADMIN_USER_ID})`,
+        );
+        return res
+          .status(403)
+          .json({ message: "Only admins can assign ranks" });
       }
 
       const { userId, rank } = req.body;
       console.log(`📝 Assigning rank "${rank}" to user ${userId}`);
 
       // Validate rank is a staff rank or member/none
-      const validRanks = ['member', 'none', ...STAFF_RANKS];
+      const validRanks = ["member", "none", ...STAFF_RANKS];
       if (!validRanks.includes(rank)) {
-        console.log(`❌ Invalid rank: ${rank}. Valid ranks: ${validRanks.join(', ')}`);
+        console.log(
+          `❌ Invalid rank: ${rank}. Valid ranks: ${validRanks.join(", ")}`,
+        );
         return res.status(400).json({ message: "Invalid rank", validRanks });
       }
 
@@ -934,14 +1048,18 @@ export async function registerRoutes(
 
       // Update rank
       const updatedUser = await storage.updateUser(userId, { userRank: rank });
-      console.log(`✅ Rank successfully updated for ${targetUser.username}: ${rank}`);
-      res.json({ 
+      console.log(
+        `✅ Rank successfully updated for ${targetUser.username}: ${rank}`,
+      );
+      res.json({
         message: `User rank updated to ${rank}`,
-        user: updatedUser 
+        user: updatedUser,
       });
     } catch (error) {
       console.error("❌ Error assigning rank:", error);
-      res.status(500).json({ message: `Failed to assign rank: ${(error as any).message}` });
+      res
+        .status(500)
+        .json({ message: `Failed to assign rank: ${(error as any).message}` });
     }
   });
 
@@ -949,9 +1067,9 @@ export async function registerRoutes(
   app.post("/api/roblox/verify", requireAuth, async (req, res) => {
     try {
       const { username } = req.body;
-      res.json({ 
+      res.json({
         message: "Roblox verification would be initiated here",
-        username
+        username,
       });
     } catch (error) {
       console.error("Error verifying Roblox:", error);
@@ -962,11 +1080,11 @@ export async function registerRoutes(
   app.post("/api/roblox/unlink", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      await storage.updateUser(userId, { 
-        robloxId: null, 
-        robloxUsername: null, 
+      await storage.updateUser(userId, {
+        robloxId: null,
+        robloxUsername: null,
         robloxDisplayName: null,
-        robloxLinkedAt: null
+        robloxLinkedAt: null,
       });
       res.json({ message: "Roblox unlinked" });
     } catch (error) {
@@ -998,28 +1116,30 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to fetch announcement" });
     }
   });
-  
+
   app.post("/api/admin/announcements", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
-        'rs_trust_safety_director',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { title, content, type, details, isPublished } = req.body;
       const announcement = await storage.createAnnouncement({
         title,
         content,
         type,
         details: JSON.stringify(details || []),
-        isPublished
+        isPublished,
       });
       res.json(announcement);
     } catch (error) {
@@ -1032,23 +1152,25 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'rs_trust_safety_director',
-        'leadership_council',
-        'operations_manager',
-        'team_member',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "rs_trust_safety_director",
+          "leadership_council",
+          "operations_manager",
+          "team_member",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { title, content, type, details, isPublished } = req.body;
       const announcement = await storage.updateAnnouncement(req.params.id, {
         title,
         content,
         type,
         details: details ? JSON.stringify(details) : undefined,
-        isPublished
+        isPublished,
       });
       res.json(announcement);
     } catch (error) {
@@ -1061,16 +1183,18 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'rs_trust_safety_director',
-        'operations_manager',
-        'team_member',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "rs_trust_safety_director",
+          "operations_manager",
+          "team_member",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
+
       await storage.deleteAnnouncement(req.params.id);
       res.json({ message: "Announcement deleted" });
     } catch (error) {
@@ -1095,8 +1219,19 @@ export async function registerRoutes(
   app.get("/api/staff-directory", async (req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
-      const staffUsers = allUsers.filter(u => 
-        ['administrator', 'senior_administrator', 'rs_trust_safety_director', 'leadership_council', 'company_director', 'moderator', 'community_moderator', 'customer_relations', 'operations_manager', 'team_member'].includes(u.userRank)
+      const staffUsers = allUsers.filter((u) =>
+        [
+          "administrator",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+          "moderator",
+          "community_moderator",
+          "customer_relations",
+          "operations_manager",
+          "team_member",
+        ].includes(u.userRank),
       );
       res.json(staffUsers);
     } catch (error) {
@@ -1120,24 +1255,27 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'rs_trust_safety_director',
-        'operations_manager',
-        'team_member',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "rs_trust_safety_director",
+          "operations_manager",
+          "team_member",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { isOffline, offlineMessage } = req.body;
       const existingSettings = await storage.getSiteSettings();
-      
+
       const settings = await storage.updateSiteSettings({
         id: "main",
-        isOffline: isOffline !== undefined ? isOffline : existingSettings.isOffline,
+        isOffline:
+          isOffline !== undefined ? isOffline : existingSettings.isOffline,
         offlineMessage: offlineMessage || existingSettings.offlineMessage,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
       res.json(settings);
     } catch (error) {
@@ -1151,20 +1289,23 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'customer_relations',
-        'operations_manager',
-        'team_member',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "customer_relations",
+          "operations_manager",
+          "team_member",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { targetUsername, vipTier } = req.body;
       const targetUser = await storage.getUserByUsername(targetUsername);
-      if (!targetUser) return res.status(404).json({ message: "User not found" });
-      
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
+
       const updated = await storage.updateUser(targetUser.id, { vipTier });
       res.json({ message: `Subscription set to ${vipTier}`, user: updated });
     } catch (error) {
@@ -1178,25 +1319,28 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAllowed = user?.userRank && [
-        'customer_relations',
-        'operations_manager',
-        'team_member',
-        'leadership_council',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAllowed =
+        user?.userRank &&
+        [
+          "customer_relations",
+          "operations_manager",
+          "team_member",
+          "leadership_council",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAllowed) return res.status(403).json({ message: "Unauthorized" });
-      
+
       const { username, email } = req.body;
       const existingUser = await storage.getUserByUsername(username);
-      if (existingUser) return res.status(400).json({ message: "Username already taken" });
-      
+      if (existingUser)
+        return res.status(400).json({ message: "Username already taken" });
+
       const newUser = await storage.upsertUser({
         username,
         email,
-        userRank: 'member',
-        vipTier: 'none'
+        userRank: "member",
+        vipTier: "none",
       });
       res.json({ message: "Account created successfully", user: newUser });
     } catch (error) {
@@ -1210,24 +1354,30 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const isAdmin = user?.userRank && [
-        'administrator',
-        'senior_administrator',
-        'customer_relations',
-        'leadership_council',
-        'operations_manager',
-        'team_member',
-        'company_director'
-      ].includes(user.userRank);
-      
+      const isAdmin =
+        user?.userRank &&
+        [
+          "administrator",
+          "senior_administrator",
+          "customer_relations",
+          "leadership_council",
+          "operations_manager",
+          "team_member",
+          "company_director",
+        ].includes(user.userRank);
+
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
-      
-      const query = req.query.q as string || "";
+
+      const query = (req.query.q as string) || "";
       const allUsers = await storage.getAllUsers();
       const filtered = allUsers
-        .filter(u => u.username?.toLowerCase().includes(query.toLowerCase()) || u.email?.toLowerCase().includes(query.toLowerCase()))
+        .filter(
+          (u) =>
+            u.username?.toLowerCase().includes(query.toLowerCase()) ||
+            u.email?.toLowerCase().includes(query.toLowerCase()),
+        )
         .slice(0, 20);
-      
+
       res.json(filtered);
     } catch (error) {
       console.error("Error searching users:", error);
@@ -1239,8 +1389,19 @@ export async function registerRoutes(
   app.get("/api/staff-directory", async (req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
-      const staffUsers = allUsers.filter(u => 
-        ['administrator', 'operations_manager', 'team_member', 'senior_administrator', 'rs_trust_safety_director', 'leadership_council', 'company_director', 'moderator', 'community_moderator', 'customer_relations'].includes(u.userRank)
+      const staffUsers = allUsers.filter((u) =>
+        [
+          "administrator",
+          "operations_manager",
+          "team_member",
+          "senior_administrator",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+          "moderator",
+          "community_moderator",
+          "customer_relations",
+        ].includes(u.userRank),
       );
       res.json(staffUsers);
     } catch (error) {
@@ -1248,30 +1409,17 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to fetch staff directory" });
     }
   });
-  
+
   // Payments: Submit VIP Payment (Auto-charged via Stripe)
   app.post("/api/payments/submit", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUser(userId);
-      const { vipTier, cardNumber, cardExpiry, cardCvc, cardLast4, cardBrand, billingName, billingEmail, billingAddress, billingCity, billingState, billingZip, billingCountry } = req.body;
-      
-      const tierPrices: Record<string, number> = {
-        bronze: 1099,
-        sapphire: 2099,
-        diamond: 3465,
-        founders: 4599
-      };
-      
-      const amount = tierPrices[vipTier];
-      if (!amount) return res.status(400).json({ message: "Invalid VIP tier" });
-      
-      // Create payment record with processing status
-      const payment = await storage.createPayment({
-        userId,
+      const {
         vipTier,
-        amount,
-        status: 'processing',
+        cardNumber,
+        cardExpiry,
+        cardCvc,
         cardLast4,
         cardBrand,
         billingName,
@@ -1280,25 +1428,58 @@ export async function registerRoutes(
         billingCity,
         billingState,
         billingZip,
-        billingCountry
+        billingCountry,
+      } = req.body;
+
+      const tierPrices: Record<string, number> = {
+        bronze: 1099,
+        sapphire: 2099,
+        diamond: 3465,
+        founders: 4599,
+      };
+
+      const amount = tierPrices[vipTier];
+      if (!amount) return res.status(400).json({ message: "Invalid VIP tier" });
+
+      // Create payment record with processing status
+      const payment = await storage.createPayment({
+        userId,
+        vipTier,
+        amount,
+        status: "processing",
+        cardLast4,
+        cardBrand,
+        billingName,
+        billingEmail,
+        billingAddress,
+        billingCity,
+        billingState,
+        billingZip,
+        billingCountry,
       });
-      
+
       // Process payment (card data stored in database for admin processing)
       try {
         // Mark as success and activate VIP immediately
-        await storage.updatePaymentStatus(payment.id, 'success');
+        await storage.updatePaymentStatus(payment.id, "success");
         await storage.updateUser(userId, { vipTier });
-        
-        res.json({ 
-          message: "Payment processed successfully! Your VIP tier is now active.",
+
+        res.json({
+          message:
+            "Payment processed successfully! Your VIP tier is now active.",
           payment,
-          success: true 
+          success: true,
         });
       } catch (chargeError) {
-        await storage.updatePaymentStatus(payment.id, 'failed', String(chargeError));
-        res.status(400).json({ 
-          message: "Payment failed. Please check your card details and try again.",
-          error: String(chargeError)
+        await storage.updatePaymentStatus(
+          payment.id,
+          "failed",
+          String(chargeError),
+        );
+        res.status(400).json({
+          message:
+            "Payment failed. Please check your card details and try again.",
+          error: String(chargeError),
         });
       }
     } catch (error) {
@@ -1323,14 +1504,19 @@ export async function registerRoutes(
   app.post("/api/support/contact", async (req, res) => {
     try {
       const { name, email, subject, message } = req.body;
-      
+
       if (!name || !email || !subject || !message) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-      
+
       // Store support ticket in database (or send email via Resend)
-      console.log("Support ticket received:", { name, email, subject, message });
-      
+      console.log("Support ticket received:", {
+        name,
+        email,
+        subject,
+        message,
+      });
+
       res.json({ message: "Your message has been sent to our support team" });
     } catch (error) {
       console.error("Error submitting support ticket:", error);

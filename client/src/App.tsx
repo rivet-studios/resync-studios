@@ -43,9 +43,21 @@ import AdminCP from "@/pages/admin-cp";
 
 // Full layout with sidebar (authenticated users)
 function AppLayout({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "3rem",
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/auth/logout", { method: "GET", credentials: "include" });
+      if (response.ok) {
+        setLocation("/login");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -55,7 +67,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col flex-1 overflow-hidden">
           <header className="flex items-center justify-between h-14 px-4 border-b shrink-0">
             <SidebarTrigger data-testid="button-sidebar-toggle" />
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleLogout}
+                data-testid="button-logout"
+                className="text-sm px-3 py-1 rounded hover:bg-muted transition-colors"
+              >
+                Logout
+              </button>
+              <ThemeToggle />
+            </div>
           </header>
           <main className="flex-1 overflow-auto p-4 sm:p-6">
             {children}
