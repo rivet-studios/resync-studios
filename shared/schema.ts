@@ -419,6 +419,27 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Manual Payments (VIP Subscriptions)
+export const payments = pgTable("payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  vipTier: varchar("vip_tier").notNull(), // bronze, sapphire, diamond, founders
+  amount: integer("amount").notNull(), // in cents
+  status: varchar("status").default('pending'), // pending, approved, rejected, completed
+  cardLast4: varchar("card_last_4"),
+  cardBrand: varchar("card_brand"), // visa, mastercard, amex, discover
+  billingName: varchar("billing_name"),
+  billingEmail: varchar("billing_email"),
+  billingAddress: text("billing_address"),
+  billingCity: varchar("billing_city"),
+  billingState: varchar("billing_state"),
+  billingZip: varchar("billing_zip"),
+  billingCountry: varchar("billing_country"),
+  adminNotes: text("admin_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   clan: one(clans, { fields: [users.clanId], references: [clans.id] }),
@@ -587,6 +608,12 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
   createdAt: true
 });
 
+export const insertPaymentSchema = createInsertSchema(payments).omit({ 
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -673,6 +700,9 @@ export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
 
 export type Project = typeof projects.$inferSelect;
 export type InsertProject = z.infer<typeof insertProjectSchema>;
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 
 // VIP tier configuration
 export const VIP_TIERS = {

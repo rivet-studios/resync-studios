@@ -1184,5 +1184,86 @@ export async function registerRoutes(
     }
   });
 
+  // Payments: Submit VIP Payment
+  app.post("/api/payments/submit", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { vipTier, cardLast4, cardBrand, billingName, billingEmail, billingAddress, billingCity, billingState, billingZip, billingCountry } = req.body;
+      
+      const tierPrices: Record<string, number> = {
+        bronze: 1299,
+        sapphire: 2999,
+        diamond: 4499,
+        founders: 12000
+      };
+      
+      const amount = tierPrices[vipTier];
+      if (!amount) return res.status(400).json({ message: "Invalid VIP tier" });
+      
+      const payment = await storage.createPayment({
+        userId,
+        vipTier,
+        amount,
+        status: 'pending',
+        cardLast4,
+        cardBrand,
+        billingName,
+        billingEmail,
+        billingAddress,
+        billingCity,
+        billingState,
+        billingZip,
+        billingCountry
+      });
+      
+      res.json({ message: "Payment submitted for review", payment });
+    } catch (error) {
+      console.error("Error submitting payment:", error);
+      res.status(500).json({ message: "Failed to submit payment" });
+    }
+  });
+
+  // Payments: Get User Payments
+  app.get("/api/payments/history", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const userPayments = await storage.getUserPayments(userId);
+      res.json(userPayments);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ message: "Failed to fetch payment history" });
+    }
+  });
+
+  // Admin: Update Payment Status
+  app.patch("/api/admin/payments/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      const isAdmin = user?.userRank && [
+        'administrator',
+        'senior_administrator',
+        'customer_relations',
+        'leadership_council',
+        'company_director'
+      ].includes(user.userRank);
+      
+      if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
+      
+      const { status, adminNotes } = req.body;
+      const payment = await storage.updatePaymentStatus(req.params.id, status, adminNotes);
+      
+      // If approved, update user's VIP tier
+      if (status === 'approved' && payment) {
+        await storage.updateUser(payment.userId, { vipTier: payment.vipTier });
+      }
+      
+      res.json({ message: "Payment updated", payment });
+    } catch (error) {
+      console.error("Error updating payment:", error);
+      res.status(500).json({ message: "Failed to update payment" });
+    }
+  });
+
   return httpServer;
 }

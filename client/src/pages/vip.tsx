@@ -1,9 +1,20 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { VipBadge } from "@/components/vip-badge";
+import { PaymentForm } from "@/components/payment-form";
 import { Link } from "wouter";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Crown,
   Gem,
@@ -16,6 +27,7 @@ import {
   Shield,
   Sparkles,
   ArrowRight,
+  Lock,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
 
@@ -242,14 +254,28 @@ export default function VIP() {
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  className="w-full"
-                  variant={isCurrentTier ? "outline" : "default"}
-                  disabled={!isCurrentTier}
-                  data-testid={`button-subscribe-${tier.id}`}
-                >
-                  {isCurrentTier ? 'Current Plan' : 'Coming Soon'}
-                </Button>
+                {isCurrentTier ? (
+                  <Button className="w-full" variant="outline" disabled>
+                    Current Plan
+                  </Button>
+                ) : (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="w-full" data-testid={`button-subscribe-${tier.id}`}>
+                        Subscribe Now
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Get {tier.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="bg-primary/5 rounded p-3 mb-4">
+                        <p className="text-sm font-medium">${tier.price}/month</p>
+                      </div>
+                      <PaymentForm tier={tier} onSuccess={() => window.location.reload()} />
+                    </DialogContent>
+                  </Dialog>
+                )}
               </CardContent>
             </Card>
           );

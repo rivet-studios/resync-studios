@@ -13,8 +13,9 @@ import {
   type ChatMessage, type InsertChatMessage,
   type Announcement, type InsertAnnouncement,
   type SiteSettings, type InsertSiteSettings,
+  type Payment, type InsertPayment,
   users, clans, lfgPosts, lfgParticipants, builds, buildVotes,
-  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens, announcements, siteSettings
+  forumCategories, forumThreads, forumReplies, chatMessages, magicLinkTokens, announcements, siteSettings, payments
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, or, ilike, lt } from "drizzle-orm";
@@ -256,6 +257,12 @@ export interface IStorage {
   // Site Settings
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings>;
+  
+  // Payments
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayment(id: string): Promise<Payment | undefined>;
+  getUserPayments(userId: string): Promise<Payment[]>;
+  updatePaymentStatus(id: string, status: string, adminNotes?: string): Promise<Payment | undefined>;
   
   // Stats
   getStats(): Promise<{ totalMembers: number; activeLfg: number; totalClans: number; totalBuilds: number }>;
@@ -604,6 +611,29 @@ export class DatabaseStorage implements IStorage {
       .where(eq(siteSettings.id, "main"))
       .returning();
     return settings;
+  }
+
+  // Payments
+  async createPayment(paymentData: InsertPayment): Promise<Payment> {
+    const [payment] = await db.insert(payments).values(paymentData).returning();
+    return payment;
+  }
+
+  async getPayment(id: string): Promise<Payment | undefined> {
+    const [payment] = await db.select().from(payments).where(eq(payments.id, id));
+    return payment;
+  }
+
+  async getUserPayments(userId: string): Promise<Payment[]> {
+    return db.select().from(payments).where(eq(payments.userId, userId)).orderBy(desc(payments.createdAt));
+  }
+
+  async updatePaymentStatus(id: string, status: string, adminNotes?: string): Promise<Payment | undefined> {
+    const [payment] = await db.update(payments)
+      .set({ status, adminNotes, updatedAt: new Date() })
+      .where(eq(payments.id, id))
+      .returning();
+    return payment;
   }
 
   // Stats
