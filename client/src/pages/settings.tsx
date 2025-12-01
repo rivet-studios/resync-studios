@@ -310,20 +310,23 @@ export default function Settings() {
                 <CardDescription>Choose your preferred color scheme</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <FormLabel className="mb-3">Theme Mode</FormLabel>
-                  <Select value={theme} onValueChange={setTheme}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
-                      <SelectItem value="system">System</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button>Save Appearance</Button>
+                <FormLabel>Theme Mode</FormLabel>
+                <Select value={theme} onValueChange={(value) => {
+                  setTheme(value);
+                  localStorage.setItem("react-studios-theme", value);
+                }}>
+                  <SelectTrigger className="w-full sm:w-64">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Your theme preference is saved locally.
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -481,9 +484,14 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle>Billing Address</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <p className="text-muted-foreground">No billing information on file</p>
-                <Button className="mt-4">Add Billing Address</Button>
+                <Button 
+                  onClick={() => toast({ title: "Feature coming soon", description: "Billing address management will be available soon." })}
+                  data-testid="button-add-billing"
+                >
+                  Add Billing Address
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -501,9 +509,14 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <p className="text-muted-foreground">No payment methods on file</p>
-                <Button className="mt-4">Add Payment Method</Button>
+                <Button 
+                  onClick={() => toast({ title: "Feature coming soon", description: "Payment method management will be available soon." })}
+                  data-testid="button-add-payment"
+                >
+                  Add Payment Method
+                </Button>
               </CardContent>
             </Card>
           </div>

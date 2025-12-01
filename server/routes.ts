@@ -646,6 +646,15 @@ export async function registerRoutes(
     });
   });
 
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
   // Discord linking routes
   app.post("/api/discord/link", requireAuth, async (req, res) => {
     try {
@@ -1200,19 +1209,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting announcement:", error);
       res.status(500).json({ message: "Failed to delete announcement" });
-    }
-  });
-
-  app.get("/api/announcements/:id", async (req, res) => {
-    try {
-      const announcement = await storage.getAnnouncement(req.params.id);
-      if (!announcement) {
-        return res.status(404).json({ message: "Announcement not found" });
-      }
-      res.json(announcement);
-    } catch (error) {
-      console.error("Error fetching announcement:", error);
-      res.status(500).json({ message: "Failed to fetch announcement" });
     }
   });
 
