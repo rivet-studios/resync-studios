@@ -1,0 +1,72 @@
+==> Detected service running on port 5000
+     ==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+     ==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.cjs
+🔐 Discord OAuth Callback URL: https://resync-studios.onrender.com/auth/discord/callback
+✅ Discord OAuth configured with Client ID: 14286445...
+🔐 ADMIN_USER_ID at startup: 192748ea-5fff-4a28-97eb-d54437658b5b
+✅ Session store initialized with PostgreSQL
+🗄️ Initializing database schema...
+✅ Database schema initialized successfully
+✅ Discord bot logged in as resyncstudios.com#8667
+📂 Forum categories retrieved: 5 categories
+🔄 Starting Invision forum migration...
+👥 Fetching all Invision users...
+📍 CWD: /opt/render/project/src
+📍 Index.html path: /opt/render/project/src/dist/public/index.html
+📍 Index.html exists: true
+✅ PRODUCTION MODE: Serving from dist/public
+2:13:14 AM [express] serving on port 5000
+📌 User already exists: cxiqlne
+✅ Created user: admin
+✅ Created user: Reni
+     ==> Your service is live 🎉
+     ==> 
+     ==> ///////////////////////////////////////////////////////////
+     ==> 
+     ==> Available at your primary URL https://resync-studios.onrender.com
+     ==> 
+     ==> ///////////////////////////////////////////////////////////
+✅ Created user: silentdirective.
+✅ Created user: Ice
+✅ Created user: E_SD010015
+✅ Created user: Iceberg1038
+✅ Created user: maybeknockz
+✅ Created user: cinder
+✅ Created user: acerxtro
+✅ Created user: d1vvt
+✅ Created user: Ash
+📌 User already exists: ArielOperations
+✅ Created user: XUSeriouslyYT
+✅ User import complete! Imported 12 new users from Invision
+📂 Fetching Invision categories...
+📂 Forum categories retrieved: 5 categories
+✅ Created category: Announcements
+✅ Created category: Accepted
+✅ Created category: Rules &amp; Information
+✅ Created category: Discussions
+✅ Created category: Rejected
+✅ Created category: Community
+✅ Created category: Information &amp; Rules
+✅ Created category: Questions
+✅ Created category: Updates
+✅ Created category: Under Review
+✅ Created category: Suggestions
+✅ Created category: Feedback
+✅ Created category: Donator Reviews
+✅ Created category: Staff Reviews
+✅ Created category: Reviews of Community Staff Members
+✅ Created category: Moderation
+✅ Created category: Staff Applications
+✅ Created category: Your Submitted Staff Applications
+✅ Created category: Blacklisted
+✅ Created category: Game Moderation Appeals
+✅ Created category: Game Ban Appeals
+✅ Created category: Accepted
+✅ Created category: Discord Moderation Appeals
+✅ Created category: Accepted
+✅ Created category: Denied
+📝 Fetching Invision topics...
+✅ Invision migration complete! Imported 12 users and 0 threads
