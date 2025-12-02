@@ -59,6 +59,7 @@ const ADMIN_RANKS = [
 
 const RANK_OPTIONS = [
   { value: "member", label: "Member" },
+  { value: "team_member", label: "Team Member" },
   { value: "moderator", label: "Moderator" },
   { value: "community_moderator", label: "Community Moderator" },
   { value: "administrator", label: "Administrator" },
