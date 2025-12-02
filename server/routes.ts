@@ -15,7 +15,10 @@ import { z } from "zod";
 
 // Auth middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (!((req as any).isAuthenticated && (req as any).isAuthenticated()) || !req.user) {
+  if (
+    !((req as any).isAuthenticated && (req as any).isAuthenticated()) ||
+    !req.user
+  ) {
     return res.status(401).json({ message: "Unauthorized" });
   }
   next();
@@ -31,13 +34,43 @@ export async function registerRoutes(
     if (existingCategories.length === 0) {
       console.log("📂 Creating default forum categories...");
       const defaultCategories = [
-        { name: "General Discussion", description: "General chat and discussions", icon: "MessageSquare", color: "#667eea", order: 0 },
-        { name: "Game Updates", description: "News and updates about games", icon: "Rocket", color: "#764ba2", order: 1 },
-        { name: "Community Showcase", description: "Share your creations and achievements", icon: "Star", color: "#f093fb", order: 2 },
-        { name: "Support & Questions", description: "Get help and ask questions", icon: "HelpCircle", color: "#4facfe", order: 3 },
-        { name: "Off-Topic", description: "Random conversations and fun", icon: "Hash", color: "#43e97b", order: 4 },
+        {
+          name: "General Discussion",
+          description: "General chat and discussions",
+          icon: "MessageSquare",
+          color: "#667eea",
+          order: 0,
+        },
+        {
+          name: "Game Updates",
+          description: "News and updates about games",
+          icon: "Rocket",
+          color: "#764ba2",
+          order: 1,
+        },
+        {
+          name: "Community Showcase",
+          description: "Share your creations and achievements",
+          icon: "Star",
+          color: "#f093fb",
+          order: 2,
+        },
+        {
+          name: "Support & Questions",
+          description: "Get help and ask questions",
+          icon: "HelpCircle",
+          color: "#4facfe",
+          order: 3,
+        },
+        {
+          name: "Off-Topic",
+          description: "Random conversations and fun",
+          icon: "Hash",
+          color: "#43e97b",
+          order: 4,
+        },
       ];
-      
+
       for (const category of defaultCategories) {
         await storage.createForumCategory(category as any);
       }
@@ -57,7 +90,7 @@ export async function registerRoutes(
       "sessionID:",
       req.sessionID,
     );
-    if (!((req as any).isAuthenticated?.()) || !req.user) {
+    if (!(req as any).isAuthenticated?.() || !req.user) {
       return res
         .status(401)
         .json({ message: "401: Not authenticated. Unauthorized." });
@@ -130,7 +163,9 @@ export async function registerRoutes(
       const { password } = req.body;
 
       if (!password || password.length < 6) {
-        return res.status(400).json({ message: "Password must be at least 6 characters" });
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters" });
       }
 
       const user = await storage.getUser(userId);
@@ -139,12 +174,20 @@ export async function registerRoutes(
       }
 
       // Only allow setting password for users with @sharkyinteractive.com or @metrointeractive.com emails
-      if (!user.email || (!user.email.endsWith("@sharkyinteractive.com") && !user.email.endsWith("@metrointeractive.com"))) {
-        return res.status(403).json({ message: "Password setting not allowed for this account" });
+      if (
+        !user.email ||
+        (!user.email.endsWith("@sharkyinteractive.com") &&
+          !user.email.endsWith("@metrointeractive.com"))
+      ) {
+        return res
+          .status(403)
+          .json({ message: "Password setting not allowed for this account" });
       }
 
       const hashedPassword = hashPassword(password);
-      const updatedUser = await storage.updateUser(userId, { password: hashedPassword });
+      const updatedUser = await storage.updateUser(userId, {
+        password: hashedPassword,
+      });
 
       console.log(`✅ Password set for user: ${user.username}`);
       res.json({ message: "Password set successfully", user: updatedUser });
@@ -431,10 +474,10 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
 
-      if (user.vipTier !== "diamond" && user.vipTier !== "founders") {
+      if (user.vipTier !== "Bronze" && user.vipTier !== "founders") {
         return res
           .status(403)
-          .json({ message: "Diamond VIP or higher required to create clans" });
+          .json({ message: "Bronze VIP or higher required to create clans" });
       }
 
       const data = insertClanSchema.parse({
@@ -1035,6 +1078,51 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/set-user-password", requireAuth, async (req, res) => {
+    try {
+      const adminId = (req.user as any).id;
+      const { userId, password } = req.body;
+
+      if (!password || password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters" });
+      }
+
+      const admin = await storage.getUser(adminId);
+      const isAdminUser =
+        admin?.userRank &&
+        [
+          "operations_manager",
+          "rs_trust_safety_director",
+          "leadership_council",
+          "company_director",
+        ].includes(admin.userRank);
+
+      if (!isAdminUser) {
+        return res
+          .status(403)
+          .json({ message: "Only admins can set user passwords" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const hashedPassword = hashPassword(password);
+      const updatedUser = await storage.updateUser(userId, {
+        password: hashedPassword,
+      });
+
+      console.log(`✅ Admin set password for user: ${user.username}`);
+      res.json({ message: "Password set successfully", user: updatedUser });
+    } catch (error) {
+      console.error("Error setting user password:", error);
+      res.status(500).json({ message: "Failed to set password" });
+    }
+  });
+
   // Admin: Manual rank assignment (for staff roles only)
   const STAFF_RANKS = [
     "company_director",
@@ -1227,8 +1315,8 @@ export async function registerRoutes(
       const isAdmin =
         user?.userRank &&
         [
-          "administrator",
-          "senior_administrator",
+          "team_member",
+          "operations_manager",
           "rs_trust_safety_director",
           "leadership_council",
           "company_director",
@@ -1309,19 +1397,21 @@ export async function registerRoutes(
   app.get("/api/staff-directory", async (req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
-      const staffUsers = allUsers.filter((u) =>
-        u.userRank && [
-          "administrator",
-          "senior_administrator",
-          "rs_trust_safety_director",
-          "leadership_council",
-          "company_director",
-          "moderator",
-          "community_moderator",
-          "customer_relations",
-          "operations_manager",
-          "team_member",
-        ].includes(u.userRank),
+      const staffUsers = allUsers.filter(
+        (u) =>
+          u.userRank &&
+          [
+            "administrator",
+            "senior_administrator",
+            "rs_trust_safety_director",
+            "leadership_council",
+            "company_director",
+            "moderator",
+            "community_moderator",
+            "customer_relations",
+            "operations_manager",
+            "team_member",
+          ].includes(u.userRank),
       );
       res.json(staffUsers);
     } catch (error) {
@@ -1348,9 +1438,7 @@ export async function registerRoutes(
       const isAdmin =
         user?.userRank &&
         [
-          "rs_trust_safety_director",
           "operations_manager",
-          "team_member",
           "leadership_council",
           "company_director",
         ].includes(user.userRank);
@@ -1602,11 +1690,47 @@ export async function registerRoutes(
   app.get("/api/subscriptions/tiers", async (req, res) => {
     res.json({
       tiers: [
-        { id: "bronze", name: "Bronze", price: 1399, priceText: "$13.99/month", benefits: ["Custom profile badge", "Priority support"] },
-        { id: "sapphire", name: "Sapphire", price: 2999, priceText: "$29.99/month", benefits: ["All Bronze benefits", "Exclusive cosmetics", "Priority matchmaking"] },
-        { id: "diamond", name: "Diamond", price: 4499, priceText: "$44.99/month", benefits: ["All Sapphire benefits", "VIP cosmetics", "Ad-free experience"] },
-        { id: "founders", name: "Founders", price: 6499, priceText: "$64.99/month", benefits: ["All Diamond benefits", "Founder title", "Lifetime status guarantee"] },
-      ]
+        {
+          id: "bronze",
+          name: "Bronze",
+          price: 1399,
+          priceText: "$13.99/month",
+          benefits: ["Custom profile badge", "Priority support"],
+        },
+        {
+          id: "sapphire",
+          name: "Sapphire",
+          price: 2999,
+          priceText: "$29.99/month",
+          benefits: [
+            "All Bronze benefits",
+            "Exclusive cosmetics",
+            "Priority matchmaking",
+          ],
+        },
+        {
+          id: "diamond",
+          name: "Diamond",
+          price: 4499,
+          priceText: "$44.99/month",
+          benefits: [
+            "All Sapphire benefits",
+            "VIP cosmetics",
+            "Ad-free experience",
+          ],
+        },
+        {
+          id: "founders",
+          name: "Founders",
+          price: 6499,
+          priceText: "$64.99/month",
+          benefits: [
+            "All Diamond benefits",
+            "Founder title",
+            "Lifetime status guarantee",
+          ],
+        },
+      ],
     });
   });
 
@@ -1617,12 +1741,12 @@ export async function registerRoutes(
       const user = await storage.getUser(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
       const payments = await storage.getUserPayments(userId);
-      const activePayment = payments.find(p => p.status === "success");
+      const activePayment = payments.find((p) => p.status === "success");
       res.json({
         currentTier: user.vipTier,
         hasActiveSubscription: user.vipTier !== "none",
         lastPayment: activePayment,
-        allPayments: payments
+        allPayments: payments,
       });
     } catch (error) {
       console.error("Error fetching subscription status:", error);
@@ -1659,16 +1783,18 @@ export async function registerRoutes(
     const INVISION_URL = "https://e335519.invisionservice.com/api";
     const API_KEY = "fdbe9fd2d0834d0870a79b5c99bbdabf";
     const userMap = new Map(); // Map Invision user IDs to RESYNC user IDs
-    
+
     try {
       console.log("🔄 Starting Invision forum migration...");
-      
+
       // STEP 1: Fetch and import ALL users
       console.log("👥 Fetching all Invision users...");
-      const usersRes = await fetch(`${INVISION_URL}/core/members?key=${API_KEY}&limit=10000`);
+      const usersRes = await fetch(
+        `${INVISION_URL}/core/members?key=${API_KEY}&limit=10000`,
+      );
       const usersData = await usersRes.json();
       const invisionUsers = usersData.results || [];
-      
+
       let userCount = 0;
       for (const invUser of invisionUsers) {
         try {
@@ -1680,19 +1806,25 @@ export async function registerRoutes(
           if (!existingUser && invUser.name) {
             existingUser = await storage.getUserByUsername(invUser.name);
           }
-          
+
           if (!existingUser) {
             // Create new user with Invision data
             const newUser = await storage.upsertUser({
               username: invUser.name || `user_${invUser.id}`,
               email: invUser.email || `user_${invUser.id}@invision.local`,
-              firstName: invUser.name?.split(' ')[0] || invUser.name,
-              lastName: invUser.name?.split(' ').slice(1).join(' ') || "",
+              firstName: invUser.name?.split(" ")[0] || invUser.name,
+              lastName: invUser.name?.split(" ").slice(1).join(" ") || "",
               profileImageUrl: invUser.photo?.url || undefined,
               bio: invUser.about || undefined,
               reputation: invUser.reputation || 0,
               totalPosts: invUser.posts || 0,
-              createdAt: invUser.joined ? new Date(typeof invUser.joined === 'number' ? invUser.joined * 1000 : invUser.joined) : new Date(),
+              createdAt: invUser.joined
+                ? new Date(
+                    typeof invUser.joined === "number"
+                      ? invUser.joined * 1000
+                      : invUser.joined,
+                  )
+                : new Date(),
             } as any);
             userMap.set(invUser.id, newUser.id);
             userCount++;
@@ -1706,20 +1838,24 @@ export async function registerRoutes(
           console.error(`❌ Error creating user ${invUser.name}:`, userError);
         }
       }
-      console.log(`✅ User import complete! Imported ${userCount} new users from Invision`);
-      
+      console.log(
+        `✅ User import complete! Imported ${userCount} new users from Invision`,
+      );
+
       // STEP 2: Fetch and create forum categories
       console.log("📂 Fetching Invision categories...");
-      const categoriesRes = await fetch(`${INVISION_URL}/forums/forums?key=${API_KEY}`);
+      const categoriesRes = await fetch(
+        `${INVISION_URL}/forums/forums?key=${API_KEY}`,
+      );
       const categoriesData = await categoriesRes.json();
       const invisionCategories = categoriesData.results || [];
-      
+
       const categoryMap = new Map();
       const existing = await storage.getForumCategories();
-      
+
       for (const invCat of invisionCategories) {
-        const alreadyExists = existing.some(c => c.name === invCat.name);
-        
+        const alreadyExists = existing.some((c) => c.name === invCat.name);
+
         if (!alreadyExists) {
           try {
             const created = await storage.createForumCategory({
@@ -1732,37 +1868,43 @@ export async function registerRoutes(
             categoryMap.set(invCat.id, created.id);
             console.log(`✅ Created category: ${invCat.name}`);
           } catch (catError) {
-            console.error(`❌ Error creating category ${invCat.name}:`, catError);
+            console.error(
+              `❌ Error creating category ${invCat.name}:`,
+              catError,
+            );
           }
         } else {
-          const cat = existing.find(c => c.name === invCat.name);
+          const cat = existing.find((c) => c.name === invCat.name);
           if (cat) categoryMap.set(invCat.id, cat.id);
         }
       }
-      
+
       // STEP 3: Fetch topics/threads and create with mapped user IDs
       console.log("📝 Fetching Invision topics...");
-      const topicsRes = await fetch(`${INVISION_URL}/forums/topics?key=${API_KEY}&limit=10000`);
+      const topicsRes = await fetch(
+        `${INVISION_URL}/forums/topics?key=${API_KEY}&limit=10000`,
+      );
       const topicsData = await topicsRes.json();
       const invisionTopics = topicsData.results || [];
-      
+
       let threadCount = 0;
       for (const topic of invisionTopics) {
         try {
-          const categoryId = categoryMap.get(topic.forum) || categoryMap.values().next().value;
+          const categoryId =
+            categoryMap.get(topic.forum) || categoryMap.values().next().value;
           if (!categoryId) {
             console.warn(`⚠️ No category found for topic ${topic.id}`);
             continue;
           }
-          
+
           // Use mapped user ID if available
           let authorId = null;
           if (topic.author?.id && userMap.has(topic.author.id)) {
             authorId = userMap.get(topic.author.id);
           }
-          
+
           if (!authorId) continue;
-          
+
           const thread = await storage.createForumThread({
             categoryId,
             authorId,
@@ -1777,7 +1919,7 @@ export async function registerRoutes(
             updatedAt: new Date(topic.updated || topic.created),
           } as any);
           threadCount++;
-          
+
           // Create replies/posts using mapped user IDs
           if (topic.posts && topic.posts.length > 1) {
             for (const post of topic.posts.slice(1)) {
@@ -1786,7 +1928,7 @@ export async function registerRoutes(
                 if (post.author?.id && userMap.has(post.author.id)) {
                   postAuthorId = userMap.get(post.author.id);
                 }
-                
+
                 if (postAuthorId) {
                   await storage.createForumReply({
                     threadId: thread.id,
@@ -1798,7 +1940,10 @@ export async function registerRoutes(
                   } as any);
                 }
               } catch (replyError) {
-                console.error(`❌ Error creating reply for post ${post.id}:`, replyError);
+                console.error(
+                  `❌ Error creating reply for post ${post.id}:`,
+                  replyError,
+                );
               }
             }
           }
@@ -1806,13 +1951,15 @@ export async function registerRoutes(
           console.error(`❌ Error creating thread ${topic.id}:`, threadError);
         }
       }
-      
-      console.log(`✅ Invision migration complete! Imported ${userCount} users and ${threadCount} threads`);
+
+      console.log(
+        `✅ Invision migration complete! Imported ${userCount} users and ${threadCount} threads`,
+      );
     } catch (error) {
       console.error("❌ Invision migration failed:", error);
     }
   }
-  
+
   // Run migration once at startup if not already done
   const migrationLock = new Map();
   if (!migrationLock.has("invision")) {
