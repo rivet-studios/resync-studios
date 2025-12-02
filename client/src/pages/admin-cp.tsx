@@ -121,6 +121,8 @@ export default function AdminCP() {
   const [selectedVip, setSelectedVip] = useState("none");
   const [offlineMessage, setOfflineMessage] = useState("");
   const [isOffline, setIsOffline] = useState(false);
+  const [userToSetPassword, setUserToSetPassword] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState("");
 
   const isAdmin = user?.userRank && ADMIN_RANKS.includes(user.userRank);
 
@@ -209,6 +211,28 @@ export default function AdminCP() {
     onSuccess: () => {
       toast({ title: "Success", description: "Deleted" });
       queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+    },
+  });
+
+  const setPasswordMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/admin/set-user-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userToSetPassword.id, password: newPassword }),
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Password set successfully" });
+      setUserToSetPassword(null);
+      setNewPassword("");
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: (error as Error).message || "Failed to set password", variant: "destructive" });
     },
   });
 
@@ -380,6 +404,38 @@ export default function AdminCP() {
                           <Badge variant="outline">{u.vipTier}</Badge>
                         </div>
                       </div>
+                      <Dialog open={userToSetPassword?.id === u.id} onOpenChange={(open) => {
+                        if (!open) setUserToSetPassword(null);
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" onClick={() => setUserToSetPassword(u)}>
+                            Set Password
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Set Password for {u.username}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-sm font-medium">New Password</label>
+                              <Input 
+                                type="password" 
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                placeholder="Minimum 6 characters"
+                              />
+                            </div>
+                            <Button 
+                              onClick={() => setPasswordMutation.mutate()}
+                              disabled={setPasswordMutation.isPending || newPassword.length < 6}
+                              className="w-full"
+                            >
+                              {setPasswordMutation.isPending ? "Setting..." : "Set Password"}
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </CardContent>
                 </Card>
