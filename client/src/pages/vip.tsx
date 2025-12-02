@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -33,101 +39,104 @@ import { SiDiscord, SiRoblox } from "react-icons/si";
 
 const tiers = [
   {
-    id: 'bronze',
-    name: 'Bronze VIP',
+    id: "bronze",
+    name: "Bronze VIP",
     price: 12.99,
     icon: Crown,
-    className: 'vip-bronze',
+    className: "vip-bronze",
     features: [
-      'Exclusive Discord Role & Privileges',
-      'Post Community Groups & Advertise',
-      'Priority HelpDesk Support',
-      'Priority Moderation Appeals',
-      'Priority Staff Applications',
-      'All Playtime Requirements Waived',
-      'XP Boost (20%) across all teams',
-      'Paychecks Boost (20%)',
-      'Save 20% on Vehicle Insurance',
-      'Save 20% on Vehicles',
-      'Higher Chem & Plant Sell Rates (20%)',
-      'ATM Fees Waived',
-    ],
-    popular: false,
-  },
-  {
-    id: 'sapphire',
-    name: 'Sapphire VIP',
-    price: 29.99,
-    icon: Gem,
-    className: 'vip-sapphire',
-    features: [
-      'Exclusive Discord Role & Privileges',
-      'Post Community Groups & Advertise',
-      'High Priority HelpDesk Support',
-      'High Priority Moderation Appeals',
-      'High Priority Staff Applications',
-      'All Playtime Requirements Waived',
-      'XP Boost (35%)',
-      'Paychecks Boost (30%)',
-      'Save 25% on Vehicle Insurance',
-      'Save 25% on Vehicles',
-      'Higher Chem & Plant Sell Rates (30%)',
-      'ATM Fees Waived',
-      'Exclusive Vehicles',
+      "Exclusive Discord Role & Privileges",
+      "Post Community Groups & Advertise",
+      "Priority HelpDesk Support",
+      "Priority Moderation Appeals",
+      "Priority Staff Applications",
+      "All Playtime Requirements Waived",
+      "XP Boost (20%) across all teams",
+      "Unlock CHP",
+      "Paychecks Boost (20%)",
+      "Save 20% on Vehicle Insurance",
+      "Save 20% on Vehicles",
+      "Higher Chem & Plant Sell Rates (20%)",
+      "ATM Fees Waived",
     ],
     popular: true,
   },
   {
-    id: 'diamond',
-    name: 'Diamond VIP',
+    id: "sapphire",
+    name: "Sapphire VIP",
+    price: 29.99,
+    icon: Gem,
+    className: "vip-sapphire",
+    features: [
+      "Exclusive Discord Role & Privileges",
+      "Post Community Groups & Advertise",
+      "High Priority HelpDesk Support",
+      "High Priority Moderation Appeals",
+      "High Priority Staff Applications",
+      "All Playtime Requirements Waived",
+      "XP Boost (35%)",
+      "Paychecks Boost (30%)",
+      "Unlock LAPD",
+      "Save 25% on Vehicle Insurance",
+      "Save 25% on Vehicles",
+      "Higher Chem & Plant Sell Rates (30%)",
+      "ATM Fees Waived",
+      "Exclusive Vehicles",
+    ],
+    popular: true,
+  },
+  {
+    id: "diamond",
+    name: "Diamond VIP",
     price: 44.99,
     icon: Diamond,
-    className: 'vip-diamond',
+    className: "vip-diamond",
     features: [
-      'Exclusive Discord Role & Privileges',
-      'Post Community Groups & Advertise',
-      'High Priority HelpDesk Support',
-      'High Priority Moderation Appeals',
-      'High Priority Staff Applications',
-      'Audi RS3 Given each Subscription Cycle',
-      'All Playtime Requirements Waived',
-      'XP Boost (45%)',
-      'Medical Bills 50% Off',
-      'No Wallet Limit',
-      'Paychecks Boost (40%)',
-      'Save 35% on Vehicle Insurance',
-      'Save 35% on Vehicles',
-      'Higher Chem & Plant Sell Rates (40%)',
-      'Perma-Knife on Civilian Team',
-      'ATM Fees Waived',
+      "Exclusive Discord Role & Privileges",
+      "Post Community Groups & Advertise",
+      "High Priority HelpDesk Support",
+      "High Priority Moderation Appeals",
+      "High Priority Staff Applications",
+      "Audi RS3 Given each Subscription Cycle",
+      "All Playtime Requirements Waived",
+      "Unlock USMS",
+      "XP Boost (45%)",
+      "Medical Bills 50% Off",
+      "No Wallet Limit",
+      "Paychecks Boost (40%)",
+      "Save 35% on Vehicle Insurance",
+      "Save 35% on Vehicles",
+      "Higher Chem & Plant Sell Rates (40%)",
+      "Perma-Knife on Civilian Team",
+      "ATM Fees Waived",
     ],
     popular: false,
   },
   {
-    id: 'founders',
-    name: 'Founders Edition',
-    price: 120.00,
+    id: "founders",
+    name: "Founders Edition",
+    price: 120.0,
     icon: Star,
-    className: 'vip-founders',
+    className: "vip-founders",
     features: [
-      'Exclusive Founders Discord Role',
-      'Post Community Groups & Advertise',
-      'Urgent Priority HelpDesk Support',
-      'Urgent Priority Moderation Appeals',
-      'Urgent Priority Staff Applications',
-      'Instant VBI Access & Arrest Authority',
-      'All Team-Queue & Team Count Bypass',
-      'All Playtime Requirements Waived',
-      'Hellcat Given each Subscription Cycle',
-      'XP Boost (55%)',
-      'Medical Bills 55% Off',
-      'No Wallet Limit',
-      'Paychecks Boost (55%)',
-      'Save 50% on Vehicle Insurance',
-      'Save 50% on Vehicles',
-      'Higher Chem & Plant Sell Rates (50%)',
-      'Perma-Glock on Civilian Team',
-      'ATM Fees Waived',
+      "Exclusive Founders Discord Role",
+      "Post Community Groups & Advertise",
+      "Urgent Priority HelpDesk Support",
+      "Urgent Priority Moderation Appeals",
+      "Urgent Priority Staff Applications",
+      "Instant FBI Access & Arrest Authority",
+      "All Team-Queue & Team Count Bypass",
+      "All Playtime Requirements Waived",
+      "Hellcat Given each Subscription Cycle",
+      "XP Boost (55%)",
+      "Medical Bills 55% Off",
+      "No Wallet Limit",
+      "Paychecks Boost (55%)",
+      "Save 50% on Vehicle Insurance",
+      "Save 50% on Vehicles",
+      "Higher Chem & Plant Sell Rates (50%)",
+      "Perma-Glock on Civilian Team",
+      "ATM Fees Waived",
     ],
     popular: false,
     limited: true,
@@ -137,7 +146,7 @@ const tiers = [
 export default function VIP() {
   const { user } = useAuth();
 
-  const currentTierIndex = tiers.findIndex(t => t.id === user?.vipTier);
+  const currentTierIndex = tiers.findIndex((t) => t.id === user?.vipTier);
 
   return (
     <div className="space-y-8">
@@ -151,13 +160,13 @@ export default function VIP() {
           Unlock Premium Features
         </h1>
         <p className="text-lg text-muted-foreground">
-          Upgrade your gaming experience with exclusive features, badges, and perks.
-          VIP members get automatic Discord role assignments!
+          Upgrade your gaming experience with exclusive features, badges, and
+          perks. VIP members get automatic Discord role assignments!
         </p>
       </div>
 
       {/* Current Status */}
-      {user?.vipTier && user.vipTier !== 'none' && (
+      {user?.vipTier && user.vipTier !== "none" && (
         <Card className="max-w-2xl mx-auto bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -179,7 +188,9 @@ export default function VIP() {
                 </div>
               </div>
               <Button variant="outline" asChild>
-                <Link href="/settings?tab=subscription">Manage Subscription</Link>
+                <Link href="/settings?tab=subscription">
+                  Manage Subscription
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -197,8 +208,8 @@ export default function VIP() {
               <div className="flex-1">
                 <h3 className="font-semibold">Link Your Discord Account</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Link your Discord account before purchasing VIP to receive automatic role assignment 
-                  in our Discord server.
+                  Link your Discord account before purchasing VIP to receive
+                  automatic role assignment in our Discord server.
                 </p>
               </div>
               <Button variant="outline" asChild>
@@ -220,23 +231,29 @@ export default function VIP() {
           const Icon = tier.icon;
 
           return (
-            <Card 
-              key={tier.id} 
-              className={`relative ${tier.popular ? 'border-primary ring-1 ring-primary' : ''}`}
+            <Card
+              key={tier.id}
+              className={`relative ${tier.popular ? "border-primary ring-1 ring-primary" : ""}`}
               data-testid={`card-vip-${tier.id}`}
             >
               {tier.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+                  <Badge className="bg-primary text-primary-foreground">
+                    Most Popular
+                  </Badge>
                 </div>
               )}
               {tier.limited && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-yellow-500 text-yellow-950">Limited Edition</Badge>
+                  <Badge className="bg-yellow-500 text-yellow-950">
+                    Limited Edition
+                  </Badge>
                 </div>
               )}
               <CardHeader className="text-center pb-2">
-                <div className={`w-16 h-16 mx-auto rounded-xl ${tier.className} flex items-center justify-center mb-4`}>
+                <div
+                  className={`w-16 h-16 mx-auto rounded-xl ${tier.className} flex items-center justify-center mb-4`}
+                >
                   <Icon className="w-8 h-8" />
                 </div>
                 <CardTitle>{tier.name}</CardTitle>
@@ -261,7 +278,10 @@ export default function VIP() {
                 ) : (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full" data-testid={`button-subscribe-${tier.id}`}>
+                      <Button
+                        className="w-full"
+                        data-testid={`button-subscribe-${tier.id}`}
+                      >
                         Subscribe Now
                       </Button>
                     </DialogTrigger>
@@ -270,9 +290,14 @@ export default function VIP() {
                         <DialogTitle>Get {tier.name}</DialogTitle>
                       </DialogHeader>
                       <div className="bg-primary/5 rounded p-3 mb-4">
-                        <p className="text-sm font-medium">${tier.price}/month</p>
+                        <p className="text-sm font-medium">
+                          ${tier.price}/month
+                        </p>
                       </div>
-                      <PaymentForm tier={tier} onSuccess={() => window.location.reload()} />
+                      <PaymentForm
+                        tier={tier}
+                        onSuccess={() => window.location.reload()}
+                      />
                     </DialogContent>
                   </Dialog>
                 )}
@@ -286,7 +311,9 @@ export default function VIP() {
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Why Go VIP?</CardTitle>
-          <CardDescription>Exclusive benefits for our most dedicated members</CardDescription>
+          <CardDescription>
+            Exclusive benefits for our most dedicated members
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -297,7 +324,8 @@ export default function VIP() {
               <div>
                 <h4 className="font-semibold">Auto Discord Roles</h4>
                 <p className="text-sm text-muted-foreground">
-                  Get your VIP role automatically assigned in our Discord server.
+                  Get your VIP role automatically assigned in our Discord
+                  server.
                 </p>
               </div>
             </div>
@@ -369,27 +397,36 @@ export default function VIP() {
           <div>
             <h4 className="font-semibold">How do I get my Discord role?</h4>
             <p className="text-sm text-muted-foreground mt-1">
-              Link your Discord account in Settings before or after purchasing VIP. 
-              Your role will be automatically assigned within minutes.
+              Link your Discord account in Settings before or after purchasing
+              VIP. Your role will be automatically assigned within minutes.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold">Can I upgrade or downgrade my plan?</h4>
+            <h4 className="font-semibold">
+              Can I upgrade or downgrade my plan?
+            </h4>
             <p className="text-sm text-muted-foreground mt-1">
-              Yes! You can change your plan at any time. Upgrades take effect immediately, 
-              and downgrades take effect at the end of your billing period.
+              Yes! You can change your plan at any time. Upgrades take effect
+              immediately, and downgrades take effect at the end of your billing
+              period.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold">When will VIP subscriptions be available?</h4>
+            <h4 className="font-semibold">
+              When will VIP subscriptions be available?
+            </h4>
             <p className="text-sm text-muted-foreground mt-1">
-              VIP subscriptions are currently in development. Check back soon for payment options!
+              VIP subscriptions are currently in development. Check back soon
+              for payment options!
             </p>
           </div>
           <div>
-            <h4 className="font-semibold">Is the Founders Edition really limited?</h4>
+            <h4 className="font-semibold">
+              Is the Founders Edition really limited?
+            </h4>
             <p className="text-sm text-muted-foreground mt-1">
-              Yes! Founders Edition is limited to early supporters. Once sold out, it will never be available again.
+              Yes! Founders Edition is limited to early supporters. Once sold
+              out, it will never be available again.
             </p>
           </div>
         </CardContent>

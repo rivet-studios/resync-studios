@@ -51,7 +51,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
       if (response.ok) {
         setLocation("/login");
       }
@@ -78,9 +81,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-4 sm:p-6">
-            {children}
-          </main>
+          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>
@@ -98,16 +99,18 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         <div className="flex gap-2">
           {!user ? (
             <>
-              <a href="/login" className="text-sm hover:underline">Login</a>
-              <a href="/signup" className="text-sm hover:underline">Sign Up</a>
+              <a href="/login" className="text-sm hover:underline">
+                Login
+              </a>
+              <a href="/signup" className="text-sm hover:underline">
+                Sign Up
+              </a>
             </>
           ) : null}
           <ThemeToggle />
         </div>
       </header>
-      <main className="flex-1 overflow-auto p-4 sm:p-6">
-        {children}
-      </main>
+      <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
     </div>
   );
 }
@@ -161,7 +164,7 @@ function PublicRoutes() {
         <Route path="/" component={Landing} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
-        <Route path="/staff" component={StaffDirectory} />
+        <Route path="/team" component={StaffDirectory} />
         <Route path="/guidelines" component={Guidelines} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
@@ -170,8 +173,14 @@ function PublicRoutes() {
         <Route path="/support" component={Support} />
         <Route path="/volunteer" component={VolunteerModeration} />
         <Route path="/dmca" component={DMCA} />
-        <Route path="/project-reimagined-rules" component={ProjectReimaginedrules} />
-        <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
+        <Route
+          path="/project-reimagined-rules"
+          component={ProjectReimaginedrules}
+        />
+        <Route
+          path="/volunteer-agreement"
+          component={VolunteerStaffAgreement}
+        />
         <Route path="/leo-guidelines" component={LEOGuidelines} />
         <Route path="/community-rules" component={CommunityRules} />
         <Route path="/about" component={AboutMetro} />

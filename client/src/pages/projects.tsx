@@ -1,24 +1,82 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Gamepad2 } from "lucide-react";
 
 const RS_PROJECTS = [
-  { name: "Los Angeles, California: Reimagined", game: "ROBLOX", status: "active", location: "Los Angeles, CA" },
-  { name: "Perris, California: Reimagined", game: "ROBLOX", status: "active", location: "Perris, CA" },
-  { name: "Fort Loredo: Reimagined", game: "ROBLOX", status: "active", location: "Western" },
-  { name: "Project Foxtrot", game: "ROBLOX", status: "active", location: "Multiple" },
-  { name: "The Highville Project", game: "ROBLOX", status: "active", location: "Police Academy" },
-  { name: "Australian Defence Force Academy", game: "ROBLOX", status: "active", location: "Australia" },
-  { name: "State of Bartow", game: "ROBLOX", status: "active", location: "Bartow, FL" },
-  { name: "State of Florida, Miami Dade County", game: "ROBLOX", status: "active", location: "Miami, FL" },
-  { name: "San Ramon, California", game: "ROBLOX", status: "active", location: "San Ramon, CA" },
-  { name: "DarkModRP Systems", game: "FiveM", status: "development", location: "Experimental" },
+  {
+    name: "Los Angeles, California: Reimagined",
+    game: "ROBLOX",
+    status: "active",
+    location: "Los Angeles, CA",
+  },
+  {
+    name: "Perris, California: Reimagined",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Perris, CA",
+  },
+  {
+    name: "Fort Loredo: Reimagined",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Western",
+  },
+  {
+    name: "Project Foxtrot",
+    game: "ROBLOX",
+    status: "active",
+    location: "Multiple",
+  },
+  {
+    name: "The Highville Project",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Police Academy",
+  },
+  {
+    name: "Australian Defence Force Academy",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Australia",
+  },
+  {
+    name: "State of Bartow",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Bartow, FL",
+  },
+  {
+    name: "State of Florida, Miami Dade County",
+    game: "ROBLOX",
+    status: "discontinued",
+    location: "Miami, FL",
+  },
+  {
+    name: "San Ramon, California",
+    game: "ROBLOX",
+    status: "active",
+    location: "San Ramon, CA",
+  },
+  {
+    name: "DarkModRP Systems",
+    game: "FiveM",
+    status: "development",
+    location: "Experimental",
+  },
 ];
 
 export default function Projects() {
-  const activeProjects = RS_PROJECTS.filter(p => p.status === 'active');
-  const devProjects = RS_PROJECTS.filter(p => p.status === 'development');
-  const discontinuedProjects = RS_PROJECTS.filter(p => p.status === 'discontinued');
+  const activeProjects = RS_PROJECTS.filter((p) => p.status === "active");
+  const devProjects = RS_PROJECTS.filter((p) => p.status === "development");
+  const discontinuedProjects = RS_PROJECTS.filter(
+    (p) => p.status === "discontinued",
+  );
 
   return (
     <div className="space-y-8 max-w-5xl">
@@ -27,9 +85,12 @@ export default function Projects() {
           <Gamepad2 className="w-3.5 h-3.5" />
           Our Work
         </Badge>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">RESYNC Studios Projects</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold">
+          RESYNC Studios Projects
+        </h1>
         <p className="text-lg text-muted-foreground">
-          Explore all of our active projects, experimental systems, and creative endeavors across multiple platforms.
+          Explore all of our active projects, experimental systems, and creative
+          endeavors across multiple platforms.
         </p>
       </div>
 
@@ -69,7 +130,9 @@ export default function Projects() {
                   <CardHeader>
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <CardTitle className="text-lg">{project.name}</CardTitle>
+                        <CardTitle className="text-lg">
+                          {project.name}
+                        </CardTitle>
                         <CardDescription>{project.location}</CardDescription>
                       </div>
                       <Badge variant="secondary">{project.game}</Badge>
@@ -96,7 +159,9 @@ export default function Projects() {
                   <CardHeader>
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <CardTitle className="text-lg line-through">{project.name}</CardTitle>
+                        <CardTitle className="text-lg line-through">
+                          {project.name}
+                        </CardTitle>
                         <CardDescription>{project.location}</CardDescription>
                       </div>
                       <Badge variant="outline">{project.game}</Badge>
@@ -112,8 +177,10 @@ export default function Projects() {
       <Card className="bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
         <CardContent className="p-6">
           <p className="text-center">
-            RESYNC Studios is constantly innovating and creating immersive roleplaying experiences. 
-            From detailed city simulations to experimental game mechanics, we push the boundaries of what's possible.
+            RESYNC Studios is constantly innovating and creating immersive
+            roleplaying experiences. From detailed city simulations to
+            experimental game mechanics, we push the boundaries of what's
+            possible.
           </p>
         </CardContent>
       </Card>

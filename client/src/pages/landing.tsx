@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { 
-  Users, 
-  MessageSquare, 
-  BarChart3, 
-  Gamepad2, 
-  Shield, 
+import {
+  Users,
+  MessageSquare,
+  BarChart3,
+  Gamepad2,
+  Shield,
   Globe,
   Star,
   ChevronRight,
@@ -27,53 +27,62 @@ const features = [
   {
     icon: Users,
     title: "Member Management",
-    description: "Comprehensive member management with detailed profiles, statistics tracking, and powerful community moderation tools."
+    description:
+      "Comprehensive member management with detailed profiles, statistics tracking, and powerful community moderation tools.",
   },
   {
     icon: MessageSquare,
     title: "Community Forums",
-    description: "Built-in forum system with real-time chat, announcements, and engaging discussion spaces for your community."
+    description:
+      "Built-in forum system with real-time chat, announcements, and engaging discussion spaces for your community.",
   },
   {
     icon: BarChart3,
     title: "Analytics Dashboard",
-    description: "Advanced analytics providing deep insights into member engagement and community growth."
+    description:
+      "Advanced analytics providing deep insights into member engagement and community growth.",
   },
   {
     icon: Gamepad2,
     title: "Game Integration",
-    description: "Advanced game development integration supporting high-fidelity experiences across platforms with custom server capabilities."
+    description:
+      "Advanced game development integration supporting high-fidelity experiences across platforms with custom server capabilities.",
   },
   {
     icon: Shield,
     title: "Security & Moderation",
-    description: "Advanced security systems ensuring fair play and safe gaming environments with robust anti-cheat and monitoring capabilities."
+    description:
+      "Advanced security systems ensuring fair play and safe gaming environments with robust anti-cheat and monitoring capabilities.",
   },
   {
     icon: Globe,
     title: "Global Infrastructure",
-    description: "Worldwide server network delivering high-fidelity gaming experiences with low latency and high availability globally."
+    description:
+      "Worldwide server network delivering high-fidelity gaming experiences with low latency and high availability globally.",
   },
 ];
 
 const testimonials = [
   {
-    quote: "The REACT Studios™ platform revolutionized our community management. The high-fidelity game development tools are exceptional and our players love the seamless experience.",
+    quote:
+      "The RESYNC Studios™ platform revolutionized our community management. The high-fidelity game development tools are exceptional and our players love the seamless experience.",
     author: "Alex Chen",
     company: "Lead Developer, Pixel Studios",
-    avatar: "A"
+    avatar: "A",
   },
   {
-    quote: "Their open gaming environment and advanced development capabilities helped us create high-fidelity experiences that grew our community from 1,000 to 50,000 players in 6 months.",
+    quote:
+      "Their open gaming environment and advanced development capabilities helped us create high-fidelity experiences that grew our community from 1,000 to 50,000 players in 6 months.",
     author: "Sarah Johnson",
     company: "Community Manager, GameForge",
-    avatar: "S"
+    avatar: "S",
   },
   {
-    quote: "Outstanding open gaming platform with exceptional development support. The seamless integration enabled us to deliver high-fidelity games and increased community engagement by 300%.",
+    quote:
+      "Outstanding open gaming platform with exceptional development support. The seamless integration enabled us to deliver high-fidelity games and increased community engagement by 300%.",
     author: "Mike Rodriguez",
     company: "Founder, Indie Game Collective",
-    avatar: "M"
+    avatar: "M",
   },
 ];
 
@@ -86,8 +95,8 @@ const tiers = [
       "[RS Discord Server] Post Images / Videos / Files",
       "[RS HelpDesk] Priority Ticket Support",
       "[RS Moderation] Priority Appeals and Player Reports",
-      "+ 8 more benefits"
-    ]
+      "+ 8 more benefits",
+    ],
   },
   {
     name: "Diamond VIP®",
@@ -97,8 +106,8 @@ const tiers = [
       "[RS Discord Server] Post Images / Videos / Files",
       "[RS HelpDesk] High Priority Ticket Support",
       "[RS Moderation] High Priority Appeals and Player Reports",
-      "+ 13 more benefits"
-    ]
+      "+ 13 more benefits",
+    ],
   },
   {
     name: "Founder's Edition VIP®",
@@ -108,8 +117,8 @@ const tiers = [
       "[RS Discord Server] Post Images / Videos / Files",
       "[RS HelpDesk] Urgent Priority Ticket Support",
       "[RS Moderation] Urgent Priority Appeals and Player Reports",
-      "+ 15 more benefits"
-    ]
+      "+ 15 more benefits",
+    ],
   },
 ];
 
@@ -124,9 +133,11 @@ export default function Landing() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Gamepad2 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-bold text-xl">REACT Studios™</span>
+              <span className="font-display font-bold text-xl">
+                REACT Studios™
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button asChild variant="outline" size="sm">
                 <a href="/forums">Join The Community</a>
@@ -145,11 +156,13 @@ export default function Landing() {
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
             The number one online gaming community platform
           </h1>
-          
+
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            REACT Studios™ creates an open gaming environment accessible to everyone, delivering high-fidelity games through our exceptional game development expertise and building online communities.
+            RESYNC Studios™ creates an open gaming environment accessible to
+            everyone, delivering high-fidelity games through our exceptional
+            game development expertise and building online communities.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Button size="lg" className="px-8" asChild>
               <a href="/signup">
@@ -168,13 +181,15 @@ export default function Landing() {
               <Card key={index} className="bg-card/50 border-border/50">
                 <CardContent className="p-4 text-center">
                   <div className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-                    <AnimatedCounter 
-                      end={stat.value} 
+                    <AnimatedCounter
+                      end={stat.value}
                       suffix={stat.suffix}
                       duration={2000 + index * 200}
                     />
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">{stat.label}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    {stat.label}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -190,7 +205,9 @@ export default function Landing() {
               Everything you need for thriving communities
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our gaming platform provides all the essential tools needed to build thriving communities and deliver exceptional high-fidelity gaming experiences through advanced development capabilities.
+              Our gaming platform provides all the essential tools needed to
+              build thriving communities and deliver exceptional high-fidelity
+              gaming experiences through advanced development capabilities.
             </p>
           </div>
 
@@ -204,7 +221,9 @@ export default function Landing() {
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {feature.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -220,7 +239,8 @@ export default function Landing() {
               Trusted by developers and members worldwide
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Members choose us for our commitment to open environments and exceptional development capabilities.
+              Members choose us for our commitment to open environments and
+              exceptional development capabilities.
             </p>
           </div>
 
@@ -230,13 +250,22 @@ export default function Landing() {
                 <CardContent className="p-6">
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4 leading-relaxed">"{testimonial.quote}"</p>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
+                    "{testimonial.quote}"
+                  </p>
                   <div>
-                    <p className="font-semibold text-sm">{testimonial.author}</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.company}</p>
+                    <p className="font-semibold text-sm">
+                      {testimonial.author}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {testimonial.company}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -264,7 +293,9 @@ export default function Landing() {
                   <CardTitle className="text-xl">{tier.name}</CardTitle>
                   <div className="mt-3">
                     <span className="text-3xl font-bold">${tier.price}</span>
-                    <span className="text-muted-foreground text-sm ml-2">/ month</span>
+                    <span className="text-muted-foreground text-sm ml-2">
+                      / month
+                    </span>
                   </div>
                 </CardHeader>
                 <CardContent className="flex-1">
@@ -295,7 +326,9 @@ export default function Landing() {
             Ready to join the community?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Join thousands of members who trust REACT Studios™ to deliver exceptional high-fidelity gaming experiences in our open, accessible environment.
+            Join thousands of members who trust RESYNC Studios™ to deliver
+            exceptional high-fidelity gaming experiences in our open, accessible
+            environment.
           </p>
           <Button size="lg" className="px-8" asChild>
             <a href="/forums">
@@ -313,19 +346,44 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <Gamepad2 className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold">REACT Studios™</span>
+            <span className="font-display font-bold">RESYNC Studios™</span>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-6 mb-6">
-            <a href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign In</a>
-            <a href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a>
-            <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="/guidelines" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Community Guidelines</a>
-            <a href="/dmca" className="text-sm text-muted-foreground hover:text-foreground transition-colors">DMCA Policy</a>
+            <a
+              href="/login"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sign In
+            </a>
+            <a
+              href="/terms"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="/privacy"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/guidelines"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Community Guidelines
+            </a>
+            <a
+              href="/dmca"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              DMCA Policy
+            </a>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            © 2025 REACT Studios™. All rights reserved.
+            © 2025 RESYNC Studios™. All rights reserved.
           </p>
         </div>
       </footer>
