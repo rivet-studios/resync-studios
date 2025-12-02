@@ -151,6 +151,21 @@ function AuthenticatedRoutes() {
         <Route path="/admin" component={Admin} />
         <Route path="/modcp" component={ModCP} />
         <Route path="/admin-cp" component={AdminCP} />
+        <Route path="/team" component={StaffDirectory} />
+        <Route path="/guidelines" component={Guidelines} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/announcements" component={Announcements} />
+        <Route path="/projects" component={Projects} />
+        <Route path="/support" component={Support} />
+        <Route path="/volunteer" component={VolunteerModeration} />
+        <Route path="/dmca" component={DMCA} />
+        <Route path="/project-reimagined-rules" component={ProjectReimaginedrules} />
+        <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
+        <Route path="/leo-guidelines" component={LEOGuidelines} />
+        <Route path="/community-rules" component={CommunityRules} />
+        <Route path="/about" component={AboutMetro} />
+        <Route path="/fort-loredo" component={FortLoredo} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
