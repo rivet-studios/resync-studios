@@ -192,7 +192,10 @@ export default function AdminCP() {
         body: JSON.stringify(data),
         credentials: "include",
       });
-      if (!response.ok) throw new Error("Failed");
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to create announcement");
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -200,8 +203,9 @@ export default function AdminCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
     },
     onError: (error) => {
-      toast({ title: "Error", description: "Failed to create announcement", variant: "destructive" });
-      console.error("Announcement creation error:", error);
+      const errorMsg = (error as Error).message || "Failed to create announcement";
+      toast({ title: "Error", description: errorMsg, variant: "destructive" });
+      console.error("Announcement creation error:", errorMsg);
     },
   });
 
