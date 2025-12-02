@@ -153,6 +153,7 @@ function AuthenticatedRoutes() {
         <Route path="/modcp" component={ModCP} />
         <Route path="/admin-cp" component={AdminCP} />
         <Route path="/team" component={StaffDirectory} />
+        <Route path="/staff" component={StaffDirectory} />
         <Route path="/staff-directory" component={StaffDirectory} />
         <Route path="/builds" component={Builds} />
         <Route path="/guidelines" component={Guidelines} />
@@ -183,6 +184,7 @@ function PublicRoutes() {
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
         <Route path="/team" component={StaffDirectory} />
+        <Route path="/staff" component={StaffDirectory} />
         <Route path="/staff-directory" component={StaffDirectory} />
         <Route path="/builds" component={Builds} />
         <Route path="/guidelines" component={Guidelines} />
