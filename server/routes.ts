@@ -1325,17 +1325,29 @@ export async function registerRoutes(
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
 
       const { title, content, type, details, isPublished } = req.body;
-      const announcement = await storage.createAnnouncement({
+      console.log("📝 Creating announcement with data:", { title, content, type, details, isPublished });
+
+      if (!title || !content) {
+        console.log("❌ Missing required fields: title or content");
+        return res.status(400).json({ message: "Title and content are required" });
+      }
+
+      const announcementData = {
         title,
         content,
-        type,
-        details: JSON.stringify(details || []),
-        isPublished,
-      });
+        type: type || "update",
+        details: details ? JSON.stringify(details) : JSON.stringify([]),
+        isPublished: isPublished !== false,
+      };
+
+      console.log("📋 Final announcement data:", announcementData);
+      const announcement = await storage.createAnnouncement(announcementData);
+      console.log("✅ Announcement created:", announcement.id);
       res.json(announcement);
     } catch (error) {
-      console.error("Error creating announcement:", error);
-      res.status(500).json({ message: "Failed to create announcement" });
+      console.error("❌ Error creating announcement:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({ message: `Failed to create announcement: ${errorMessage}` });
     }
   });
 
