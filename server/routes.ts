@@ -25,6 +25,28 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express,
 ): Promise<Server> {
+  // Seed default forum categories if none exist
+  try {
+    const existingCategories = await storage.getForumCategories();
+    if (existingCategories.length === 0) {
+      console.log("📂 Creating default forum categories...");
+      const defaultCategories = [
+        { name: "General Discussion", description: "General chat and discussions", icon: "MessageSquare", color: "#667eea", order: 0 },
+        { name: "Game Updates", description: "News and updates about games", icon: "Rocket", color: "#764ba2", order: 1 },
+        { name: "Community Showcase", description: "Share your creations and achievements", icon: "Star", color: "#f093fb", order: 2 },
+        { name: "Support & Questions", description: "Get help and ask questions", icon: "HelpCircle", color: "#4facfe", order: 3 },
+        { name: "Off-Topic", description: "Random conversations and fun", icon: "Hash", color: "#43e97b", order: 4 },
+      ];
+      
+      for (const category of defaultCategories) {
+        await storage.createForumCategory(category as any);
+      }
+      console.log("✅ Default forum categories created");
+    }
+  } catch (error) {
+    console.error("❌ Error seeding forum categories:", error);
+  }
+
   // Auth routes
   app.get("/api/auth/user", async (req, res) => {
     console.log(
