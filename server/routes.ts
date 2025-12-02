@@ -1623,5 +1623,138 @@ export async function registerRoutes(
     }
   });
 
+  // Invision Migration: Fetch and import forum data
+  async function migrateInvisionData() {
+    const INVISION_URL = "https://e335519.invisionservice.com/forums/api";
+    const API_KEY = "fdbe9fd2d0834d0870a79b5c99bbdabf";
+    
+    try {
+      console.log("🔄 Starting Invision forum migration...");
+      
+      // Fetch categories
+      console.log("📂 Fetching Invision categories...");
+      const categoriesRes = await fetch(`${INVISION_URL}/core/forums?key=${API_KEY}`);
+      const categoriesData = await categoriesRes.json();
+      const invisionCategories = categoriesData.results || [];
+      
+      // Map and create categories
+      const categoryMap = new Map();
+      for (const invCat of invisionCategories) {
+        const existing = await storage.getForumCategories();
+        const alreadyExists = existing.some(c => c.name === invCat.name);
+        
+        if (!alreadyExists) {
+          const created = await storage.createForumCategory({
+            name: invCat.name,
+            description: invCat.description || "",
+            icon: "MessageSquare",
+            color: "#667eea",
+            order: invCat.position || 0,
+          } as any);
+          categoryMap.set(invCat.id, created.id);
+          console.log(`✅ Created category: ${invCat.name}`);
+        } else {
+          const cat = existing.find(c => c.name === invCat.name);
+          if (cat) categoryMap.set(invCat.id, cat.id);
+        }
+      }
+      
+      // Fetch topics/threads
+      console.log("📝 Fetching Invision topics...");
+      const topicsRes = await fetch(`${INVISION_URL}/forums/topics?key=${API_KEY}&limit=10000`);
+      const topicsData = await topicsRes.json();
+      const invisionTopics = topicsData.results || [];
+      
+      // Create threads
+      let threadCount = 0;
+      for (const topic of invisionTopics) {
+        try {
+          const categoryId = categoryMap.get(topic.forum) || categoryMap.values().next().value;
+          if (!categoryId) {
+            console.warn(`⚠️ No category found for topic ${topic.id}`);
+            continue;
+          }
+          
+          // Try to find or create user from topic
+          let authorId = null;
+          if (topic.author) {
+            let author = await storage.getUserByUsername(topic.author.name);
+            if (!author) {
+              author = await storage.upsertUser({
+                username: topic.author.name,
+                email: topic.author.email || `user_${topic.author.id}@invision.local`,
+                firstName: topic.author.name,
+              } as any);
+            }
+            authorId = author.id;
+          }
+          
+          if (!authorId) continue;
+          
+          const thread = await storage.createForumThread({
+            categoryId,
+            authorId,
+            title: topic.title,
+            content: topic.posts?.[0]?.post || topic.title,
+            isPinned: topic.pinned || false,
+            isLocked: topic.locked || false,
+            viewCount: topic.views || 0,
+            replyCount: topic.posts?.length || 0,
+            upvotes: 0,
+            createdAt: new Date(topic.created),
+            updatedAt: new Date(topic.updated || topic.created),
+          } as any);
+          threadCount++;
+          
+          // Create replies/posts
+          if (topic.posts && topic.posts.length > 1) {
+            for (const post of topic.posts.slice(1)) {
+              try {
+                let postAuthorId = null;
+                if (post.author) {
+                  let postAuthor = await storage.getUserByUsername(post.author.name);
+                  if (!postAuthor) {
+                    postAuthor = await storage.upsertUser({
+                      username: post.author.name,
+                      email: post.author.email || `user_${post.author.id}@invision.local`,
+                      firstName: post.author.name,
+                    } as any);
+                  }
+                  postAuthorId = postAuthor.id;
+                }
+                
+                if (postAuthorId) {
+                  await storage.createForumReply({
+                    threadId: thread.id,
+                    authorId: postAuthorId,
+                    content: post.post || "",
+                    upvotes: 0,
+                    createdAt: new Date(post.created),
+                    updatedAt: new Date(post.updated || post.created),
+                  } as any);
+                }
+              } catch (replyError) {
+                console.error(`❌ Error creating reply for post ${post.id}:`, replyError);
+              }
+            }
+          }
+        } catch (threadError) {
+          console.error(`❌ Error creating thread ${topic.id}:`, threadError);
+        }
+      }
+      
+      console.log(`✅ Invision migration complete! Created ${threadCount} threads`);
+    } catch (error) {
+      console.error("❌ Invision migration failed:", error);
+    }
+  }
+  
+  // Run migration once at startup if not already done
+  const migrationLock = new Map();
+  if (!migrationLock.has("invision")) {
+    migrationLock.set("invision", true);
+    migrateInvisionData().catch(console.error);
+  }
+
   return httpServer;
 }
