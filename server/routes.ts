@@ -1627,17 +1627,62 @@ export async function registerRoutes(
   async function migrateInvisionData() {
     const INVISION_URL = "https://e335519.invisionservice.com/forums/api";
     const API_KEY = "fdbe9fd2d0834d0870a79b5c99bbdabf";
+    const userMap = new Map(); // Map Invision user IDs to RESYNC user IDs
     
     try {
       console.log("🔄 Starting Invision forum migration...");
       
-      // Fetch categories
+      // STEP 1: Fetch and import ALL users
+      console.log("👥 Fetching all Invision users...");
+      const usersRes = await fetch(`${INVISION_URL}/core/members?key=${API_KEY}&limit=10000`);
+      const usersData = await usersRes.json();
+      const invisionUsers = usersData.results || [];
+      
+      let userCount = 0;
+      for (const invUser of invisionUsers) {
+        try {
+          // Check if user already exists by email or username
+          let existingUser = null;
+          if (invUser.email) {
+            existingUser = await storage.getUserByEmail(invUser.email);
+          }
+          if (!existingUser && invUser.name) {
+            existingUser = await storage.getUserByUsername(invUser.name);
+          }
+          
+          if (!existingUser) {
+            // Create new user with Invision data
+            const newUser = await storage.upsertUser({
+              username: invUser.name || `user_${invUser.id}`,
+              email: invUser.email || `user_${invUser.id}@invision.local`,
+              firstName: invUser.name?.split(' ')[0] || invUser.name,
+              lastName: invUser.name?.split(' ').slice(1).join(' ') || "",
+              profileImageUrl: invUser.photo?.url || undefined,
+              bio: invUser.about || undefined,
+              reputation: invUser.reputation || 0,
+              totalPosts: invUser.posts || 0,
+              createdAt: invUser.joined ? new Date(invUser.joined * 1000) : new Date(),
+            } as any);
+            userMap.set(invUser.id, newUser.id);
+            userCount++;
+            console.log(`✅ Created user: ${invUser.name}`);
+          } else {
+            // User exists, just map their ID
+            userMap.set(invUser.id, existingUser.id);
+            console.log(`📌 User already exists: ${invUser.name}`);
+          }
+        } catch (userError) {
+          console.error(`❌ Error creating user ${invUser.name}:`, userError);
+        }
+      }
+      console.log(`✅ User import complete! Imported ${userCount} new users from Invision`);
+      
+      // STEP 2: Fetch and create forum categories
       console.log("📂 Fetching Invision categories...");
       const categoriesRes = await fetch(`${INVISION_URL}/core/forums?key=${API_KEY}`);
       const categoriesData = await categoriesRes.json();
       const invisionCategories = categoriesData.results || [];
       
-      // Map and create categories
       const categoryMap = new Map();
       for (const invCat of invisionCategories) {
         const existing = await storage.getForumCategories();
@@ -1659,13 +1704,12 @@ export async function registerRoutes(
         }
       }
       
-      // Fetch topics/threads
+      // STEP 3: Fetch topics/threads and create with mapped user IDs
       console.log("📝 Fetching Invision topics...");
       const topicsRes = await fetch(`${INVISION_URL}/forums/topics?key=${API_KEY}&limit=10000`);
       const topicsData = await topicsRes.json();
       const invisionTopics = topicsData.results || [];
       
-      // Create threads
       let threadCount = 0;
       for (const topic of invisionTopics) {
         try {
@@ -1675,18 +1719,10 @@ export async function registerRoutes(
             continue;
           }
           
-          // Try to find or create user from topic
+          // Use mapped user ID if available
           let authorId = null;
-          if (topic.author) {
-            let author = await storage.getUserByUsername(topic.author.name);
-            if (!author) {
-              author = await storage.upsertUser({
-                username: topic.author.name,
-                email: topic.author.email || `user_${topic.author.id}@invision.local`,
-                firstName: topic.author.name,
-              } as any);
-            }
-            authorId = author.id;
+          if (topic.author?.id && userMap.has(topic.author.id)) {
+            authorId = userMap.get(topic.author.id);
           }
           
           if (!authorId) continue;
@@ -1706,21 +1742,13 @@ export async function registerRoutes(
           } as any);
           threadCount++;
           
-          // Create replies/posts
+          // Create replies/posts using mapped user IDs
           if (topic.posts && topic.posts.length > 1) {
             for (const post of topic.posts.slice(1)) {
               try {
                 let postAuthorId = null;
-                if (post.author) {
-                  let postAuthor = await storage.getUserByUsername(post.author.name);
-                  if (!postAuthor) {
-                    postAuthor = await storage.upsertUser({
-                      username: post.author.name,
-                      email: post.author.email || `user_${post.author.id}@invision.local`,
-                      firstName: post.author.name,
-                    } as any);
-                  }
-                  postAuthorId = postAuthor.id;
+                if (post.author?.id && userMap.has(post.author.id)) {
+                  postAuthorId = userMap.get(post.author.id);
                 }
                 
                 if (postAuthorId) {
@@ -1743,7 +1771,7 @@ export async function registerRoutes(
         }
       }
       
-      console.log(`✅ Invision migration complete! Created ${threadCount} threads`);
+      console.log(`✅ Invision migration complete! Imported ${userCount} users and ${threadCount} threads`);
     } catch (error) {
       console.error("❌ Invision migration failed:", error);
     }
