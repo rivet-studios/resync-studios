@@ -1625,7 +1625,7 @@ export async function registerRoutes(
 
   // Invision Migration: Fetch and import forum data
   async function migrateInvisionData() {
-    const INVISION_URL = "https://e335519.invisionservice.com/forums/api";
+    const INVISION_URL = "https://e335519.invisionservice.com/api";
     const API_KEY = "fdbe9fd2d0834d0870a79b5c99bbdabf";
     const userMap = new Map(); // Map Invision user IDs to RESYNC user IDs
     
@@ -1778,12 +1778,13 @@ export async function registerRoutes(
   }
   
   // Run migration once at startup if not already done
-  // NOTE: Disabled temporarily - Invision API endpoints need verification
-  // const migrationLock = new Map();
-  // if (!migrationLock.has("invision")) {
-  //   migrationLock.set("invision", true);
-  //   migrateInvisionData().catch(console.error);
-  // }
+  const migrationLock = new Map();
+  if (!migrationLock.has("invision")) {
+    migrationLock.set("invision", true);
+    migrateInvisionData().catch((error) => {
+      console.error("❌ Migration error (continuing anyway):", error.message);
+    });
+  }
 
   return httpServer;
 }
