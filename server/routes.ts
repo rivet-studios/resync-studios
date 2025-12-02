@@ -1778,11 +1778,12 @@ export async function registerRoutes(
   }
   
   // Run migration once at startup if not already done
-  const migrationLock = new Map();
-  if (!migrationLock.has("invision")) {
-    migrationLock.set("invision", true);
-    migrateInvisionData().catch(console.error);
-  }
+  // NOTE: Disabled temporarily - Invision API endpoints need verification
+  // const migrationLock = new Map();
+  // if (!migrationLock.has("invision")) {
+  //   migrationLock.set("invision", true);
+  //   migrateInvisionData().catch(console.error);
+  // }
 
   return httpServer;
 }
