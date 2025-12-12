@@ -36,62 +36,62 @@ export const rankConfig = {
     label: "Administrator",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   senior_administrator: {
     label: "Senior Administrator",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   moderator: {
     label: "Moderator",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   community_moderator: {
     label: "Community Moderator",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   community_senior_moderator: {
     label: "Community Senior Moderator",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   community_developer: {
     label: "Community Developer",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   // VIP ranks (no badge)
   bronze_vip: {
     label: "Bronze VIP",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   sapphire_vip: {
     label: "Sapphire VIP",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   diamond_vip: {
     label: "Diamond VIP",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   founders_edition_vip: {
     label: "Founders Edition VIP",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   // Sub-groups
   customer_relations: {
@@ -104,7 +104,7 @@ export const rankConfig = {
     label: "RS™ Volunteer Staff",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   member: {
     label: "Member",
@@ -118,47 +118,52 @@ interface UserRankBadgeProps {
   rank?: string;
   username?: string;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
-export function UserRankBadge({ rank = 'member', username, className = '', size = 'md' }: UserRankBadgeProps) {
-  if (!rank || rank === 'member') return null;
-  
+export function UserRankBadge({
+  rank = "member",
+  username,
+  className = "",
+  size = "md",
+}: UserRankBadgeProps) {
+  if (!rank || rank === "member") return null;
+
   const config = rankConfig[rank as keyof typeof rankConfig];
   if (!config) return null;
 
-  const sizeClass = size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-base' : 'text-sm';
+  const sizeClass =
+    size === "sm" ? "text-xs" : size === "lg" ? "text-base" : "text-sm";
 
   return (
-    <strong className={`group-prefix inline-flex items-center gap-1.5 ${sizeClass} ${className}`}>
+    <strong
+      className={`group-prefix inline-flex items-center gap-1.5 ${sizeClass} ${className}`}
+    >
       {config.badgeUrl && (
-        <img 
-          src={config.badgeUrl} 
-          alt={config.label} 
-          width="16" 
-          height="16" 
-          loading="lazy" 
+        <img
+          src={config.badgeUrl}
+          alt={config.label}
+          width="16"
+          height="16"
+          loading="lazy"
           decoding="async"
           className="w-4 h-4"
         />
       )}
-      <span 
-        className="font-bold"
-        style={{ color: config.color }}
-      >
+      <span className="font-bold" style={{ color: config.color }}>
         {config.label}
       </span>
     </strong>
   );
 }
 
-export function FormattedUsername({ 
-  rank = 'member', 
-  username = 'User',
-  className = ''
+export function FormattedUsername({
+  rank = "member",
+  username = "User",
+  className = "",
 }: UserRankBadgeProps) {
   const config = rankConfig[rank as keyof typeof rankConfig];
-  
+
   // If rank is not formatted or no username, return plain
   if (!config?.formatted || !username) {
     return <span className={className}>{username}</span>;
@@ -167,20 +172,17 @@ export function FormattedUsername({
   return (
     <div className={`inline-flex items-center gap-1.5 ${className}`}>
       {config.badgeUrl && (
-        <img 
-          src={config.badgeUrl} 
-          alt={config.label} 
-          width="16" 
-          height="16" 
-          loading="lazy" 
+        <img
+          src={config.badgeUrl}
+          alt={config.label}
+          width="16"
+          height="16"
+          loading="lazy"
           decoding="async"
           className="w-4 h-4"
         />
       )}
-      <span 
-        className="font-bold uppercase"
-        style={{ color: config.color }}
-      >
+      <span className="font-bold uppercase" style={{ color: config.color }}>
         {username}
       </span>
     </div>

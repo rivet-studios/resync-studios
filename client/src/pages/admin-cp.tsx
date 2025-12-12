@@ -3,7 +3,13 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -34,7 +40,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Shield, Plus, Edit2, Trash2, Users, Settings, AlertTriangle } from "lucide-react";
+import {
+  Shield,
+  Plus,
+  Edit2,
+  Trash2,
+  Users,
+  Settings,
+  AlertTriangle,
+} from "lucide-react";
 import { type Announcement } from "@shared/schema";
 
 interface User {
@@ -50,20 +64,38 @@ interface Stats {
 }
 
 const ADMIN_RANKS = [
-  'administrator',
-  'senior_administrator',
-  'rs_trust_safety_director',
-  'leadership_council',
-  'company_director'
+  "administrator",
+  "senior_administrator",
+  "staff_administration_director",
+  "leadership_council",
+  "operations_manager",
+  "team_member",
+  "company_director",
 ];
 
 const RANK_OPTIONS = [
   { value: "member", label: "Member" },
-  { value: "team_member", label: "Team Member" },
-  { value: "moderator", label: "Moderator" },
+  { value: "active_member", label: "Active Member" },
+  { value: "trusted_member", label: "Trusted Member" },
+  { value: "community_partner", label: "Community Partner" },
+  { value: "bronze_vip", label: "Bronze VIP" },
+  { value: "sapphire_vip", label: "Sapphire VIP" },
+  { value: "diamond_vip", label: "Diamond VIP" },
+  { value: "founders_edition_vip", label: "Founders Edition VIP" },
+  { value: "founders_edition_lifetime", label: "Lifetime" },
+  { value: "community_developer", label: "Community Developer" },
+  { value: "rs_volunteer_staff", label: "RS Volunteer Staff" },
   { value: "community_moderator", label: "Community Moderator" },
+  { value: "community_senior_moderator", label: "Community Senior Moderator" },
+  { value: "moderator", label: "Moderator" },
   { value: "administrator", label: "Administrator" },
+  { value: "senior_administrator", label: "Senior Administrator" },
   { value: "customer_relations", label: "Customer Relations" },
+  { value: "team_member", label: "Team Member" },
+  { value: "staff_administration_director", label: "Trust & Safety Director" },
+  { value: "leadership_council", label: "Leadership Council" },
+  { value: "operations_manager", label: "Operations Manager" },
+  { value: "company_director", label: "Company Director" },
 ];
 
 const VIP_OPTIONS = [
@@ -78,11 +110,16 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
   const [type, setType] = useState(initialData?.type || "update");
-  const [details, setDetails] = useState(initialData?.details ? JSON.parse(initialData.details) : [""]);
-  const [isPublished, setIsPublished] = useState(initialData?.isPublished !== false);
+  const [details, setDetails] = useState(
+    initialData?.details ? JSON.parse(initialData.details) : [""],
+  );
+  const [isPublished, setIsPublished] = useState(
+    initialData?.isPublished !== false,
+  );
 
   const handleAddDetail = () => setDetails([...details, ""]);
-  const handleRemoveDetail = (idx: number) => setDetails(details.filter((_: string, i: number) => i !== idx));
+  const handleRemoveDetail = (idx: number) =>
+    setDetails(details.filter((_: string, i: number) => i !== idx));
   const handleDetailChange = (idx: number, value: string) => {
     const newDetails = [...details];
     newDetails[idx] = value;
@@ -91,22 +128,57 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
 
   return (
     <div className="space-y-4">
-      <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-      <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Content" />
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Title"
+      />
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Content"
+      />
       <Select value={type} onValueChange={setType}>
-        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="launch">Launch</SelectItem>
           <SelectItem value="roadmap">Roadmap</SelectItem>
           <SelectItem value="feature">Feature</SelectItem>
           <SelectItem value="update">Update</SelectItem>
+          <SelectItem value="maintenance">Maintenance</SelectItem>
+          <SelectItem value="event">Event</SelectItem>
+          <SelectItem value="announcement">Announcement</SelectItem>
+          <SelectItem value="news">News</SelectItem>
+          <SelectItem value="alert">Alert</SelectItem>
+          <SelectItem value="warning">Warning</SelectItem>
         </SelectContent>
       </Select>
       <div className="flex items-center gap-2">
-        <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} id="publish" />
-        <label htmlFor="publish" className="text-sm">Publish</label>
+        <input
+          type="checkbox"
+          checked={isPublished}
+          onChange={(e) => setIsPublished(e.target.checked)}
+          id="publish"
+        />
+        <label htmlFor="publish" className="text-sm">
+          Publish
+        </label>
       </div>
-      <Button onClick={() => onSubmit({ title, content, type, details: details.filter((d: string) => d.trim()), isPublished })} disabled={isLoading} className="w-full">
+      <Button
+        onClick={() =>
+          onSubmit({
+            title,
+            content,
+            type,
+            details: details.filter((d: string) => d.trim()),
+            isPublished,
+          })
+        }
+        disabled={isLoading}
+        className="w-full"
+      >
         {isLoading ? "Saving..." : "Save"}
       </Button>
     </div>
@@ -136,7 +208,9 @@ export default function AdminCP() {
               <AlertTriangle className="w-12 h-12 text-destructive" />
               <div>
                 <h2 className="font-bold text-lg mb-2">Access Denied</h2>
-                <p className="text-muted-foreground">You don't have admin access.</p>
+                <p className="text-muted-foreground">
+                  You don't have admin access.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -146,8 +220,12 @@ export default function AdminCP() {
   }
 
   const { data: stats } = useQuery<Stats>({ queryKey: ["/api/stats"] });
-  const { data: users = [] } = useQuery<User[]>({ queryKey: ["/api/admin/users"] });
-  const { data: announcements = [] } = useQuery<Announcement[]>({ queryKey: ["/api/announcements"] });
+  const { data: users = [] } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+  });
+  const { data: announcements = [] } = useQuery<Announcement[]>({
+    queryKey: ["/api/announcements"],
+  });
   const { data: siteSettings } = useQuery({ queryKey: ["/api/site-settings"] });
   const { data: searchResults = [] } = useQuery({
     queryKey: ["/api/admin/search-users", subscriptionSearch],
@@ -159,7 +237,10 @@ export default function AdminCP() {
       const response = await fetch("/api/admin/assign-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUsername: selectedUser?.username, vipTier: selectedVip }),
+        body: JSON.stringify({
+          targetUsername: selectedUser?.username,
+          vipTier: selectedVip,
+        }),
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to assign subscription");
@@ -170,18 +251,31 @@ export default function AdminCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setSelectedUser(null);
     },
-    onError: () => toast({ title: "Error", description: "Failed to assign subscription", variant: "destructive" }),
+    onError: () =>
+      toast({
+        title: "Error",
+        description: "Failed to assign subscription",
+        variant: "destructive",
+      }),
   });
 
   const updateSiteSettingsMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("PATCH", "/api/admin/site-settings", { isOffline, offlineMessage });
+      await apiRequest("PATCH", "/api/admin/site-settings", {
+        isOffline,
+        offlineMessage,
+      });
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Settings updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/site-settings"] });
     },
-    onError: () => toast({ title: "Error", description: "Failed to update settings", variant: "destructive" }),
+    onError: () =>
+      toast({
+        title: "Error",
+        description: "Failed to update settings",
+        variant: "destructive",
+      }),
   });
 
   const createAnnouncementMutation = useMutation({
@@ -203,7 +297,8 @@ export default function AdminCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
     },
     onError: (error) => {
-      const errorMsg = (error as Error).message || "Failed to create announcement";
+      const errorMsg =
+        (error as Error).message || "Failed to create announcement";
       toast({ title: "Error", description: errorMsg, variant: "destructive" });
       console.error("Announcement creation error:", errorMsg);
     },
@@ -224,7 +319,10 @@ export default function AdminCP() {
       const response = await fetch("/api/admin/set-user-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: userToSetPassword.id, password: newPassword }),
+        body: JSON.stringify({
+          userId: userToSetPassword.id,
+          password: newPassword,
+        }),
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed");
@@ -237,7 +335,11 @@ export default function AdminCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (error) => {
-      toast({ title: "Error", description: (error as Error).message || "Failed to set password", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (error as Error).message || "Failed to set password",
+        variant: "destructive",
+      });
     },
   });
 
@@ -246,20 +348,38 @@ export default function AdminCP() {
       <div className="flex items-center gap-3">
         <Shield className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="font-display text-3xl font-bold">Admin Control Panel</h1>
-          <p className="text-muted-foreground">Manage platform, users, subscriptions, and content</p>
+          <h1 className="font-display text-3xl font-bold">
+            Admin Control Panel
+          </h1>
+          <p className="text-muted-foreground">
+            Manage platform, users, subscriptions, and content
+          </p>
         </div>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-7 overflow-x-auto">
-          <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-          <TabsTrigger value="subscriptions" className="text-xs">Subscriptions</TabsTrigger>
-          <TabsTrigger value="announcements" className="text-xs">Announcements</TabsTrigger>
-          <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
-          <TabsTrigger value="ranks" className="text-xs">Ranks</TabsTrigger>
-          <TabsTrigger value="site" className="text-xs">Site</TabsTrigger>
-          <TabsTrigger value="system" className="text-xs">System</TabsTrigger>
+          <TabsTrigger value="overview" className="text-xs">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="subscriptions" className="text-xs">
+            Subscriptions
+          </TabsTrigger>
+          <TabsTrigger value="announcements" className="text-xs">
+            Announcements
+          </TabsTrigger>
+          <TabsTrigger value="users" className="text-xs">
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="ranks" className="text-xs">
+            Ranks
+          </TabsTrigger>
+          <TabsTrigger value="site" className="text-xs">
+            Site
+          </TabsTrigger>
+          <TabsTrigger value="system" className="text-xs">
+            System
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -269,7 +389,9 @@ export default function AdminCP() {
                 <CardTitle className="text-sm">Total Members</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalMembers || 0}</div>
+                <div className="text-2xl font-bold">
+                  {stats?.totalMembers || 0}
+                </div>
               </CardContent>
             </Card>
             <Card>
@@ -287,7 +409,9 @@ export default function AdminCP() {
           <Card>
             <CardHeader>
               <CardTitle>Assign Subscription</CardTitle>
-              <CardDescription>Manually assign VIP tiers to users</CardDescription>
+              <CardDescription>
+                Manually assign VIP tiers to users
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -316,7 +440,9 @@ export default function AdminCP() {
 
               {selectedUser && (
                 <div>
-                  <p className="text-sm font-medium mb-2">Selected: {selectedUser.username}</p>
+                  <p className="text-sm font-medium mb-2">
+                    Selected: {selectedUser.username}
+                  </p>
                   <Select value={selectedVip} onValueChange={setSelectedVip}>
                     <SelectTrigger>
                       <SelectValue />
@@ -334,7 +460,9 @@ export default function AdminCP() {
                     disabled={assignSubscriptionMutation.isPending}
                     className="w-full mt-2"
                   >
-                    {assignSubscriptionMutation.isPending ? "Assigning..." : "Assign"}
+                    {assignSubscriptionMutation.isPending
+                      ? "Assigning..."
+                      : "Assign"}
                   </Button>
                 </div>
               )}
@@ -347,14 +475,19 @@ export default function AdminCP() {
             <h2 className="text-lg font-semibold">Announcements</h2>
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="sm"><Plus className="w-4 h-4 mr-2" />New</Button>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Create Announcement</DialogTitle>
                 </DialogHeader>
                 <AnnouncementForm
-                  onSubmit={(data: any) => createAnnouncementMutation.mutate(data)}
+                  onSubmit={(data: any) =>
+                    createAnnouncementMutation.mutate(data)
+                  }
                   isLoading={createAnnouncementMutation.isPending}
                 />
               </DialogContent>
@@ -367,7 +500,9 @@ export default function AdminCP() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold">{a.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-1">{a.content}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {a.content}
+                      </p>
                     </div>
                     <Button
                       size="sm"
@@ -393,9 +528,10 @@ export default function AdminCP() {
           </div>
           <div className="space-y-2">
             {users
-              .filter((u) =>
-                u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+              .filter(
+                (u) =>
+                  u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  u.email?.toLowerCase().includes(searchTerm.toLowerCase()),
               )
               .map((u) => (
                 <Card key={u.id}>
@@ -403,40 +539,58 @@ export default function AdminCP() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{u.username}</p>
-                        <p className="text-sm text-muted-foreground">{u.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {u.email}
+                        </p>
                         <div className="flex gap-2 mt-1">
                           <Badge variant="outline">{u.userRank}</Badge>
                           <Badge variant="outline">{u.vipTier}</Badge>
                         </div>
                       </div>
-                      <Dialog open={userToSetPassword?.id === u.id} onOpenChange={(open) => {
-                        if (!open) setUserToSetPassword(null);
-                      }}>
+                      <Dialog
+                        open={userToSetPassword?.id === u.id}
+                        onOpenChange={(open) => {
+                          if (!open) setUserToSetPassword(null);
+                        }}
+                      >
                         <DialogTrigger asChild>
-                          <Button size="sm" variant="outline" onClick={() => setUserToSetPassword(u)}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setUserToSetPassword(u)}
+                          >
                             Set Password
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Set Password for {u.username}</DialogTitle>
+                            <DialogTitle>
+                              Set Password for {u.username}
+                            </DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div>
-                              <label className="text-sm font-medium">New Password</label>
-                              <Input 
-                                type="password" 
+                              <label className="text-sm font-medium">
+                                New Password
+                              </label>
+                              <Input
+                                type="password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 placeholder="Minimum 6 characters"
                               />
                             </div>
-                            <Button 
+                            <Button
                               onClick={() => setPasswordMutation.mutate()}
-                              disabled={setPasswordMutation.isPending || newPassword.length < 6}
+                              disabled={
+                                setPasswordMutation.isPending ||
+                                newPassword.length < 6
+                              }
                               className="w-full"
                             >
-                              {setPasswordMutation.isPending ? "Setting..." : "Set Password"}
+                              {setPasswordMutation.isPending
+                                ? "Setting..."
+                                : "Set Password"}
                             </Button>
                           </div>
                         </DialogContent>
@@ -456,9 +610,14 @@ export default function AdminCP() {
             </CardHeader>
             <CardContent className="space-y-2">
               {RANK_OPTIONS.map((rank) => (
-                <div key={rank.value} className="flex justify-between p-2 border rounded">
+                <div
+                  key={rank.value}
+                  className="flex justify-between p-2 border rounded"
+                >
                   <span className="font-medium">{rank.label}</span>
-                  <Badge variant="outline">{users.filter((u) => u.userRank === rank.value).length}</Badge>
+                  <Badge variant="outline">
+                    {users.filter((u) => u.userRank === rank.value).length}
+                  </Badge>
                 </div>
               ))}
             </CardContent>
@@ -478,7 +637,9 @@ export default function AdminCP() {
                   onChange={(e) => setIsOffline(e.target.checked)}
                   id="offline"
                 />
-                <label htmlFor="offline" className="font-medium">Take Site Offline</label>
+                <label htmlFor="offline" className="font-medium">
+                  Take Site Offline
+                </label>
               </div>
               {isOffline && (
                 <Textarea
@@ -487,8 +648,13 @@ export default function AdminCP() {
                   placeholder="Enter offline message..."
                 />
               )}
-              <Button onClick={() => updateSiteSettingsMutation.mutate()} disabled={updateSiteSettingsMutation.isPending}>
-                {updateSiteSettingsMutation.isPending ? "Updating..." : "Update"}
+              <Button
+                onClick={() => updateSiteSettingsMutation.mutate()}
+                disabled={updateSiteSettingsMutation.isPending}
+              >
+                {updateSiteSettingsMutation.isPending
+                  ? "Updating..."
+                  : "Update"}
               </Button>
             </CardContent>
           </Card>

@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Crown, Shield, Headphones, Cpu, Trophy } from "lucide-react";
 
@@ -130,7 +136,9 @@ export default function StaffDirectory() {
           <Users className="w-3.5 h-3.5" />
           Meet the Team
         </Badge>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">Staff Directory</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold">
+          Staff Directory
+        </h1>
         <p className="text-lg text-muted-foreground">
           Meet the passionate team behind Resync Studios™
         </p>
@@ -165,7 +173,9 @@ export default function StaffDirectory() {
                     <CardContent className="text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                          {member.endDate ? `${member.joinDate} - ${member.endDate}` : member.joinDate}
+                          {member.endDate
+                            ? `${member.joinDate} - ${member.endDate}`
+                            : member.joinDate}
                         </span>
                       </div>
                       {isRetired && (
@@ -186,7 +196,8 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining the Resync Studios team? Visit our careers page or contact us for more information.
+            Interested in joining the Resync Studios team? Visit our careers
+            page or contact us for more information.
           </p>
         </CardContent>
       </Card>

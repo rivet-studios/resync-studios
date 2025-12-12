@@ -54,7 +54,7 @@ const mainNavItems = [
   { title: "About Metro Interactive", url: "/about", icon: Info },
   { title: "Fort Loredo Project", url: "/fort-loredo", icon: MapPin },
   { title: "Announcements", url: "/announcements", icon: Megaphone },
-  { title: "LFG Matchmaking", url: "/lfg", icon: Target },
+  { title: "nil", url: "/not-found", icon: Target },
   { title: "Clans", url: "/clans", icon: Users },
   { title: "Builds & Meta", url: "/builds", icon: Swords },
   { title: "Forums", url: "/forums", icon: MessageSquare },
@@ -74,8 +74,16 @@ const accountNavItems = [
   { title: "Terms of Service", url: "/terms", icon: FileText },
   { title: "DMCA Policy", url: "/dmca", icon: Shield },
   { title: "LEO & Emergency Guidelines", url: "/leo-guidelines", icon: Radio },
-  { title: "Project Reimagined Rules", url: "/project-reimagined-rules", icon: BookOpen },
-  { title: "Volunteer Staff Agreement", url: "/volunteer-agreement", icon: Handshake },
+  {
+    title: "Project Foxtrot Rules",
+    url: "/project-foxtrot-rules",
+    icon: BookOpen,
+  },
+  {
+    title: "Volunteer Staff Agreement",
+    url: "/volunteer-agreement",
+    icon: Handshake,
+  },
 ];
 
 export function AppSidebar() {
@@ -118,10 +126,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     isActive={location === item.url}
-                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
@@ -142,10 +150,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {accountNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     isActive={location === item.url}
-                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
@@ -158,7 +166,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {user?.vipTier && user.vipTier !== 'none' && (
+        {user?.vipTier && user.vipTier !== "none" && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
@@ -178,18 +186,20 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   className="w-full justify-between"
                   data-testid="button-user-menu"
                 >
                   <div className="flex items-center gap-2">
                     <Avatar className="w-8 h-8">
-                      <AvatarImage 
-                        src={user?.profileImageUrl || undefined} 
+                      <AvatarImage
+                        src={user?.profileImageUrl || undefined}
                         alt={getDisplayName()}
                         className="object-cover"
                       />
-                      <AvatarFallback className="text-xs">{getInitials()}</AvatarFallback>
+                      <AvatarFallback className="text-xs">
+                        {getInitials()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-start text-left">
                       <span className="text-sm font-medium truncate max-w-[120px]">
@@ -229,11 +239,19 @@ export function AppSidebar() {
                       if (response.ok) {
                         setLocation("/login");
                       } else {
-                        toast({ title: "Error", description: "Logout failed", variant: "destructive" });
+                        toast({
+                          title: "Error",
+                          description: "Logout failed",
+                          variant: "destructive",
+                        });
                       }
                     } catch (error) {
                       console.error("Logout failed:", error);
-                      toast({ title: "Error", description: "Logout failed", variant: "destructive" });
+                      toast({
+                        title: "Error",
+                        description: "Logout failed",
+                        variant: "destructive",
+                      });
                     }
                   }}
                   className="cursor-pointer text-destructive"

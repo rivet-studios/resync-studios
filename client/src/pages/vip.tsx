@@ -41,7 +41,7 @@ const tiers = [
   {
     id: "bronze",
     name: "Bronze VIP",
-    price: 12.99,
+    price: 22.95,
     icon: Crown,
     className: "vip-bronze",
     features: [
@@ -60,11 +60,42 @@ const tiers = [
       "ATM Fees Waived",
     ],
     popular: true,
+    limited: false,
+    sale: true,
+    salePrice: 10.99,
+    saleEnds: "2026-8-29T23:59:59Z",
+    saleDiscount: 5,
+    saleDiscountText: "5% OFF",
+    saleDiscountBadge: "bg-red-500 text-red-50",
+    saleDiscountBadgeText: "SALE",
+    saleDiscountBadgeIcon: Lock,
+    saleDiscountBadgeIconClassName: "w-3 h-3 text-red-500",
+    comingSoon: false,
+    comingSoonText: "COMING SOON",
+    comingSoonBadge: "bg-yellow-500 text-yellow-950",
+    comingSoonBadgeText: "COMING SOON",
+    comingSoonBadgeIcon: Zap,
+    comingSoonBadgeIconClassName: "w-3 h-3 text-yellow-500",
+    leavingSoon: false,
+    leavingSoonText: "LEAVING SOON",
+    leavingSoonBadge: "bg-red-500 text-red-50",
+    leavingSoonBadgeText: "LEAVING SOON",
+    leavingSoonBadgeIcon: Lock,
+    leavingSoonBadgeIconClassName: "w-3 h-3 text-red-500",
+    leavingSoonEnds: "2026-8-29T23:59:59Z",
+    soldOut: false,
+    soldOutText: "SOLD OUT",
+    soldOutBadge: "bg-gray-500 text-gray-50",
+    soldOutBadgeText: "SOLD OUT",
+    soldOutBadgeIcon: Lock,
+    soldOutBadgeIconClassName: "w-3 h-3 text-gray-500",
+    // Disable the purchase button for this tier when soldOut: true
+    // Disable the purchase button for this tier when leavingSoonEnds date is reached and the tier is no longer available for purchase (leavingSoon: true) and change leavingSoonText to "UNAVAILABLE" and leavingSoonBadge to "bg-gray-500 text-gray-50" and leavingSoonBadgeText to "UNAVAILABLE" and leavingSoonBadgeIcon to Lock and leavingSoonBadgeIconClassName to "w-3 h-3 text-gray-500"
   },
   {
     id: "sapphire",
     name: "Sapphire VIP",
-    price: 29.99,
+    price: 33.95,
     icon: Gem,
     className: "vip-sapphire",
     features: [
@@ -73,22 +104,56 @@ const tiers = [
       "High Priority HelpDesk Support",
       "High Priority Moderation Appeals",
       "High Priority Staff Applications",
+      "Audi RS3 Given each Subscription Cycle",
       "All Playtime Requirements Waived",
-      "XP Boost (35%)",
-      "Paychecks Boost (30%)",
-      "Unlock LAPD",
-      "Save 25% on Vehicle Insurance",
-      "Save 25% on Vehicles",
-      "Higher Chem & Plant Sell Rates (30%)",
+      "Unlock USMS",
+      "XP Boost (45%)",
+      "Medical Bills 50% Off",
+      "No Wallet Limit",
+      "Paychecks Boost (40%)",
+      "Save 35% on Vehicle Insurance",
+      "Save 35% on Vehicles",
+      "Higher Chem & Plant Sell Rates (40%)",
+      "Perma-Knife on Civilian Team",
       "ATM Fees Waived",
-      "Exclusive Vehicles",
     ],
-    popular: true,
+    popular: false,
+    limited: false,
+    sale: true,
+    salePrice: 14.99,
+    saleEnds: "2026-8-29T23:59:59Z",
+    saleDiscount: 25,
+    saleDiscountText: "25% OFF",
+    saleDiscountBadge: "bg-red-500 text-red-50",
+    saleDiscountBadgeText: "SALE",
+    saleDiscountBadgeIcon: Lock,
+    saleDiscountBadgeIconClassName: "w-3 h-3 text-red-500",
+    comingSoon: false,
+    comingSoonText: "COMING SOON",
+    comingSoonBadge: "bg-yellow-500 text-yellow-950",
+    comingSoonBadgeText: "COMING SOON",
+    comingSoonBadgeIcon: Zap,
+    comingSoonBadgeIconClassName: "w-3 h-3 text-yellow-500",
+    leavingSoon: true,
+    leavingSoonText: "LEAVING SOON",
+    leavingSoonBadge: "bg-red-500 text-red-50",
+    leavingSoonBadgeText: "LEAVING SOON",
+    leavingSoonBadgeIcon: Lock,
+    leavingSoonBadgeIconClassName: "w-3 h-3 text-red-500",
+    leavingSoonEnds: "2026-8-29T23:59:59Z",
+    soldOut: false,
+    soldOutText: "SOLD OUT",
+    soldOutBadge: "bg-gray-500 text-gray-50",
+    soldOutBadgeText: "SOLD OUT",
+    soldOutBadgeIcon: Lock,
+    soldOutBadgeIconClassName: "w-3 h-3 text-gray-500",
+    // Disable the purchase button for this tier when soldOut: true
+    // Disable the purchase button for this tier when leavingSoonEnds date is reached and the tier is no longer available for purchase (leavingSoon: true) and change leavingSoonText to "UNAVAILABLE" and leavingSoonBadge to "bg-gray-500 text-gray-50" and leavingSoonBadgeText to "UNAVAILABLE" and leavingSoonBadgeIcon to Lock and leavingSoonBadgeIconClassName to "w-3 h-3 text-gray-500"
   },
   {
     id: "diamond",
     name: "Diamond VIP",
-    price: 44.99,
+    price: 45.99,
     icon: Diamond,
     className: "vip-diamond",
     features: [
@@ -111,6 +176,37 @@ const tiers = [
       "ATM Fees Waived",
     ],
     popular: false,
+    limited: false,
+    sale: true,
+    salePrice: 19.99,
+    saleEnds: "2026-8-29T23:59:59Z",
+    saleDiscount: 15,
+    saleDiscountText: "15% OFF",
+    saleDiscountBadge: "bg-red-500 text-red-50",
+    saleDiscountBadgeText: "SALE",
+    saleDiscountBadgeIcon: Lock,
+    saleDiscountBadgeIconClassName: "w-3 h-3 text-red-500",
+    comingSoon: false,
+    comingSoonText: "COMING SOON",
+    comingSoonBadge: "bg-yellow-500 text-yellow-950",
+    comingSoonBadgeText: "COMING SOON",
+    comingSoonBadgeIcon: Zap,
+    comingSoonBadgeIconClassName: "w-3 h-3 text-yellow-500",
+    leavingSoon: false,
+    leavingSoonText: "LEAVING SOON",
+    leavingSoonBadge: "bg-red-500 text-red-50",
+    leavingSoonBadgeText: "LEAVING SOON",
+    leavingSoonBadgeIcon: Lock,
+    leavingSoonBadgeIconClassName: "w-3 h-3 text-red-500",
+    leavingSoonEnds: "2026-8-29T23:59:59Z",
+    soldOut: false,
+    soldOutText: "SOLD OUT",
+    soldOutBadge: "bg-gray-500 text-gray-50",
+    soldOutBadgeText: "SOLD OUT",
+    soldOutBadgeIcon: Lock,
+    soldOutBadgeIconClassName: "w-3 h-3 text-gray-500",
+    // Disable the purchase button for this tier when soldOut: true
+    // Disable the purchase button for this tier when leavingSoonEnds date is reached and the tier is no longer available for purchase (leavingSoon: true) and change leavingSoonText to "UNAVAILABLE" and leavingSoonBadge to "bg-gray-500 text-gray-50" and leavingSoonBadgeText to "UNAVAILABLE" and leavingSoonBadgeIcon to Lock and leavingSoonBadgeIconClassName to "w-3 h-3 text-gray-500"
   },
   {
     id: "founders",
@@ -140,6 +236,36 @@ const tiers = [
     ],
     popular: false,
     limited: true,
+    sale: true,
+    salePrice: 35.0,
+    saleEnds: "2026-8-29T23:59:59Z",
+    saleDiscount: 70,
+    saleDiscountText: "70% OFF",
+    saleDiscountBadge: "bg-red-500 text-red-50",
+    saleDiscountBadgeText: "SALE",
+    saleDiscountBadgeIcon: Lock,
+    saleDiscountBadgeIconClassName: "w-3 h-3 text-red-500",
+    comingSoon: false,
+    comingSoonText: "COMING SOON",
+    comingSoonBadge: "bg-yellow-500 text-yellow-950",
+    comingSoonBadgeText: "COMING SOON",
+    comingSoonBadgeIcon: Zap,
+    comingSoonBadgeIconClassName: "w-3 h-3 text-yellow-500",
+    leavingSoon: false,
+    leavingSoonText: "LEAVING SOON",
+    leavingSoonBadge: "bg-red-500 text-red-50",
+    leavingSoonBadgeText: "LEAVING SOON",
+    leavingSoonBadgeIcon: Lock,
+    leavingSoonBadgeIconClassName: "w-3 h-3 text-red-500",
+    leavingSoonEnds: "2026-8-29T23:59:59Z",
+    soldOut: false,
+    soldOutText: "SOLD OUT",
+    soldOutBadge: "bg-gray-500 text-gray-50",
+    soldOutBadgeText: "SOLD OUT",
+    soldOutBadgeIcon: Lock,
+    soldOutBadgeIconClassName: "w-3 h-3 text-gray-500",
+    // Disable the purchase button for this tier when soldOut: true
+    // Disable the purchase button for this tier when leavingSoonEnds date is reached and the tier is no longer available for purchase (leavingSoon: true) and change leavingSoonText to "UNAVAILABLE" and leavingSoonBadge to "bg-gray-500 text-gray-50" and leavingSoonBadgeText to "UNAVAILABLE" and leavingSoonBadgeIcon to Lock and leavingSoonBadgeIconClassName to "w-3 h-3 text-gray-500"
   },
 ];
 
@@ -413,11 +539,16 @@ export default function VIP() {
           </div>
           <div>
             <h4 className="font-semibold">
-              When will VIP subscriptions be available?
+              When will the Sapphire VIP subscription return?
             </h4>
             <p className="text-sm text-muted-foreground mt-1">
-              VIP subscriptions are currently in development. Check back soon
-              for payment options!
+              As of now, Sapphire VIP is not available for purchase. We are
+              currently evaluating the demand and feedback for this tier. Stay
+              tuned for updates! We appreciate your patience and understanding.
+              We will notify you when Sapphire VIP is available for purchase
+              again. Thank you for your support and understanding. We look
+              forward to serving you better in the future. Best regards, The
+              Resync Studios Team.
             </p>
           </div>
           <div>

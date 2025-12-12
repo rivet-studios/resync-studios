@@ -270,6 +270,7 @@ export async function registerRoutes(
           email: email as string,
           username: username as string,
           userRank: "member",
+          secondaryUserRank: "active_member",
           vipTier: "none",
         });
         req.login(user, (err) => {
@@ -474,7 +475,7 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
 
-      if (user.vipTier !== "Bronze" && user.vipTier !== "founders") {
+      if (user.vipTier !== "none" && user.vipTier !== "any") {
         return res
           .status(403)
           .json({ message: "Bronze VIP or higher required to create clans" });
@@ -822,8 +823,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "team_member",
+          "operations_manager",
           "company_director",
         ].includes(user.userRank);
 
@@ -855,8 +858,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "operations_manager",
+          "team_member",
           "company_director",
         ].includes(user.userRank);
 
@@ -895,8 +900,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "operations_manager",
+          "team_member",
           "company_director",
         ].includes(user.userRank);
 
@@ -925,8 +932,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "operations_manager",
+          "team_member",
           "company_director",
         ].includes(user.userRank);
 
@@ -955,8 +964,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "operations_manager",
+          "team_member",
           "company_director",
         ].includes(user.userRank);
 
@@ -992,8 +1003,10 @@ export async function registerRoutes(
           "community_senior_moderator",
           "administrator",
           "senior_administrator",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
+          "operations_manager",
+          "team_member",
           "company_director",
         ].includes(user.userRank);
 
@@ -1094,7 +1107,8 @@ export async function registerRoutes(
         admin?.userRank &&
         [
           "operations_manager",
-          "rs_trust_safety_director",
+          "team_member",
+          "staff_administration_director",
           "leadership_council",
           "company_director",
         ].includes(admin.userRank);
@@ -1129,7 +1143,7 @@ export async function registerRoutes(
     "leadership_council",
     "operations_manager",
     "team_member",
-    "rs_trust_safety_director",
+    "staff_administration_director",
     "administrator",
     "senior_administrator",
     "moderator",
@@ -1167,6 +1181,7 @@ export async function registerRoutes(
         username: user.username,
         email: user.email,
         userRank: user.userRank,
+        secondaryUserRank: user.secondaryUserRank,
         vipTier: user.vipTier,
         createdAt: user.createdAt,
       }));
@@ -1317,7 +1332,7 @@ export async function registerRoutes(
         [
           "team_member",
           "operations_manager",
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
           "company_director",
         ].includes(user.userRank);
@@ -1325,11 +1340,19 @@ export async function registerRoutes(
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
 
       const { title, content, type, details, isPublished } = req.body;
-      console.log("📝 Creating announcement with data:", { title, content, type, details, isPublished });
+      console.log("📝 Creating announcement with data:", {
+        title,
+        content,
+        type,
+        details,
+        isPublished,
+      });
 
       if (!title || !content) {
         console.log("❌ Missing required fields: title or content");
-        return res.status(400).json({ message: "Title and content are required" });
+        return res
+          .status(400)
+          .json({ message: "Title and content are required" });
       }
 
       const announcementData = {
@@ -1346,8 +1369,11 @@ export async function registerRoutes(
       res.json(announcement);
     } catch (error) {
       console.error("❌ Error creating announcement:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      res.status(500).json({ message: `Failed to create announcement: ${errorMessage}` });
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res
+        .status(500)
+        .json({ message: `Failed to create announcement: ${errorMessage}` });
     }
   });
 
@@ -1358,7 +1384,7 @@ export async function registerRoutes(
       const isAdmin =
         user?.userRank &&
         [
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "leadership_council",
           "operations_manager",
           "team_member",
@@ -1389,7 +1415,7 @@ export async function registerRoutes(
       const isAdmin =
         user?.userRank &&
         [
-          "rs_trust_safety_director",
+          "staff_administration_director",
           "operations_manager",
           "team_member",
           "leadership_council",
@@ -1415,7 +1441,7 @@ export async function registerRoutes(
           [
             "administrator",
             "senior_administrator",
-            "rs_trust_safety_director",
+            "staff_administration_director",
             "leadership_council",
             "company_director",
             "moderator",
@@ -1451,7 +1477,6 @@ export async function registerRoutes(
         user?.userRank &&
         [
           "operations_manager",
-          "leadership_council",
           "company_director",
         ].includes(user.userRank);
 
@@ -1482,10 +1507,8 @@ export async function registerRoutes(
       const isAdmin =
         user?.userRank &&
         [
-          "customer_relations",
           "operations_manager",
           "team_member",
-          "leadership_council",
           "company_director",
         ].includes(user.userRank);
 
@@ -1530,6 +1553,7 @@ export async function registerRoutes(
         username,
         email,
         userRank: "member",
+        secondaryUserRank: "active_member"
         vipTier: "none",
       });
       res.json({ message: "Account created successfully", user: newUser });
@@ -1550,6 +1574,7 @@ export async function registerRoutes(
           "administrator",
           "senior_administrator",
           "customer_relations",
+          "staff_administration_director",
           "leadership_council",
           "operations_manager",
           "team_member",
@@ -1705,15 +1730,15 @@ export async function registerRoutes(
         {
           id: "bronze",
           name: "Bronze",
-          price: 1399,
-          priceText: "$13.99/month",
+          price: 1099,
+          priceText: "$10.99/month",
           benefits: ["Custom profile badge", "Priority support"],
         },
         {
           id: "sapphire",
           name: "Sapphire",
-          price: 2999,
-          priceText: "$29.99/month",
+          price: 1599,
+          priceText: "$15.99/month",
           benefits: [
             "All Bronze benefits",
             "Exclusive cosmetics",
@@ -1723,8 +1748,8 @@ export async function registerRoutes(
         {
           id: "diamond",
           name: "Diamond",
-          price: 4499,
-          priceText: "$44.99/month",
+          price: 1999,
+          priceText: "$19.99/month",
           benefits: [
             "All Sapphire benefits",
             "VIP cosmetics",
@@ -1734,8 +1759,8 @@ export async function registerRoutes(
         {
           id: "founders",
           name: "Founders",
-          price: 6499,
-          priceText: "$64.99/month",
+          price: 3599,
+          priceText: "$35.99/month",
           benefits: [
             "All Diamond benefits",
             "Founder title",

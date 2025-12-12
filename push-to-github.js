@@ -25,13 +25,15 @@ async function getAccessToken() {
   }
 
   connectionSettings = await fetch(
-    "https://" + hostname + "/api/v2/connection?include_secrets=true&connector_names=github",
+    "https://" +
+      hostname +
+      "/api/v2/connection?include_secrets=true&connector_names=github",
     {
       headers: {
         Accept: "application/json",
         X_REPLIT_TOKEN: xReplitToken,
       },
-    }
+    },
   )
     .then((res) => res.json())
     .then((data) => data.items?.[0]);
@@ -67,8 +69,7 @@ async function main() {
     try {
       await octokit.rest.repos.createForAuthenticatedUser({
         name: repoName,
-        description:
-          "REACT Studios Gaming Community Platform - Discord Auth, LFG, Clans, Forums",
+        description: "REACT Studios Gaming Community Platform",
         private: false,
         auto_init: false,
       });
@@ -112,7 +113,9 @@ async function main() {
     });
 
     console.log("✅ SUCCESS! Your code is now on GitHub!");
-    console.log(`🌐 Repository URL: https://github.com/${username}/${repoName}`);
+    console.log(
+      `🌐 Repository URL: https://github.com/${username}/${repoName}`,
+    );
     console.log("\n📋 Next steps for Render/Railway deployment:");
     console.log(`   1. Go to render.com or railway.app`);
     console.log(`   2. Connect your GitHub repo: ${username}/${repoName}`);

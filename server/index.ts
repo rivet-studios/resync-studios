@@ -60,7 +60,7 @@ app.use(
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     },
     name: "resync.sid", // Custom session cookie name
-  })
+  }),
 );
 
 app.use(
@@ -117,20 +117,20 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize database tables on startup
   await initializeDatabase();
-  
+
   // Initialize Discord bot for nickname syncing
   await initializeDiscordBot();
-  
+
   await registerRoutes(httpServer, app);
 
   // Static file serving for SPA
   const distPublicPath = path.join(process.cwd(), "dist", "public");
   const indexHtmlPath = path.join(distPublicPath, "index.html");
-  
+
   console.log(`📍 CWD: ${process.cwd()}`);
   console.log(`📍 Index.html path: ${indexHtmlPath}`);
   console.log(`📍 Index.html exists: ${fs.existsSync(indexHtmlPath)}`);
-  
+
   // Health check endpoint
   app.get("/_health", (req, res) => {
     res.json({ status: "ok", mode: process.env.NODE_ENV });
@@ -138,13 +138,15 @@ app.use((req, res, next) => {
 
   if (fs.existsSync(indexHtmlPath)) {
     console.log("✅ PRODUCTION MODE: Serving from dist/public");
-    
+
     // Serve all static assets with no caching
-    app.use(express.static(distPublicPath, { 
-      etag: false,
-      maxAge: 0
-    }));
-    
+    app.use(
+      express.static(distPublicPath, {
+        etag: false,
+        maxAge: 0,
+      }),
+    );
+
     // Catch-all: serve index.html for all non-API routes (SPA routing)
     app.all("*", (req, res) => {
       res.sendFile(indexHtmlPath);

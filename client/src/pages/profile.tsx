@@ -89,6 +89,9 @@ export default function Profile() {
                 {user?.userRank && user.userRank !== 'member' && (
                   <UserRankBadge rank={user.userRank} />
                 )}
+                {user?.secondaryUserRank && user.secondaryUserRank !== 'member' && (
+                  <UserRankBadge rank={user.secondaryUserRank} />
+                )}
                 {user?.vipTier && user.vipTier !== 'none' && (
                   <VipBadge tier={user.vipTier as any} />
                 )}

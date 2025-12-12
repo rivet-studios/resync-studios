@@ -89,7 +89,7 @@ const testimonials = [
 const tiers = [
   {
     name: "Bronze VIP®",
-    price: 13.99,
+    price: 10.99,
     features: [
       "[RS Discord Server] Exclusive Role, Less Chat Restrictions",
       "[RS Discord Server] Post Images / Videos / Files",
@@ -100,7 +100,7 @@ const tiers = [
   },
   {
     name: "Diamond VIP®",
-    price: 34.99,
+    price: 19.99,
     features: [
       "[RS Discord Server] Exclusive Role, Less Chat Restrictions",
       "[RS Discord Server] Post Images / Videos / Files",
@@ -111,7 +111,7 @@ const tiers = [
   },
   {
     name: "Founder's Edition VIP®",
-    price: 64.99,
+    price: 35.0,
     features: [
       "[RS Discord Server] Exclusive Role, Less Chat Restrictions",
       "[RS Discord Server] Post Images / Videos / Files",
@@ -134,7 +134,7 @@ export default function Landing() {
                 <Gamepad2 className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="font-display font-bold text-xl">
-                REACT Studios™
+                RESYNC Studios™
               </span>
             </div>
 
