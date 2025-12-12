@@ -1475,10 +1475,7 @@ export async function registerRoutes(
       const user = await storage.getUser(userId);
       const isAdmin =
         user?.userRank &&
-        [
-          "operations_manager",
-          "company_director",
-        ].includes(user.userRank);
+        ["operations_manager", "company_director"].includes(user.userRank);
 
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
 
@@ -1506,11 +1503,9 @@ export async function registerRoutes(
       const user = await storage.getUser(userId);
       const isAdmin =
         user?.userRank &&
-        [
-          "operations_manager",
-          "team_member",
-          "company_director",
-        ].includes(user.userRank);
+        ["operations_manager", "team_member", "company_director"].includes(
+          user.userRank,
+        );
 
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
 
@@ -1553,7 +1548,7 @@ export async function registerRoutes(
         username,
         email,
         userRank: "member",
-        secondaryUserRank: "active_member"
+        secondaryUserRank: "active_member",
         vipTier: "none",
       });
       res.json({ message: "Account created successfully", user: newUser });
