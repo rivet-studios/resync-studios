@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
@@ -19,27 +31,41 @@ interface User {
 
 const RANK_OPTIONS = [
   { value: "member", label: "Member" },
-  { value: "none", label: "None" },
-  { value: "company_director", label: "Company Director" },
+  { value: "active_member", label: "Active Member" },
+  { value: "trusted_member", label: "Trusted Member" },
+  { value: "community_partner", label: "Community Partner" },
+  { value: "bronze_vip", label: "Bronze VIP" },
+  { value: "sapphire_vip", label: "Sapphire VIP" },
+  { value: "diamond_vip", label: "Diamond VIP" },
+  { value: "founders_edition_vip", label: "Founders Edition VIP" },
+  { value: "founders_edition_lifetime", label: "Lifetime" },
+  { value: "community_developer", label: "Community Developer" },
+  { value: "rs_volunteer_staff", label: "RS Volunteer Staff" },
+  { value: "community_moderator", label: "Community Moderator" },
+  { value: "community_senior_moderator", label: "Community Senior Moderator" },
+  { value: "moderator", label: "moderator" },
+  { value: "administrator", label: "administrator" },
+  { value: "senior_administrator", label: "senior_administrator" },
+  { value: "customer_relations", label: "Customer Relations" },
+  { value: "team_member", label: "Team Member" },
+  { value: "staff_administration_director", label: "Trust & Safety Director" },
   { value: "leadership_council", label: "Leadership Council" },
   { value: "operations_manager", label: "Operations Manager" },
-  { value: "rs_trust_safety_director", label: "Trust & Safety Director" },
-  { value: "administrator", label: "Administrator" },
-  { value: "senior_administrator", label: "Senior Administrator" },
-  { value: "moderator", label: "Moderator" },
-  { value: "community_moderator", label: "Community Moderator" },
-  { value: "community_senior_moderator", label: "Senior Community Moderator" },
-  { value: "community_developer", label: "Community Developer" },
-  { value: "customer_relations", label: "Customer Relations" },
-  { value: "rs_volunteer_staff", label: "Volunteer Staff" },
+  { value: "company_director", label: "Company Director" },
 ];
 
 export default function AdminPanel() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>({});
+  const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>(
+    {},
+  );
 
-  const { data: users = [], isLoading, error: queryError } = useQuery({
+  const {
+    data: users = [],
+    isLoading,
+    error: queryError,
+  } = useQuery({
     queryKey: ["/api/admin/users"],
   });
 
@@ -64,10 +90,10 @@ export default function AdminPanel() {
         body: JSON.stringify({ userId, rank }),
         credentials: "include",
       });
-      
+
       const data = await response.json();
       console.log(`📊 Response:`, response.status, data);
-      
+
       if (!response.ok) {
         throw new Error(data.message || `HTTP ${response.status}`);
       }
@@ -89,9 +115,10 @@ export default function AdminPanel() {
     },
   });
 
-  const filteredUsers = users.filter((user: User) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user: User) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleRankChange = (userId: string, newRank: string) => {
@@ -112,13 +139,17 @@ export default function AdminPanel() {
           <Shield className="w-8 h-8" />
           Admin Panel
         </h1>
-        <p className="text-muted-foreground">Manage user ranks and permissions</p>
+        <p className="text-muted-foreground">
+          Manage user ranks and permissions
+        </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Rank Assignment</CardTitle>
-          <CardDescription>Search for users and assign them ranks</CardDescription>
+          <CardDescription>
+            Search for users and assign them ranks
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Input
@@ -129,9 +160,13 @@ export default function AdminPanel() {
           />
 
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading users...</div>
+            <div className="text-center py-8 text-muted-foreground">
+              Loading users...
+            </div>
           ) : filteredUsers.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No users found</div>
+            <div className="text-center py-8 text-muted-foreground">
+              No users found
+            </div>
           ) : (
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {filteredUsers.map((user: User) => (
@@ -142,10 +177,13 @@ export default function AdminPanel() {
                 >
                   <div className="flex-1">
                     <div className="font-semibold">{user.username}</div>
-                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {user.email}
+                    </div>
                     <div className="mt-1">
                       <Badge variant="outline">
-                        {RANK_OPTIONS.find((r) => r.value === user.userRank)?.label || user.userRank}
+                        {RANK_OPTIONS.find((r) => r.value === user.userRank)
+                          ?.label || user.userRank}
                       </Badge>
                     </div>
                   </div>
@@ -153,9 +191,14 @@ export default function AdminPanel() {
                   <div className="flex items-center gap-2">
                     <Select
                       value={selectedRanks[user.id] || ""}
-                      onValueChange={(value) => handleRankChange(user.id, value)}
+                      onValueChange={(value) =>
+                        handleRankChange(user.id, value)
+                      }
                     >
-                      <SelectTrigger className="w-48" data-testid={`select-rank-${user.id}`}>
+                      <SelectTrigger
+                        className="w-48"
+                        data-testid={`select-rank-${user.id}`}
+                      >
                         <SelectValue placeholder="Select new rank" />
                       </SelectTrigger>
                       <SelectContent>
@@ -169,7 +212,9 @@ export default function AdminPanel() {
 
                     <Button
                       onClick={() => handleAssignRank(user.id)}
-                      disabled={!selectedRanks[user.id] || assignRankMutation.isPending}
+                      disabled={
+                        !selectedRanks[user.id] || assignRankMutation.isPending
+                      }
                       data-testid={`button-assign-${user.id}`}
                     >
                       {assignRankMutation.isPending ? "Assigning..." : "Assign"}

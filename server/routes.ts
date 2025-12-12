@@ -474,7 +474,7 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
 
-      if (user.vipTier !== "Bronze" && user.vipTier !== "founders") {
+      if (user.vipTier !== "none" && user.vipTier !== "founders") {
         return res
           .status(403)
           .json({ message: "Bronze VIP or higher required to create clans" });
@@ -1325,11 +1325,19 @@ export async function registerRoutes(
       if (!isAdmin) return res.status(403).json({ message: "Unauthorized" });
 
       const { title, content, type, details, isPublished } = req.body;
-      console.log("📝 Creating announcement with data:", { title, content, type, details, isPublished });
+      console.log("📝 Creating announcement with data:", {
+        title,
+        content,
+        type,
+        details,
+        isPublished,
+      });
 
       if (!title || !content) {
         console.log("❌ Missing required fields: title or content");
-        return res.status(400).json({ message: "Title and content are required" });
+        return res
+          .status(400)
+          .json({ message: "Title and content are required" });
       }
 
       const announcementData = {
@@ -1346,8 +1354,11 @@ export async function registerRoutes(
       res.json(announcement);
     } catch (error) {
       console.error("❌ Error creating announcement:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      res.status(500).json({ message: `Failed to create announcement: ${errorMessage}` });
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res
+        .status(500)
+        .json({ message: `Failed to create announcement: ${errorMessage}` });
     }
   });
 

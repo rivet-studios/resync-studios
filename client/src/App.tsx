@@ -30,7 +30,7 @@ import Projects from "@/pages/projects";
 import Support from "@/pages/support";
 import VolunteerModeration from "@/pages/volunteer-moderation";
 import DMCA from "@/pages/dmca";
-import ProjectReimaginedrules from "@/pages/project-reimagined-rules";
+import ProjectFoxtrotrules from "@/pages/project-foxtrot-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
 import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
@@ -164,8 +164,11 @@ function AuthenticatedRoutes() {
         <Route path="/support" component={Support} />
         <Route path="/volunteer" component={VolunteerModeration} />
         <Route path="/dmca" component={DMCA} />
-        <Route path="/project-reimagined-rules" component={ProjectReimaginedrules} />
-        <Route path="/volunteer-agreement" component={VolunteerStaffAgreement} />
+        <Route path="/project-foxtrot-rules" component={ProjectFoxtrotrules} />
+        <Route
+          path="/volunteer-agreement"
+          component={VolunteerStaffAgreement}
+        />
         <Route path="/leo-guidelines" component={LEOGuidelines} />
         <Route path="/community-rules" component={CommunityRules} />
         <Route path="/about" component={AboutMetro} />
@@ -183,6 +186,8 @@ function PublicRoutes() {
         <Route path="/" component={Landing} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
+        <Route path="/chat" component={Chat} />
+        <Route path="/vip" component={VIP} />
         <Route path="/team" component={StaffDirectory} />
         <Route path="/staff" component={StaffDirectory} />
         <Route path="/staff-directory" component={StaffDirectory} />
@@ -195,10 +200,7 @@ function PublicRoutes() {
         <Route path="/support" component={Support} />
         <Route path="/volunteer" component={VolunteerModeration} />
         <Route path="/dmca" component={DMCA} />
-        <Route
-          path="/project-reimagined-rules"
-          component={ProjectReimaginedrules}
-        />
+        <Route path="/project-foxtrot-rules" component={ProjectFoxtrotrules} />
         <Route
           path="/volunteer-agreement"
           component={VolunteerStaffAgreement}
@@ -240,7 +242,7 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="react-studios-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="resync-studios-theme">
         <TooltipProvider>
           <Router />
           <Toaster />
