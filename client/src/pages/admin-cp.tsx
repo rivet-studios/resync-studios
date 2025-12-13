@@ -526,8 +526,8 @@ export default function AdminCP() {
             {users
               .filter(
                 (u) =>
-                  u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  u.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+                  (u.username?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+                  (u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false),
               )
               .map((u) => (
                 <Card key={u.id}>
