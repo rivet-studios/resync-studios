@@ -43,7 +43,6 @@ import {
   Shield,
   Plus,
   Trash2,
-  Settings,
   AlertTriangle,
 } from "lucide-react";
 import { type Announcement, type User } from "@shared/schema";
