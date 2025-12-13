@@ -113,15 +113,6 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
     initialData?.isPublished !== false,
   );
 
-  const handleAddDetail = () => setDetails([...details, ""]);
-  const handleRemoveDetail = (idx: number) =>
-    setDetails(details.filter((_: string, i: number) => i !== idx));
-  const handleDetailChange = (idx: number, value: string) => {
-    const newDetails = [...details];
-    newDetails[idx] = value;
-    setDetails(newDetails);
-  };
-
   return (
     <div className="space-y-4">
       <Input
@@ -222,7 +213,6 @@ export default function AdminCP() {
   const { data: announcements = [] } = useQuery<Announcement[]>({
     queryKey: ["/api/announcements"],
   });
-  const { data: siteSettings } = useQuery({ queryKey: ["/api/site-settings"] });
   const { data: searchResults = [] } = useQuery<User[]>({
     queryKey: ["/api/admin/search-users", subscriptionSearch],
     enabled: subscriptionSearch.length > 0,
