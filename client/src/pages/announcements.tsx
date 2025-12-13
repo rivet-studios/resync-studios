@@ -24,8 +24,6 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function Announcements() {
-  const { user } = useAuth();
-
   const { data: announcements = [], isLoading } = useQuery<Announcement[]>({
     queryKey: ["/api/announcements"],
   });
