@@ -43,7 +43,6 @@ import {
   Shield,
   Plus,
   Trash2,
-  Users,
   Settings,
   AlertTriangle,
 } from "lucide-react";
