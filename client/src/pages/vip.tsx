@@ -41,7 +41,7 @@ const tiers = [
   {
     id: "bronze",
     name: "Bronze VIP",
-    price: 22.95,
+    price: 10.99,
     icon: Crown,
     className: "vip-bronze",
     features: [
@@ -95,7 +95,7 @@ const tiers = [
   {
     id: "sapphire",
     name: "Sapphire VIP",
-    price: 33.95,
+    price: 14.99,
     icon: Gem,
     className: "vip-sapphire",
     features: [
@@ -153,7 +153,7 @@ const tiers = [
   {
     id: "diamond",
     name: "Diamond VIP",
-    price: 45.99,
+    price: 19.99,
     icon: Diamond,
     className: "vip-diamond",
     features: [
@@ -211,7 +211,7 @@ const tiers = [
   {
     id: "founders",
     name: "Founders Edition",
-    price: 120.0,
+    price: 35.99,
     icon: Star,
     className: "vip-founders",
     features: [
