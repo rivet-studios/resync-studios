@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { type User } from "@shared/schema";
 import {
   Card,
   CardContent,
@@ -66,7 +67,7 @@ interface ForumReply {
 }
 
 export default function ModCP() {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user?: User };
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
 

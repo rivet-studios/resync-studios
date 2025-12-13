@@ -47,7 +47,7 @@ const departments: Department[] = [
       },
       {
         name: "ArielOperations",
-        role: "Operations Manager & Staff Administration Director",
+        role: "Operations Manager",
         joinDate: "2025-Present",
       },
       {
@@ -64,7 +64,7 @@ const departments: Department[] = [
     members: [
       {
         name: "Iceberg1038",
-        role: "Trust & Safety Director",
+        role: "Staff Department Director",
         joinDate: "2023-Present",
       },
     ],
@@ -74,6 +74,11 @@ const departments: Department[] = [
     icon: Headphones,
     color: "text-green-500",
     members: [
+      {
+        name: "Bobby3245832",
+        role: "Customer Support Director",
+        joinDate: "2025-Present",
+      },
       {
         name: "nil",
         role: "Senior Customer Support Representative",
@@ -92,12 +97,12 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "d1vvt",
+        name: "cxiqlne",
         role: "Vehicle Artist",
-        joinDate: "2019-Present",
+        joinDate: "2018-Present",
       },
       {
-        name: "acerxtro",
+        name: "cxiqlne",
         role: "Gameplay Systems Developer",
         joinDate: "2018-Present",
       },
