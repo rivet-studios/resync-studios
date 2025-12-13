@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -43,7 +42,6 @@ import {
 import {
   Shield,
   Plus,
-  Edit2,
   Trash2,
   Users,
   Settings,
@@ -106,7 +104,7 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
   const [type, setType] = useState(initialData?.type || "update");
-  const [details, setDetails] = useState(
+  const [details] = useState(
     initialData?.details ? JSON.parse(initialData.details) : [""],
   );
   const [isPublished, setIsPublished] = useState(
