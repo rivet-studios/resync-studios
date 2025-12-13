@@ -23,28 +23,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Shield,
-  Plus,
-  Trash2,
-  AlertTriangle,
-} from "lucide-react";
+import { Shield, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { type Announcement, type User } from "@shared/schema";
 
 interface Stats {
