@@ -18,7 +18,7 @@ export const rankConfig = {
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
   },
-  rs_trust_safety_director: {
+  staff_department_director: {
     label: "STAFF DEPARTMENT DIRECTOR",
     color: "#4B7DF7",
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
@@ -83,6 +83,12 @@ export const rankConfig = {
   },
   founders_edition_vip: {
     label: "Founders Edition VIP",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: true,
+  },
+  founders_edition_lifetime: {
+    label: "Founders Edition Lifetime",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
