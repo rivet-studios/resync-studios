@@ -6,14 +6,14 @@ export const rankConfig = {
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
   },
-  leadership_council: {
-    label: "LEADERSHIP COUNCIL",
+  operations_manager: {
+    label: "OPERATIONS MANAGER",
     color: "#4B7DF7",
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
   },
-  operations_manager: {
-    label: "OPERATIONS MANAGER",
+  leadership_council: {
+    label: "LEADERSHIP COUNCIL",
     color: "#4B7DF7",
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
@@ -165,6 +165,7 @@ interface UserRankBadgeProps {
 
 export function UserRankBadge({
   rank = "member",
+  username,
   className = "",
   size = "md",
 }: UserRankBadgeProps) {

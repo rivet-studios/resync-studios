@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import {
   Card,
   CardContent,
@@ -26,7 +26,6 @@ interface User {
   username: string;
   email: string;
   userRank: string;
-  secondaryUserRank: string;
   createdAt: string;
 }
 
