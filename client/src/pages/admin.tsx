@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   Card,
   CardContent,
@@ -85,15 +85,7 @@ export default function AdminPanel() {
   }, [queryError, toast]);
 
   const assignRankMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      rank,
-      secondaryrank,
-    }: {
-      userId: string;
-      rank: string;
-      secondaryrank?: string;
-    }) => {
+    mutationFn: async ({ userId, rank }: { userId: string; rank: string }) => {
       console.log(`🔐 Assigning rank: user=${userId}, rank=${rank}`);
       const response = await fetch("/api/admin/assign-rank", {
         method: "POST",
@@ -101,7 +93,6 @@ export default function AdminPanel() {
         body: JSON.stringify({
           userId,
           rank,
-          ...(secondaryrank && { secondaryrank }),
         }),
         credentials: "include",
       });
