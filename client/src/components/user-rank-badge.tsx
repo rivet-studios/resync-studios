@@ -19,7 +19,7 @@ export const rankConfig = {
     formatted: true,
   },
   rs_trust_safety_director: {
-    label: "RS TRUST & SAFETY DIRECTOR™",
+    label: "STAFF DEPARTMENT DIRECTOR",
     color: "#4B7DF7",
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
@@ -32,20 +32,14 @@ export const rankConfig = {
     formatted: true,
   },
   // Staff ranks (no badge)
-  administrator: {
-    label: "Administrator",
+  community_administrator: {
+    label: "Community Administrator",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
   },
-  senior_administrator: {
-    label: "Senior Administrator",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
-  moderator: {
-    label: "Moderator",
+  community_senior_administrator: {
+    label: "Community Senior Administrator",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
@@ -106,8 +100,20 @@ export const rankConfig = {
     badgeUrl: null,
     formatted: true,
   },
+  rs_trust_safety_team: {
+    label: "RS Trusty & Safety Team",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: true,
+  },
   member: {
     label: "Member",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: false,
+  },
+  banned: {
+    label: "Banned",
     color: "#6B7280",
     badgeUrl: null,
     formatted: false,
