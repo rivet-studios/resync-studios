@@ -17,7 +17,6 @@ import { z } from "zod";
 export const vipTierEnum = pgEnum("vip_tier", [
   "none",
   "bronze",
-  "sapphire",
   "diamond",
   "founders",
   "founders_lifetime",
@@ -52,11 +51,10 @@ export const userRankEnum = pgEnum("user_rank", [
   "customer_relations",
   "appeals_moderator",
   "rs_volunteer_staff",
-  "rs_trust_&_safety_team",
+  "rs_trust_safety_team",
   "founders_edition_lifetime",
   "founders_edition_vip",
   "diamond_vip",
-  "sapphire_vip",
   "bronze_vip",
   "community_partner",
   "trusted_member",
@@ -109,9 +107,8 @@ export const users = pgTable("users", {
   // Clan membership
   clanId: varchar("clan_id"),
   clanRole: varchar("clan_role"),
-  // User rank/role - User rank is the primary rank of the user - User rank can be either member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff
-  userRank: userRankEnum("user_rank").default("member"), // Primary rank
-  secondaryUserRank: userRankEnum("secondary_user_rank").default("member"), // Secondary rank - Optional - if none provided, secondary rank will be set to member by default. If a secondary rank is provided, it will be set to that rank. If the user is a VIP, the secondary rank will be set to the VIP rank unless a secondary rank is provided, in which case it will be set to that rank. If the user is a staff member, the primary rank will be set to the staff rank and if the user already had a primary rank set, the original primary rank will be set to the secondary rank, in which case it will be set to that rank.
+  // User rank/role
+  userRank: userRankEnum("user_rank").default("member"),
   // Banning
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
@@ -616,7 +613,7 @@ export const metaDatabase = pgTable("meta_database", {
   content: text("content").notNull(),
   tier: varchar("tier"), // S, A, B, C
   winRate: integer("win_rate"),
-  viewCount: integer("view_count").default(0),
+  viewCount: integer("view_count").default(1), // Start at 1 to count the initial view
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -677,7 +674,7 @@ export const payments = pgTable("payments", {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
-  vipTier: varchar("vip_tier").notNull(), // bronze, sapphire, diamond, founders
+  vipTier: varchar("vip_tier").notNull(), // bronze, diamond, founders, lifetime
   amount: integer("amount").notNull(), // in cents
   status: varchar("status").default("processing"), // processing, success, failed, refunded
   stripePaymentIntentId: varchar("stripe_payment_intent_id"),
@@ -1004,20 +1001,6 @@ export const VIP_TIERS = {
       "ATM Fees Waived",
     ],
   },
-  sapphire: {
-    name: "Sapphire VIP",
-    price: 1599,
-    features: [
-      "Exclusive Discord Role & Privileges",
-      "High Priority HelpDesk Support",
-      "High Priority Moderation Appeals",
-      "XP Boost (35%)",
-      "Paychecks Boost (30%)",
-      "Save 25% on Vehicle Insurance",
-      "Exclusive Vehicles",
-      "ATM Fees Waived",
-    ],
-  },
   diamond: {
     name: "Diamond VIP",
     price: 1999,
@@ -1036,7 +1019,7 @@ export const VIP_TIERS = {
   },
   founders: {
     name: "Founders Edition",
-    price: 3500,
+    price: 3599,
     features: [
       "Exclusive Founders Discord Role",
       "Urgent Priority HelpDesk Support",
