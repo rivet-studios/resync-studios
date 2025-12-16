@@ -107,7 +107,7 @@ export const rankConfig = {
     formatted: false,
   },
   rs_volunteer_staff: {
-    label: "RS™ Volunteer Staff",
+    label: "RS Volunteer Staff",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
@@ -165,7 +165,6 @@ interface UserRankBadgeProps {
 
 export function UserRankBadge({
   rank = "member",
-  username,
   className = "",
   size = "md",
 }: UserRankBadgeProps) {
