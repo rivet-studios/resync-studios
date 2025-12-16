@@ -411,15 +411,15 @@ export default function ModCP() {
               <div className="grid gap-4">
                 <Button variant="outline" className="justify-start" disabled>
                   <Shield className="w-4 h-4 mr-2" />
-                  View User Reports (Open Testing)
+                  View User Reports (Open Beta Testing)
                 </Button>
                 <Button variant="outline" className="justify-start" disabled>
                   <AlertTriangle className="w-4 h-4 mr-2" />
-                  View Spam Reports (Open Testing)
+                  View Spam Reports (Open Beta Testing)
                 </Button>
                 <Button variant="outline" className="justify-start" disabled>
                   <Lock className="w-4 h-4 mr-2" />
-                  Manage Bans (Open Testing)
+                  Manage Bans (Open Beta Testing)
                 </Button>
               </div>
             </CardContent>
