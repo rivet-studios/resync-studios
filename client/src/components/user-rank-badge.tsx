@@ -62,6 +62,12 @@ export const rankConfig = {
     badgeUrl: null,
     formatted: true,
   },
+  staff_internal_affairs: {
+    label: "Staff Internal Affairs",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: true,
+  },
   // VIP ranks (no badge)
   bronze_vip: {
     label: "Bronze VIP",
@@ -111,6 +117,30 @@ export const rankConfig = {
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
+  },
+  appeals_moderator: {
+    label: "Appeals Moderator",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: false,
+  },
+  community_partner: {
+    label: "Community Partner",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: false,
+  },
+  trusted_member: {
+    label: "Trusted Member",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: false,
+  },
+  active_member: {
+    label: "Active Member",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: false,
   },
   member: {
     label: "Member",

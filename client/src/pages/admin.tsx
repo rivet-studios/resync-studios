@@ -20,7 +20,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
-import { secondaryUserRankEnum } from "@shared/schema";
 
 interface User {
   id: string;
@@ -42,7 +41,7 @@ const RANK_OPTIONS = [
   { value: "diamond_vip", label: "Diamond VIP" },
   { value: "founders_edition_vip", label: "Founders Edition VIP" },
   { value: "founders_edition_lifetime", label: "Lifetime" },
-  { value: "rs_trust_&_safety_team", label: "RS Trust & Safety Team" },
+  { value: "rs_trust_safety_team", label: "RS Trust & Safety Team" },
   { value: "rs_volunteer_staff", label: "RS Volunteer Staff" },
   { value: "appeals_moderator", label: "Appeals Moderator" },
   { value: "customer_relations", label: "Customer Relations" },
