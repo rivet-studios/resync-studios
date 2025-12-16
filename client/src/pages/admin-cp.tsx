@@ -54,7 +54,6 @@ const RANK_OPTIONS = [
   { value: "trusted_member", label: "Trusted Member" },
   { value: "community_partner", label: "Community Partner" },
   { value: "bronze_vip", label: "Bronze VIP" },
-  { value: "sapphire_vip", label: "Sapphire VIP" },
   { value: "diamond_vip", label: "Diamond VIP" },
   { value: "founders_edition_vip", label: "Founders Edition VIP" },
   { value: "founders_edition_lifetime", label: "Lifetime" },
@@ -78,7 +77,6 @@ const RANK_OPTIONS = [
 const VIP_OPTIONS = [
   { value: "none", label: "None" },
   { value: "bronze", label: "Bronze ($10.99)" },
-  { value: "sapphire", label: "Sapphire ($14.99)" },
   { value: "diamond", label: "Diamond ($19.99)" },
   { value: "founders", label: "Founders ($35.99)" },
 ];

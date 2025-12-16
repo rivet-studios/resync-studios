@@ -75,12 +75,6 @@ export const rankConfig = {
     badgeUrl: null,
     formatted: true,
   },
-  sapphire_vip: {
-    label: "Sapphire VIP",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
   diamond_vip: {
     label: "Diamond VIP",
     color: "#6B7280",

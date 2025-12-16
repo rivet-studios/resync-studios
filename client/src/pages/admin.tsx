@@ -36,7 +36,6 @@ const RANK_OPTIONS = [
   { value: "trusted_member", label: "Trusted Member" },
   { value: "community_partner", label: "Community Partner" },
   { value: "bronze_vip", label: "Bronze VIP" },
-  { value: "sapphire_vip", label: "Sapphire VIP" },
   { value: "diamond_vip", label: "Diamond VIP" },
   { value: "founders_edition_vip", label: "Founders Edition VIP" },
   { value: "founders_edition_lifetime", label: "Lifetime" },

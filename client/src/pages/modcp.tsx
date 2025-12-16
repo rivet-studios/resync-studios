@@ -66,7 +66,7 @@ export default function ModCP() {
   const isMod =
     user?.userRank &&
     [
-      "rs_trust_&_safety_team",
+      "rs_trust_safety_team",
       "community_moderator",
       "community_senior_moderator",
       "community_administrator",
@@ -411,15 +411,15 @@ export default function ModCP() {
               <div className="grid gap-4">
                 <Button variant="outline" className="justify-start" disabled>
                   <Shield className="w-4 h-4 mr-2" />
-                  View User Reports (Coming Soon)
+                  View User Reports (Open Testing)
                 </Button>
                 <Button variant="outline" className="justify-start" disabled>
                   <AlertTriangle className="w-4 h-4 mr-2" />
-                  View Spam Reports (Coming Soon)
+                  View Spam Reports (Open Testing)
                 </Button>
                 <Button variant="outline" className="justify-start" disabled>
                   <Lock className="w-4 h-4 mr-2" />
-                  Manage Bans (Coming Soon)
+                  Manage Bans (Open Testing)
                 </Button>
               </div>
             </CardContent>
