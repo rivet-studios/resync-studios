@@ -11,7 +11,6 @@ import {
   Star,
   ChevronRight,
 } from "lucide-react";
-import { SiDiscord, SiRoblox } from "react-icons/si";
 
 const stats = [
   { value: 69600, label: "Connected Members", suffix: "+" },
