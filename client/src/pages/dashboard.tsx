@@ -19,9 +19,24 @@ export default function Dashboard() {
 
   const quickActions = [
     { icon: Target, label: "Find Group", href: "/lfg", color: "text-chart-1" },
-    { icon: Users, label: "Browse Clans", href: "/clans", color: "text-chart-2" },
-    { icon: Swords, label: "View Builds", href: "/builds", color: "text-chart-3" },
-    { icon: MessageSquare, label: "Forums", href: "/forums", color: "text-chart-4" },
+    {
+      icon: Users,
+      label: "Browse Clans",
+      href: "/clans",
+      color: "text-chart-2",
+    },
+    {
+      icon: Swords,
+      label: "View Builds",
+      href: "/builds",
+      color: "text-chart-3",
+    },
+    {
+      icon: MessageSquare,
+      label: "Forums",
+      href: "/forums",
+      color: "text-chart-4",
+    },
   ];
 
   return (
@@ -37,7 +52,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {user?.vipTier && user.vipTier !== 'none' ? (
+          {user?.vipTier && user.vipTier !== "none" ? (
             <VipBadge tier={user.vipTier as any} />
           ) : (
             <Button variant="outline" asChild size="sm">
@@ -60,7 +75,8 @@ export default function Dashboard() {
                 <div>
                   <h3 className="font-semibold">Complete Your Profile</h3>
                   <p className="text-sm text-muted-foreground">
-                    Link your accounts to unlock full features and exclusive perks.
+                    Link your accounts to unlock full features and exclusive
+                    perks.
                   </p>
                 </div>
               </div>
@@ -110,7 +126,9 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">---</p>
-                <p className="text-xs text-muted-foreground">Active LFG Posts</p>
+                <p className="text-xs text-muted-foreground">
+                  Active LFG Posts
+                </p>
               </div>
             </div>
           </CardContent>
@@ -149,7 +167,9 @@ export default function Dashboard() {
           <Card key={action.label} className="hover-elevate">
             <Link href={action.href}>
               <CardContent className="p-4 flex flex-col items-center text-center cursor-pointer">
-                <div className={`w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3 ${action.color}`}>
+                <div
+                  className={`w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3 ${action.color}`}
+                >
                   <action.icon className="w-6 h-6" />
                 </div>
                 <span className="font-medium text-sm">{action.label}</span>
