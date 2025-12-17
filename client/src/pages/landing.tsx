@@ -15,11 +15,11 @@ import {
 import { SiDiscord, SiRoblox } from "react-icons/si";
 
 const stats = [
-  { value: 69600, label: "Connected Members", suffix: "+" },
-  { value: 0, label: "Discord Members", suffix: "+" },
-  { value: 295100, label: "Roblox Members", suffix: "+" },
+  { value: 15, label: "Connected Members", suffix: "+" },
+  { value: 14, label: "Discord Members", suffix: "+" },
+  { value: 59, label: "Roblox Members", suffix: "+" },
   { value: 34900, label: "Active Discussions", suffix: "+" },
-  { value: 99.9, label: "Uptime", suffix: "%" },
+  { value: 86.9, label: "Uptime", suffix: "%" },
   { value: 24, label: "Support", suffix: "/7" },
 ];
 
