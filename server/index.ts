@@ -121,7 +121,7 @@ app.use((req, res, next) => {
   // Initialize Discord bot for nickname syncing
   await initializeDiscordBot();
 
-  await registerRoutes(httpServer, app);
+  await registerRoutes({ httpServer, app });
 
   // Static file serving for SPA
   const distPublicPath = path.join(process.cwd(), "dist", "public");

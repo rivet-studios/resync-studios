@@ -17,7 +17,6 @@ import { z } from "zod";
 export const vipTierEnum = pgEnum("vip_tier", [
   "none",
   "bronze",
-  "sapphire",
   "diamond",
   "founders",
   "founders_lifetime",
@@ -38,28 +37,30 @@ export const gameRoleEnum = pgEnum("game_role", [
   "any",
 ]);
 export const userRankEnum = pgEnum("user_rank", [
-  "member", // Default rank for all users
-  "active_member", // Users who have played games or posted in forums
-  "trusted_member", // Users who have been active for a long time
-  "community_partner", // Users who have partnered with Resync Studios
-  "company_director", // Chief Executive Officer (CEO) & Founder of Resync Studios - cxiqlne
-  "leadership_council", // Members of the Leadership Council
-  "operations_manager", // Operations Managers
-  "staff_administration_director", // RS Trust & Safety Director
-  "team_member", // Users who are part of the Resync Studios team and users who are retired/former staff HR
-  "administrator", // Users who are administrators
-  "senior_administrator", // Users who are senior administrators - Trust & Safety Director typically recieves this rank as well
-  "moderator", // Users who are moderators
-  "community_moderator", // Users who are community moderators - Volunteer Staff typically recieves this rank
-  "community_senior_moderator", // Users who are community senior moderators - Volunteer Staff typically recieves this rank upon promotion
-  "community_developer", // Users who are community developers
-  "bronze_vip", // Users who have purchased Bronze VIP
-  "sapphire_vip", // Users who have purchased Sapphire VIP
-  "diamond_vip", // Users who have purchased Diamond VIP
-  "founders_edition_vip", // Users who have purchased Founders Edition VIP
-  "founders_edition_lifetime", // Users who have purchased Founders Edition Lifetime VIP
-  "customer_relations", // Users who are part of the Customer Relations team
-  "rs_volunteer_staff", // Users who are part of the RS Volunteer Staff team - given to users upon passing the Volunteer Staff application process
+  "banned",
+  "member",
+  "active_member",
+  "trusted_member",
+  "community_partner",
+  "company_director",
+  "leadership_council",
+  "operations_manager",
+  "staff_department_director",
+  "team_member",
+  "community_administrator",
+  "community_senior_administrator",
+  "community_moderator",
+  "community_senior_moderator",
+  "community_developer",
+  "bronze_vip",
+  "diamond_vip",
+  "founders_edition_vip",
+  "founders_edition_lifetime",
+  "customer_relations",
+  "rs_volunteer_staff",
+  "rs_trust_safety_team",
+  "appeals_moderator",
+  "staff_internal_affairs",
 ]);
 
 // Session storage table (mandatory for Replit Auth)
@@ -106,177 +107,8 @@ export const users = pgTable("users", {
   // Clan membership
   clanId: varchar("clan_id"),
   clanRole: varchar("clan_role"),
-  // User rank/role - User rank is the primary rank of the user - User rank can be either member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff
-  userRank: userRankEnum("user_rank").default("member"), // Primary rank
-  secondaryUserRank: userRankEnum("secondary_user_rank").default("member"), // Secondary rank - Optional - if none provided, secondary rank will be set to member by default. If a secondary rank is provided, it will be set to that rank. If the user is a VIP, the secondary rank will be set to the VIP rank unless a secondary rank is provided, in which case it will be set to that rank. If the user is a staff member, the secondary rank will be set to the staff rank unless a secondary rank is provided, in which case it will be set to that rank. - The following ranks are available for secondary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administ administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime - The following ranks are available for primary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff - The following ranks are available for VIP ranks: bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime - The following ranks are available for staff ranks: administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, rs_volunteer_staff
-  // Banning
-  isBanned: boolean("is_banned").default(false),
-  banReason: text("ban_reason"),
-  bannedAt: timestamp("banned_at"),
-  bannedBy: varchar("banned_by"),
-  // Website Ban
-  isWebsiteBanned: boolean("is_website_banned").default(false),
-  websiteBanReason: text("website_ban_reason"),
-  websiteBannedAt: timestamp("website_banned_at"),
-  websiteBannedBy: varchar("website_banned_by"),
-  // Moderator Dashboard
-  isModerator: boolean("is_moderator").default(false),
-  // Admin Dashboard
-  isAdmin: boolean("is_admin").default(false),
-  // Community Developer Dashboard
-  isCommunityDeveloper: boolean("is_community_developer").default(false),
-  // EAR (Emergency Access Request) Dashboard - EAR is a system that allows users to request access to the website if they are banned or have a website ban - EAR is only available to users who have a valid reason for requesting access
-  isEAR: boolean("is_ear").default(false),
-  // EAR Requests - EAR Requests are requests made by users to request access to the website if they are banned or have a website ban - EAR Requests are only available to users who have a valid reason for requesting access - EAR Requests are reviewed by the EAR Dashboard
-  earRequests: text("ear_requests"),
-  // EAR Request Status - EAR Request Status is the status of the EAR Request - EAR Request Status can be either pending, approved, or denied - EAR Request Status is reviewed by the EAR Dashboard
-  earRequestStatus: varchar("ear_request_status").default("pending"),
-  // EAR Request Date - EAR Request Date is the date the EAR Request was made - EAR Request Date is reviewed by the EAR Dashboard
-  earRequestDate: timestamp("ear_request_date"),
-  // EAR Request Reviewed By - EAR Request Reviewed By is the user who reviewed the EAR Request - EAR Request Reviewed By is reviewed by the EAR Dashboard
-  earRequestReviewedBy: varchar("ear_request_reviewed_by"),
-  // EAR Request Reviewed Date - EAR Request Reviewed Date is the date the EAR Request was reviewed - EAR Request Reviewed Date is reviewed by the EAR Dashboard - EAR Request Reviewed Date is only available if the EAR Request Status is either approved or denied
-  earRequestReviewedDate: timestamp("ear_request_reviewed_date"),
-  // EAR Request Reviewed Reason - EAR Request Reviewed Reason is the reason the EAR Request was reviewed - EAR Request Reviewed Reason is reviewed by the EAR Dashboard - EAR Request Reviewed Reason is only available if the EAR Request Status is either approved or denied - EAR Request Reviewed Reason can be either approved or denied
-  earRequestReviewedReason: text("ear_request_reviewed_reason"),
-  // Discord Server Roles - Discord Server Roles are the roles that the user has in the Resync Studios Discord server - Discord Server Roles are only available to users who have linked their Discord account to the website - Discord Server Roles are reviewed by the Discord Server Roles Dashboard
-  discordServerRoles: text("discord_server_roles"),
-  // Discord Server Roles Date - Discord Server Roles Date is the date the Discord Server Roles were last updated - Discord Server Roles Date is reviewed by the Discord Server Roles Dashboard
-  discordServerRolesDate: timestamp("discord_server_roles_date"),
-  // Discord Server Roles Reviewed By - Discord Server Roles Reviewed By is the user who reviewed the Discord Server Roles - Discord Server Roles Reviewed By is reviewed by the Discord Server Roles Dashboard
-  discordServerRolesReviewedBy: varchar("discord_server_roles_reviewed_by"),
-  // Discord Server Roles Reviewed Date - Discord Server Roles Reviewed Date is the date the Discord Server Roles were last reviewed - Discord Server Roles Reviewed Date is reviewed by the Discord Server Roles Dashboard
-  discordServerRolesReviewedDate: timestamp(
-    "discord_server_roles_reviewed_date",
-  ),
-  // Discord Server Roles Reviewed Reason - Discord Server Roles Reviewed Reason is the reason the Discord Server Roles were last reviewed - Discord Server Roles Reviewed Reason is reviewed by the Discord Server Roles Dashboard
-  discordServerRolesReviewedReason: text(
-    "discord_server_roles_reviewed_reason",
-  ),
-  // HelpDesk Tickets - HelpDesk Tickets are the tickets that the user has created in the HelpDesk - HelpDesk Tickets are only available to users who have created a HelpDesk ticket - HelpDesk Tickets are reviewed by the HelpDesk Dashboard - HelpDesk Tickets can be either open, closed, or pending - HelpDesk Tickets can be either public or private - HelpDesk Tickets can be either urgent or non-urgent - HelpDesk Tickets can be either high priority or low priority - HelpDesk Tickets can be either high severity or low severity - HelpDesk Tickets can be either high impact or low impact - HelpDesk Tickets can be either high risk or low risk - Help Desk Tickets can be either high reward or low reward - HelpDesk Tickets can be either high value or low value - HelpDesk Tickets can be either high cost or low cost - HelpDesk Tickets can be either high benefit or low benefit - HelpDesk Tickets can be either high return or low return - HelpDesk Tickets can be either high ROI or low ROI - HelpDesk Tickets can be either high leverage or low leverage
-  helpDeskTickets: text("help_desk_tickets"),
-  // HelpDesk Tickets Date - HelpDesk Tickets Date is the date the HelpDesk Tickets were last updated - HelpDesk Tickets Date is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsDate: timestamp("help_desk_tickets_date"),
-  // HelpDesk Tickets Reviewed By - HelpDesk Tickets Reviewed By is the user who reviewed the HelpDesk Tickets - HelpDesk Tickets Reviewed By is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsReviewedBy: varchar("help_desk_tickets_reviewed_by"),
-  // HelpDesk Tickets Reviewed Date - HelpDesk Tickets Reviewed Date is the date the HelpDesk Tickets were last reviewed - HelpDesk Tickets Reviewed Date is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsReviewedDate: timestamp("help_desk_tickets_reviewed_date"),
-  // HelpDesk Tickets Reviewed Reason - HelpDesk Tickets Reviewed Reason is the reason the HelpDesk Tickets were last reviewed - HelpDesk Tickets Reviewed Reason is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsReviewedReason: text("help_desk_tickets_reviewed_reason"),
-  // HelpDesk Tickets Status - HelpDesk Tickets Status is the status of the HelpDesk Tickets - HelpDesk Tickets Status can be either open, closed, or pending - HelpDesk Tickets Status is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsStatus: varchar("help_desk_tickets_status").default("open"),
-  // HelpDesk Tickets Priority - HelpDesk Tickets Priority is the priority of the HelpDesk Tickets - HelpDesk Tickets Priority can be either high or low - HelpDesk Tickets Priority is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsPriority: varchar("help_desk_tickets_priority").default("low"),
-  // HelpDesk Tickets Severity - HelpDesk Tickets Severity is the severity of the HelpDesk Tickets - HelpDesk Tickets Severity can be either high or low - HelpDesk Tickets Severity is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsSeverity: varchar("help_desk_tickets_severity").default("low"),
-  // HelpDesk Tickets Impact - HelpDesk Tickets Impact is the impact of the HelpDesk Tickets - HelpDesk Tickets Impact can be either high or low - HelpDesk Tickets Impact is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsImpact: varchar("help_desk_tickets_impact").default("low"),
-  // HelpDesk Tickets Risk - HelpDesk Tickets Risk is the risk of the HelpDesk Tickets - HelpDesk Tickets Risk can be either high or low - HelpDesk Tickets Risk is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsRisk: varchar("help_desk_tickets_risk").default("low"),
-  // HelpDesk Tickets Reward - HelpDesk Tickets Reward is the reward of the HelpDesk Tickets - HelpDesk Tickets Reward can be either high or low - HelpDesk Tickets Reward is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsReward: varchar("help_desk_tickets_reward").default("low"),
-  // HelpDesk Tickets Value - HelpDesk Tickets Value is the value of the HelpDesk Tickets - HelpDesk Tickets Value can be either high or low - HelpDesk Tickets Value is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsValue: varchar("help_desk_tickets_value").default("low"),
-  // HelpDesk Tickets Cost - HelpDesk Tickets Cost is the cost of the HelpDesk Tickets - HelpDesk Tickets Cost can be either high or low - HelpDesk Tickets Cost is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsCost: varchar("help_desk_tickets_cost").default("low"),
-  // HelpDesk Tickets Benefit - HelpDesk Tickets Benefit is the benefit of the HelpDesk Tickets - HelpDesk Tickets Benefit can be either high or low - HelpDesk Tickets Benefit is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsBenefit: varchar("help_desk_tickets_benefit").default("low"),
-  // HelpDesk Tickets Return - HelpDesk Tickets Return is the return of the HelpDesk Tickets - HelpDesk Tickets Return can be either high or low - HelpDesk Tickets Return is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsReturn: varchar("help_desk_tickets_return").default("low"),
-  // HelpDesk Tickets ROI - HelpDesk Tickets ROI is the ROI of the HelpDesk Tickets - HelpDesk Tickets ROI can be either high or low - HelpDesk Tickets ROI is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsROI: varchar("help_desk_tickets_roi").default("low"),
-  // HelpDesk Tickets Leverage - HelpDesk Tickets Leverage is the leverage of the HelpDesk Tickets - HelpDesk Tickets Leverage can be either high or low - HelpDesk Tickets Leverage is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLeverage: varchar("help_desk_tickets_leverage").default("low"),
-  // HelpDesk Tickets Public - HelpDesk Tickets Public is whether the HelpDesk Tickets are public or private - HelpDesk Tickets Public is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsPublic: boolean("help_desk_tickets_public").default(false),
-  // HelpDesk Tickets Urgent - HelpDesk Tickets Urgent is whether the HelpDesk Tickets are urgent or non-urgent - HelpDesk Tickets Urgent is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsUrgent: boolean("help_desk_tickets_urgent").default(false),
-  // HelpDesk Tickets High Priority - HelpDesk Tickets High Priority is whether the HelpDesk Tickets are high priority or low priority - HelpDesk Tickets High Priority is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighPriority: boolean(
-    "help_desk_tickets_high_priority",
-  ).default(false),
-  // HelpDesk Tickets High Severity - HelpDesk Tickets High Severity is whether the HelpDesk Tickets are high severity or low severity - HelpDesk Tickets High Severity is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighSeverity: boolean(
-    "help_desk_tickets_high_severity",
-  ).default(false),
-  // HelpDesk Tickets High Impact - HelpDesk Tickets High Impact is whether the HelpDesk Tickets are high impact or low impact - HelpDesk Tickets High Impact is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighImpact: boolean("help_desk_tickets_high_impact").default(
-    false,
-  ),
-  // HelpDesk Tickets High Risk - HelpDesk Tickets High Risk is whether the HelpDesk Tickets are high risk or low risk - HelpDesk Tickets High Risk is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighRisk: boolean("help_desk_tickets_high_risk").default(
-    false,
-  ),
-  // HelpDesk Tickets High Reward - HelpDesk Tickets High Reward is whether the HelpDesk Tickets are high reward or low reward - HelpDesk Tickets High Reward is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighReward: boolean("help_desk_tickets_high_reward").default(
-    false,
-  ),
-  // HelpDesk Tickets High Value - HelpDesk Tickets High Value is whether the HelpDesk Tickets are high value or low value - HelpDesk Tickets High Value is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighValue: boolean("help_desk_tickets_high_value").default(
-    false,
-  ),
-  // HelpDesk Tickets High Cost - HelpDesk Tickets High Cost is whether the HelpDesk Tickets are high cost or low cost - HelpDesk Tickets High Cost is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighCost: boolean("help_desk_tickets_high_cost").default(
-    false,
-  ),
-  // HelpDesk Tickets High Benefit - HelpDesk Tickets High Benefit is whether the HelpDesk Tickets are high benefit or low benefit - HelpDesk Tickets High Benefit is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighBenefit: boolean("help_desk_tickets_high_benefit").default(
-    false,
-  ),
-  // HelpDesk Tickets High Return - HelpDesk Tickets High Return is whether the HelpDesk Tickets are high return or low return - HelpDesk Tickets High Return is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighReturn: boolean("help_desk_tickets_high_return").default(
-    false,
-  ),
-  // HelpDesk Tickets High ROI - HelpDesk Tickets High ROI is whether the HelpDesk Tickets are high ROI or low ROI - HelpDesk Tickets High ROI is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighROI: boolean("help_desk_tickets_high_roi").default(false),
-  // HelpDesk Tickets High Leverage - HelpDesk Tickets High Leverage is whether the HelpDesk Tickets are high leverage or low leverage - HelpDesk Tickets High Leverage is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsHighLeverage: boolean(
-    "help_desk_tickets_high_leverage",
-  ).default(false),
-  // HelpDesk Tickets Private - HelpDesk Tickets Private is whether the HelpDesk Tickets are private or public - HelpDesk Tickets Private is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsPrivate: boolean("help_desk_tickets_private").default(false),
-  // HelpDesk Tickets Non-Urgent - HelpDesk Tickets Non-Urgent is whether the HelpDesk Tickets are non-urgent or urgent - HelpDesk Tickets Non-Urgent is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsNonUrgent: boolean("help_desk_tickets_non_urgent").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Priority - HelpDesk Tickets Low Priority is whether the HelpDesk Tickets are low priority or high priority - HelpDesk Tickets Low Priority is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowPriority: boolean("help_desk_tickets_low_priority").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Severity - HelpDesk Tickets Low Severity is whether the HelpDesk Tickets are low severity or high severity - HelpDesk Tickets Low Severity is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowSeverity: boolean("help_desk_tickets_low_severity").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Impact - HelpDesk Tickets Low Impact is whether the HelpDesk Tickets are low impact or high impact - HelpDesk Tickets Low Impact is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowImpact: boolean("help_desk_tickets_low_impact").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Risk - HelpDesk Tickets Low Risk is whether the HelpDesk Tickets are low risk or high risk - HelpDesk Tickets Low Risk is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowRisk: boolean("help_desk_tickets_low_risk").default(false),
-  // HelpDesk Tickets Low Reward - HelpDesk Tickets Low Reward is whether the HelpDesk Tickets are low reward or high reward - HelpDesk Tickets Low Reward is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowReward: boolean("help_desk_tickets_low_reward").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Value - HelpDesk Tickets Low Value is whether the HelpDesk Tickets are low value or high value - HelpDesk Tickets Low Value is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowValue: boolean("help_desk_tickets_low_value").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Cost - HelpDesk Tickets Low Cost is whether the HelpDesk Tickets are low cost or high cost - HelpDesk Tickets Low Cost is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowCost: boolean("help_desk_tickets_low_cost").default(false),
-  // HelpDesk Tickets Low Benefit - HelpDesk Tickets Low Benefit is whether the HelpDesk Tickets are low benefit or high benefit - HelpDesk Tickets Low Benefit is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowBenefit: boolean("help_desk_tickets_low_benefit").default(
-    false,
-  ),
-  // HelpDesk Tickets Low Return - HelpDesk Tickets Low Return is whether the HelpDesk Tickets are low return or high return - HelpDesk Tickets Low Return is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowReturn: boolean("help_desk_tickets_low_return").default(
-    false,
-  ),
-  // HelpDesk Tickets Low ROI - HelpDesk Tickets Low ROI is whether the HelpDesk Tickets are low ROI or high ROI - HelpDesk Tickets Low ROI is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowROI: boolean("help_desk_tickets_low_roi").default(false),
-  // HelpDesk Tickets Low Leverage - HelpDesk Tickets Low Leverage is whether the HelpDesk Tickets are low leverage or high leverage - HelpDesk Tickets Low Leverage is reviewed by the HelpDesk Dashboard
-  helpDeskTicketsLowLeverage: boolean("help_desk_tickets_low_leverage").default(
-    false,
-  ),
+  // User rank
+  userRank: userRankEnum("user_rank").default("member"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -294,7 +126,7 @@ export const clans = pgTable("clans", {
   bannerUrl: varchar("banner_url"),
   ownerId: varchar("owner_id").notNull(),
   isRecruiting: boolean("is_recruiting").default(true),
-  memberCount: integer("member_count").default(1), // Start at 1 to count the owner
+  memberCount: integer("member_count").default(1),
   maxMembers: integer("max_members").default(50),
   discordInvite: varchar("discord_invite"),
   primaryGame: varchar("primary_game"),
@@ -317,7 +149,7 @@ export const lfgPosts = pgTable("lfg_posts", {
   skillLevel: skillLevelEnum("skill_level").default("intermediate"),
   roleNeeded: gameRoleEnum("role_needed").default("any"),
   playersNeeded: integer("players_needed").default(1),
-  playersJoined: integer("players_joined").default(0), // Does not include the author
+  playersJoined: integer("players_joined").default(0),
   scheduledAt: timestamp("scheduled_at"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -350,7 +182,7 @@ export const builds = pgTable("builds", {
   imageUrl: varchar("image_url"),
   upvotes: integer("upvotes").default(0),
   downvotes: integer("downvotes").default(0),
-  viewCount: integer("view_count").default(1), // Start at 1 to count the initial view
+  viewCount: integer("view_count").default(1),
   isFeatured: boolean("is_featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -392,8 +224,8 @@ export const forumThreads = pgTable("forum_threads", {
   content: text("content").notNull(),
   isPinned: boolean("is_pinned").default(false),
   isLocked: boolean("is_locked").default(false),
-  viewCount: integer("view_count").default(1), // Start at 1 to count the initial view
-  replyCount: integer("reply_count").default(1), // Start at 1 to count the initial post
+  viewCount: integer("view_count").default(1),
+  replyCount: integer("reply_count").default(1),
   upvotes: integer("upvotes").default(0),
   lastReplyAt: timestamp("last_reply_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -496,7 +328,7 @@ export const dailyRewards = pgTable("daily_rewards", {
 // Reputation Points
 export const reputationPoints = pgTable("reputation_points", {
   userId: varchar("user_id").primaryKey(),
-  totalPoints: integer("total_points").default(0), // Reputation points go up by +1 for each post, reply, or upvote on a post or reply - Reputation points go down by -1 for each downvote a user registers on the users post or reply - Reputation points go down by -5 for each report filed against the user - Reputation points go down by -10 for each ban issued against the user
+  totalPoints: integer("total_points").default(0),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
@@ -674,7 +506,7 @@ export const payments = pgTable("payments", {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
-  vipTier: varchar("vip_tier").notNull(), // bronze, sapphire, diamond, founders
+  vipTier: varchar("vip_tier").notNull(), // bronze, diamond, founders, founders_lifetime
   amount: integer("amount").notNull(), // in cents
   status: varchar("status").default("processing"), // processing, success, failed, refunded
   stripePaymentIntentId: varchar("stripe_payment_intent_id"),
@@ -1001,20 +833,6 @@ export const VIP_TIERS = {
       "ATM Fees Waived",
     ],
   },
-  sapphire: {
-    name: "Sapphire VIP",
-    price: 1599,
-    features: [
-      "Exclusive Discord Role & Privileges",
-      "High Priority HelpDesk Support",
-      "High Priority Moderation Appeals",
-      "XP Boost (35%)",
-      "Paychecks Boost (30%)",
-      "Save 25% on Vehicle Insurance",
-      "Exclusive Vehicles",
-      "ATM Fees Waived",
-    ],
-  },
   diamond: {
     name: "Diamond VIP",
     price: 1999,
@@ -1029,6 +847,7 @@ export const VIP_TIERS = {
       "Save 35% on Vehicles",
       "Perma-Knife on Civilian Team",
       "ATM Fees Waived",
+      "Clan Creation Access",
     ],
   },
   founders: {
@@ -1036,6 +855,23 @@ export const VIP_TIERS = {
     price: 3500,
     features: [
       "Exclusive Founders Discord Role",
+      "Urgent Priority HelpDesk Support",
+      "Instant FBI Access & Arrest Authority",
+      "All Team-Queue & Team Count Bypass",
+      "Hellcat Given Monthly",
+      "XP Boost (55%)",
+      "Medical Bills 55% Off",
+      "No Wallet Limit",
+      "Save 50% on Vehicles",
+      "Perma-Glock on Civilian Team",
+      "ATM Fees Waived",
+    ],
+  },
+  founders_lifetime: {
+    name: "Founders Edition Lifetime",
+    price: 6499,
+    features: [
+      "Exclusive Founders Lifetime Discord Role",
       "Urgent Priority HelpDesk Support",
       "Instant FBI Access & Arrest Authority",
       "All Team-Queue & Team Count Bypass",

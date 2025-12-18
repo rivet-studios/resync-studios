@@ -34,20 +34,14 @@ export async function initializeDatabase() {
     // Create enum types
     await db.execute(`
       DO $$ BEGIN
-        CREATE TYPE vip_tier AS ENUM ('none', 'bronze', 'sapphire', 'diamond', 'founders', 'founders_edition_lifetime');
+        CREATE TYPE vip_tier AS ENUM ('none', 'bronze', 'diamond', 'founders', 'founders_edition_lifetime');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$;
     `);
-    // Update the user_rank enum type to include all the new ranks
-    // All users can be given more than one rank, so we need to update the user_rank enum type to include all the new ranks
-    // We can do this by adding the new ranks to the existing enum type using the ALTER TYPE command
-    // We can also add the new ranks to the existing enum type using the CREATE TYPE command, but this will create a new enum type with the same name, which will cause an error if the enum type already exists
-    // We can use the DO $$ BEGIN ... EXCEPTION WHEN duplicate_object THEN null; END $$; block to prevent this error
-    // Since all users can receive more than one rank, there will be 2 rank options when updating a user rank. This will be as follows: Primary Rank, Secondary Rank (Secondary Rank is Optional - if none provided, secondary rank will be set to member by default. If a secondary rank is provided, it will be set to that rank. If the user is a VIP, the secondary rank will be set to the VIP rank unless a secondary rank is provided, in which case it will be set to that rank. If the user is a staff member, the secondary rank will be set to the staff rank unless a secondary rank is provided, in which case it will be set to that rank.) - The following ranks are available for secondary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff - The following ranks are available for primary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff - The following ranks are available for VIP ranks: bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime - The following ranks are available for staff ranks: administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, rs_volunteer_staff - The following ranks are available for community ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, customer_relations, rs_volunteer_staff
-
     await db.execute(`
       DO $$ BEGIN
         CREATE TYPE user_rank AS ENUM (
+    'banned',
     'member',
     'active_member',
     'trusted_member',
@@ -55,21 +49,22 @@ export async function initializeDatabase() {
     'company_director',
     'leadership_council',
     'operations_manager',
-    'staff_administration_director',
+    'staff_department_director',
     'team_member',
-    'administrator',
-    'senior_administrator',
-    'moderator',
+    'community_administrator',
+    'community_senior_administrator',
     'community_moderator',
     'community_senior_moderator',
     'community_developer',
     'bronze_vip',
-    'sapphire_vip',
     'diamond_vip',
     'founders_edition_vip',
     'founders_edition_lifetime',
     'customer_relations',
-    'rs_volunteer_staff'
+    'rs_volunteer_staff',
+    'rs_trust_safety_team',
+    'staff_internal_affairs',
+    'appeals_moderator',
         );
       EXCEPTION WHEN duplicate_object THEN null;
       END $$;
@@ -117,7 +112,6 @@ export async function initializeDatabase() {
         "clan_id" varchar,
         "clan_role" varchar,
         "user_rank" user_rank DEFAULT 'member',
-        "secondary_user_rank" secondary_user_rank DEFAULT 'active_member',
         "is_banned" boolean DEFAULT false,
         "ban_reason" text,
         "banned_at" timestamp,

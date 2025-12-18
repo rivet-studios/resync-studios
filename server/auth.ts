@@ -22,18 +22,87 @@ if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
 }
 
 // Passport user serialization
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: any, done: (arg0: null, arg1: any) => void) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await storage.getUser(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
+passport.deserializeUser(
+  async (
+    id: string,
+    done: (
+      arg0: unknown,
+      arg1:
+        | {
+            id: string;
+            createdAt: Date | null;
+            email: string | null;
+            password: string | null;
+            firstName: string | null;
+            lastName: string | null;
+            profileImageUrl: string | null;
+            username: string | null;
+            bio: string | null;
+            vipTier:
+              | "none"
+              | "bronze"
+              | "diamond"
+              | "founders"
+              | "founders_lifetime"
+              | null;
+            stripeCustomerId: string | null;
+            stripeSubscriptionId: string | null;
+            discordId: string | null;
+            discordUsername: string | null;
+            discordAvatar: string | null;
+            discordLinkedAt: Date | null;
+            robloxId: string | null;
+            robloxUsername: string | null;
+            robloxDisplayName: string | null;
+            robloxLinkedAt: Date | null;
+            gamesPlayed: number | null;
+            totalPosts: number | null;
+            reputation: number | null;
+            clanId: string | null;
+            clanRole: string | null;
+            userRank:
+              | "banned"
+              | "member"
+              | "active_member"
+              | "trusted_member"
+              | "community_partner"
+              | "company_director"
+              | "leadership_council"
+              | "operations_manager"
+              | "staff_department_director"
+              | "team_member"
+              | "community_administrator"
+              | "community_senior_administrator"
+              | "community_moderator"
+              | "community_senior_moderator"
+              | "community_developer"
+              | "bronze_vip"
+              | "diamond_vip"
+              | "founders_edition_vip"
+              | "founders_edition_lifetime"
+              | "customer_relations"
+              | "rs_volunteer_staff"
+              | "rs_trust_safety_team"
+              | "appeals_moderator"
+              | "staff_internal_affairs"
+              | null;
+            updatedAt: Date | null;
+          }
+        | undefined,
+    ) => void,
+  ) => {
+    try {
+      const user = await storage.getUser(id);
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
+  },
+);
 
 // Discord Strategy
 if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
@@ -45,7 +114,76 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
         callbackURL: CALLBACK_URL,
         scope: ["identify", "email", "guilds"],
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (
+        accessToken: any,
+        refreshToken: any,
+        profile: { id: any; email: string; username: string; avatar: any },
+        done: (
+          arg0: unknown,
+          arg1:
+            | {
+                id: string;
+                email: string | null;
+                password: string | null;
+                firstName: string | null;
+                lastName: string | null;
+                profileImageUrl: string | null;
+                username: string | null;
+                bio: string | null;
+                vipTier:
+                  | "none"
+                  | "bronze"
+                  | "diamond"
+                  | "founders"
+                  | "founders_lifetime"
+                  | null;
+                stripeCustomerId: string | null;
+                stripeSubscriptionId: string | null;
+                discordId: string | null;
+                discordUsername: string | null;
+                discordAvatar: string | null;
+                discordLinkedAt: Date | null;
+                robloxId: string | null;
+                robloxUsername: string | null;
+                robloxDisplayName: string | null;
+                robloxLinkedAt: Date | null;
+                gamesPlayed: number | null;
+                totalPosts: number | null;
+                reputation: number | null;
+                clanId: string | null;
+                clanRole: string | null;
+                userRank:
+                  | "banned"
+                  | "member"
+                  | "active_member"
+                  | "trusted_member"
+                  | "community_partner"
+                  | "company_director"
+                  | "leadership_council"
+                  | "operations_manager"
+                  | "staff_department_director"
+                  | "team_member"
+                  | "community_administrator"
+                  | "community_senior_administrator"
+                  | "community_moderator"
+                  | "community_senior_moderator"
+                  | "community_developer"
+                  | "bronze_vip"
+                  | "diamond_vip"
+                  | "founders_edition_vip"
+                  | "founders_edition_lifetime"
+                  | "customer_relations"
+                  | "rs_volunteer_staff"
+                  | "rs_trust_safety_team"
+                  | "appeals_moderator"
+                  | "staff_internal_affairs"
+                  | null;
+                createdAt: Date | null;
+                updatedAt: Date | null;
+              }
+            | undefined,
+        ) => void,
+      ) => {
         try {
           const discordId = profile.id;
           const email = profile.email || `${profile.username}@discord.local`;

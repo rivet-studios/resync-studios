@@ -81,7 +81,7 @@ export async function registerRoutes(
   }
 
   // Auth routes
-  app.get("/api/auth/user", async (req, res) => {
+  app.get("/api/auth/user", async (req: { user: { id: any; }; sessionID: any; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; json: (arg0: any) => void; }) => {
     console.log(
       "🔍 Auth check - isAuth:",
       (req as any).isAuthenticated?.(),
@@ -109,7 +109,7 @@ export async function registerRoutes(
   });
 
   // Email-based signup
-  app.post("/api/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", async (req: { body: { email: any; username?: any; password?: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; json: (arg0: { message: string; user: Promise<{ id: any; createdAt: any; email: any; password: any; username: any; bio: any; reputation: any; firstName: any; lastName: any; profileImageUrl: any; vipTier: any; stripeCustomerId: any; stripeSubscriptionId: any; discordId: any; discordUsername: any; discordAvatar: any; discordLinkedAt: any; robloxId: any; robloxUsername: any; robloxDisplayName: any; robloxLinkedAt: any; gamesPlayed: any; totalPosts: any; clanId: any; clanRole: any; userRank: any; updatedAt: any; }>; }) => void; }) => {
     try {
       console.log("📝 Signup request received for email:", req.body.email);
       const { email, username, password } = req.body;
@@ -138,11 +138,33 @@ export async function registerRoutes(
 
       const hashedPassword = hashPassword(password);
       const user = await storage.upsertUser({
-        email,
-        username,
-        password: hashedPassword,
-        userRank: "member",
-        vipTier: "none",
+          email,
+          username,
+          password: hashedPassword,
+          userRank: "member",
+          vipTier: "none",
+          id: undefined,
+          createdAt: undefined,
+          bio: undefined,
+          reputation: undefined,
+          firstName: undefined,
+          lastName: undefined,
+          profileImageUrl: undefined,
+          stripeCustomerId: undefined,
+          stripeSubscriptionId: undefined,
+          discordId: undefined,
+          discordUsername: undefined,
+          discordAvatar: undefined,
+          discordLinkedAt: undefined,
+          robloxId: undefined,
+          robloxUsername: undefined,
+          robloxDisplayName: undefined,
+          robloxLinkedAt: undefined,
+          gamesPlayed: undefined,
+          totalPosts: undefined,
+          clanId: undefined,
+          clanRole: undefined,
+          updatedAt: undefined
       });
 
       console.log("✅ Account created:", user.id);
@@ -157,7 +179,7 @@ export async function registerRoutes(
   });
 
   // Set password for accounts with no password (fake migration emails)
-  app.post("/api/auth/set-password", requireAuth, async (req, res) => {
+  app.post("/api/auth/set-password", requireAuth, async (req: { user: any; body: { password: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; json: (arg0: { message: string; user: Promise<{ id: any; createdAt: any; email: any; password: any; username: any; bio: any; reputation: any; firstName: any; lastName: any; profileImageUrl: any; vipTier: any; stripeCustomerId: any; stripeSubscriptionId: any; discordId: any; discordUsername: any; discordAvatar: any; discordLinkedAt: any; robloxId: any; robloxUsername: any; robloxDisplayName: any; robloxLinkedAt: any; gamesPlayed: any; totalPosts: any; clanId: any; clanRole: any; userRank: any; updatedAt: any; } | undefined>; }) => void; }) => {
     try {
       const userId = (req.user as any).id;
       const { password } = req.body;
@@ -198,7 +220,7 @@ export async function registerRoutes(
   });
 
   // Email-based login
-  app.post("/api/auth/email-login", async (req, res) => {
+  app.post("/api/auth/email-login", async (req: { body: { email: any; password?: any; }; login: (arg0: any, arg1: (err: any) => any) => void; sessionID: any; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): unknown; new(): any; }; }; json: (arg0: { message: string; user: any; }) => void; }) => {
     try {
       console.log("🔑 Login request received for email:", req.body.email);
       const { email, password } = req.body;
@@ -248,7 +270,7 @@ export async function registerRoutes(
   });
 
   // Verify magic link token
-  app.get("/api/auth/verify-token", async (req, res) => {
+  app.get("/api/auth/verify-token", async (req: { query: { token: any; email: any; username: any; }; login: (arg0: any, arg1: { (err: any): any; (err: any): any; }) => void; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; redirect: (arg0: string) => void; }) => {
     try {
       const { token, email, username } = req.query;
 
@@ -267,11 +289,33 @@ export async function registerRoutes(
       // If signup (username provided), create user
       if (username) {
         const user = await storage.upsertUser({
-          email: email as string,
-          username: username as string,
-          userRank: "member",
-          secondaryUserRank: "active_member",
-          vipTier: "none",
+            email: email as string,
+            username: username as string,
+            userRank: "member",
+            vipTier: "none",
+            id: undefined,
+            createdAt: undefined,
+            password: undefined,
+            bio: undefined,
+            reputation: undefined,
+            firstName: undefined,
+            lastName: undefined,
+            profileImageUrl: undefined,
+            stripeCustomerId: undefined,
+            stripeSubscriptionId: undefined,
+            discordId: undefined,
+            discordUsername: undefined,
+            discordAvatar: undefined,
+            discordLinkedAt: undefined,
+            robloxId: undefined,
+            robloxUsername: undefined,
+            robloxDisplayName: undefined,
+            robloxLinkedAt: undefined,
+            gamesPlayed: undefined,
+            totalPosts: undefined,
+            clanId: undefined,
+            clanRole: undefined,
+            updatedAt: undefined
         });
         req.login(user, (err) => {
           if (err) {
@@ -299,18 +343,10 @@ export async function registerRoutes(
   });
 
   // Stats
-  app.get("/api/stats", async (req, res) => {
-    try {
-      const stats = await storage.getStats();
-      res.json(stats);
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-      res.status(500).json({ message: "Failed to fetch stats" });
-    }
-  });
+  app.get("/api/stats");
 
   // User profile
-  app.patch("/api/users/profile", requireAuth, async (req, res) => {
+  app.patch("/api/users/profile", requireAuth, async (req: { body: { username: any; bio: any; }; user: any; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; json: (arg0: Promise<{ id: any; createdAt: any; email: any; password: any; username: any; bio: any; reputation: any; firstName: any; lastName: any; profileImageUrl: any; vipTier: any; stripeCustomerId: any; stripeSubscriptionId: any; discordId: any; discordUsername: any; discordAvatar: any; discordLinkedAt: any; robloxId: any; robloxUsername: any; robloxDisplayName: any; robloxLinkedAt: any; gamesPlayed: any; totalPosts: any; clanId: any; clanRole: any; userRank: any; updatedAt: any; } | undefined>) => void; }) => {
     try {
       const { username, bio } = req.body;
       const userId = (req.user as any).id;
@@ -331,40 +367,11 @@ export async function registerRoutes(
   });
 
   // LFG Routes
-  app.get("/api/lfg", async (req, res) => {
-    try {
-      const posts = await storage.getLfgPosts();
-      const postsWithAuthors = await Promise.all(
-        posts.map(async (post) => {
-          const author = await storage.getUser(post.authorId);
-          return { ...post, author };
-        }),
-      );
-      res.json(postsWithAuthors);
-    } catch (error) {
-      console.error("Error fetching LFG posts:", error);
-      res.status(500).json({ message: "Failed to fetch LFG posts" });
-    }
-  });
+  app.get("/api/lfg");
 
-  app.get("/api/lfg/recent", async (req, res) => {
-    try {
-      const posts = await storage.getLfgPosts();
-      const recentPosts = posts.slice(0, 5).reverse();
-      const postsWithAuthors = await Promise.all(
-        recentPosts.map(async (post) => {
-          const author = await storage.getUser(post.authorId);
-          return { ...post, author };
-        }),
-      );
-      res.json(postsWithAuthors);
-    } catch (error) {
-      console.error("Error fetching recent LFG posts:", error);
-      res.json([]);
-    }
-  });
+  app.get("/api/lfg/recent");
 
-  app.get("/api/lfg/:id", async (req, res) => {
+  app.get("/api/lfg/:id", async (req: { params: { id: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; json: (arg0: any) => void; }) => {
     try {
       const post = await storage.getLfgPost(req.params.id);
       if (!post) {
@@ -378,7 +385,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/lfg", requireAuth, async (req, res) => {
+  app.post("/api/lfg", requireAuth, async (req: { body: unknown; user: any; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; errors?: z.ZodIssue[]; }): void; new(): any; }; }; }) => {
     try {
       const data = insertLfgPostSchema.parse({
         ...req.body,

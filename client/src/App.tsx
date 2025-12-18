@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import NotFound from "@/pages/not-found";
+import Unauthorized from "@/pages/unauthorized";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
@@ -174,6 +175,7 @@ function AuthenticatedRoutes() {
         <Route path="/about" component={AboutMetro} />
         <Route path="/fort-loredo" component={FortLoredo} />
         <Route component={NotFound} />
+        <Route path="/unauthorized" component={Unauthorized} />
       </Switch>
     </AppLayout>
   );
@@ -212,6 +214,7 @@ function PublicRoutes() {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route component={NotFound} />
+        <Route path="/unauthorized" component={Unauthorized} />
       </Switch>
     </PublicLayout>
   );
