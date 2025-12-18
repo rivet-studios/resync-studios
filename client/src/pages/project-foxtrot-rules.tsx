@@ -349,8 +349,8 @@ export default function ProjectFoxtrotrules() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               All corruption RP (bribes, planting evidence) must be pre-approved
-              by a Corporate Member. Unauthorized corruption results in
-              permanent bans + permanent LEO blacklist.
+              by a Team Member. Unauthorized corruption results in permanent
+              bans + permanent LEO blacklist.
             </CardContent>
           </Card>
 

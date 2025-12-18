@@ -3,7 +3,13 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -28,7 +34,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Shield, Trash2, Lock, Unlock, Eye, EyeOff, AlertTriangle } from "lucide-react";
+import {
+  Shield,
+  Trash2,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+} from "lucide-react";
 
 interface ForumThread {
   id: string;
@@ -57,16 +71,23 @@ export default function ModCP() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Check if user is moderator or above
-  const isMod = user?.userRank && [
-    'moderator',
-    'community_moderator',
-    'community_senior_moderator',
-    'administrator',
-    'senior_administrator',
-    'rs_trust_safety_director',
-    'leadership_council',
-    'company_director'
-  ].includes(user.userRank);
+  const isMod =
+    user?.userRank &&
+    [
+      "rs_trust_safety_team",
+      "community_moderator",
+      "community_senior_moderator",
+      "community_administrator",
+      "community_senior_administrator",
+      "staff_department_director",
+      "operations_manager",
+      "team_member",
+      "rs_volunteer_staff",
+      "staff_internal_affairs",
+      "appeals_moderator",
+      "leadership_council",
+      "company_director",
+    ].includes(user?.userRank);
 
   if (!isMod) {
     return (
@@ -77,7 +98,10 @@ export default function ModCP() {
               <AlertTriangle className="w-12 h-12 text-destructive" />
               <div>
                 <h2 className="font-bold text-lg mb-2">Access Denied</h2>
-                <p className="text-muted-foreground">You don't have permission to access the Moderator Control Panel.</p>
+                <p className="text-muted-foreground">
+                  You don't have permission to access the Moderator Control
+                  Panel.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -86,37 +110,65 @@ export default function ModCP() {
     );
   }
 
-  const { data: threads = [], isLoading: threadsLoading } = useQuery<ForumThread[]>({
+  const { data: threads = [], isLoading: threadsLoading } = useQuery<
+    ForumThread[]
+  >({
     queryKey: ["/api/modcp/threads"],
   });
 
-  const { data: replies = [], isLoading: repliesLoading } = useQuery<ForumReply[]>({
+  const { data: replies = [], isLoading: repliesLoading } = useQuery<
+    ForumReply[]
+  >({
     queryKey: ["/api/modcp/replies"],
   });
 
   const lockThreadMutation = useMutation({
-    mutationFn: async ({ threadId, isLocked }: { threadId: string; isLocked: boolean }) => {
-      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/lock`, { isLocked });
+    mutationFn: async ({
+      threadId,
+      isLocked,
+    }: {
+      threadId: string;
+      isLocked: boolean;
+    }) => {
+      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/lock`, {
+        isLocked,
+      });
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Thread updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update thread", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update thread",
+        variant: "destructive",
+      });
     },
   });
 
   const pinThreadMutation = useMutation({
-    mutationFn: async ({ threadId, isPinned }: { threadId: string; isPinned: boolean }) => {
-      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/pin`, { isPinned });
+    mutationFn: async ({
+      threadId,
+      isPinned,
+    }: {
+      threadId: string;
+      isPinned: boolean;
+    }) => {
+      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/pin`, {
+        isPinned,
+      });
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Thread updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update thread", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update thread",
+        variant: "destructive",
+      });
     },
   });
 
@@ -129,7 +181,11 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete thread", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to delete thread",
+        variant: "destructive",
+      });
     },
   });
 
@@ -142,19 +198,29 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/modcp/replies"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete reply", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to delete reply",
+        variant: "destructive",
+      });
     },
   });
 
-  const filteredThreads = threads.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredThreads = threads.filter((t) =>
+    t.title.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Shield className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="font-display text-3xl font-bold">Moderator Control Panel</h1>
-          <p className="text-muted-foreground">Manage forums, threads, and community content</p>
+          <h1 className="font-display text-3xl font-bold">
+            Moderator Control Panel
+          </h1>
+          <p className="text-muted-foreground">
+            Manage forums, threads, and community content
+          </p>
         </div>
       </div>
 
@@ -196,30 +262,55 @@ export default function ModCP() {
                         <div className="flex-1">
                           <h3 className="font-semibold mb-2 flex items-center gap-2">
                             {thread.title}
-                            {thread.isPinned && <Badge variant="outline">Pinned</Badge>}
-                            {thread.isLocked && <Badge variant="outline">Locked</Badge>}
+                            {thread.isPinned && (
+                              <Badge variant="outline">Pinned</Badge>
+                            )}
+                            {thread.isLocked && (
+                              <Badge variant="outline">Locked</Badge>
+                            )}
                           </h3>
-                          <p className="text-sm text-muted-foreground mb-2">{thread.content.substring(0, 100)}...</p>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {thread.content.substring(0, 100)}...
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            By {thread.author?.username || "Unknown"} • {new Date(thread.createdAt).toLocaleDateString()}
+                            By {thread.author?.username || "Unknown"} •{" "}
+                            {new Date(thread.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex gap-2 flex-wrap">
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => lockThreadMutation.mutate({ threadId: thread.id, isLocked: !thread.isLocked })}
+                            onClick={() =>
+                              lockThreadMutation.mutate({
+                                threadId: thread.id,
+                                isLocked: !thread.isLocked,
+                              })
+                            }
                             data-testid={`button-lock-${thread.id}`}
                           >
-                            {thread.isLocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                            {thread.isLocked ? (
+                              <Unlock className="w-4 h-4" />
+                            ) : (
+                              <Lock className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => pinThreadMutation.mutate({ threadId: thread.id, isPinned: !thread.isPinned })}
+                            onClick={() =>
+                              pinThreadMutation.mutate({
+                                threadId: thread.id,
+                                isPinned: !thread.isPinned,
+                              })
+                            }
                             data-testid={`button-pin-${thread.id}`}
                           >
-                            {thread.isPinned ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {thread.isPinned ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -229,15 +320,20 @@ export default function ModCP() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Thread</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Delete Thread
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete this thread? This action cannot be undone.
+                                  Are you sure you want to delete this thread?
+                                  This action cannot be undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <div className="flex gap-2">
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => deleteThreadMutation.mutate(thread.id)}
+                                  onClick={() =>
+                                    deleteThreadMutation.mutate(thread.id)
+                                  }
                                   className="bg-destructive"
                                 >
                                   Delete
@@ -277,7 +373,8 @@ export default function ModCP() {
                         <div className="flex-1">
                           <p className="text-sm mb-2">{reply.content}</p>
                           <p className="text-xs text-muted-foreground">
-                            By {reply.author?.username || "Unknown"} • {new Date(reply.createdAt).toLocaleDateString()}
+                            By {reply.author?.username || "Unknown"} •{" "}
+                            {new Date(reply.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <AlertDialog>
@@ -296,7 +393,9 @@ export default function ModCP() {
                             <div className="flex gap-2">
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => deleteReplyMutation.mutate(reply.id)}
+                                onClick={() =>
+                                  deleteReplyMutation.mutate(reply.id)
+                                }
                                 className="bg-destructive"
                               >
                                 Delete

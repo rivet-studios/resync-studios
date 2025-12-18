@@ -4,7 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -52,7 +58,11 @@ import {
 import { SiDiscord, SiRoblox } from "react-icons/si";
 
 const profileSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters").max(30).optional(),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30)
+    .optional(),
   bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
 });
 
@@ -60,13 +70,48 @@ type ProfileForm = z.infer<typeof profileSchema>;
 
 const SETTINGS_TABS = [
   { id: "account", label: "Account", icon: User, category: "Core Settings" },
-  { id: "appearance", label: "Appearance", icon: Palette, category: "Core Settings" },
-  { id: "connections", label: "Integrations", icon: LinkIcon, category: "Core Settings" },
-  { id: "billing", label: "Billing", icon: CreditCard, category: "Account Management" },
-  { id: "payments", label: "Payment Method", icon: CreditCard, category: "Account Management" },
-  { id: "subscription", label: "Subscription", icon: Crown, category: "Account Management" },
-  { id: "downloads", label: "Downloads", icon: Download, category: "Resources" },
-  { id: "orders", label: "Orders", icon: Package, category: "Account Management" },
+  {
+    id: "appearance",
+    label: "Appearance",
+    icon: Palette,
+    category: "Core Settings",
+  },
+  {
+    id: "connections",
+    label: "Integrations",
+    icon: LinkIcon,
+    category: "Core Settings",
+  },
+  {
+    id: "billing",
+    label: "Billing",
+    icon: CreditCard,
+    category: "Account Management",
+  },
+  {
+    id: "payments",
+    label: "Payment Method",
+    icon: CreditCard,
+    category: "Account Management",
+  },
+  {
+    id: "subscription",
+    label: "Subscription",
+    icon: Crown,
+    category: "Account Management",
+  },
+  {
+    id: "downloads",
+    label: "Downloads",
+    icon: Download,
+    category: "Resources",
+  },
+  {
+    id: "orders",
+    label: "Orders",
+    icon: Package,
+    category: "Account Management",
+  },
 ];
 
 export default function Settings() {
@@ -74,14 +119,14 @@ export default function Settings() {
   const { toast } = useToast();
   const [location] = useLocation();
   const [theme, setTheme] = useState("light");
-  
+
   const params = new URLSearchParams(window.location.search);
-  const initialTab = params.get('tab') || 'account';
+  const initialTab = params.get("tab") || "account";
   const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
     const newParams = new URLSearchParams(window.location.search);
-    const tab = newParams.get('tab');
+    const tab = newParams.get("tab");
     if (tab) setActiveTab(tab);
   }, [location]);
 
@@ -99,11 +144,18 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Profile updated!", description: "Your changes have been saved." });
+      toast({
+        title: "Profile updated!",
+        description: "Your changes have been saved.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update profile.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update profile.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -118,7 +170,11 @@ export default function Settings() {
       }
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to start Discord linking.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to start Discord linking.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -128,11 +184,18 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Discord unlinked", description: "Your Discord account has been disconnected." });
+      toast({
+        title: "Discord unlinked",
+        description: "Your Discord account has been disconnected.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to unlink Discord.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to unlink Discord.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -142,11 +205,18 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Roblox unlinked", description: "Your Roblox account has been disconnected." });
+      toast({
+        title: "Roblox unlinked",
+        description: "Your Roblox account has been disconnected.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to unlink Roblox.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to unlink Roblox.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -167,12 +237,15 @@ export default function Settings() {
   };
 
   // Group tabs by category
-  const groupedTabs = SETTINGS_TABS.reduce((acc, tab) => {
-    const category = tab.category;
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(tab);
-    return acc;
-  }, {} as Record<string, typeof SETTINGS_TABS>);
+  const groupedTabs = SETTINGS_TABS.reduce(
+    (acc, tab) => {
+      const category = tab.category;
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(tab);
+      return acc;
+    },
+    {} as Record<string, typeof SETTINGS_TABS>,
+  );
 
   return (
     <div className="flex gap-6 max-w-6xl mx-auto">
@@ -193,7 +266,9 @@ export default function Settings() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors data-[active=true]:bg-primary data-[active=true]:text-primary-foreground hover:bg-muted ${
-                        isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-foreground hover:bg-muted"
                       }`}
                       data-active={isActive}
                       data-testid={`settings-tab-${tab.id}`}
@@ -215,23 +290,31 @@ export default function Settings() {
         {activeTab === "account" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Account Settings</h1>
-              <p className="text-muted-foreground mt-1">Manage your account information and profile</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Account Settings
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your account information and profile
+              </p>
             </div>
 
             <Card>
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your public profile details</CardDescription>
+                <CardDescription>
+                  Update your public profile details
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage 
-                      src={user?.profileImageUrl || undefined} 
+                    <AvatarImage
+                      src={user?.profileImageUrl || undefined}
                       className="object-cover"
                     />
-                    <AvatarFallback className="text-xl">{getInitials()}</AvatarFallback>
+                    <AvatarFallback className="text-xl">
+                      {getInitials()}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">Profile Photo</p>
@@ -242,7 +325,10 @@ export default function Settings() {
                 </div>
 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmitProfile)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmitProfile)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={form.control}
                       name="username"
@@ -250,7 +336,11 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>Username</FormLabel>
                           <FormControl>
-                            <Input placeholder="your_username" {...field} data-testid="input-settings-username" />
+                            <Input
+                              placeholder="your_username"
+                              {...field}
+                              data-testid="input-settings-username"
+                            />
                           </FormControl>
                           <FormDescription>
                             Your public display name. Must be unique.
@@ -267,7 +357,7 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>Bio</FormLabel>
                           <FormControl>
-                            <Textarea 
+                            <Textarea
                               placeholder="Tell others about yourself..."
                               className="resize-none"
                               {...field}
@@ -282,12 +372,14 @@ export default function Settings() {
                       )}
                     />
 
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={updateProfileMutation.isPending}
                       data-testid="button-save-profile"
                     >
-                      {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                      {updateProfileMutation.isPending
+                        ? "Saving..."
+                        : "Save Changes"}
                     </Button>
                   </form>
                 </Form>
@@ -300,21 +392,30 @@ export default function Settings() {
         {activeTab === "appearance" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Appearance</h1>
-              <p className="text-muted-foreground mt-1">Customize how RESYNC Studios looks for you</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Appearance
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Customize how RESYNC Studios looks for you
+              </p>
             </div>
 
             <Card>
               <CardHeader>
                 <CardTitle>Theme</CardTitle>
-                <CardDescription>Choose your preferred color scheme</CardDescription>
+                <CardDescription>
+                  Choose your preferred color scheme
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormLabel>Theme Mode</FormLabel>
-                <Select value={theme} onValueChange={(value) => {
-                  setTheme(value);
-                  localStorage.setItem("react-studios-theme", value);
-                }}>
+                <Select
+                  value={theme}
+                  onValueChange={(value) => {
+                    setTheme(value);
+                    localStorage.setItem("react-studios-theme", value);
+                  }}
+                >
                   <SelectTrigger className="w-full sm:w-64">
                     <SelectValue />
                   </SelectTrigger>
@@ -336,8 +437,12 @@ export default function Settings() {
         {activeTab === "connections" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Integrations</h1>
-              <p className="text-muted-foreground mt-1">Link your gaming accounts and services</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Integrations
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Link your gaming accounts and services
+              </p>
             </div>
 
             <Card>
@@ -358,7 +463,10 @@ export default function Settings() {
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold">Discord</h4>
                         {user?.discordId ? (
-                          <Badge variant="secondary" className="gap-1 bg-green-500/10 text-green-500">
+                          <Badge
+                            variant="secondary"
+                            className="gap-1 bg-green-500/10 text-green-500"
+                          >
                             <CheckCircle className="w-3 h-3" />
                             Connected
                           </Badge>
@@ -371,18 +479,22 @@ export default function Settings() {
                       </div>
                       {user?.discordId ? (
                         <p className="text-sm text-muted-foreground mt-1">
-                          Connected as <span className="font-medium">{user.discordUsername}</span>
+                          Connected as{" "}
+                          <span className="font-medium">
+                            {user.discordUsername}
+                          </span>
                         </p>
                       ) : (
                         <p className="text-sm text-muted-foreground mt-1">
-                          Connect your Discord to access the full server and receive VIP roles automatically.
+                          Connect your Discord to access the full server and
+                          receive VIP roles automatically.
                         </p>
                       )}
                     </div>
                   </div>
                   {user?.discordId ? (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => unlinkDiscordMutation.mutate()}
                       disabled={unlinkDiscordMutation.isPending}
@@ -391,7 +503,7 @@ export default function Settings() {
                       Disconnect
                     </Button>
                   ) : (
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={() => linkDiscordMutation.mutate()}
                       disabled={linkDiscordMutation.isPending}
@@ -413,7 +525,10 @@ export default function Settings() {
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold">Roblox</h4>
                         {user?.robloxId ? (
-                          <Badge variant="secondary" className="gap-1 bg-green-500/10 text-green-500">
+                          <Badge
+                            variant="secondary"
+                            className="gap-1 bg-green-500/10 text-green-500"
+                          >
                             <CheckCircle className="w-3 h-3" />
                             Verified
                           </Badge>
@@ -426,18 +541,24 @@ export default function Settings() {
                       </div>
                       {user?.robloxId ? (
                         <p className="text-sm text-muted-foreground mt-1">
-                          Verified as <span className="font-medium">{user.robloxDisplayName || user.robloxUsername}</span>
+                          Verified as{" "}
+                          <span className="font-medium">
+                            {user.robloxDisplayName || user.robloxUsername}
+                          </span>
                         </p>
                       ) : (
                         <div className="mt-2 space-y-2">
                           <p className="text-sm text-muted-foreground">
-                            Verify your Roblox account to receive in-game VIP perks.
+                            Verify your Roblox account to receive in-game VIP
+                            perks.
                           </p>
                           <div className="flex gap-2">
-                            <Input 
+                            <Input
                               placeholder="Your Roblox username"
                               value={robloxUsername}
-                              onChange={(e) => setRobloxUsername(e.target.value)}
+                              onChange={(e) =>
+                                setRobloxUsername(e.target.value)
+                              }
                               className="max-w-xs"
                               data-testid="input-roblox-username"
                             />
@@ -447,8 +568,8 @@ export default function Settings() {
                     </div>
                   </div>
                   {user?.robloxId ? (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => unlinkRobloxMutation.mutate()}
                       disabled={unlinkRobloxMutation.isPending}
@@ -457,7 +578,7 @@ export default function Settings() {
                       Disconnect
                     </Button>
                   ) : (
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={() => {}}
                       disabled={!robloxUsername}
@@ -476,8 +597,12 @@ export default function Settings() {
         {activeTab === "billing" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Billing</h1>
-              <p className="text-muted-foreground mt-1">Manage your billing information</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Billing
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your billing information
+              </p>
             </div>
 
             <Card>
@@ -485,9 +610,17 @@ export default function Settings() {
                 <CardTitle>Billing Address</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">No billing information on file</p>
-                <Button 
-                  onClick={() => toast({ title: "Feature coming soon", description: "Billing address management will be available soon." })}
+                <p className="text-muted-foreground">
+                  No billing information on file
+                </p>
+                <Button
+                  onClick={() =>
+                    toast({
+                      title: "Feature coming soon",
+                      description:
+                        "Billing address management will be available soon.",
+                    })
+                  }
                   data-testid="button-add-billing"
                 >
                   Add Billing Address
@@ -501,8 +634,12 @@ export default function Settings() {
         {activeTab === "payments" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Payment Methods</h1>
-              <p className="text-muted-foreground mt-1">Manage your payment methods</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Payment Methods
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your payment methods
+              </p>
             </div>
 
             <Card>
@@ -510,9 +647,17 @@ export default function Settings() {
                 <CardTitle>Payment Methods</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">No payment methods on file</p>
-                <Button 
-                  onClick={() => toast({ title: "Feature coming soon", description: "Payment method management will be available soon." })}
+                <p className="text-muted-foreground">
+                  No payment methods on file
+                </p>
+                <Button
+                  onClick={() =>
+                    toast({
+                      title: "Feature coming soon",
+                      description:
+                        "Payment method management will be available soon.",
+                    })
+                  }
                   data-testid="button-add-payment"
                 >
                   Add Payment Method
@@ -526,8 +671,12 @@ export default function Settings() {
         {activeTab === "subscription" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">VIP Subscription</h1>
-              <p className="text-muted-foreground mt-1">Manage your VIP membership</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                VIP Subscription
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your VIP membership
+              </p>
             </div>
 
             <Card>
@@ -535,7 +684,7 @@ export default function Settings() {
                 <CardTitle>Current Subscription</CardTitle>
               </CardHeader>
               <CardContent>
-                {user?.vipTier && user.vipTier !== 'none' ? (
+                {user?.vipTier && user.vipTier !== "none" ? (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10">
                       <div>
@@ -550,7 +699,9 @@ export default function Settings() {
                 ) : (
                   <div className="text-center py-8">
                     <Crown className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="font-semibold mb-2">No Active Subscription</h3>
+                    <h3 className="font-semibold mb-2">
+                      No Active Subscription
+                    </h3>
                     <p className="text-muted-foreground mb-4">
                       Upgrade to VIP to unlock exclusive features!
                     </p>
@@ -568,8 +719,12 @@ export default function Settings() {
         {activeTab === "downloads" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Downloads</h1>
-              <p className="text-muted-foreground mt-1">Access downloadable resources</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Downloads
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Access downloadable resources
+              </p>
             </div>
 
             <Card>
@@ -577,7 +732,9 @@ export default function Settings() {
                 <CardTitle>Available Downloads</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">No downloads available at this time</p>
+                <p className="text-muted-foreground">
+                  No downloads available at this time
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -587,8 +744,12 @@ export default function Settings() {
         {activeTab === "orders" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">Orders</h1>
-              <p className="text-muted-foreground mt-1">View your order history</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">
+                Orders
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                View your order history
+              </p>
             </div>
 
             <Card>

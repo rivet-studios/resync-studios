@@ -20,42 +20,54 @@ const RS_PROJECTS = [
     game: "ROBLOX",
     status: "discontinued",
     location: "Perris, CA",
+    reasonfordiscontinuation:
+      "Project was discontinued due to lack of interest and under request of REACT Studios.",
   },
   {
     name: "Fort Loredo: Reimagined",
     game: "ROBLOX",
     status: "discontinued",
-    location: "Western",
+    location: "Loredo, TX",
+    reasonfordiscontinuation:
+      "Project was discontinued due to lack of interest and unsupported RS systems.",
   },
   {
     name: "Project Foxtrot",
     game: "ROBLOX",
-    status: "active",
-    location: "Multiple",
+    status: "development",
+    location: "Rosewood County, Foxtrot",
   },
   {
     name: "The Highville Project",
     game: "ROBLOX",
     status: "discontinued",
     location: "Police Academy",
+    reasonfordiscontinuation:
+      "Project was discontinued due to lack of interest. However, the project remains under the company, unsupported. The project has been taken over by the former COO, Reni, as Project Manager. We do not plan on reinstating the project as of now.",
   },
   {
     name: "Australian Defence Force Academy",
     game: "ROBLOX",
     status: "discontinued",
     location: "Australia",
+    reasonfordiscontinuation:
+      "Project was discontinued due to lack of interest and security complications.",
   },
   {
     name: "State of Bartow",
     game: "ROBLOX",
     status: "discontinued",
     location: "Bartow, FL",
+    reasonfordiscontinuation:
+      "Project was discontinued due to corruption, lack of player support, and lack of interest.",
   },
   {
     name: "State of Florida, Miami Dade County",
     game: "ROBLOX",
     status: "discontinued",
     location: "Miami, FL",
+    reasonfordiscontinuation:
+      "Project was discontinued due to developer corruption & TOS violations.",
   },
   {
     name: "San Ramon, California",
@@ -166,6 +178,9 @@ export default function Projects() {
                       </div>
                       <Badge variant="outline">{project.game}</Badge>
                     </div>
+                    <Badge variant="outline">
+                      {project.reasonfordiscontinuation}
+                    </Badge>
                   </CardHeader>
                 </Card>
               ))}

@@ -64,9 +64,10 @@ interface Stats {
 }
 
 const ADMIN_RANKS = [
-  "administrator",
-  "senior_administrator",
-  "staff_administration_director",
+  "community_administrator",
+  "community_senior_administrator",
+  "staff_department_director",
+  "staff_internal_affairs",
   "leadership_council",
   "operations_manager",
   "team_member",
@@ -74,25 +75,27 @@ const ADMIN_RANKS = [
 ];
 
 const RANK_OPTIONS = [
+  { value: "banned", label: "Banned" },
   { value: "member", label: "Member" },
   { value: "active_member", label: "Active Member" },
   { value: "trusted_member", label: "Trusted Member" },
   { value: "community_partner", label: "Community Partner" },
   { value: "bronze_vip", label: "Bronze VIP" },
-  { value: "sapphire_vip", label: "Sapphire VIP" },
   { value: "diamond_vip", label: "Diamond VIP" },
   { value: "founders_edition_vip", label: "Founders Edition VIP" },
-  { value: "founders_edition_lifetime", label: "Lifetime" },
+  { value: "founders_edition_lifetime", label: "Founders Edition Lifetime" },
   { value: "community_developer", label: "Community Developer" },
+  { value: "appeals_moderator", label: "Appeals Moderator" },
   { value: "rs_volunteer_staff", label: "RS Volunteer Staff" },
+  { value: "rs_trust_safety_team", label: "RS Trust & Safety Team" },
   { value: "community_moderator", label: "Community Moderator" },
   { value: "community_senior_moderator", label: "Community Senior Moderator" },
-  { value: "moderator", label: "Moderator" },
-  { value: "administrator", label: "Administrator" },
-  { value: "senior_administrator", label: "Senior Administrator" },
+  { value: "community_administrator", label: "Administrator" },
+  { value: "community_senior_administrator", label: "Senior Administrator" },
   { value: "customer_relations", label: "Customer Relations" },
   { value: "team_member", label: "Team Member" },
-  { value: "staff_administration_director", label: "Trust & Safety Director" },
+  { value: "staff_internal_affairs", label: "Staff Internal Affairs" },
+  { value: "staff_department_director", label: "Staff Department Director" },
   { value: "leadership_council", label: "Leadership Council" },
   { value: "operations_manager", label: "Operations Manager" },
   { value: "company_director", label: "Company Director" },
@@ -100,10 +103,13 @@ const RANK_OPTIONS = [
 
 const VIP_OPTIONS = [
   { value: "none", label: "None" },
-  { value: "bronze", label: "Bronze ($12.99)" },
-  { value: "sapphire", label: "Sapphire ($29.99)" },
-  { value: "diamond", label: "Diamond ($44.99)" },
-  { value: "founders", label: "Founders ($120)" },
+  { value: "bronze", label: "Bronze ($10.99)" },
+  { value: "diamond", label: "Diamond ($19.99)" },
+  { value: "founders", label: "Founders ($35.99)" },
+  {
+    value: "founders_edition_lifetime",
+    label: "Founders Edition Lifetime ($64.99)",
+  },
 ];
 
 function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {

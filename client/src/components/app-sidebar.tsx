@@ -55,6 +55,7 @@ const mainNavItems = [
   { title: "Fort Loredo Project", url: "/fort-loredo", icon: MapPin },
   { title: "Announcements", url: "/announcements", icon: Megaphone },
   { title: "nil", url: "/not-found", icon: Target },
+  { title: "nil", url: "/unauthorized", icon: Lock },
   { title: "Clans", url: "/clans", icon: Users },
   { title: "Builds & Meta", url: "/builds", icon: Swords },
   { title: "Forums", url: "/forums", icon: MessageSquare },

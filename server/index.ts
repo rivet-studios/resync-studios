@@ -65,7 +65,7 @@ app.use(
 
 app.use(
   express.json({
-    verify: (req, _res, buf) => {
+    verify: (req: { rawBody: any }, _res: any, buf: any) => {
       req.rawBody = buf;
     },
   }),
@@ -88,31 +88,41 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+app.use(
+  (
+    req: { path: any; method: any },
+    res: {
+      json: (bodyJson: any, ...args: any[]) => any;
+      on: (arg0: string, arg1: () => void) => void;
+      statusCode: any;
+    },
+    next: () => void,
+  ) => {
+    const start = Date.now();
+    const path = req.path;
+    let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+    const originalResJson = res.json;
+    res.json = function (bodyJson, ...args) {
+      capturedJsonResponse = bodyJson;
+      return originalResJson.apply(res, [bodyJson, ...args]);
+    };
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      if (path.startsWith("/api")) {
+        let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+        if (capturedJsonResponse) {
+          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        }
+
+        log(logLine);
       }
+    });
 
-      log(logLine);
-    }
-  });
-
-  next();
-});
+    next();
+  },
+);
 
 (async () => {
   // Initialize database tables on startup
@@ -132,9 +142,17 @@ app.use((req, res, next) => {
   console.log(`📍 Index.html exists: ${fs.existsSync(indexHtmlPath)}`);
 
   // Health check endpoint
-  app.get("/_health", (req, res) => {
-    res.json({ status: "ok", mode: process.env.NODE_ENV });
-  });
+  app.get(
+    "/_health",
+    (
+      req: any,
+      res: {
+        json: (arg0: { status: string; mode: string | undefined }) => void;
+      },
+    ): void => {
+      res.json({ status: "ok", mode: process.env.NODE_ENV });
+    },
+  );
 
   if (fs.existsSync(indexHtmlPath)) {
     console.log("✅ PRODUCTION MODE: Serving from dist/public");
@@ -148,7 +166,7 @@ app.use((req, res, next) => {
     );
 
     // Catch-all: serve index.html for all non-API routes (SPA routing)
-    app.all("*", (req, res) => {
+    app.all("*", (req: any, res: { sendFile: (arg0: string) => void }) => {
       res.sendFile(indexHtmlPath);
     });
   } else {

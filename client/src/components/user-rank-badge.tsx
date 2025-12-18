@@ -18,8 +18,8 @@ export const rankConfig = {
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
   },
-  rs_trust_safety_director: {
-    label: "RS TRUST & SAFETY DIRECTOR™",
+  staff_department_director: {
+    label: "STAFF DEPARTMENT DIRECTOR™",
     color: "#4B7DF7",
     badgeUrl: "https://i.imgur.com/Rqbqq9B.png",
     formatted: true,
@@ -32,85 +32,121 @@ export const rankConfig = {
     formatted: true,
   },
   // Staff ranks (no badge)
-  administrator: {
+  community_administrator: {
     label: "Administrator",
-    color: "#6B7280",
+    color: "#FD1D1D",
     badgeUrl: null,
     formatted: true,
   },
-  senior_administrator: {
+  community_senior_administrator: {
     label: "Senior Administrator",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
-  moderator: {
-    label: "Moderator",
-    color: "#6B7280",
+    color: "#FD1D1D",
     badgeUrl: null,
     formatted: true,
   },
   community_moderator: {
     label: "Community Moderator",
-    color: "#6B7280",
+    color: "#B0C4DE",
     badgeUrl: null,
     formatted: true,
   },
   community_senior_moderator: {
     label: "Community Senior Moderator",
-    color: "#6B7280",
+    color: "#B0C4DE",
     badgeUrl: null,
     formatted: true,
   },
   community_developer: {
     label: "Community Developer",
-    color: "#6B7280",
+    color: "#FD1D1D",
     badgeUrl: null,
     formatted: true,
   },
-  // VIP ranks (no badge)
+  // VIP ranks (corresponding VIP badge)
   bronze_vip: {
-    label: "Bronze VIP",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
-  sapphire_vip: {
-    label: "Sapphire VIP",
-    color: "#6B7280",
-    badgeUrl: null,
+    label: "Bronze VIP®",
+    color: "(90deg, fcff9e 50%, c67700 100%)",
+    badgeUrl: "https://i.imgur.com/tyuR9Az.png",
     formatted: true,
   },
   diamond_vip: {
-    label: "Diamond VIP",
-    color: "#6B7280",
-    badgeUrl: null,
+    label: "Diamond VIP®",
+    color: "(90deg, #EEAECA 0%, #94BBE9 100%)",
+    badgeUrl: "https://i.imgur.com/bfmw4KN_d.png",
     formatted: true,
   },
   founders_edition_vip: {
-    label: "Founders Edition VIP",
-    color: "#6B7280",
-    badgeUrl: null,
+    label: "Founders Edition VIP®",
+    color: "(90deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)",
+    badgeUrl: "https://i.imgur.com/eeGvuLF.png",
+    formatted: true,
+  },
+  founders_edition_lifetime: {
+    label: "Founders Edition Lifetime®",
+    color: "(90deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)",
+    badgeUrl: "https://i.imgur.com/eeGvuLF.png",
     formatted: true,
   },
   // Sub-groups
   customer_relations: {
     label: "Customer Relations",
-    color: "#6B7280",
+    color: "#EE204D",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   rs_volunteer_staff: {
     label: "RS™ Volunteer Staff",
-    color: "#6B7280",
+    color: "#A3C1AD",
+    badgeUrl: null,
+    formatted: true,
+  },
+  rs_trust_safety_team: {
+    label: "RS Trust & Safety Team",
+    color: "#FFFF0000",
+    badgeUrl: null,
+    formatted: true,
+  },
+  staff_internal_affairs: {
+    label: "Staff Internal Affairs",
+    color: "#833AB4",
+    badgeUrl: null,
+    formatted: true,
+  },
+  appeals_moderator: {
+    label: "Appeals Moderator",
+    color: "#FCB045",
+    badgeUrl: null,
+    formatted: true,
+  },
+  community_partner: {
+    label: "Community Partner",
+    color: "#B0C4DE",
+    badgeUrl: null,
+    formatted: true,
+  },
+  trusted_member: {
+    label: "Trusted Member",
+    color: "FCB045",
+    badgeUrl: null,
+    formatted: true,
+  },
+  active_member: {
+    label: "Active Member",
+    color: "#B0C4DE",
     badgeUrl: null,
     formatted: true,
   },
   member: {
     label: "Member",
-    color: "#6B7280",
+    color: "#B0C4DE",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
+  },
+  banned: {
+    label: "Banned",
+    color: "#B0C4DE",
+    badgeUrl: null,
+    formatted: true,
   },
 };
 
