@@ -484,9 +484,9 @@ export class DatabaseStorage implements IStorage {
       const categories = await db.select().from(forumCategories).orderBy(forumCategories.order);
       console.log("📂 Forum categories retrieved:", categories.length, "categories");
       if (categories.length === 0) {
-        console.warn("⚠️ No forum categories found in database. Checking raw SQL...");
-        const rawCategories = await db.execute(`SELECT * FROM forum_categories LIMIT 5`);
-        console.log("🔍 Raw SQL result:", rawCategories);
+        console.warn("⚠️ No forum categories found in database. Checking database...");
+        const debugCategories = await db.select().from(forumCategories).limit(5);
+        console.log("🔍 Database result:", debugCategories);
       }
       return categories;
     } catch (error) {
