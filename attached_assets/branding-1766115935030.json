@@ -1,0 +1,109 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Instrument Sans",
+      "count": 44
+    },
+    {
+      "family": "ui-sans-serif",
+      "count": 44
+    },
+    {
+      "family": "system-ui",
+      "count": 44
+    },
+    {
+      "family": "sans-serif",
+      "count": 44
+    },
+    {
+      "family": "Apple Color Emoji",
+      "count": 44
+    },
+    {
+      "family": "Segoe UI Emoji",
+      "count": 44
+    },
+    {
+      "family": "Segoe UI Symbol",
+      "count": 44
+    },
+    {
+      "family": "Noto Color Emoji",
+      "count": 44
+    }
+  ],
+  "colors": {
+    "primary": "#4B5563",
+    "accent": "#4B5563",
+    "background": "#FFFFFF",
+    "textPrimary": "#09090B",
+    "link": "#4B5563"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Instrument Sans",
+      "heading": "Instrument Sans"
+    },
+    "fontStacks": {
+      "body": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "heading": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "paragraph": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ]
+    },
+    "fontSizes": {
+      "h1": "16px",
+      "h2": "18px",
+      "body": "14px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 8,
+    "borderRadius": "0px"
+  },
+  "components": {},
+  "images": {
+    "logo": "File saved at: attached_assets/logo.svg",
+    "favicon": "https://reactstudios.com/favicon.ico",
+    "ogImage": "File saved at: attached_assets/ogImage.svg"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Logo rejected: Red flags detected (small square icon). Strong indicators: header logo linking to homepage, header location, visible, highest logo on page, reasonable size, small square icon (likely UI icon, heavy penalty), SVG format. Score: 93 (clear winner by 25 points)",
+    "confidence": 0.9,
+    "rejected": true
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

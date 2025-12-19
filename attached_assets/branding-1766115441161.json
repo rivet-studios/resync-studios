@@ -1,0 +1,130 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Instrument Sans",
+      "count": 15
+    },
+    {
+      "family": "ui-sans-serif",
+      "count": 15
+    },
+    {
+      "family": "system-ui",
+      "count": 15
+    },
+    {
+      "family": "sans-serif",
+      "count": 15
+    },
+    {
+      "family": "Apple Color Emoji",
+      "count": 15
+    },
+    {
+      "family": "Segoe UI Emoji",
+      "count": 15
+    },
+    {
+      "family": "Segoe UI Symbol",
+      "count": 15
+    },
+    {
+      "family": "Noto Color Emoji",
+      "count": 15
+    }
+  ],
+  "colors": {
+    "primary": "#4B5563",
+    "accent": "#4B5563",
+    "background": "#FFFFFF",
+    "textPrimary": "#09090B",
+    "link": "#4B5563"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Instrument Sans",
+      "heading": "Instrument Sans"
+    },
+    "fontStacks": {
+      "body": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "heading": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "paragraph": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ]
+    },
+    "fontSizes": {
+      "h1": "20px",
+      "h2": "20px",
+      "body": "14px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 8,
+    "borderRadius": "4px"
+  },
+  "components": {
+    "input": {
+      "background": "#FFFFFF",
+      "textColor": "#09090B",
+      "borderColor": "#9F9FA9",
+      "borderRadius": "8px",
+      "borderRadiusCorners": {
+        "topLeft": "8px",
+        "topRight": "8px",
+        "bottomRight": "8px",
+        "bottomLeft": "8px"
+      },
+      "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0 0 0 / 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+    }
+  },
+  "images": {
+    "logo": null,
+    "favicon": "https://reactstudios.com/favicon.ico",
+    "ogImage": null
+  },
+  "__framework_hints": [],
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}
