@@ -101,7 +101,7 @@ export default function Profile() {
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-2">{getDisplayName()}</h1>
 
-                {/* Badges Row */}
+                {/* Badges Row - Display multiple ranks */}
                 <div className="flex flex-wrap gap-2 mb-3">
                   {user.userRank && user.userRank !== "member" && (
                     <UserRankBadge rank={user.userRank} size="sm" />
@@ -109,6 +109,10 @@ export default function Profile() {
                   {user.secondaryUserRank &&
                     user.secondaryUserRank !== "member" && (
                       <UserRankBadge rank={user.secondaryUserRank} size="sm" />
+                    )}
+                  {user.tertiaryUserRank &&
+                    user.tertiaryUserRank !== "member" && (
+                      <UserRankBadge rank={user.tertiaryUserRank} size="sm" />
                     )}
                   {user.vipTier && user.vipTier !== "none" && (
                     <div className="flex items-center">

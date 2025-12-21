@@ -1,4 +1,11 @@
 export const rankConfig = {
+  // Lifetime rank (automatic for Founders Edition Lifetime purchase)
+  lifetime: {
+    label: "LIFETIME",
+    color: "#F59E0B", // Amber/Gold for premium
+    badgeUrl: null,
+    formatted: true,
+  },
   // Leadership ranks (Verified badge - capitalized blue, formatted username)
   company_director: {
     label: "COMPANY DIRECTOR",

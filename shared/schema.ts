@@ -42,6 +42,7 @@ export const userRankEnum = pgEnum("user_rank", [
   "active_member", // Users who have played games or posted in forums
   "trusted_member", // Users who have been active for a long time
   "community_partner", // Users who have partnered with Resync Studios
+  "lifetime", // Users who have purchased Founders Edition Lifetime - grants lifetime access
   "company_director", // Chief Executive Officer (CEO) & Founder of Resync Studios - cxiqlne
   "leadership_council", // Members of the Leadership Council
   "operations_manager", // Operations Managers
@@ -106,9 +107,10 @@ export const users = pgTable("users", {
   // Clan membership
   clanId: varchar("clan_id"),
   clanRole: varchar("clan_role"),
-  // User rank/role - User rank is the primary rank of the user - User rank can be either member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff
+  // User rank/role - Support for multiple ranks (up to 3)
   userRank: userRankEnum("user_rank").default("member"), // Primary rank
-  secondaryUserRank: userRankEnum("secondary_user_rank").default("member"), // Secondary rank - Optional - if none provided, secondary rank will be set to member by default. If a secondary rank is provided, it will be set to that rank. If the user is a VIP, the secondary rank will be set to the VIP rank unless a secondary rank is provided, in which case it will be set to that rank. If the user is a staff member, the secondary rank will be set to the staff rank unless a secondary rank is provided, in which case it will be set to that rank. - The following ranks are available for secondary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administ administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime - The following ranks are available for primary ranks: member, active_member, trusted_member, community_partner, company_director, leadership_council, operations_manager, staff_administration_director, team_member, administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime, customer_relations, rs_volunteer_staff - The following ranks are available for VIP ranks: bronze_vip, sapphire_vip, diamond_vip, founders_edition_vip, founders_edition_lifetime - The following ranks are available for staff ranks: administrator, senior_administrator, moderator, community_moderator, community_senior_moderator, community_developer, rs_volunteer_staff
+  secondaryUserRank: userRankEnum("secondary_user_rank").default("member"), // Secondary rank
+  tertiaryUserRank: userRankEnum("tertiary_user_rank").default("member"), // Tertiary rank - automatically assigned to lifetime members
   // Banning
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
