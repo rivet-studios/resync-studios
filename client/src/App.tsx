@@ -40,6 +40,8 @@ import ModCP from "@/pages/modcp";
 import AdminCP from "@/pages/admin-cp";
 import Builds from "@/pages/builds";
 import Blog from "@/pages/blog";
+import Store from "@/pages/store";
+import Policies from "@/pages/policies";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -131,6 +133,8 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/blog" component={Blog} />
+        <Route path="/store" component={Store} />
+        <Route path="/policies" component={Policies} />
         <Route path="/forums" component={Forums} />
         <Route path="/forums/thread/:id" component={ForumThread} />
         <Route path="/vip" component={VIP} />
