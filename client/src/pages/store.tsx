@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -63,7 +69,8 @@ const storeItems: StoreItem[] = [
     category: "Cosmetics",
     price: 4.99,
     description: "Personalize your profile with a custom avatar",
-    inStock: true,
+    badge: "COMING SOON",
+    inStock: false,
   },
   {
     id: "4",
@@ -71,7 +78,8 @@ const storeItems: StoreItem[] = [
     category: "Cosmetics",
     price: 2.99,
     description: "Display a custom banner on your profile",
-    inStock: true,
+    badge: "COMING SOON",
+    inStock: false,
   },
   {
     id: "5",
@@ -79,8 +87,8 @@ const storeItems: StoreItem[] = [
     category: "Clans",
     price: 19.99,
     description: "Everything you need to start your clan",
-    badge: "NEW",
-    inStock: true,
+    badge: "COMING SOON",
+    inStock: false,
   },
   {
     id: "6",
@@ -88,7 +96,8 @@ const storeItems: StoreItem[] = [
     category: "Gameplay",
     price: 12.99,
     description: "Essential items for enhanced roleplay experience",
-    inStock: true,
+    badge: "COMING SOON",
+    inStock: false,
   },
   {
     id: "7",
@@ -96,7 +105,8 @@ const storeItems: StoreItem[] = [
     category: "Account",
     price: 3.99,
     description: "Change your username one time",
-    inStock: true,
+    badge: "COMING SOON",
+    inStock: false,
   },
   {
     id: "8",
@@ -108,7 +118,7 @@ const storeItems: StoreItem[] = [
   },
   {
     id: "9",
-    name: "Founders Edition Pass",
+    name: "Founders Edition Lifetime",
     category: "Subscriptions",
     price: 49.99,
     description: "Lifetime access to all founder benefits",
@@ -122,17 +132,25 @@ export default function Store() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cart, setCart] = useState<string[]>([]);
 
-  const categories = ["all", ...new Set(storeItems.map((item) => item.category))];
+  const categories = [
+    "all",
+    ...new Set(storeItems.map((item) => item.category)),
+  ];
 
   const filteredItems = storeItems.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesSearch = item.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const toggleCart = (itemId: string) => {
     setCart((prev) =>
-      prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId],
     );
   };
 
@@ -167,8 +185,14 @@ export default function Store() {
             </div>
 
             {/* Category Filter */}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-48" data-testid="select-category">
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger
+                className="w-full sm:w-48"
+                data-testid="select-category"
+              >
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
@@ -190,7 +214,9 @@ export default function Store() {
                   {cart.length} item{cart.length !== 1 ? "s" : ""} in cart
                 </span>
               </div>
-              <span className="text-sm font-bold">${totalPrice.toFixed(2)}</span>
+              <span className="text-sm font-bold">
+                ${totalPrice.toFixed(2)}
+              </span>
             </div>
           )}
         </CardContent>
@@ -269,16 +295,20 @@ export default function Store() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-2xl font-bold">${item.price.toFixed(2)}</span>
+                  <span className="text-2xl font-bold">
+                    ${item.price.toFixed(2)}
+                  </span>
                   {item.originalPrice && (
                     <>
                       <span className="text-sm line-through text-muted-foreground">
                         ${item.originalPrice.toFixed(2)}
                       </span>
                       {item.discount && (
-                        <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                          -
-                          {item.discount}%
+                        <Badge
+                          variant="outline"
+                          className="bg-red-50 text-red-700 border-red-200"
+                        >
+                          -{item.discount}%
                         </Badge>
                       )}
                     </>

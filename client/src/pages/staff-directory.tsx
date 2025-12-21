@@ -46,11 +46,6 @@ const departments: Department[] = [
         joinDate: "2025-Present",
       },
       {
-        name: "ArielOperations",
-        role: "Operations Manager & Staff Administration Director",
-        joinDate: "2025-Present",
-      },
-      {
         name: "Kyros",
         role: "Operations Manager",
         joinDate: "2024-Present",
@@ -75,6 +70,11 @@ const departments: Department[] = [
     color: "text-green-500",
     members: [
       {
+        name: "Bobby23458836",
+        role: "Customer Relations Director",
+        joinDate: "2025-Present",
+      },
+      {
         name: "nil",
         role: "Senior Customer Support Representative",
         joinDate: "Unknown",
@@ -92,12 +92,12 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "d1vvt",
+        name: "cxiqlne",
         role: "Vehicle Artist",
-        joinDate: "2019-Present",
+        joinDate: "2018-Present",
       },
       {
-        name: "acerxtro",
+        name: "cxiqlne",
         role: "Gameplay Systems Developer",
         joinDate: "2018-Present",
       },

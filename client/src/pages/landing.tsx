@@ -14,9 +14,9 @@ import {
 import { Link } from "wouter";
 
 const stats = [
-  { value: 72.5, label: "Connected Members", suffix: "K+" },
-  { value: 61.2, label: "Discord Members", suffix: "K+" },
-  { value: 303, label: "Roblox Members", suffix: "K+" },
+  { value: 15, label: "Connected Members", suffix: "K+" },
+  { value: 20, label: "Discord Members", suffix: "K+" },
+  { value: 25, label: "Roblox Members", suffix: "K+" },
   { value: 36.6, label: "Active Discussions", suffix: "K+" },
   { value: 99.9, label: "Uptime", suffix: "%" },
   { value: 24, label: "Support", suffix: "/7" },
@@ -33,7 +33,7 @@ const features = [
     icon: MessageSquare,
     title: "Community Forums",
     description:
-      "Built-in forum system with real-time discussions, announcements, and engaging spaces for your community.",
+      "Built-in forum system with real-time discussions, announcements, and engaging spaces for our community.",
   },
   {
     icon: BarChart3,
@@ -68,7 +68,7 @@ export default function Landing() {
       <section className="space-y-8 text-center max-w-3xl mx-auto">
         <div className="space-y-4">
           <Badge variant="outline" className="gap-2 mx-auto">
-            Now powering 72.5K+ members
+            Now powering 15K+ members
           </Badge>
           <h1 className="text-5xl sm:text-6xl font-bold leading-tight">
             The number one online gaming community platform
@@ -76,7 +76,7 @@ export default function Landing() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             RESYNC Studios™ creates an open gaming environment accessible to
             everyone, delivering high-fidelity games through our exceptional
-            game development expertise and building online communities.
+            game development expertise and building online roleplay games.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

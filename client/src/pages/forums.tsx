@@ -37,12 +37,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
-import {
-  MessageSquare,
-  Plus,
-  Search,
-  MessageCircle,
-} from "lucide-react";
+import { MessageSquare, Plus, Search, MessageCircle } from "lucide-react";
 import type { ForumCategory, ForumThread, User } from "@shared/schema";
 
 const createThreadSchema = z.object({
@@ -54,6 +49,8 @@ const createThreadSchema = z.object({
 type CreateThreadForm = z.infer<typeof createThreadSchema>;
 
 interface ThreadWithAuthor extends ForumThread {
+  locked: any;
+  pinned: any;
   author?: User;
   category?: ForumCategory;
 }
@@ -65,11 +62,15 @@ export default function Forums() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery<ForumCategory[]>({
+  const { data: categories, isLoading: categoriesLoading } = useQuery<
+    ForumCategory[]
+  >({
     queryKey: ["/api/forums/categories"],
   });
 
-  const { data: threads, isLoading: threadsLoading } = useQuery<ThreadWithAuthor[]>({
+  const { data: threads, isLoading: threadsLoading } = useQuery<
+    ThreadWithAuthor[]
+  >({
     queryKey: ["/api/forums/threads", selectedCategory],
   });
 
@@ -88,18 +89,25 @@ export default function Forums() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Thread created!", description: "Your discussion has been posted." });
+      toast({
+        title: "Thread created!",
+        description: "Your discussion has been posted.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
       setIsCreateOpen(false);
       form.reset();
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create thread.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to create thread.",
+        variant: "destructive",
+      });
     },
   });
 
   const filteredThreads = threads?.filter((thread) =>
-    thread.title.toLowerCase().includes(searchQuery.toLowerCase())
+    thread.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const onSubmit = (data: CreateThreadForm) => {
@@ -125,7 +133,9 @@ export default function Forums() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold">Forums</h1>
-            <p className="text-muted-foreground mt-2">Connect with our community and get support</p>
+            <p className="text-muted-foreground mt-2">
+              Connect with our community and get support
+            </p>
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
@@ -137,17 +147,25 @@ export default function Forums() {
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create Discussion Thread</DialogTitle>
-                <DialogDescription>Start a new discussion with the community</DialogDescription>
+                <DialogDescription>
+                  Start a new discussion with the community
+                </DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a category" />
@@ -172,7 +190,11 @@ export default function Forums() {
                       <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Thread title..." {...field} data-testid="input-thread-title" />
+                          <Input
+                            placeholder="Thread title..."
+                            {...field}
+                            data-testid="input-thread-title"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -185,17 +207,30 @@ export default function Forums() {
                       <FormItem>
                         <FormLabel>Content</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Write your message..." rows={6} {...field} data-testid="textarea-thread-content" />
+                          <Textarea
+                            placeholder="Write your message..."
+                            rows={6}
+                            {...field}
+                            data-testid="textarea-thread-content"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsCreateOpen(false)}
+                    >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={createMutation.isPending} data-testid="button-post-thread">
+                    <Button
+                      type="submit"
+                      disabled={createMutation.isPending}
+                      data-testid="button-post-thread"
+                    >
                       {createMutation.isPending ? "Posting..." : "Post Thread"}
                     </Button>
                   </div>
@@ -266,7 +301,8 @@ export default function Forums() {
                   >
                     {cat.name}
                     <span className="ml-auto text-xs text-muted-foreground">
-                      {threads?.filter((t) => t.categoryId === cat.id).length || 0}
+                      {threads?.filter((t) => t.categoryId === cat.id).length ||
+                        0}
                     </span>
                   </Button>
                 ))
@@ -287,7 +323,9 @@ export default function Forums() {
             <Card>
               <CardContent className="p-8 text-center">
                 <MessageCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-muted-foreground">No discussions yet. Be the first to start one!</p>
+                <p className="text-muted-foreground">
+                  No discussions yet. Be the first to start one!
+                </p>
                 <Button className="mt-4" onClick={() => setIsCreateOpen(true)}>
                   Create Thread
                 </Button>
@@ -303,26 +341,44 @@ export default function Forums() {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex gap-3">
                       <Avatar className="w-10 h-10 shrink-0">
-                        <AvatarImage src={thread.author?.profileImageUrl || undefined} />
+                        <AvatarImage
+                          src={thread.author?.profileImageUrl || undefined}
+                        />
                         <AvatarFallback>
                           {thread.author?.username?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start gap-2 mb-1">
-                          <h3 className="font-semibold truncate text-sm">{thread.title}</h3>
-                          {thread.pinned && <Badge variant="secondary" className="text-xs">Pinned</Badge>}
-                          {thread.locked && <Badge variant="secondary" className="text-xs">Locked</Badge>}
+                          <h3 className="font-semibold truncate text-sm">
+                            {thread.title}
+                          </h3>
+                          {thread.pinned && (
+                            <Badge variant="secondary" className="text-xs">
+                              Pinned
+                            </Badge>
+                          )}
+                          {thread.locked && (
+                            <Badge variant="secondary" className="text-xs">
+                              Locked
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                          <span>Started by {thread.author?.username || "Anonymous"}</span>
+                          <span>
+                            Started by {thread.author?.username || "Anonymous"}
+                          </span>
                           <span>•</span>
-                          <span>{formatTimeAgo(new Date(thread.createdAt))}</span>
+                          <span>
+                            {formatTimeAgo(new Date(thread.createdAt))}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground ml-13">
-                      <span className="font-medium">{thread.content?.substring(0, 100)}...</span>
+                      <span className="font-medium">
+                        {thread.content?.substring(0, 100)}...
+                      </span>
                       <div className="flex items-center gap-1">
                         <MessageSquare className="w-3.5 h-3.5" />
                         {thread.replyCount || 0}

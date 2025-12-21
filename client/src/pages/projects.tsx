@@ -11,60 +11,81 @@ import { Gamepad2 } from "lucide-react";
 const RS_PROJECTS = [
   {
     name: "Los Angeles, California: Reimagined",
+    projectManager: "cxiqlne",
     game: "ROBLOX",
     status: "active",
     location: "Los Angeles, CA",
   },
   {
     name: "Perris, California: Reimagined",
+    projectManager: "cxiqlne, silentdirective.",
     game: "ROBLOX",
     status: "discontinued",
     location: "Perris, CA",
+    reasonfordiscontinuation:
+      "The project was discontinued after multiple development complications and unsupported systems.",
   },
   {
     name: "Fort Loredo: Reimagined",
+    projectManager: "cxiqlne",
     game: "ROBLOX",
-    status: "discontinued",
-    location: "Western",
+    status: "development",
+    location: "Loredo, TX",
   },
   {
     name: "Project Foxtrot",
+    projectManager: "cxiqlne, silentdirective.",
     game: "ROBLOX",
-    status: "active",
-    location: "Multiple",
+    status: "development",
+    location: "Rosewood County, State of Foxtrot",
   },
   {
     name: "The Highville Project",
+    projectOverseer: "cxiqlne",
+    projectManager: "Reni",
     game: "ROBLOX",
-    status: "discontinued",
-    location: "Police Academy",
+    status: "active",
+    location: "Highfield",
+    reasonfordiscontinuation:
+      "The project is no longer supported under Resync Studios ― formal ownership taken over by Reni",
   },
   {
     name: "Australian Defence Force Academy",
+    projectManager: "cxiqlne, Reni",
     game: "ROBLOX",
     status: "discontinued",
     location: "Australia",
+    reasonfordiscontinuation:
+      "While ADFA was intended to be successful, it proved unreliable overtime due to many factors.",
   },
   {
     name: "State of Bartow",
+    projectManager: "cxiqlne, LA5TIC",
     game: "ROBLOX",
     status: "discontinued",
     location: "Bartow, FL",
+    reasonfordiscontinuation:
+      "State of Bartow was discontinued after former leadership was found in violation of local law and the project was proving to be a liability to Resync Studios.",
   },
   {
     name: "State of Florida, Miami Dade County",
+    projectManager: "cxiqlne, LA5TIC",
     game: "ROBLOX",
     status: "discontinued",
     location: "Miami, FL",
+    reasonfordiscontinuation:
+      "The project was taken down permanently due to leadership complications.",
   },
   {
     name: "San Ramon, California",
+    projectManager: "cxiqlne",
     game: "ROBLOX",
-    status: "active",
+    status: "development",
     location: "San Ramon, CA",
   },
   {
     name: "DarkModRP Systems",
+    projectManager: "cxiqlne",
     game: "FiveM",
     status: "development",
     location: "Experimental",
@@ -105,6 +126,12 @@ export default function Projects() {
                   <div className="flex justify-between items-start gap-2">
                     <div>
                       <CardTitle className="text-lg">{project.name}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {project.projectOverseer}
+                      </CardTitle>
+                      <CardTitle className="text-lg">
+                        {project.projectManager}
+                      </CardTitle>
                       <CardDescription>{project.location}</CardDescription>
                     </div>
                     <Badge>{project.game}</Badge>
@@ -133,6 +160,12 @@ export default function Projects() {
                         <CardTitle className="text-lg">
                           {project.name}
                         </CardTitle>
+                        <CardTitle className="text-lg">
+                          {project.projectOverseer}
+                        </CardTitle>
+                        <CardTitle className="text-lg">
+                          {project.projectManager}
+                        </CardTitle>
                         <CardDescription>{project.location}</CardDescription>
                       </div>
                       <Badge variant="secondary">{project.game}</Badge>
@@ -159,12 +192,21 @@ export default function Projects() {
                   <CardHeader>
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <CardTitle className="text-lg line-through">
+                        <CardTitle className="text-lg">
                           {project.name}
+                        </CardTitle>
+                        <CardTitle className="text-lg">
+                          {project.projectOverseer}
+                        </CardTitle>
+                        <CardTitle className="text-lg">
+                          {project.projectManager}
                         </CardTitle>
                         <CardDescription>{project.location}</CardDescription>
                       </div>
                       <Badge variant="outline">{project.game}</Badge>
+                      <Badge variant="outline">
+                        {project.reasonfordiscontinuation}
+                      </Badge>
                     </div>
                   </CardHeader>
                 </Card>
