@@ -1,4 +1,5 @@
 // PostgreSQL database integration
+import { sql } from "drizzle-orm";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { migrate } from "drizzle-orm/neon-serverless/migrator";
@@ -22,7 +23,7 @@ export async function initializeDatabase() {
     console.log("🗄️ Initializing database schema...");
 
     // Create all tables from schema using raw SQL
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "sessions" (
         "sid" varchar PRIMARY KEY,
         "sess" jsonb NOT NULL,
@@ -32,14 +33,14 @@ export async function initializeDatabase() {
     `);
 
     // Create enum types
-    await db.execute(`
+    await db.execute(sql`
       DO $$ BEGIN
         CREATE TYPE vip_tier AS ENUM ('none', 'bronze', 'sapphire', 'diamond', 'founders', 'founders_edition_lifetime', 'lifetime');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$;
     `);
 
-    await db.execute(`
+    await db.execute(sql`
       DO $$ BEGIN
         CREATE TYPE user_rank AS ENUM (
     'banned',
@@ -77,14 +78,14 @@ export async function initializeDatabase() {
       END $$;
     `);
 
-    await db.execute(`
+    await db.execute(sql`
       DO $$ BEGIN
         CREATE TYPE skill_level AS ENUM ('beginner', 'intermediate', 'advanced', 'expert', 'pro');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$;
     `);
 
-    await db.execute(`
+    await db.execute(sql`
       DO $$ BEGIN
         CREATE TYPE game_role AS ENUM ('tank', 'dps', 'support', 'healer', 'flex', 'any');
       EXCEPTION WHEN duplicate_object THEN null;
@@ -92,7 +93,7 @@ export async function initializeDatabase() {
     `);
 
     // Users table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "users" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "email" varchar UNIQUE,
@@ -148,7 +149,7 @@ export async function initializeDatabase() {
     `);
 
     // Magic link tokens table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "magic_link_tokens" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "email" varchar NOT NULL,
@@ -160,7 +161,7 @@ export async function initializeDatabase() {
     `);
 
     // Clans table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "clans" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "name" varchar NOT NULL UNIQUE,
@@ -181,7 +182,7 @@ export async function initializeDatabase() {
     `);
 
     // LFG Posts table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "lfg_posts" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "author_id" varchar NOT NULL,
@@ -202,7 +203,7 @@ export async function initializeDatabase() {
     `);
 
     // LFG Participants table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "lfg_participants" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "lfg_post_id" varchar NOT NULL,
@@ -213,7 +214,7 @@ export async function initializeDatabase() {
     `);
 
     // Builds table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "builds" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "author_id" varchar NOT NULL,
@@ -234,7 +235,7 @@ export async function initializeDatabase() {
     `);
 
     // Build Votes table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "build_votes" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "build_id" varchar NOT NULL,
@@ -245,7 +246,7 @@ export async function initializeDatabase() {
     `);
 
     // Forum Categories table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "forum_categories" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "name" varchar NOT NULL,
@@ -259,7 +260,7 @@ export async function initializeDatabase() {
     `);
 
     // Forum Threads table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "forum_threads" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "category_id" varchar NOT NULL,
@@ -278,7 +279,7 @@ export async function initializeDatabase() {
     `);
 
     // Forum Replies table
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "forum_replies" (
         "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
         "thread_id" varchar NOT NULL,
@@ -292,7 +293,7 @@ export async function initializeDatabase() {
     `);
 
     // Chat Messages table
-    await db.execute(`
+    await db.execute(sql`
     CREATE TABLE IF NOT EXISTS "chat_messages" (
       "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
       "sender_id" varchar NOT NULL,
