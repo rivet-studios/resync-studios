@@ -776,7 +776,14 @@ export async function registerRoutes(
           console.error("❌ Passport login error:", err);
           return res.redirect("/login?error=session_error");
         }
-        res.redirect("/dashboard");
+        // Save session explicitly before redirecting
+        req.session.save((err) => {
+          if (err) {
+            console.error("❌ Session save error:", err);
+            return res.redirect("/login?error=save_error");
+          }
+          res.redirect("/dashboard");
+        });
       });
     },
   );
