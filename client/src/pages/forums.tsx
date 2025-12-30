@@ -377,7 +377,7 @@ export default function Forums() {
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground ml-13">
                       <span className="font-medium">
-                        {thread.content?.substring(0, 100)}...
+                        {thread.content ? `${thread.content.substring(0, 100)}...` : ""}
                       </span>
                       <div className="flex items-center gap-1">
                         <MessageSquare className="w-3.5 h-3.5" />
