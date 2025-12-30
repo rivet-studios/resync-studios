@@ -55,9 +55,10 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie: {
-      secure: false,
+      secure: true,
       httpOnly: true,
       sameSite: "lax",
+      domain: ".resyncstudios.com",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     },
     name: "resync.sid", // Custom session cookie name
