@@ -92,9 +92,9 @@ export function MainHeader() {
               </Button>
 
               <Button variant="ghost" size="icon" asChild data-testid="button-support">
-                <Link href="/support">
+                <a href="https://support.resyncstudios.com" target="_blank" rel="noopener noreferrer">
                   <BookOpen className="w-5 h-5" />
-                </Link>
+                </a>
               </Button>
 
               <ThemeToggle />

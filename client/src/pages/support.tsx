@@ -148,46 +148,8 @@ const FAQ_ITEMS = [
   },
 ];
 
+// Support page migrated to Freshdesk redirect
 export default function Support() {
-  const { toast } = useToast();
-  const [activeCategory, setActiveCategory] = useState("Account");
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const categories = [...new Set(FAQ_ITEMS.map((item) => item.category))];
-  const filtered = FAQ_ITEMS.filter((item) => item.category === activeCategory);
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/support/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(contactForm),
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Error code 400: Failed to submit");
-      toast({
-        title: "Message Sent",
-        description: "Our support team will respond within 24 hours.",
-      });
-      setContactForm({ name: "", email: "", subject: "", message: "" });
-    } catch {
-      toast({
-        title: "Error code: 400",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="space-y-8 max-w-5xl">
@@ -267,7 +229,7 @@ export default function Support() {
         </div>
       </div>
 
-      {/* Contact Form */}
+      {/* Contact Form Placeholder Redirect */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -275,106 +237,41 @@ export default function Support() {
             Contact Support
           </CardTitle>
           <CardDescription>
-            Can't find what you're looking for? Send us a message
+            Need further assistance? Our dedicated support team is ready to help you on Freshdesk.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleContactSubmit} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Name</label>
-                <Input
-                  placeholder="Your name"
-                  value={contactForm.name}
-                  onChange={(e) =>
-                    setContactForm({ ...contactForm, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={contactForm.email}
-                  onChange={(e) =>
-                    setContactForm({ ...contactForm, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Subject</label>
-              <Input
-                placeholder="i.e. Account Issue"
-                value={contactForm.subject}
-                onChange={(e) =>
-                  setContactForm({ ...contactForm, subject: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Message</label>
-              <Textarea
-                placeholder="Describe your issue or question..."
-                value={contactForm.message}
-                onChange={(e) =>
-                  setContactForm({ ...contactForm, message: e.target.value })
-                }
-                required
-                className="min-h-32"
-              />
-            </div>
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded p-3 flex gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-600">
-                Please note that our support response time is 24 hours. During
-                high volume intake periods and/or holiday events (such as
-                Christmas), response times may be longer. If you have not
-                received a response within 72 hours, please reply to the most
-                recent email thread with an escalation request. Requesting an
-                escalation under 72 hours prior to the initial response will
-                only hurt your case and reset your position in the queue.
-                <br />
-                <span className="text-xs text-red-600"> </span>{" "}
-                <span className="font-semibold"> </span>
-                Do not include sensitive information such as passwords or credit
-                card numbers. Our support team will never ask for this
-                information. If you receive a request for sensitive information,
-                please report it to us immediately. Once reported, our Trust &
-                Safety team will investigate the issue. Once the investigation
-                is complete, we will notify you of the results. If the
-                investigation finds that the request was made in good faith, we
-                will refund any funds that were lost as a result of the request.
-                If the investigation finds that the request was made in bad
-                faith, we will take appropriate action against the individual
-                who made the request. This may include banning the individual
-                from our platform and the involvement of local law enforcement
-                (and federal law enforcement if it passes into federal
-                jurisdiction). We take the security of our users very seriously
-                and we appreciate your cooperation in this matter. Thank you for
-                your understanding and for being a part of the RESYNC Studios
-                community. We look forward to serving you better in the future.
-                If you have any questions or concerns, please do not hesitate to
-                contact us. We are here to help. Our support team will never ask
-                for any PII (Personally Identifiable Information) such as
-                passwords or credit card numbers. This is a scam and we will
-                never ask for this information. If you receive a request for
-                this information, please report it to us immediately. Our Trust
-                & Safety team will investigate the issue and notify you of the
-                results.
-                <span className="font-semibold">,</span>
-                VIP members receive priority support with responses within 2
-                hours.
-              </p>
-            </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting ? "Sending..." : "Send Message"}
+        <CardContent className="flex flex-col items-center py-12 text-center space-y-6">
+          <div className="max-w-md">
+            <h3 className="text-xl font-bold mb-2">Visit our Support Portal</h3>
+            <p className="text-muted-foreground mb-6">
+              We've moved our support ticketing system to Freshdesk to provide you with a more efficient and streamlined experience.
+            </p>
+            <Button size="lg" className="w-full sm:w-auto px-8" asChild>
+              <a href="https://support.resyncstudios.com" target="_blank" rel="noopener noreferrer">
+                Go to Support Portal
+              </a>
             </Button>
-          </form>
+          </div>
+          
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6 max-w-2xl text-left flex gap-4">
+            <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <div className="space-y-3">
+              <p className="text-sm text-blue-800 font-medium">
+                Support Guidelines & Expectations
+              </p>
+              <div className="text-xs text-blue-700 space-y-2 leading-relaxed">
+                <p>
+                  Our standard response time is 24 hours. During high-volume periods or holidays, response times may be longer. If you haven't heard back within 72 hours, please update your ticket with an escalation request.
+                </p>
+                <p>
+                  <strong>Security Note:</strong> RS Support will <strong>NEVER</strong> ask for sensitive information like passwords or credit card numbers. If you receive such a request, report it immediately through our Trust & Safety portal on Freshdesk.
+                </p>
+                <p>
+                  VIP members enjoy priority support with target response times under 2 hours.
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
