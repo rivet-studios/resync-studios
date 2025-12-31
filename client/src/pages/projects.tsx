@@ -97,6 +97,13 @@ const RS_PROJECTS = [
     status: "development",
     location: "Experimental",
   },
+  {
+    name: "Victoria State Roleplay, Australia",
+    projectManager: "Project Manager: cxiqlne, Reni",
+    game: "ROBLOX",
+    status: "development",
+    location: "Victoria, AU",
+  },
 ];
 
 export default function Projects() {
