@@ -1,0 +1,44 @@
+January 5, 2026 at 4:26 PM
+failed
+318bb65
+Update build script to use npx for improved reliability Modify the build script in package.json to use `npx tsx` instead of `tsx` to ensure the build process correctly executes the tsx command in various deployment environments. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 7264e967-e0c2-416d-94d3-b4cdb60b1d1a Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 8030aae7-434a-4275-b09a-1de1bdb333a1 Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/f368ded8-a951-4bb0-8aa0-d556e994fc80/7264e967-e0c2-416d-94d3-b4cdb60b1d1a/q4k6P6f
+
+Rollback
+
+All logs
+Search
+Search
+
+Live tail
+GMT+11
+
+
+
+==> Downloading cache...
+==> Cloning from https://github.com/sharkyowlskv-lab/resync-studios
+==> Checking out commit 318bb655bde11e7f0271f60b79d32feef8e5613e in branch main
+==> Downloaded 53MB in 2s. Extraction took 1s.
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'npm run build && npm run db:push'...
+> rest-express@1.0.0 build
+> npx tsx script/build.ts && npm run db:push
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'esbuild' imported from /opt/render/project/src/script/build.ts
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:256:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:854:18)
+    at defaultResolve (node:internal/modules/esm/resolve:984:11)
+    at nextResolve (node:internal/modules/esm/hooks:748:28)
+    at resolveBase (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1767590874586:2:3744)
+    at resolveDirectory (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1767590874586:2:4243)
+    at resolveTsPaths (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1767590874586:2:4984)
+    at async resolve (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1767590874586:2:5355)
+    at async nextResolve (node:internal/modules/esm/hooks:748:22) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+Node.js v22.16.0
+==> Build failed 😞
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
