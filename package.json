@@ -10,7 +10,7 @@
     "build": "npm run build:tsx && npm run db:push",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc"
-  },
+  }
 
   },
   "dependencies": {
