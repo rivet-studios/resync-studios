@@ -43,7 +43,7 @@ const departments: Department[] = [
       {
         name: "silentdirective.",
         role: "Operations Manager & Co Founder",
-        joinDate: "2025-Present",
+        joinDate: "2024-Present",
       },
       {
         name: "Kyros",
@@ -53,13 +53,13 @@ const departments: Department[] = [
     ],
   },
   {
-    name: "RS Trust & Safety",
+    name: "RS Trust & Safety Director",
     icon: Shield,
     color: "text-red-500",
     members: [
       {
         name: "Iceberg1038",
-        role: "Trust & Safety Director",
+        role: "Staff Department Director",
         joinDate: "2023-Present",
       },
     ],
@@ -70,18 +70,18 @@ const departments: Department[] = [
     color: "text-green-500",
     members: [
       {
-        name: "Bobby23458836",
+        name: "bobby283543",
         role: "Customer Relations Director",
         joinDate: "2025-Present",
       },
       {
-        name: "nil",
-        role: "Senior Customer Support Representative",
+        name: "Vacant",
+        role: "Unknown",
         joinDate: "Unknown",
       },
       {
-        name: "nil",
-        role: "Customer Support Representative",
+        name: "Vacant",
+        role: "Unknown",
         joinDate: "Unknown",
       },
     ],
@@ -92,14 +92,24 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "cxiqlne",
+        name: "Vacant",
         role: "Vehicle Artist",
-        joinDate: "2018-Present",
+        joinDate: "Unknown",
       },
       {
         name: "cxiqlne",
         role: "Gameplay Systems Developer",
         joinDate: "2018-Present",
+      },
+      {
+        name: "Reni",
+        role: "Gameplay Systems Developer",
+        joinDate: "2019-Present",
+      },
+      {
+        name: "silentdirective.",
+        role: "Gameplay Systems Developer",
+        joinDate: "2024-Present",
       },
       {
         name: "cxiqlne",
@@ -120,9 +130,21 @@ const departments: Department[] = [
     members: [
       {
         name: "Reni",
-        role: "Former Operations Manager & Co Founder",
+        role: "Operations Manager & Co Founder",
         joinDate: "2019",
         endDate: "2025",
+      },
+      {
+        name: "Alexx",
+        role: "Trust & Safety Director",
+        joinDate: "2023",
+        endDate: "2025",
+      },
+      {
+        name: "LA5TIC",
+        role: "Operations Manager & Lead Engineer",
+        joinDate: "2018",
+        endDate: "2023",
       },
     ],
   },
@@ -196,8 +218,12 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining the Resync Studios team? Visit our careers
-            page or contact us for more information.
+            Open Positions
+            <CardDescription className="text-xs"></CardDescription>• Vehicle
+            Artist • Gameplay Systems Developer • Programmer • Vehicle Engineer
+            • Customer Relations Specialist Agent (DMCA) • Customer Relations
+            Specialist Agent (Partnership) • Customer Relations Specialist Agent
+            (Takedown Requests)
           </p>
         </CardContent>
       </Card>

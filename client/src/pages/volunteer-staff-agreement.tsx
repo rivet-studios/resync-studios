@@ -23,7 +23,7 @@ export default function VolunteerStaffAgreement() {
           Terms and conditions for volunteer moderators and staff members
         </p>
         <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: December 12, 2025
+          Last Updated: January 6, 2026
         </p>
       </div>
 
@@ -161,6 +161,15 @@ export default function VolunteerStaffAgreement() {
                   Applying rules consistently to all users without favoritism or
                   prejudice
                 </li>
+                <li>
+                  Represent the RS Trust & Safety Team with professionalism and
+                  dignity at all times - This includes maintaining a
+                  professional appearance, using appropriate language, and
+                  avoiding any behavior that could be perceived as
+                  unprofessional or inappropriate - This also includes
+                  maintaining a professional demeanor in all communications,
+                  both in-game and out-of-game
+                </li>
                 <li>Promptly reporting serious issues to designated staff</li>
               </ul>
             </CardContent>
@@ -240,6 +249,8 @@ export default function VolunteerStaffAgreement() {
                 <li>Abusing staff tools</li>
                 <li>Unprofessional conduct</li>
                 <li>Failure to enforce rules</li>
+                <li>Violating Discord and/or ROBLOX Terms of Use</li>
+                <li>Unauthorised Use of Staff Tools</li>
                 <li>Violating Resync Studios Terms and Conditions</li>
               </ul>
             </CardContent>
@@ -256,6 +267,9 @@ export default function VolunteerStaffAgreement() {
               termination of your Volunteer Staff privileges and may result in
               permanent termination of your underlying Resync Studios user
               account, without right of appeal.
+              <p className="mt-3 text-destructive font-semibold">
+                Any abuse of power is grounds for immediate removal.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -308,7 +322,7 @@ export default function VolunteerStaffAgreement() {
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>
                 Upon conclusion of your role, you agree not to engage in conduct
-                intended to disrupt or harm, including:
+                intended to disrupt or harm, including but not limited to:
               </p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>
