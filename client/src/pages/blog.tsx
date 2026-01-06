@@ -24,7 +24,7 @@ const blogPosts = [
     author: "cxiqlne",
     date: "Dec 19, 2025",
     image:
-      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=300&fit=crop",
+      "https://imgur.com/a/car-fire-sbi-resync-studios-project-foxtrot-teaser-AjnovPK",
     featured: true,
     readTime: 10,
     views: 156,

@@ -164,10 +164,7 @@ export async function registerRoutes(
       }
 
       // Only allow setting password for users with @resyncstudios.com emails
-      if (
-        !user.email ||
-        !user.email.endsWith("@resyncstudios.com")
-      ) {
+      if (!user.email || !user.email.endsWith("@resyncstudios.com")) {
         return res
           .status(403)
           .json({ message: "Password setting not allowed for this account" });
@@ -207,14 +204,14 @@ export async function registerRoutes(
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-        req.login(user as any, (err) => {
-          if (err) {
-            console.error("❌ Failed to establish session:", err);
-            return res.status(500).json({ message: "Failed to login" });
-          }
-          console.log("✅ User logged in:", user.id, "SessionID:", req.sessionID);
-          res.json({ message: "Logged in successfully", user });
-        });
+      req.login(user as any, (err) => {
+        if (err) {
+          console.error("❌ Failed to establish session:", err);
+          return res.status(500).json({ message: "Failed to login" });
+        }
+        console.log("✅ User logged in:", user.id, "SessionID:", req.sessionID);
+        res.json({ message: "Logged in successfully", user });
+      });
     } catch (error) {
       console.error(
         "❌ Error in login:",
@@ -305,116 +302,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  // LFG Routes
-  app.get("/api/lfg", async (req, res) => {
-    try {
-      const posts = await storage.getLfgPosts();
-      const postsWithAuthors = await Promise.all(
-        posts.map(async (post) => {
-          const author = await storage.getUser(post.authorId);
-          return { ...post, author };
-        }),
-      );
-      res.json(postsWithAuthors);
-    } catch (error) {
-      console.error("Error fetching LFG posts:", error);
-      res.status(500).json({ message: "Failed to fetch LFG posts" });
-    }
-  });
-
-  app.get("/api/lfg/recent", async (req, res) => {
-    try {
-      const posts = await storage.getLfgPosts();
-      const recentPosts = posts.slice(0, 5).reverse();
-      const postsWithAuthors = await Promise.all(
-        recentPosts.map(async (post) => {
-          const author = await storage.getUser(post.authorId);
-          return { ...post, author };
-        }),
-      );
-      res.json(postsWithAuthors);
-    } catch (error) {
-      console.error("Error fetching recent LFG posts:", error);
-      res.json([]);
-    }
-  });
-
-  app.get("/api/lfg/:id", async (req, res) => {
-    try {
-      const post = await storage.getLfgPost(req.params.id);
-      if (!post) {
-        return res.status(404).json({ message: "LFG post not found" });
-      }
-      const author = await storage.getUser(post.authorId);
-      res.json({ ...post, author });
-    } catch (error) {
-      console.error("Error fetching LFG post:", error);
-      res.status(500).json({ message: "Failed to fetch LFG post" });
-    }
-  });
-
-  app.post("/api/lfg", requireAuth, async (req, res) => {
-    try {
-      const data = insertLfgPostSchema.parse({
-        ...req.body,
-        authorId: (req.user as any).id,
-      });
-      const post = await storage.createLfgPost(data);
-      res.status(201).json(post);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res
-          .status(400)
-          .json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error creating LFG post:", error);
-      res.status(500).json({ message: "Failed to create LFG post" });
-    }
-  });
-
-  app.post("/api/lfg/:id/join", requireAuth, async (req, res) => {
-    try {
-      const postId = req.params.id;
-      const userId = (req.user as any).id;
-      const post = await storage.getLfgPost(postId);
-
-      if (!post) {
-        return res.status(404).json({ message: "LFG post not found" });
-      }
-
-      if ((post.playersJoined || 0) >= (post.playersNeeded || 1)) {
-        return res.status(400).json({ message: "Group is full" });
-      }
-
-      const participant = await storage.joinLfgPost(
-        postId,
-        userId,
-        req.body.role,
-      );
-      res.status(201).json(participant);
-    } catch (error) {
-      console.error("Error joining LFG post:", error);
-      res.status(500).json({ message: "Failed to join LFG post" });
-    }
-  });
-
-  app.delete("/api/lfg/:id", requireAuth, async (req, res) => {
-    try {
-      const post = await storage.getLfgPost(req.params.id);
-      if (!post) {
-        return res.status(404).json({ message: "LFG post not found" });
-      }
-      if (post.authorId !== (req.user as any).id) {
-        return res.status(403).json({ message: "Not authorized" });
-      }
-      await storage.deleteLfgPost(req.params.id);
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting LFG post:", error);
-      res.status(500).json({ message: "Failed to delete LFG post" });
     }
   });
 
