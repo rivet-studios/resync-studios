@@ -74,7 +74,7 @@ export default function Landing() {
             The number one online gaming community platform
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            RESYNC Studios™ creates an open gaming environment accessible to
+            RIVET Studios™ creates an open gaming environment accessible to
             everyone, delivering high-fidelity games through our exceptional
             game development expertise and building online roleplay games.
           </p>
@@ -155,7 +155,7 @@ export default function Landing() {
             Ready to join our community?
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of community members at RESYNC Studios™ to
+            Join thousands of community members at RIVET Studios™ to
             experience roleplay & realism like never before!
           </p>
         </div>

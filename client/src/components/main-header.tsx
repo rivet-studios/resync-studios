@@ -49,7 +49,7 @@ export function MainHeader() {
             {/* Logo & Brand */}
             <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
               <img src={logoSvg} alt="RS" className="w-8 h-8" />
-              <span className="font-display font-bold text-lg hidden sm:inline">RESYNC Studios™</span>
+              <span className="font-display font-bold text-lg hidden sm:inline">RIVET Studios™</span>
             </Link>
 
             {/* Desktop Navigation */}

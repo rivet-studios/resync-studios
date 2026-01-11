@@ -681,7 +681,7 @@ export default function AdminCP() {
               </div>
               <div>
                 <p className="text-sm font-medium">Platform</p>
-                <p className="text-muted-foreground">RESYNC Studios v1.0</p>
+                <p className="text-muted-foreground">RIVET Studios v1.0</p>
               </div>
             </CardContent>
           </Card>

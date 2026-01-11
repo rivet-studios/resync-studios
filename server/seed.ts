@@ -11,7 +11,7 @@ async function seed() {
   // Seed forum categories matching user's structure
   await db.insert(forumCategories).values([
     // News & Information
-    { name: "Announcements", description: "Important announcements from the Resync Studios team", icon: "Bell", color: "primary", order: 1 },
+    { name: "Announcements", description: "Important announcements from the Rivet Studios team", icon: "Bell", color: "primary", order: 1 },
     { name: "Information & Rules", description: "Community rules and important information", icon: "Info", color: "primary", order: 2 },
     { name: "Updates", description: "Game updates and patch notes", icon: "Zap", color: "primary", order: 3 },
     

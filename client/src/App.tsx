@@ -54,7 +54,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="font-bold mb-4">RESYNC Studios™</h3>
+              <h3 className="font-bold mb-4">RIVET Studios™</h3>
               <p className="text-sm text-muted-foreground">
                 Building the future of digital experiences with innovative
                 solutions and community-driven development.
@@ -168,7 +168,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="border-t border-border/50 pt-8">
             <p className="text-xs text-muted-foreground text-center">
-              © 2025 RESYNC Studios™. All rights reserved.
+              © 2025 RIVET Studios™. All rights reserved.
             </p>
           </div>
         </div>

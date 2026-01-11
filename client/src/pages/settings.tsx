@@ -301,7 +301,7 @@ export default function Settings() {
           <div className="space-y-6">
             <div>
               <h1 className="font-display text-2xl sm:text-3xl font-bold">Appearance</h1>
-              <p className="text-muted-foreground mt-1">Customize how RESYNC Studios looks for you</p>
+              <p className="text-muted-foreground mt-1">Customize how RIVET Studios looks for you</p>
             </div>
 
             <Card>

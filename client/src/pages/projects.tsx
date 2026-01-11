@@ -72,7 +72,7 @@ const RS_PROJECTS = [
     status: "discontinued",
     location: "Bartow, FL",
     reasonfordiscontinuation:
-      "Reason for Discontinuation: State of Bartow was discontinued after former leadership was found in violation of local law and the project was proving to be a liability to Resync Studios.",
+      "Reason for Discontinuation: State of Bartow was discontinued after former leadership was found in violation of local law and the project was proving to be a liability to Rivet Studios.",
   },
   {
     name: "State of Florida, Miami Dade County",
@@ -121,7 +121,7 @@ export default function Projects() {
           Our Work
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          RESYNC Studios Projects
+          RIVET Studios Projects
         </h1>
         <p className="text-lg text-muted-foreground">
           Explore all of our active projects, experimental systems, and creative
@@ -233,7 +233,7 @@ export default function Projects() {
       <Card className="bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
         <CardContent className="p-6">
           <p className="text-center">
-            RESYNC Studios is constantly innovating and creating immersive
+            RIVET Studios is constantly innovating and creating immersive
             roleplaying experiences. From detailed city simulations to
             experimental game mechanics, we push the boundaries of what's
             possible.

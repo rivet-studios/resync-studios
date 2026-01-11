@@ -21,9 +21,7 @@ export const reportStatusEnum = pgEnum("report_status", [
 ]);
 
 export const reports = pgTable("reports", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   reporterId: varchar("reporter_id").notNull(),
   targetId: varchar("target_id").notNull(),
   targetType: varchar("target_type").notNull(),
@@ -47,9 +45,10 @@ export type InsertReport = z.infer<typeof insertReportSchema>;
 // Enums
 export const vipTierEnum = pgEnum("vip_tier", [
   "none",
-  "bronze_vip",
-  "diamond_vip",
-  "founders_vip",
+  "bronze",
+  "sapphire",
+  "diamond",
+  "founders",
   "founders_lifetime",
   "lifetime",
 ]);
@@ -76,10 +75,11 @@ export const userRankEnum = pgEnum("user_rank", [
   "community_partner",
   "bronze_vip",
   "diamond_vip",
-  "founders_vip",
+  "founders_edition_vip",
   "lifetime",
   "customer_relations",
   "rs_volunteer_staff",
+  "rs_trust_safety_team",
   "appeals_moderator",
   "community_moderator",
   "community_senior_moderator",
@@ -87,7 +87,7 @@ export const userRankEnum = pgEnum("user_rank", [
   "community_senior_administrator",
   "community_developer",
   "staff_internal_affairs",
-  "mi_trust_safety_director",
+  "mi_trust_safety_director_trademark",
   "staff_department_director",
   "team_member",
   "operations_manager",
@@ -117,7 +117,6 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   username: varchar("username").unique(),
   bio: text("bio"),
-  signature: text("signature"),
   // VIP subscription
   vipTier: vipTierEnum("vip_tier").default("none"),
   stripeCustomerId: varchar("stripe_customer_id"),
@@ -141,25 +140,25 @@ export const users = pgTable("users", {
   clanRole: varchar("clan_role"),
   // User rank/role - Support for multiple ranks (up to 20)
   userRank: userRankEnum("user_rank").default("member"), // Primary rank
-  secondaryUserRank: text("secondary_user_rank").default("active_member"), // Secondary rank
+  secondaryUserRank: text("secondary_user_rank").default("None"), // Secondary rank
   tertiaryUserRank: userRankEnum("tertiary_user_rank").default("lifetime"), // Tertiary rank
-  quaternaryUserRank: text("quaternary_user_rank").default("none"),
-  quinaryUserRank: text("quinary_user_rank").default("none"),
-  senaryUserRank: text("senary_user_rank").default("none"),
-  septenaryUserRank: text("septenary_user_rank").default("none"),
-  octonaryUserRank: text("octonary_user_rank").default("none"),
-  nonaryUserRank: text("nonary_user_rank").default("none"),
-  denaryUserRank: text("denary_user_rank").default("none"),
-  eleventhUserRank: text("eleventh_user_rank").default("none"),
-  twelfthUserRank: text("twelfth_user_rank").default("none"),
-  thirteenthUserRank: text("thirteenth_user_rank").default("none"),
-  fourteenthUserRank: text("fourteenth_user_rank").default("none"),
-  fifteenthUserRank: text("fifteenth_user_rank").default("none"),
-  sixteenthUserRank: text("sixteenth_user_rank").default("none"),
-  seventeenthUserRank: text("seventeenth_user_rank").default("none"),
-  eighteenthUserRank: text("eighteenth_user_rank").default("none"),
-  nineteenthUserRank: text("nineteenth_user_rank").default("none"),
-  twentiethUserRank: text("twentieth_user_rank").default("none"),
+  quaternaryUserRank: text("quaternary_user_rank").default("None"),
+  quinaryUserRank: text("quinary_user_rank").default("None"),
+  senaryUserRank: text("senary_user_rank").default("None"),
+  septenaryUserRank: text("septenary_user_rank").default("None"),
+  octonaryUserRank: text("octonary_user_rank").default("None"),
+  nonaryUserRank: text("nonary_user_rank").default("None"),
+  denaryUserRank: text("denary_user_rank").default("None"),
+  eleventhUserRank: text("eleventh_user_rank").default("None"),
+  twelfthUserRank: text("twelfth_user_rank").default("None"),
+  thirteenthUserRank: text("thirteenth_user_rank").default("None"),
+  fourteenthUserRank: text("fourteenth_user_rank").default("None"),
+  fifteenthUserRank: text("fifteenth_user_rank").default("None"),
+  sixteenthUserRank: text("sixteenth_user_rank").default("None"),
+  seventeenthUserRank: text("seventeenth_user_rank").default("None"),
+  eighteenthUserRank: text("eighteenth_user_rank").default("None"),
+  nineteenthUserRank: text("nineteenth_user_rank").default("None"),
+  twentiethUserRank: text("twentieth_user_rank").default("None"),
   // Banning
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
@@ -175,8 +174,15 @@ export const users = pgTable("users", {
   // Admin Dashboard
   isAdmin: boolean("is_admin").default(false),
   // Community Developer Dashboard
-  isCommunityDeveloper: boolean("is_community_developer").default(false),
-
+  isCommunity Developer: boolean("is_community_developer").default(false),
+  // EAR (Emergency Access Request) Dashboard
+  isEAR: boolean("is_ear").default(false),
+  earRequests: text("ear_requests"),
+  earRequestStatus: varchar("ear_request_status").default("pending"),
+  earRequestDate: timestamp("ear_request_date"),
+  earRequestReviewedBy: varchar("ear_request_reviewed_by"),
+  earRequestReviewedDate: timestamp("ear_request_reviewed_date"),
+  earRequestReviewedReason: text("ear_request_reviewed_reason"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -304,7 +310,7 @@ export const magicLinkTokens = pgTable("magic_link_tokens", {
 });
 
 // Announcements
-export const news = pgTable("news", {
+export const announcements = pgTable("announcements", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
@@ -323,7 +329,7 @@ export const siteSettings = pgTable("site_settings", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  isOffline: boolean("is_offline").default(true),
+  isOffline: boolean("is_offline").default(false),
   offlineMessage: text("offline_message"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -371,7 +377,7 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   id: true,
   createdAt: true,
 });
-export const insertNewsSchema = createInsertSchema(news).omit({
+export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -390,20 +396,16 @@ export type Build = typeof builds.$inferSelect;
 export type InsertBuild = z.infer<typeof insertBuildSchema>;
 export type BuildVote = typeof buildVotes.$inferSelect;
 export type ForumCategory = typeof forumCategories.$inferSelect;
-export type InsertForumCategory = z.infer<
-  ReturnType<typeof createInsertSchema<typeof forumCategories>>
->;
+export type InsertForumCategory = z.infer<ReturnType<typeof createInsertSchema<typeof forumCategories>>>;
 export type ForumThread = typeof forumThreads.$inferSelect;
 export type InsertForumThread = z.infer<typeof insertForumThreadSchema>;
 export type ForumReply = typeof forumReplies.$inferSelect;
 export type InsertForumReply = z.infer<typeof insertForumReplySchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type Announcement = typeof news.$inferSelect;
-export type InsertAnnouncement = z.infer<typeof insertNewsSchema>;
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 export type SiteSettings = typeof siteSettings.$inferSelect;
-export type InsertSiteSettings = z.infer<
-  ReturnType<typeof createInsertSchema<typeof siteSettings>>
->;
+export type InsertSiteSettings = z.infer<ReturnType<typeof createInsertSchema<typeof siteSettings>>>;
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;

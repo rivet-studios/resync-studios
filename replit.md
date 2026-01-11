@@ -1,7 +1,7 @@
-# RESYNC Studios Platform - Development Notes
+# RIVET Studios Platform - Development Notes
 
 ## Project Overview
-Full-featured gaming community platform for RESYNC Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, user profiles, and comprehensive rank system.
+Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, user profiles, and comprehensive rank system.
 
 ## Current Status (December 21, 2025)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
@@ -63,7 +63,7 @@ Added 13+ new ranks to match workflow & position entitlement:
 - Users (with VIP tier, Discord/Roblox linking, user ranks)
 - Announcements (live-edited by admins)
 - Payments (tracks card charges with status)
-- Projects (RESYNC Studios projects list)
+- Projects (RIVET Studios projects list)
 - Site Settings (offline mode, custom message)
 - Forums, Clans, Chat, and other community features
 

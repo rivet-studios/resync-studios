@@ -1,4 +1,4 @@
-# RESYNC Studios - Ready to Deploy
+# RIVET Studios - Ready to Deploy
 
 Your GitHub repo is created and ready: **https://github.com/sharkyowlskv-lab/resync-studios**
 
@@ -162,4 +162,4 @@ After deployment:
 - [ ] Redirects back to app after login
 - [ ] No errors in browser console
 
-Done! Your RESYNC Studios platform is live! 🚀
+Done! Your RIVET Studios platform is live! 🚀

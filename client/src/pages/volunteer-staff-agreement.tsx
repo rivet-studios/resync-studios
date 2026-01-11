@@ -38,7 +38,7 @@ export default function VolunteerStaffAgreement() {
               <p className="text-muted-foreground text-sm">
                 Please read this agreement carefully. It contains important
                 information regarding your role, responsibilities, and the
-                nature of your relationship with Resync Studios. By accepting an
+                nature of your relationship with Rivet Studios. By accepting an
                 invitation to become a Volunteer Staff member, you acknowledge
                 that you have read, understood, and unconditionally agree to be
                 bound by all terms and conditions contained herein.
@@ -64,7 +64,7 @@ export default function VolunteerStaffAgreement() {
             <CardContent className="text-sm text-muted-foreground">
               Your role as Volunteer Staff is a strictly voluntary, unpaid,
               at-will position. You are not an employee, independent contractor,
-              partner, or agent of Resync Studios. You perform your duties for
+              partner, or agent of Rivet Studios. You perform your duties for
               personal civic, charitable, or humanitarian reasons, without
               promise, expectation, or receipt of any compensation.
             </CardContent>
@@ -90,7 +90,7 @@ export default function VolunteerStaffAgreement() {
               <CardTitle className="text-base">At-Will Termination</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              The relationship between you and Resync Studios is entirely
+              The relationship between you and Rivet Studios is entirely
               "at-will." Either party may terminate this volunteer relationship
               at any time, for any reason or for no reason, with or without
               advance notice or explanation.
@@ -151,7 +151,7 @@ export default function VolunteerStaffAgreement() {
               <p>Your responsibilities include:</p>
               <ul className="list-disc list-inside space-y-1 ml-2 mt-2">
                 <li>
-                  Actively and impartially enforcing Resync Studios policies
+                  Actively and impartially enforcing Rivet Studios policies
                 </li>
                 <li>Promoting a welcoming and constructive atmosphere</li>
                 <li>
@@ -210,7 +210,7 @@ export default function VolunteerStaffAgreement() {
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground space-y-3">
             <p>
-              All staff tools are the sole property of Resync Studios, granted
+              All staff tools are the sole property of Rivet Studios, granted
               exclusively for performing your duties.
             </p>
             <p className="font-semibold text-foreground">
@@ -251,7 +251,7 @@ export default function VolunteerStaffAgreement() {
                 <li>Failure to enforce rules</li>
                 <li>Violating Discord and/or ROBLOX Terms of Use</li>
                 <li>Unauthorised Use of Staff Tools</li>
-                <li>Violating Resync Studios Terms and Conditions</li>
+                <li>Violating Rivet Studios Terms and Conditions</li>
               </ul>
             </CardContent>
           </Card>
@@ -265,7 +265,7 @@ export default function VolunteerStaffAgreement() {
             <CardContent className="text-sm text-muted-foreground">
               A violation of this Agreement will result in the immediate
               termination of your Volunteer Staff privileges and may result in
-              permanent termination of your underlying Resync Studios user
+              permanent termination of your underlying Rivet Studios user
               account, without right of appeal.
               <p className="mt-3 text-destructive font-semibold">
                 Any abuse of power is grounds for immediate removal.
@@ -296,9 +296,9 @@ export default function VolunteerStaffAgreement() {
               <div className="space-y-2 mt-3">
                 <p className="font-semibold text-destructive">❌ Prohibited:</p>
                 <p className="pl-4">"Former Metro Interactive Administrator"</p>
-                <p className="pl-4">"Former Resync Studios Administrator"</p>
+                <p className="pl-4">"Former Rivet Studios Administrator"</p>
                 <p className="pl-4">"Ex-Staff at Metro Interactive"</p>
-                <p className="pl-4">"Ex-Staff at Resync Studios"</p>
+                <p className="pl-4">"Ex-Staff at Rivet Studios"</p>
               </div>
               <div className="space-y-2 mt-3">
                 <p className="font-semibold text-green-600">✓ Permitted:</p>
@@ -360,7 +360,7 @@ export default function VolunteerStaffAgreement() {
           <CardContent className="p-6 text-sm text-muted-foreground">
             <p>
               You perform your volunteer duties at your own risk. To the fullest
-              extent permitted by law, Resync Studios shall not be liable for
+              extent permitted by law, Rivet Studios shall not be liable for
               any claims, damages, or liabilities arising from your actions or
               service as a Volunteer Staff member.
             </p>

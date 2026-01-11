@@ -27,7 +27,7 @@ export default function AboutRS() {
       <Card className="border-chart-2/50 bg-gradient-to-r from-chart-2/10 to-primary/10">
         <CardContent className="p-6 space-y-4">
           <p className="text-lg font-semibold">
-            We are proud to officially announce our rebrand to RESYNC Studios™
+            We are proud to officially announce our rebrand to RIVET Studios™
             — the next evolution of our community and our vision for immersive,
             advanced roleplay.
           </p>
@@ -47,7 +47,7 @@ export default function AboutRS() {
         </div>
 
         <p className="text-lg text-muted-foreground">
-          RESYNC Studios™ represents a commitment to redefining roleplay
+          RIVET Studios™ represents a commitment to redefining roleplay
           standards. Our focus is on crafting experiences that are:
         </p>
 
@@ -90,7 +90,7 @@ export default function AboutRS() {
         <div className="flex items-center gap-3">
           <Rocket className="w-8 h-8 text-primary" />
           <h2 className="font-display text-3xl font-bold">
-            The Future of RESYNC Studios™
+            The Future of RIVET Studios™
           </h2>
         </div>
 
@@ -215,7 +215,7 @@ export default function AboutRS() {
             <h2 className="font-display text-2xl font-bold">Looking Ahead</h2>
           </div>
           <p className="text-lg font-semibold">
-            RESYNC Studios™ is not just a company; it is a platform for
+            RIVET Studios™ is not just a company; it is a platform for
             storytelling, innovation, and collaboration.
           </p>
           <p className="text-muted-foreground">
@@ -235,7 +235,7 @@ export default function AboutRS() {
       <Card className="border-chart-2/30 bg-chart-2/5">
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">
-            Welcome to RESYNC Studios (formally Metro Interactive™)
+            Welcome to RIVET Studios (formally Metro Interactive™)
           </p>
           <p className="text-muted-foreground">
             Join thousands of members crafting immersive stories in the most

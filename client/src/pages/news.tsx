@@ -51,7 +51,7 @@ export default function Announcements() {
           Announcements
         </h1>
         <p className="text-lg text-muted-foreground">
-          Stay updated with the latest news and roadmap for RESYNC Studios™
+          Stay updated with the latest news and roadmap for RIVET Studios™
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export default function Announcements() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Building Together</p>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            RESYNC Studios is constantly evolving. This site is just the
+            RIVET Studios is constantly evolving. This site is just the
             beginning of what we want to achieve. With a solid foundation in
             place, we can focus on bigger features that will shape the future of
             our community. Thank you for your support throughout this journey.

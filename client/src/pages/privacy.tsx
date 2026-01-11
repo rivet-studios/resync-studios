@@ -34,7 +34,7 @@ export default function PrivacyPolicy() {
             <div>
               <p className="font-semibold mb-2">Our Commitment</p>
               <p className="text-muted-foreground">
-                Resync Studios ("we" or "us") respects your privacy and is
+                Rivet Studios ("we" or "us") respects your privacy and is
                 committed to protecting it through our compliance with this
                 policy. This Privacy Policy describes how we collect, use,
                 maintain, protect, and disclose information from users of our
@@ -195,7 +195,7 @@ export default function PrivacyPolicy() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Resync Studios does not sell your Personal Information to third
+              Rivet Studios does not sell your Personal Information to third
               parties for money or any consideration. We do not share your data
               with third parties for their marketing purposes.
             </CardContent>
@@ -407,7 +407,7 @@ export default function PrivacyPolicy() {
                 contact us at:
               </p>
               <p className="font-mono text-xs">support@resyncstudios.com</p>
-              <p className="text-xs">RESYNC Studios, Australia, Victoria</p>
+              <p className="text-xs">RIVET Studios, Australia, Victoria</p>
             </CardContent>
           </Card>
         </div>

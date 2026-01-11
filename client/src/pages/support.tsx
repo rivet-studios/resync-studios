@@ -89,7 +89,7 @@ const FAQ_ITEMS = [
   },
   {
     category: "DMCA",
-    question: "Resync Studios filed a DMCA takedown on my asset! What do I do?",
+    question: "Rivet Studios filed a DMCA takedown on my asset! What do I do?",
     answer:
       "If you believe a DMCA takedown notice has been issued falsely by our team, please email us at dmca@resyncstudios.com with the DMCA takedown notice information and proof of ownership of the asset.",
   },

@@ -20,7 +20,7 @@ export default function CommunityRules() {
           Community Rules
         </h1>
         <p className="text-lg text-muted-foreground">
-          Official rules and guidelines for Resync Studios community members
+          Official rules and guidelines for Rivet Studios community members
         </p>
       </div>
 
@@ -34,7 +34,7 @@ export default function CommunityRules() {
               </p>
               <p className="text-muted-foreground text-sm">
                 Just like any good community, rules and guidelines help keep
-                things running well. Resync Studios, we want a respectful, kind,
+                things running well. Rivet Studios, we want a respectful, kind,
                 and friendly space for everyone. Please follow our Rules and
                 Terms of Use whenever you're part of the community. We may stop
                 or remove your access at any time if you break these rules.

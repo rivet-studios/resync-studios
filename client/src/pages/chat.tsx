@@ -144,7 +144,7 @@ export default function Chat() {
           Community Chat
         </h1>
         <p className="text-muted-foreground">
-          Real-time chat with the RESYNC Studios community
+          Real-time chat with the RIVET Studios community
         </p>
       </div>
 

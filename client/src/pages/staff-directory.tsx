@@ -167,7 +167,7 @@ export default function StaffDirectory() {
           Staff Directory
         </h1>
         <p className="text-lg text-muted-foreground">
-          Meet the passionate team behind Resync Studios™
+          Meet the passionate team behind Rivet Studios™
         </p>
       </div>
 

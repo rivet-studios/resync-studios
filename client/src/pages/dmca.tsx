@@ -53,13 +53,13 @@ export default function DMCAPolicy() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                Use of Resync Studios Assets
+                Use of Rivet Studios Assets
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>
                 One of the most common reasons for takedown is the use of assets
-                that belong to Resync Studios. This includes:
+                that belong to Rivet Studios. This includes:
               </p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>3D models and textures</li>
@@ -70,7 +70,7 @@ export default function DMCAPolicy() {
               </ul>
               <p className="mt-2">
                 If any of these assets were used without permission, the game
-                may have been flagged for removal by Resync Studios' Copyright
+                may have been flagged for removal by Rivet Studios' Copyright
                 Team.
               </p>
             </CardContent>
@@ -84,7 +84,7 @@ export default function DMCAPolicy() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               <p>
-                Resync Studios works with other game developers to protect their
+                Rivet Studios works with other game developers to protect their
                 intellectual property. If your game includes assets, scripts, or
                 concepts from one of our affiliate clients without
                 authorization, it may be subject to takedown.
@@ -144,7 +144,7 @@ export default function DMCAPolicy() {
               </div>
               <div>
                 <p className="font-semibold text-foreground mb-1">
-                  Direct Contact with Resync Studios
+                  Direct Contact with Rivet Studios
                 </p>
                 <p>
                   Contact our Copyright Team at{" "}
@@ -192,13 +192,13 @@ export default function DMCAPolicy() {
       {/* What We Protect */}
       <div className="space-y-4">
         <h2 className="font-display text-2xl font-bold">
-          What Resync Studios Protects
+          What Rivet Studios Protects
         </h2>
 
         <Card>
           <CardContent className="p-6 space-y-3 text-sm text-muted-foreground">
             <p>
-              Resync Studios actively protects intellectual property in the
+              Rivet Studios actively protects intellectual property in the
               following categories:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-2">
@@ -313,7 +313,7 @@ export default function DMCAPolicy() {
             Protecting Our Community
           </p>
           <p>
-            Resync Studios is committed to protecting intellectual property
+            Rivet Studios is committed to protecting intellectual property
             rights and maintaining a fair environment for all creators. For more
             details on our intellectual property policies, please review our
             comprehensive legal documentation.

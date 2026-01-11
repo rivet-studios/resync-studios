@@ -55,7 +55,7 @@ export default function Signup() {
                 <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                   <Gamepad2 className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="font-display font-bold text-xl">RESYNC Studios</span>
+                <span className="font-display font-bold text-xl">RIVET Studios</span>
               </div>
               <ThemeToggle />
             </div>
@@ -91,7 +91,7 @@ export default function Signup() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Gamepad2 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-bold text-xl">RESYNC Studios</span>
+              <span className="font-display font-bold text-xl">RIVET Studios</span>
             </div>
             <ThemeToggle />
           </div>
@@ -109,7 +109,7 @@ export default function Signup() {
             </div>
             <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Join the Resync Studios gaming community
+              Join the Rivet Studios gaming community
             </CardDescription>
           </CardHeader>
 
@@ -190,7 +190,7 @@ export default function Signup() {
       <footer className="border-t border-border/50 bg-background/50 backdrop-blur-sm py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-            <div>© 2025 Resync Studios. All rights reserved.</div>
+            <div>© 2025 Rivet Studios. All rights reserved.</div>
             <div className="flex gap-4">
               <a href="/terms" className="hover:text-foreground transition-colors" data-testid="link-terms">Terms</a>
               <a href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-privacy">Privacy</a>

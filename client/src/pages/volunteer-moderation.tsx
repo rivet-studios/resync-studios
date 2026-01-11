@@ -149,7 +149,7 @@ export default function VolunteerModeration() {
                       Please read this agreement carefully. It contains
                       important information regarding your role,
                       responsibilities, and the nature of your relationship with
-                      RESYNC Studios. By accepting an invitation to become a
+                      RIVET Studios. By accepting an invitation to become a
                       Volunteer Staff member, you acknowledge that you have
                       read, understood, and unconditionally agree to be bound by
                       all terms and conditions.

@@ -115,7 +115,7 @@ export function AppSidebar() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Gamepad2 className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-display font-bold text-lg">RESYNC Studios</span>
+          <span className="font-display font-bold text-lg">RIVET Studios</span>
         </Link>
       </SidebarHeader>
 

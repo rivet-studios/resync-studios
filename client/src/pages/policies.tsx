@@ -28,7 +28,7 @@ const policyLinks = [
   {
     title: "Terms of Service",
     lastUpdated: "Last Updated: January 8th, 2026",
-    description: "Our terms and conditions for using RESYNC Studios",
+    description: "Our terms and conditions for using RIVET Studios",
     icon: Scale,
     href: "/terms",
   },
@@ -69,7 +69,7 @@ export default function Policies() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Policies & Guidelines</h1>
         <p className="text-lg text-muted-foreground">
-          Important information about RESYNC Studios™ policies, guidelines, and
+          Important information about RIVET Studios™ policies, guidelines, and
           legal documents
         </p>
       </div>

@@ -36,7 +36,7 @@ export default function TermsOfService() {
                 Binding Legal Agreement
               </p>
               <p className="text-muted-foreground text-sm">
-                By creating an account, accessing, or using Resync Studios
+                By creating an account, accessing, or using Rivet Studios
                 services in any manner, you affirm that you have read,
                 understood, and unconditionally agree to be legally bound by all
                 terms and conditions contained herein. If you do not agree, you
@@ -62,7 +62,7 @@ export default function TermsOfService() {
               <CardTitle className="text-base">The Services</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Welcome to Resync Studios. The Services are intended for your
+              Welcome to Rivet Studios. The Services are intended for your
               personal, non-commercial entertainment. We may change, modify,
               update, suspend, or discontinue features at any time, without
               notice and without liability.
@@ -296,7 +296,7 @@ export default function TermsOfService() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                License Grant to Resync Studios
+                License Grant to Rivet Studios
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
@@ -452,7 +452,7 @@ export default function TermsOfService() {
               <CardTitle className="text-base">Indemnification</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              You agree to defend, indemnify, and hold harmless Resync Studios
+              You agree to defend, indemnify, and hold harmless Rivet Studios
               from any claims, liabilities, and expenses (including attorneys'
               fees) arising from your use or breach of this Agreement.
             </CardContent>
@@ -484,7 +484,7 @@ export default function TermsOfService() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Agreement</p>
           <p className="text-muted-foreground">
-            By using Resync Studios services, you acknowledge that you have
+            By using Rivet Studios services, you acknowledge that you have
             read, understood, and agree to be bound by these Terms and
             Conditions and our Privacy Policy.
           </p>
