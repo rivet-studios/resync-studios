@@ -15,7 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function ProjectFoxtrotrules() {
+export default function ProjectCatalinarules() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div className="text-center space-y-2">
@@ -24,7 +24,7 @@ export default function ProjectFoxtrotrules() {
           Server Rules
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Project Foxtrot Rules
+          Project Catalina Rules
         </h1>
         <p className="text-lg text-muted-foreground">
           Official roleplay standards and expectations for all players
@@ -40,7 +40,7 @@ export default function ProjectFoxtrotrules() {
                 Serious Roleplay Environment
               </p>
               <p className="text-muted-foreground text-sm">
-                Project Foxtrot is a serious roleplay environment with a strong
+                Project Catalina is a serious roleplay environment with a strong
                 focus on realism, immersive storytelling, and consistent
                 character portrayal. All rules are enforced using a common-sense
                 approach—if an action is clearly disruptive, unrealistic, or

@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Removed missing ProtectedRoute and AuthProvider
 
 import NotFound from "@/pages/not-found";
+import Unauthorized from "@/pages/unauthorized";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
@@ -31,7 +32,7 @@ import Projects from "@/pages/projects";
 import Support from "@/pages/support";
 import VolunteerModeration from "@/pages/volunteer-moderation";
 import DMCA from "@/pages/dmca";
-import ProjectFoxtrotrules from "@/pages/project-foxtrot-rules";
+import ProjectCatalinarules from "@/pages/project-catalina-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
 import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
@@ -217,9 +218,7 @@ function Router() {
         <Route path="/forums" component={ForumHome} />
         <Route path="/forums/category/:id" component={ForumCategory} />
         <Route path="/forums/thread/:id" component={ForumThread} />
-        <Route path="/forums/new">
-          {user ? <CreateThread /> : <Login />}
-        </Route>
+        <Route path="/forums/new">{user ? <CreateThread /> : <Login />}</Route>
         <Route path="/subscriptions" component={Subscriptions} />
         <Route path="/user" component={UserProfile} />
         <Route path="/profile/:id" component={UserProfile} />
@@ -231,10 +230,10 @@ function Router() {
         <Route path="/clans" component={Clans} />
         <Route path="/admin" component={Admin} />
         <Route path="/modcp">
-          {user?.isModerator || user?.isAdmin ? <ModCP /> : <NotFound />}
+          {user?.isModerator || user?.isAdmin ? <ModCP /> : <Unauthorized />}
         </Route>
         <Route path="/admincp">
-          {user?.isAdmin ? <AdminCP /> : <NotFound />}
+          {user?.isAdmin ? <AdminCP /> : <Unauthorized />}
         </Route>
         <Route path="/guidelines" component={Guidelines} />
         <Route path="/privacy" component={Privacy} />
@@ -244,7 +243,10 @@ function Router() {
         <Route path="/support" component={Support} />
         <Route path="/volunteer" component={VolunteerModeration} />
         <Route path="/dmca" component={DMCA} />
-        <Route path="/project-foxtrot-rules" component={ProjectFoxtrotrules} />
+        <Route
+          path="/project-catalina-rules"
+          component={ProjectCatalinarules}
+        />
         <Route
           path="/volunteer-agreement"
           component={VolunteerStaffAgreement}
@@ -254,6 +256,7 @@ function Router() {
         <Route path="/about" component={AboutRS} />
         <Route path="/fort-loredo" component={FortLoredo} />
         <Route component={NotFound} />
+        <Route path="/unauthorized" component={Unauthorized} />
       </Switch>
     </PublicLayout>
   );

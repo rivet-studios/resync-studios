@@ -47,11 +47,11 @@ const departments: Department[] = [
       },
       {
         name: "ArielOperations",
-        role: "Company Representative, Team Member",
+        role: "Company Representative, Company Advisor, Chief Development Officer, Team Member",
         joinDate: "2024-Present",
       },
       {
-        name: "Kyros",
+        name: "Kryos",
         role: "Operations Manager",
         joinDate: "2024-Present",
       },
@@ -97,9 +97,9 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "Vacant",
-        role: "Vehicle Artist",
-        joinDate: "Unknown",
+        name: "ArielOperations",
+        role: "Chief Development Officer, Lead Developer",
+        joinDate: "2024-Present",
       },
       {
         name: "cxiqlne",
@@ -108,12 +108,12 @@ const departments: Department[] = [
       },
       {
         name: "Reni",
-        role: "Gameplay Systems Developer",
+        role: "Gameplay Systems Developer @ Project Victoria",
         joinDate: "2019-Present",
       },
       {
         name: "silentdirective.",
-        role: "Gameplay Systems Developer",
+        role: "Gameplay Systems Developer @ Project Sandy",
         joinDate: "2024-Present",
       },
       {

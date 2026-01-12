@@ -14,8 +14,7 @@ export default function Unauthorized() {
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            You do not have permission to access this page. Contact support if
-            you believe this is an error.
+            Restricted Area: You do not have permission to access this page.
           </p>
         </CardContent>
       </Card>
