@@ -4,6 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "postinstall": "lightningcss build",
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build:tsx": "tsx script/build.ts",
     "db:push": "drizzle-kit push",
