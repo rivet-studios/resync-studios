@@ -8,7 +8,7 @@
     "build:tsx": "tsx script/build.ts",
     "db:push": "drizzle-kit push",
     "build": "npm run build:tsx && npm run db:push",
-    "postinstall": "lightningcss build",
+    "postinstall": "npx lightningcss build",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc"
   },
