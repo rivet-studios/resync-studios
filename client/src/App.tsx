@@ -47,6 +47,7 @@ import Blog from "@/pages/blog";
 import Store from "@/pages/store";
 import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
+import Checkout from "@/pages/checkout";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -215,6 +216,7 @@ function Router() {
         <Route path="/blog" component={Blog} />
         <Route path="/store" component={Store} />
         <Route path="/store/subscriptions" component={Subscriptions} />
+        <Route path="/checkout/:tierId" component={Checkout} />
         <Route path="/policies" component={Policies} />
         <Route path="/forums" component={ForumHome} />
         <Route path="/forums/category/:id" component={ForumCategory} />

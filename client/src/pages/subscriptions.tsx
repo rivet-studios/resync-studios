@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -126,6 +127,14 @@ export default function Subscriptions() {
                   <span className="text-3xl font-black">${tier.price}</span>
                   <span className="text-sm text-muted-foreground">/ month</span>
                 </div>
+              </div>
+
+              <div className="pt-2">
+                <Button asChild className="w-full font-bold h-11" variant={tier.featured ? "default" : "outline"}>
+                  <Link href={`/checkout/${tier.id}`}>
+                    Get Started
+                  </Link>
+                </Button>
               </div>
 
               <div className="space-y-4 flex-1">
