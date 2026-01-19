@@ -54,6 +54,7 @@ import { SiDiscord, SiRoblox } from "react-icons/si";
 const profileSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters").max(30).optional(),
   bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
+  signature: z.string().max(200, "Signature must be 200 characters or less").optional(),
 });
 
 type ProfileForm = z.infer<typeof profileSchema>;
@@ -90,6 +91,7 @@ export default function Settings() {
     defaultValues: {
       username: user?.username || "",
       bio: user?.bio || "",
+      signature: user?.signature || "",
     },
   });
 
@@ -276,6 +278,27 @@ export default function Settings() {
                           </FormControl>
                           <FormDescription>
                             A short description that appears on your profile.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="signature"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Signature</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your custom signature..."
+                              {...field}
+                              data-testid="input-settings-signature"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Appears at the bottom of your profile and posts.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

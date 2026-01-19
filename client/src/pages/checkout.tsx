@@ -41,12 +41,24 @@ export default function Checkout() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert("Payment successful! Your VIP status will be updated shortly.");
+    
+    try {
+      const response = await fetch("/api/payments/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tierId }),
+      });
+      
+      if (!response.ok) throw new Error("Payment failed");
+      
+      alert("Payment successful! Your VIP status and ranks have been updated.");
       setLocation("/dashboard");
-    }, 2000);
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("There was an error processing your payment. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

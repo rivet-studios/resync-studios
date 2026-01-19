@@ -212,5 +212,34 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/payments/checkout", requireAuth, async (req, res) => {
+    try {
+      const { tierId } = req.body;
+      const userId = (req.user as any).id;
+      const updates: any = {
+        vipTier: tierId,
+        updatedAt: new Date(),
+      };
+      if (tierId === "founders") {
+        updates.tertiaryUserRank = "lifetime";
+      }
+      await storage.updateUser(userId, updates);
+      res.json({ message: "Success" });
+    } catch (error) {
+      res.status(500).json({ message: "Checkout failed" });
+    }
+  });
+
+  app.patch("/api/users/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { username, bio, signature } = req.body;
+      await storage.updateUser(userId, { username, bio, signature, updatedAt: new Date() });
+      res.json({ message: "Profile updated" });
+    } catch (error) {
+      res.status(500).json({ message: "Update failed" });
+    }
+  });
+
   return httpServer;
 }

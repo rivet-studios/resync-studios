@@ -116,7 +116,7 @@ export default function UserProfile() {
           <h3 className="text-lg font-bold text-foreground">Signature</h3>
           <div className="text-sm text-foreground/80 space-y-4 italic font-medium">
             <p className="font-bold">{profile.username},</p>
-            <p>Staff Director</p>
+            <p>{profile.signature || "Staff Director"}</p>
           </div>
         </CardContent>
       </Card>
