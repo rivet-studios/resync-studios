@@ -7,8 +7,8 @@ channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["npm", "run", "build"]
-run = ["node", "./dist/index.cjs"]
+build = ["npm install", "npm run build"]
+run = ["npm start"]
 
 [[ports]]
 localPort = 5000
@@ -40,6 +40,7 @@ waitForPort = 5000
 
 [agent]
 integrations = ["discord:1.0.0", "javascript_websocket:1.0.0", "javascript_database:1.0.0", "javascript_log_in_with_replit:1.0.0", "github:1.0.0", "resend:1.0.0"]
+expertMode = true
 
 [userenv]
 
