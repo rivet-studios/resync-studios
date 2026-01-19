@@ -71,17 +71,19 @@ export default function ModCP() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Check if user is moderator or above
-  const isMod =
-    user?.userRank &&
-    [
-      'community_moderator',
-      'community_senior_moderator',
-      'community_administrator',
-      'community_senior_administrator',
-      'team_member',
-      'operations_manager',
-      'company_director',
-    ].includes(user.userRank);
+  const staffRanks = [
+    'community_moderator',
+    'community_senior_moderator',
+    'community_administrator',
+    'community_senior_administrator',
+    'team_member',
+    'operations_manager',
+    'company_director',
+    'mi_trust_safety_director'
+  ];
+  const isMod = user?.email?.endsWith("@resyncstudios.com") || 
+                staffRanks.includes(user?.userRank || "") ||
+                (user?.additionalRanks || []).some(r => staffRanks.includes(r));
 
   if (!isMod) {
     return (

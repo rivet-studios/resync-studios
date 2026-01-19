@@ -49,6 +49,8 @@ import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
 import Checkout from "@/pages/checkout";
 
+import Onboarding from "@/pages/onboarding";
+
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
@@ -263,6 +265,7 @@ function Router() {
         <Route path="/community-rules" component={CommunityRules} />
         <Route path="/about" component={AboutRS} />
         <Route path="/fort-loredo" component={FortLoredo} />
+        <Route path="/onboarding" component={Onboarding} />
         <Route component={NotFound} />
         <Route path="/unauthorized" component={Unauthorized} />
       </Switch>

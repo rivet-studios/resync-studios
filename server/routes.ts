@@ -51,12 +51,21 @@ export async function registerRoutes(
     try {
       const { email, username, password } = req.body;
       const hashedPassword = hashPassword(password);
+      
+      const isStaffEmail = email.toLowerCase().endsWith("@resyncstudios.com");
+      const defaultRank = isStaffEmail ? "team_member" : "member";
+      const isAdmin = isStaffEmail;
+      const isModerator = isStaffEmail;
+
       const user = await storage.upsertUser({
         email,
         username,
         password: hashedPassword,
-        userRank: "member",
+        userRank: defaultRank,
         vipTier: "none",
+        isAdmin,
+        isModerator,
+        additionalRanks: isStaffEmail ? ["team_member"] : [],
       });
       res.json(user);
     } catch (error) {
@@ -136,7 +145,10 @@ export async function registerRoutes(
   app.get("/api/reports", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isModerator && !user.isAdmin)
+      const staffRanks = ["team_member", "operations_manager", "company_director", "mi_trust_safety_director"];
+      const isStaff = user.isAdmin || user.isModerator || staffRanks.includes(user.userRank) || (user.additionalRanks || []).some((r: string) => staffRanks.includes(r));
+      
+      if (!isStaff)
         return res.status(403).json({ message: "Forbidden" });
       const reports = await storage.getReports();
       res.json(reports);
@@ -144,6 +156,52 @@ export async function registerRoutes(
       res
         .status(500)
         .json({ message: "Fetch reports failed. Contact support for help." });
+    }
+  });
+
+  app.get("/api/admin/users", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const adminRanks = ["team_member", "operations_manager", "company_director", "mi_trust_safety_director"];
+      const hasAccess = user.email?.endsWith("@resyncstudios.com") || adminRanks.includes(user.userRank) || (user.additionalRanks || []).some((r: string) => adminRanks.includes(r));
+      
+      if (!hasAccess) return res.status(403).json({ message: "Forbidden" });
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/search-users", requireAuth, async (req, res) => {
+    try {
+      const { q } = req.query;
+      const allUsers = await storage.getAllUsers();
+      const filtered = allUsers.filter(u => 
+        u.username?.toLowerCase().includes((q as string).toLowerCase()) ||
+        u.email?.toLowerCase().includes((q as string).toLowerCase())
+      );
+      res.json(filtered);
+    } catch (error) {
+      res.status(500).json({ message: "Search failed" });
+    }
+  });
+
+  app.post("/api/admin/assign-rank", requireAuth, async (req, res) => {
+    try {
+      const { userId, rank } = req.body;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      
+      const currentRanks = user.additionalRanks || [];
+      if (!currentRanks.includes(rank)) {
+        await storage.updateUser(userId, {
+          additionalRanks: [...currentRanks, rank]
+        });
+      }
+      res.json({ message: "Rank assigned" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to assign rank" });
     }
   });
 

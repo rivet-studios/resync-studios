@@ -21,11 +21,14 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Users } from "lucide-react";
 
+import Unauthorized from "@/pages/unauthorized";
+
 interface User {
   id: string;
   username: string;
   email: string;
   userRank: string;
+  additionalRanks?: string[];
   createdAt: string;
 }
 
@@ -61,7 +64,17 @@ const RANK_OPTIONS = [
 ];
 
 export default function AdminPanel() {
+  const { user: currentUser } = useAuth();
   const { toast } = useToast();
+  
+  const staffRanks = ["team_member", "operations_manager", "company_director", "mi_trust_safety_director"];
+  const hasAccess = currentUser?.email?.endsWith("@resyncstudios.com") || 
+                   staffRanks.includes(currentUser?.userRank || "") ||
+                   (currentUser?.additionalRanks || []).some(r => staffRanks.includes(r));
+
+  if (!hasAccess) {
+    return <Unauthorized />;
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>(
     {},
@@ -186,11 +199,16 @@ export default function AdminPanel() {
                     <div className="text-sm text-muted-foreground">
                       {user.email}
                     </div>
-                    <div className="mt-1">
+                    <div className="mt-1 flex flex-wrap gap-1">
                       <Badge variant="outline">
                         {RANK_OPTIONS.find((r) => r.value === user.userRank)
                           ?.label || user.userRank}
                       </Badge>
+                      {(user.additionalRanks || []).map((rank) => (
+                        <Badge key={rank} variant="secondary">
+                          {RANK_OPTIONS.find((r) => r.value === rank)?.label || rank}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
 

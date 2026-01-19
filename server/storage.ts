@@ -169,9 +169,15 @@ export class DatabaseStorage implements IStorage {
     id: string,
     updates: Partial<User>,
   ): Promise<User | undefined> {
+    const current = await this.getUser(id);
     const [user] = await db
       .update(users)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ 
+        ...updates, 
+        updatedAt: new Date(),
+        // Handle array merge for additionalRanks if provided as a single string
+        additionalRanks: updates.additionalRanks || current?.additionalRanks || [],
+      })
       .where(eq(users.id, id))
       .returning();
     return user;

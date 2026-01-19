@@ -56,6 +56,7 @@ interface User {
   username: string;
   email: string;
   userRank: string;
+  additionalRanks?: string[];
   vipTier: string;
 }
 
@@ -197,16 +198,11 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
 export default function AdminCP() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [subscriptionSearch, setSubscriptionSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [selectedVip, setSelectedVip] = useState("none");
-  const [offlineMessage, setOfflineMessage] = useState("");
-  const [isOffline, setIsOffline] = useState(false);
-  const [userToSetPassword, setUserToSetPassword] = useState<any>(null);
-  const [newPassword, setNewPassword] = useState("");
-
-  const isAdmin = user?.userRank && ADMIN_RANKS.includes(user.userRank);
+  
+  const adminRanks = ["community_administrator", "community_senior_administrator", "staff_department_director", "leadership_council", "operations_manager", "team_member", "company_director", "mi_trust_safety_director"];
+  const isAdmin = user?.email?.endsWith("@resyncstudios.com") || 
+                  adminRanks.includes(user?.userRank || "") ||
+                  (user?.additionalRanks || []).some(r => adminRanks.includes(r));
 
   if (!isAdmin) {
     return (
@@ -551,8 +547,11 @@ export default function AdminCP() {
                         <p className="text-sm text-muted-foreground">
                           {u.email}
                         </p>
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex flex-wrap gap-2 mt-1">
                           <Badge variant="outline">{u.userRank}</Badge>
+                          {(u.additionalRanks || []).map(r => (
+                            <Badge key={r} variant="secondary">{r}</Badge>
+                          ))}
                           <Badge variant="outline">{u.vipTier}</Badge>
                         </div>
                       </div>

@@ -140,27 +140,11 @@ export const users = pgTable("users", {
   // Clan membership
   clanId: varchar("clan_id"),
   clanRole: varchar("clan_role"),
-  // User rank/role - Support for multiple ranks (up to 20)
+  // User rank/role - Support for multiple ranks
   userRank: userRankEnum("user_rank").default("member"), // Primary rank
-  secondaryUserRank: text("secondary_user_rank").default("None"), // Secondary rank
-  tertiaryUserRank: userRankEnum("tertiary_user_rank").default("lifetime"), // Tertiary rank
-  quaternaryUserRank: text("quaternary_user_rank").default("None"),
-  quinaryUserRank: text("quinary_user_rank").default("None"),
-  senaryUserRank: text("senary_user_rank").default("None"),
-  septenaryUserRank: text("septenary_user_rank").default("None"),
-  octonaryUserRank: text("octonary_user_rank").default("None"),
-  nonaryUserRank: text("nonary_user_rank").default("None"),
-  denaryUserRank: text("denary_user_rank").default("None"),
-  eleventhUserRank: text("eleventh_user_rank").default("None"),
-  twelfthUserRank: text("twelfth_user_rank").default("None"),
-  thirteenthUserRank: text("thirteenth_user_rank").default("None"),
-  fourteenthUserRank: text("fourteenth_user_rank").default("None"),
-  fifteenthUserRank: text("fifteenth_user_rank").default("None"),
-  sixteenthUserRank: text("sixteenth_user_rank").default("None"),
-  seventeenthUserRank: text("seventeenth_user_rank").default("None"),
-  eighteenthUserRank: text("eighteenth_user_rank").default("None"),
-  nineteenthUserRank: text("nineteenth_user_rank").default("None"),
-  twentiethUserRank: text("twentieth_user_rank").default("None"),
+  additionalRanks: text("additional_ranks").array().default(sql`'{}'::text[]`), 
+  secondaryUserRank: text("secondary_user_rank").default("None"), // Legacy
+  tertiaryUserRank: userRankEnum("tertiary_user_rank").default("lifetime"), // Legacy
   // Banning
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
