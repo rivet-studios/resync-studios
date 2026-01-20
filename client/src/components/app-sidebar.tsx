@@ -51,22 +51,23 @@ import {
 
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "About Metro Interactive", url: "/about", icon: Info },
-  { title: "Fort Loredo Project", url: "/fort-loredo", icon: MapPin },
-  { title: "Announcements", url: "/announcements", icon: Megaphone },
+  { title: "About RIVET Studios", url: "/about", icon: Info },
+  { title: "Project Catalina", url: "/catalina", icon: MapPin },
+  { title: "Announcements", url: "/news", icon: Megaphone },
   { title: "nil", url: "/not-found", icon: Target },
-  { title: "Clans", url: "/clans", icon: Users },
+  { title: "Unauthorized", url: "/unauthorized", icon: Target },
+  { title: "Groups", url: "/groups", icon: Users },
   { title: "Builds & Meta", url: "/builds", icon: Swords },
   { title: "Forums", url: "/forums", icon: MessageSquare },
-  { title: "Staff Directory", url: "/staff", icon: UsersRound },
+  { title: "Our Team", url: "/team", icon: UsersRound },
 ];
 
 const accountNavItems = [
-  { title: "VIP Membership", url: "/vip", icon: Crown },
+  { title: "Subscriptions", url: "/store/subscriptions", icon: Crown },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Moderator CP", url: "/modcp", icon: Shield },
-  { title: "Admin CP", url: "/admin-cp", icon: BarChart3 },
+  { title: "Admin CP", url: "/admincp", icon: BarChart3 },
   { title: "Admin Panel", url: "/admin", icon: Lock },
   { title: "Community Rules", url: "/community-rules", icon: Heart },
   { title: "Community Guidelines", url: "/guidelines", icon: Shield },
@@ -75,12 +76,12 @@ const accountNavItems = [
   { title: "DMCA Policy", url: "/dmca", icon: Shield },
   { title: "LEO & Emergency Guidelines", url: "/leo-guidelines", icon: Radio },
   {
-    title: "Project Foxtrot Rules",
-    url: "/project-foxtrot-rules",
+    title: "Project Catalina Rules",
+    url: "/project-catalina-rules",
     icon: BookOpen,
   },
   {
-    title: "Volunteer Staff Agreement",
+    title: "Volunteer Staff Terms & Conditions",
     url: "/volunteer-agreement",
     icon: Handshake,
   },
