@@ -82,7 +82,7 @@ export default function Onboarding() {
 
             <div className="space-y-8">
               {step === 1 && (
-                <>
+                <div className="space-y-6">
                   <div className="space-y-2">
                     <h2 className="text-2xl font-bold text-[#0A0A0A]">
                       Create your account
@@ -158,45 +158,16 @@ export default function Onboarding() {
 
                     <Button
                       className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(step + 1)}
+                      onClick={() => setStep(2)}
                     >
                       Continue
                     </Button>
                   </div>
-                </>
-              )}
-
-              {step === 2 && (
-                <>
-                  <div className="space-y-2 text-center">
-                    <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                      Verify your email
-                    </h2>
-                    <p className="text-muted-foreground">
-                      We've sent a verification code to your email.
-                    </p>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="code">Verification Code</Label>
-                      <Input
-                        id="code"
-                        placeholder="000000"
-                        className="h-12 text-center text-2xl tracking-widest"
-                      />
-                    </div>
-                    <Button
-                      className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(step + 1)}
-                    >
-                      Verify & Continue
-                    </Button>
-                  </div>
-                </>
+                </div>
               )}
 
               {step === 3 && (
-                <>
+                <div className="space-y-6">
                   <div className="space-y-2 text-center">
                     <h2 className="text-2xl font-bold text-[#0A0A0A]">
                       Link your accounts
@@ -216,16 +187,16 @@ export default function Onboarding() {
                     </Button>
                     <Button
                       className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(step + 1)}
+                      onClick={() => setStep(4)}
                     >
                       Continue
                     </Button>
                   </div>
-                </>
+                </div>
               )}
 
               {step === 4 && (
-                <>
+                <div className="space-y-6">
                   <div className="space-y-2 text-center">
                     <h2 className="text-2xl font-bold text-[#0A0A0A]">
                       Complete your profile
@@ -245,17 +216,17 @@ export default function Onboarding() {
                     </div>
                     <Button
                       className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(step + 1)}
+                      onClick={() => setStep(5)}
                     >
                       Complete Setup
                     </Button>
                   </div>
-                </>
+                </div>
               )}
 
               {step === 5 && (
-                <>
-                  <div className="space-y-2 text-center">
+                <div className="space-y-6 text-center">
+                  <div className="space-y-2">
                     <h2 className="text-2xl font-bold text-[#0A0A0A]">
                       You're all set!
                     </h2>
@@ -269,7 +240,7 @@ export default function Onboarding() {
                   >
                     <Link href="/dashboard">Go to Dashboard</Link>
                   </Button>
-                </>
+                </div>
               )}
             </div>
         </div>

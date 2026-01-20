@@ -225,6 +225,24 @@ export async function registerRoutes(
   app.get("/api/builds", async (req, res) =>
     res.json(await storage.getBuilds()),
   );
+
+  // Discord Auth routes
+  app.get("/api/auth/discord", passport.authenticate("discord"));
+  app.get(
+    "/api/auth/discord/callback",
+    passport.authenticate("discord", { failureRedirect: "/login" }),
+    (req, res) => {
+      res.redirect("/onboarding");
+    }
+  );
+
+  app.post("/api/auth/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.json({ message: "Logged out" });
+    });
+  });
+
   app.post("/api/builds", requireAuth, async (req, res) => {
     try {
       const data = insertBuildSchema.parse({
@@ -288,17 +306,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/users/profile", requireAuth, async (req, res) => {
-    try {
-      const userId = (req.user as any).id;
-      const { username, bio, signature } = req.body;
-      await storage.updateUser(userId, { username, bio, signature, updatedAt: new Date() });
-      res.json({ message: "Profile updated" });
-    } catch (error) {
-      res.status(500).json({ message: "Update failed" });
-    }
-  });
-
+  // Discord Auth routes
   app.get("/api/auth/discord", passport.authenticate("discord"));
   app.get(
     "/api/auth/discord/callback",
@@ -314,3 +322,34 @@ export async function registerRoutes(
       res.json({ message: "Logged out" });
     });
   });
+
+  app.patch("/api/users/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { username, bio, signature } = req.body;
+      await storage.updateUser(userId, { username, bio, signature, updatedAt: new Date() });
+      res.json({ message: "Profile updated" });
+    } catch (error) {
+      res.status(500).json({ message: "Update failed" });
+    }
+  });
+
+  // Discord Auth routes
+  app.get("/api/auth/discord", passport.authenticate("discord"));
+  app.get(
+    "/api/auth/discord/callback",
+    passport.authenticate("discord", { failureRedirect: "/login" }),
+    (req, res) => {
+      res.redirect("/onboarding");
+    }
+  );
+
+  app.post("/api/auth/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.json({ message: "Logged out" });
+    });
+  });
+
+  return httpServer;
+}
