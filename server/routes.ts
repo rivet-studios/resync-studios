@@ -67,7 +67,13 @@ export async function registerRoutes(
         isModerator,
         additionalRanks: isStaffEmail ? ["team_member"] : [],
       });
-      res.json(user);
+      
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Signup successful but login failed. Please try logging in manually." });
+        }
+        res.json(user);
+      });
     } catch (error) {
       res
         .status(500)
@@ -226,87 +232,6 @@ export async function registerRoutes(
     res.json(await storage.getBuilds()),
   );
 
-  // Discord Auth routes
-  app.get("/api/auth/discord", passport.authenticate("discord"));
-  app.get(
-    "/api/auth/discord/callback",
-    passport.authenticate("discord", { failureRedirect: "/login" }),
-    (req, res) => {
-      res.redirect("/onboarding");
-    }
-  );
-
-  app.post("/api/auth/logout", (req, res, next) => {
-    req.logout((err) => {
-      if (err) return next(err);
-      res.json({ message: "Logged out" });
-    });
-  });
-
-  app.post("/api/builds", requireAuth, async (req, res) => {
-    try {
-      const data = insertBuildSchema.parse({
-        ...req.body,
-        authorId: (req.user as any).id,
-      });
-      res.status(201).json(await storage.createBuild(data));
-    } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Invalid data. Contact support for help." });
-    }
-  });
-
-  // Forums
-  app.get("/api/forums/categories", async (req, res) =>
-    res.json(await storage.getForumCategories()),
-  );
-  app.get("/api/forums/categories/:id", async (req, res) => {
-    const category = await storage.getForumCategory(req.params.id);
-    if (!category)
-      return res.status(404).json({ message: "Category not found" });
-    res.json(category);
-  });
-  app.get("/api/forums/threads", async (req, res) => {
-    const categoryId = req.query.categoryId as string;
-    const threads = await storage.getForumThreads(categoryId);
-    // In a real app we'd join with users, but here we'll map if needed or assume storage does it
-    // For now, let's just return the threads. If the frontend expects author, we might need a join.
-    res.json(threads);
-  });
-  app.post("/api/forums/threads", requireAuth, async (req, res) => {
-    try {
-      const data = insertForumThreadSchema.parse({
-        ...req.body,
-        authorId: (req.user as any).id,
-      });
-      res.status(201).json(await storage.createForumThread(data));
-    } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Invalid data. Contact support for help." });
-    }
-  });
-
-  app.post("/api/payments/checkout", requireAuth, async (req, res) => {
-    try {
-      const { tierId } = req.body;
-      const userId = (req.user as any).id;
-      const updates: any = {
-        vipTier: tierId,
-        updatedAt: new Date(),
-      };
-      if (tierId === "founders") {
-        updates.tertiaryUserRank = "lifetime";
-      }
-      await storage.updateUser(userId, updates);
-      res.json({ message: "Success" });
-    } catch (error) {
-      res.status(500).json({ message: "Checkout failed" });
-    }
-  });
-
-  // Discord Auth routes
   app.get("/api/auth/discord", passport.authenticate("discord"));
   app.get(
     "/api/auth/discord/callback",
@@ -332,23 +257,6 @@ export async function registerRoutes(
     } catch (error) {
       res.status(500).json({ message: "Update failed" });
     }
-  });
-
-  // Discord Auth routes
-  app.get("/api/auth/discord", passport.authenticate("discord"));
-  app.get(
-    "/api/auth/discord/callback",
-    passport.authenticate("discord", { failureRedirect: "/login" }),
-    (req, res) => {
-      res.redirect("/onboarding");
-    }
-  );
-
-  app.post("/api/auth/logout", (req, res, next) => {
-    req.logout((err) => {
-      if (err) return next(err);
-      res.json({ message: "Logged out" });
-    });
   });
 
   return httpServer;
