@@ -43,24 +43,26 @@ export function MainHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-border/50 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 bg-background/80 border-b border-border/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo & Brand */}
-            <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
-              <img src={logoSvg} alt="RS" className="w-8 h-8" />
-              <span className="font-display font-bold text-lg hidden sm:inline">RIVET Studios™</span>
+            <Link href="/" className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity group">
+              <div className="bg-slate-900 p-1.5 rounded-lg">
+                <img src={logoSvg} alt="RS" className="w-5 h-5 invert" />
+              </div>
+              <span className="font-bold text-lg tracking-tight text-foreground">REACT Studios™</span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 ml-8">
               {navItems.map((item) => (
                 <Button
                   key={item.href}
                   variant="ghost"
                   size="sm"
                   asChild
-                  className="text-sm"
+                  className={`text-sm font-semibold h-10 px-4 rounded-xl ${location === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
                   <Link href={item.href}>{item.label}</Link>
@@ -68,18 +70,21 @@ export function MainHeader() {
               ))}
             </nav>
 
+            <div className="flex-1" />
+
             {/* Right Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(true)}
+                className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
                 data-testid="button-search"
               >
                 <Search className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon" asChild data-testid="button-cart">
+              <Button variant="ghost" size="icon" asChild className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground" data-testid="button-cart">
                 <Link href="/store">
                   <ShoppingCart className="w-5 h-5" />
                 </Link>

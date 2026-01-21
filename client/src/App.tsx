@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation, Redirect } from "wouter";
+import { Switch, Route, useLocation, Redirect, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -53,138 +53,67 @@ import Onboarding from "@/pages/onboarding";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <MainHeader />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full">
         {children}
       </main>
-      <footer className="bg-card border-t border-border/50 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold mb-4">RIVET Studios™</h3>
-              <p className="text-sm text-muted-foreground">
+      <footer className="bg-card border-t border-border/50 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-12 mb-16">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-900 p-1.5 rounded-lg">
+                  <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert" />
+                </div>
+                <h3 className="font-bold text-lg">REACT Studios™</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 Building the future of digital experiences with innovative
                 solutions and community-driven development.
               </p>
+              <div className="space-y-2 text-sm text-muted-foreground font-medium">
+                <p className="flex items-center gap-2">✉️ contact@reactstudios.com</p>
+                <p className="flex items-center gap-2">📍 3655 Torrance Blvd, 3rd Floor 6015, Torrance, CA, 90503</p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold text-sm mb-4">Navigation</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a
-                    href="/"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/blog"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/forums"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Forums
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/subscriptions"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Subscriptions
-                  </a>
-                </li>
+            
+            <div className="space-y-6">
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Navigation</h4>
+              <ul className="space-y-3 text-sm font-semibold">
+                <li><Link href="/" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🏠 Home</Link></li>
+                <li><Link href="/blog" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📰 Blog</Link></li>
+                <li><Link href="/forums" className="text-muted-foreground hover:text-foreground flex items-center gap-2">⚖️ Forums</Link></li>
+                <li><Link href="/store" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🛒 Store</Link></li>
+                <li><Link href="/subscriptions" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🔄 Subscriptions</Link></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-sm mb-4">
-                Support & Resources
-              </h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a
-                    href="/support"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Support
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/policies"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Policies
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/guidelines"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Guidelines
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/privacy"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Privacy
-                  </a>
-                </li>
+
+            <div className="space-y-6">
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Support & Resources</h4>
+              <ul className="space-y-3 text-sm font-semibold">
+                <li><Link href="/support" className="text-muted-foreground hover:text-foreground flex items-center gap-2">❓ Knowledge Base</Link></li>
+                <li><Link href="/policies" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📋 Policies</Link></li>
+                <li><Link href="/guidelines" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📖 Support</Link></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-sm mb-4">Other</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a
-                    href="/team"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/news"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    News
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/projects"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Projects
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/search"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Search Members
-                  </a>
-                </li>
+
+            <div className="space-y-6">
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Other</h4>
+              <ul className="space-y-3 text-sm font-semibold">
+                <li><Link href="/settings" className="text-muted-foreground hover:text-foreground flex items-center gap-2">👤 My Account</Link></li>
+                <li><Link href="/search" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🔍 Search</Link></li>
+                <li><Link href="/store" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🛍️ Shopping Cart</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-border/50 pt-8">
-            <p className="text-xs text-muted-foreground text-center">
-              © 2025 RIVET Studios™. All rights reserved.
+          
+          <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-muted-foreground font-medium">
+              © 2026 REACT Studios™. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              Made with <span className="text-red-500">❤️</span> by Deschutes Design Group LLC
             </p>
           </div>
         </div>

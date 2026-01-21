@@ -37,104 +37,88 @@ export default function UserProfile() {
   const renderRank = (rank: string | null | undefined) => {
     if (!rank || rank === "None" || rank === "Member") return null;
 
+    const rankColors: Record<string, string> = {
+      "Lifetime": "border-blue-200 bg-blue-50 text-blue-600",
+      "Founders Edition VIP": "border-amber-200 bg-amber-50 text-amber-600",
+      "Community Senior Administrator": "border-red-200 bg-red-50 text-red-600",
+      "Staff Internal Affairs": "border-slate-200 bg-slate-50 text-slate-600",
+      "Staff Department Director": "border-pink-200 bg-pink-50 text-pink-600",
+      "Community Moderator": "border-emerald-200 bg-emerald-50 text-emerald-600",
+      "Appeals Moderator": "border-cyan-200 bg-cyan-50 text-cyan-600",
+      "Trusted Member": "border-purple-200 bg-purple-50 text-purple-600",
+      "Active Member": "border-slate-200 bg-slate-50 text-slate-500",
+    };
+
+    const colorClass = rankColors[rank] || "border-slate-200 bg-white text-slate-600";
+
     return (
-      <span
-        className="text-[10px] font-bold uppercase tracking-tight text-slate-800"
+      <Badge
+        variant="outline"
+        className={`rounded-full px-3 py-0.5 text-[10px] font-bold border ${colorClass} shadow-sm`}
       >
         {rank
           .replace(/_/g, " ")
           .replace(/\b\w/g, (l: string) => l.toUpperCase())}
-      </span>
+      </Badge>
     );
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col pt-12">
-      <div className="max-w-4xl mx-auto w-full px-4 space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="min-h-screen bg-background flex flex-col pt-12">
+      <div className="max-w-5xl mx-auto w-full px-4 space-y-8 animate-in fade-in duration-700 pb-20">
         {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">
-          <Link
-            href="/"
-            className="hover:text-white transition-colors"
-          >
-            HOME
-          </Link>
-          <span className="text-slate-700">/</span>
-          <span className="text-white">PROFILE</span>
+        <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-4">
+          <Link href="/" className="hover:text-foreground transition-colors">Dashboard</Link>
+          <span className="opacity-40">/</span>
+          <span className="text-foreground font-semibold">{profile.username}</span>
         </div>
 
         {/* Profile Header Card */}
-        <Card className="border-none bg-white shadow-2xl rounded-[2.5rem] overflow-hidden">
-          <div className="h-40 bg-[#0f172a]" />
-          <CardContent className="px-10 pb-12">
-            <div className="relative flex flex-col items-start">
-              <div className="absolute -top-16 left-0">
-                <div className="p-1.5 bg-white rounded-[2rem] shadow-2xl">
-                  <Avatar className="w-28 h-28 rounded-[1.8rem]">
-                    <AvatarImage src={profile.profileImageUrl || undefined} />
-                    <AvatarFallback className="bg-slate-100 text-slate-400">
-                      <UserIcon className="w-10 h-10" />
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </div>
+        <Card className="border border-border/50 bg-card shadow-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              <Avatar className="w-32 h-32 rounded-full border-4 border-background shadow-xl shrink-0">
+                <AvatarImage src={profile.profileImageUrl || undefined} />
+                <AvatarFallback className="bg-muted text-muted-foreground">
+                  <UserIcon className="w-12 h-12" />
+                </AvatarFallback>
+              </Avatar>
 
-              <div className="w-full mt-4 flex flex-col space-y-6">
-                <div className="flex flex-col space-y-4">
-                  <div className="flex items-center justify-end w-full">
-                     {profile.vipTier !== "none" && (
-                        <Badge className="bg-amber-400 hover:bg-amber-400 text-white font-black rounded-full px-4 py-1 text-[10px] shadow-sm uppercase tracking-wider border-none">
-                          VIP
-                        </Badge>
-                      )}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 items-center justify-start max-w-2xl">
-                    {renderRank(profile.vipTier !== "none" ? profile.vipTier : null)}
-                    {renderRank(profile.userRank)}
-                    {(profile as any).additionalRanks?.map((rank: string) => (
-                      <span key={rank}>{renderRank(rank)}</span>
-                    ))}
-                    {profile.isAdmin && renderRank("Administrator")}
-                    {profile.isModerator && renderRank("Moderator")}
-                  </div>
+              <div className="flex-1 space-y-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                    {profile.username}
+                  </h1>
+                  {profile.vipTier !== "none" && (
+                    <Badge className="bg-slate-900 text-white font-black rounded px-2 py-0.5 text-[10px] shadow-sm uppercase tracking-tighter">
+                      VIP
+                    </Badge>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
-                  <div className="space-y-6">
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        JOIN DATE
-                      </p>
-                      <p className="text-slate-900 text-xl font-black">
-                        {profile.createdAt
-                          ? new Date(profile.createdAt).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            })
-                          : "December 30, 2025"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        MEMBER ID
-                      </p>
-                      <p className="text-slate-900 font-mono text-[10px] font-bold bg-slate-50 px-2 py-1 rounded inline-block">
-                        {profile.id}
-                      </p>
-                    </div>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  {renderRank(profile.vipTier !== "none" ? profile.vipTier : null)}
+                  {renderRank(profile.userRank)}
+                  {(profile as any).additionalRanks?.map((rank: string) => (
+                    <span key={rank}>{renderRank(rank)}</span>
+                  ))}
+                  {profile.isAdmin && renderRank("Administrator")}
+                </div>
 
-                  <div className="space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                      ABOUT ME
-                    </p>
-                    <div className="bg-slate-50 rounded-[1.5rem] p-6 min-h-[100px] flex items-center">
-                      <p className="text-slate-700 font-bold text-sm leading-relaxed">
-                        {profile.bio || "No bio information provided."}
-                      </p>
-                    </div>
+                <div className="space-y-4 pt-4 border-t border-border/50">
+                   <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                    <UserIcon className="w-4 h-4 opacity-50" />
+                    <span>Member since 12 months ago</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                    <Calendar className="w-4 h-4 opacity-50" />
+                    <span>Joined {profile.createdAt
+                      ? new Date(profile.createdAt).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "January 26, 2025"}</span>
                   </div>
                 </div>
               </div>
@@ -143,13 +127,12 @@ export default function UserProfile() {
         </Card>
 
         {/* Signature Card */}
-        <Card className="border-none bg-white shadow-xl rounded-[2.5rem] overflow-hidden">
-          <CardContent className="p-10 space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-              COMMUNITY SIGNATURE
-            </p>
-            <div className="text-2xl text-slate-900 font-black min-h-[40px] flex items-center">
-              {profile.signature || " "}
+        <Card className="border border-border/50 bg-card shadow-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-8 space-y-6">
+            <h3 className="text-xl font-bold text-foreground">Signature</h3>
+            <div className="space-y-4 text-sm text-foreground font-semibold italic">
+               <p>{profile.username},</p>
+               <p>{profile.signature || "Staff Director"}</p>
             </div>
           </CardContent>
         </Card>

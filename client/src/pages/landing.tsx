@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/animated-counter";
 import {
   Users,
@@ -9,15 +8,14 @@ import {
   Gamepad2,
   Shield,
   Globe,
-  ArrowRight,
 } from "lucide-react";
 import { Link } from "wouter";
 
 const stats = [
-  { value: 15, label: "Connected Members", suffix: "K+" },
-  { value: 20, label: "Discord Members", suffix: "K+" },
-  { value: 25, label: "Roblox Members", suffix: "K+" },
-  { value: 36.6, label: "Active Discussions", suffix: "K+" },
+  { value: 75.7, label: "Connected Members", suffix: "K+" },
+  { value: 61.2, label: "Discord Members", suffix: "K+" },
+  { value: 310.9, label: "Roblox Members", suffix: "K+" },
+  { value: 31.2, label: "Active Discussions", suffix: "K+" },
   { value: 99.9, label: "Uptime", suffix: "%" },
   { value: 24, label: "Support", suffix: "/7" },
 ];
@@ -63,41 +61,88 @@ const features = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("https://i.imgur.com/a/car-fire-sbi-resync-studios-project-foxtrot-teaser-AjnovPK.png")' }}
-        >
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]" />
-        </div>
-        
-        <div className="relative z-10 container mx-auto px-4 text-center space-y-8">
-          <div className="space-y-4 max-w-4xl mx-auto">
-            <Badge className="bg-white/10 text-white border-white/20 backdrop-blur-md px-4 py-1">
-              Building the Future of Digital Experiences
-            </Badge>
-            <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-white leading-tight">
-              RIVET Studios™
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Dynamic Background Gradient */}
+      <div className="absolute inset-0 z-0 opacity-40 dark:opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/30 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-400/20 blur-[150px] rounded-full" />
+        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-400/20 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 pt-24 pb-32 space-y-24">
+        {/* Hero Section */}
+        <section className="text-center space-y-12 max-w-5xl mx-auto">
+          <div className="space-y-6">
+             <div className="flex flex-wrap justify-center gap-4 text-sm font-semibold text-muted-foreground bg-white/50 dark:bg-black/20 backdrop-blur-sm px-6 py-2 rounded-full w-fit mx-auto border border-border/50">
+                <span className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap">🚀 Now powering <span className="text-foreground font-bold">75.7K+</span> members</span>
+                <span className="opacity-20">|</span>
+                <span className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap">👥 <span className="text-foreground font-bold">10.1K</span> online</span>
+                <span className="opacity-20">|</span>
+                <span className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap">🎮 <span className="text-foreground font-bold">310.9K</span> members</span>
+             </div>
+            
+            <h1 className="text-6xl sm:text-8xl font-bold tracking-tight text-foreground leading-[1.1]">
+              The number one online <br />
+              <span className="text-foreground">gaming community platform</span>
             </h1>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium">
-              We create open gaming environments accessible to everyone, delivering high-fidelity games through exceptional expertise.
+            
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium leading-relaxed">
+              REACT Studios™ creates an open gaming environment accessible to everyone, delivering high-fidelity games through our exceptional game development expertise and building online communities.
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-8 h-14 text-lg font-bold shadow-2xl" asChild>
-              <Link href="/signup">Join Community</Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 px-10 h-14 text-lg font-bold rounded-xl" asChild>
+              <Link href="/signup">Join The Community</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10 backdrop-blur-md px-8 h-14 text-lg font-bold" asChild>
-              <Link href="/about">Learn More</Link>
+            <Button size="lg" variant="outline" className="bg-white dark:bg-transparent border-border hover:bg-muted px-10 h-14 text-lg font-bold rounded-xl" asChild>
+              <Link href="/store">Browse Store</Link>
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Main Content */}
+        {/* Stats Section */}
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 border-t border-border/50 pt-20">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center space-y-1">
+              <div className="text-4xl font-bold text-foreground tracking-tighter">
+                <AnimatedCounter end={stat.value} suffix={stat.suffix} />
+              </div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+            </div>
+          ))}
+        </section>
+
+        {/* Features Section */}
+        <section className="space-y-20 pt-10">
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold tracking-tight text-foreground">Everything you need for thriving communities</h2>
+            <p className="text-lg text-muted-foreground font-medium">Our gaming platform provides all the essential tools needed to build thriving communities</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={feature.title} className="border border-border/50 shadow-sm bg-card hover:shadow-xl transition-all duration-300 group rounded-2xl">
+                  <CardContent className="p-8 space-y-6">
+                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <Icon className="w-6 h-6 text-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed font-medium">{feature.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}}      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-20 space-y-32">
         {/* Stats Section */}
         <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
