@@ -142,47 +142,4 @@ export default function Landing() {
       </div>
     </div>
   );
-}}      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-20 space-y-32">
-        {/* Stats Section */}
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center space-y-2">
-              <div className="text-4xl font-black text-slate-900 tracking-tighter">
-                <AnimatedCounter end={stat.value} suffix={stat.suffix} />
-              </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* Features Grid */}
-        <section className="space-y-16">
-          <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <h2 className="text-4xl font-extrabold tracking-tight text-slate-900">Innovative Solutions</h2>
-            <p className="text-lg text-slate-500 font-medium">Our platform provides the essential tools needed to build thriving communities.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={feature.title} className="border-none shadow-sm bg-slate-50/50 hover:bg-white hover:shadow-xl transition-all duration-300 group">
-                  <CardContent className="p-8 space-y-6">
-                    <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Icon className="w-7 h-7 text-slate-900" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-bold text-slate-900">{feature.title}</h3>
-                      <p className="text-slate-500 leading-relaxed font-medium">{feature.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
-      </div>
-    </div>
-  );
 }
