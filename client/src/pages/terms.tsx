@@ -23,7 +23,7 @@ export default function TermsOfService() {
           Please read these terms carefully before using our services
         </p>
         <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: January 8, 2026
+          Last Updated: January 23, 2026
         </p>
       </div>
 
@@ -484,9 +484,9 @@ export default function TermsOfService() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Agreement</p>
           <p className="text-muted-foreground">
-            By using Rivet Studios services, you acknowledge that you have
-            read, understood, and agree to be bound by these Terms and
-            Conditions and our Privacy Policy.
+            By using Rivet Studios services, you acknowledge that you have read,
+            understood, and agree to be bound by these Terms and Conditions and
+            our Privacy Policy.
           </p>
         </CardContent>
       </Card>

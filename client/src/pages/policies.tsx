@@ -27,7 +27,7 @@ const policyLinks = [
   },
   {
     title: "Terms of Service",
-    lastUpdated: "Last Updated: January 8th, 2026",
+    lastUpdated: "Last Updated: January 23rd, 2026",
     description: "Our terms and conditions for using RIVET Studios",
     icon: Scale,
     href: "/terms",
@@ -48,17 +48,17 @@ const policyLinks = [
   },
   {
     title: "DMCA Policy",
-    lastUpdated: "Last Updated: January 8th, 2026",
+    lastUpdated: "Last Updated: January 23rd, 2026",
     description: "Digital Millennium Copyright Act policy",
     icon: Shield,
     href: "/dmca",
   },
   {
-    title: "Project Foxtrot Rules",
-    lastUpdated: "Last Updated: January 8th, 2026",
-    description: "Specific rules for Project Foxtrot",
+    title: "Project Catalina Rules",
+    lastUpdated: "Last Updated: January 20th, 2026",
+    description: "Specific rules for Project Catalina",
     icon: AlertCircle,
-    href: "/project-foxtrot-rules",
+    href: "/project-catalina-rules",
   },
 ];
 
