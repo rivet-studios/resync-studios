@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Users } from "lucide-react";
-
+import { Shield, Users as UsersIcon } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import Unauthorized from "@/pages/unauthorized";
 
 interface User {
@@ -97,7 +97,7 @@ export default function AdminPanel() {
     data: users = [],
     isLoading,
     error: queryError,
-  } = useQuery({
+  } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
   });
 
@@ -264,14 +264,10 @@ export default function AdminPanel() {
           )}
 
           <div className="text-sm text-muted-foreground pt-4 border-t">
-            Total users: {Users.length}
+            Total users: {users.length}
           </div>
         </CardContent>
       </Card>
     </div>
   );
-}
-
-function useAuth(): { user: any } {
-  throw new Error("Function not implemented.");
 }

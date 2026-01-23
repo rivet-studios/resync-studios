@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { SearchDialog } from "@/components/search-dialog";
-import logoSvg from "@assets/favicon.svg";
+import logoSvg from "@assets/logo.svg";
 
 export function MainHeader() {
   const { user } = useAuth();
@@ -67,7 +67,7 @@ export function MainHeader() {
                   variant="ghost"
                   size="sm"
                   asChild
-                  className={`text-sm font-semibold h-10 px-4 rounded-xl ${location === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`text-sm font-semibold h-10 px-4 rounded-xl ${window.location.pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
                   <Link href={item.href}>{item.label}</Link>

@@ -24,16 +24,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -43,10 +33,7 @@ import {
 import {
   Shield,
   Plus,
-  Edit2,
   Trash2,
-  Users,
-  Settings,
   AlertTriangle,
 } from "lucide-react";
 import { type Announcement } from "@shared/schema";
@@ -64,53 +51,6 @@ interface Stats {
   totalMembers: number;
 }
 
-const ADMIN_RANKS = [
-  "Community Administrator",
-  "Community Senior Administrator",
-  "Community Developer",
-  "Staff Internal Affairs",
-  "Company Representative",
-  "Team Member",
-  "MI Trust & Safety Director",
-  "Staff Department Director",
-  "Operations Manager",
-  "Company Director",
-];
-
-const RANK_OPTIONS = [
-  { value: "Moderator", label: "Moderator" },
-  { value: "Administrator", label: "Administrator" },
-  { value: "Senior Administrator", label: "Senior Administrator" },
-  { value: "Banned", label: "Banned" },
-  { value: "Member", label: "Member" },
-  { value: "Active Member", label: "Active Member" },
-  { value: "Trusted Member", label: "Trusted Member" },
-  { value: "Community Partner", label: "Community Partner" },
-  { value: "Bronze VIP", label: "Bronze VIP" },
-  { value: "Diamond VIP", label: "Diamond VIP" },
-  { value: "Founders Edition VIP", label: "Founders Edition VIP" },
-  { value: "Lifetime", label: "Lifetime" },
-  { value: "RS Volunteer Staff", label: "RS Volunteer Staff" },
-  { value: "RS Trust & Safety Team", label: "RS Trust & Safety Team" },
-  { value: "Customer Relations", label: "Customer Relations" },
-  { value: "Appeals Moderator", label: "Appeals Moderator" },
-  { value: "Community Moderator", label: "Community Moderator" },
-  { value: "Community Senior Moderator", label: "Community Senior Moderator" },
-  { value: "Community Administrator", label: "Community Administrator" },
-  {
-    value: "Community Senior Sdministrator",
-    label: "Community Senior Administrator",
-  },
-  { value: "Community Developer", label: "Community Developer" },
-  { value: "Staff Internal Affairs", label: "Staff Internal Affairs" },
-  { value: "Company Representative", label: "Company Representative" },
-  { value: "Team Member", label: "Team Member" },
-  { value: "MI Trust & Safety Director", label: "MI Trust & Safety Director" },
-  { value: "Staff Department Director", label: "Staff Department Director" },
-  { value: "Operations Manager", label: "Operations Manager" },
-  { value: "Company Director", label: "Company Director" },
-];
-
 const VIP_OPTIONS = [
   { value: "none", label: "None" },
   { value: "Bronze VIP", label: "Bronze ($12.99)" },
@@ -123,21 +63,9 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
   const [type, setType] = useState(initialData?.type || "update");
-  const [details, setDetails] = useState(
-    initialData?.details ? JSON.parse(initialData.details) : [""],
-  );
   const [isPublished, setIsPublished] = useState(
     initialData?.isPublished !== false,
   );
-
-  const handleAddDetail = () => setDetails([...details, ""]);
-  const handleRemoveDetail = (idx: number) =>
-    setDetails(details.filter((_: string, i: number) => i !== idx));
-  const handleDetailChange = (idx: number, value: string) => {
-    const newDetails = [...details];
-    newDetails[idx] = value;
-    setDetails(newDetails);
-  };
 
   return (
     <div className="space-y-4">
@@ -185,7 +113,7 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
             title,
             content,
             type,
-            details: details.filter((d: string) => d.trim()),
+            details: [],
             isPublished,
           })
         }
@@ -201,6 +129,13 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
 export default function AdminCP() {
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  const [subscriptionSearch, setSubscriptionSearch] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedVip, setSelectedVip] = useState("none");
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [userToSetPassword, setUserToSetPassword] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState("");
 
   const adminRanks = [
     "Community Administrator",
@@ -214,6 +149,7 @@ export default function AdminCP() {
     "Operations Manager",
     "Company Director",
   ];
+  
   const isAdmin =
     user?.email?.endsWith("@resyncstudios.com") ||
     adminRanks.includes(user?.userRank || "") ||
@@ -246,10 +182,10 @@ export default function AdminCP() {
   const { data: announcements = [] } = useQuery<Announcement[]>({
     queryKey: ["/api/announcements"],
   });
-  const { data: siteSettings } = useQuery({ queryKey: ["/api/site-settings"] });
-  const { data: searchResults = [] } = useQuery({
-    queryKey: ["/api/admin/search-users", setSubscriptionSearch],
-    enabled: setSubscriptionSearch.length > 0,
+
+  const { data: searchResults = [] } = useQuery<User[]>({
+    queryKey: ["/api/admin/search-users", subscriptionSearch],
+    enabled: subscriptionSearch.length > 0,
   });
 
   const assignSubscriptionMutation = useMutation({
@@ -258,8 +194,8 @@ export default function AdminCP() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          targetUsername: setSelectedUser?.username,
-          vipTier: setSelectedVip,
+          targetUsername: selectedUser?.username,
+          vipTier: selectedVip,
         }),
         credentials: "include",
       });
@@ -275,25 +211,6 @@ export default function AdminCP() {
       toast({
         title: "Error",
         description: "Failed to assign subscription",
-        variant: "destructive",
-      }),
-  });
-
-  const updateSiteSettingsMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("PATCH", "/api/admin/site-settings", {
-        setIsOffline,
-        setOfflineMessage,
-      });
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Settings updated" });
-      queryClient.invalidateQueries({ queryKey: ["/api/site-settings"] });
-    },
-    onError: () =>
-      toast({
-        title: "Error",
-        description: "Failed to update settings",
         variant: "destructive",
       }),
   });
@@ -320,7 +237,6 @@ export default function AdminCP() {
       const errorMsg =
         (error as Error).message || "Failed to create announcement";
       toast({ title: "Error", description: errorMsg, variant: "destructive" });
-      console.error("Announcement creation error:", errorMsg);
     },
   });
 
@@ -340,8 +256,8 @@ export default function AdminCP() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: setUserToSetPassword.id,
-          password: setNewPassword,
+          userId: userToSetPassword?.id,
+          password: newPassword,
         }),
         credentials: "include",
       });
@@ -363,34 +279,6 @@ export default function AdminCP() {
     },
   });
 
-  function setSubscriptionSearch(_value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setSelectedUser(_u: User): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setSelectedVip(_value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setSearchTerm(_value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setNewPassword(_value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setIsOffline(_checked: boolean): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function setOfflineMessage(_value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -406,35 +294,18 @@ export default function AdminCP() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-7 overflow-x-auto">
-          <TabsTrigger value="overview" className="text-xs">
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="subscriptions" className="text-xs">
-            Subscriptions
-          </TabsTrigger>
-          <TabsTrigger value="announcements" className="text-xs">
-            Announcements
-          </TabsTrigger>
-          <TabsTrigger value="users" className="text-xs">
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="ranks" className="text-xs">
-            Ranks
-          </TabsTrigger>
-          <TabsTrigger value="site" className="text-xs">
-            Site
-          </TabsTrigger>
-          <TabsTrigger value="system" className="text-xs">
-            System
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 overflow-x-auto">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
+          <TabsTrigger value="announcements">Announcements</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Total Members</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground">Total Members</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -444,7 +315,7 @@ export default function AdminCP() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Announcements</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground">Announcements</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{announcements.length}</div>
@@ -466,17 +337,17 @@ export default function AdminCP() {
                 <label className="text-sm font-medium">Search User</label>
                 <Input
                   placeholder="Username or email..."
-                  value={setSubscriptionSearch}
+                  value={subscriptionSearch}
                   onChange={(e) => setSubscriptionSearch(e.target.value)}
                 />
               </div>
 
-              {setSubscriptionSearch && searchResults.length > 0 && (
-                <div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
+              {subscriptionSearch && searchResults.length > 0 && (
+                <div className="space-y-2 max-h-48 overflow-y-auto border rounded-xl p-2 bg-muted/30">
                   {searchResults.map((u: User) => (
                     <div
                       key={u.id}
-                      className="p-2 border rounded cursor-pointer hover:bg-muted"
+                      className="p-3 border rounded-xl cursor-pointer hover:bg-background transition-colors"
                       onClick={() => setSelectedUser(u)}
                     >
                       <p className="font-medium">{u.username}</p>
@@ -487,9 +358,9 @@ export default function AdminCP() {
               )}
 
               {selectedUser && (
-                <div>
-                  <p className="text-sm font-medium mb-2">
-                    Selected: {setSelectedUser.username}
+                <div className="space-y-4 pt-4 border-t">
+                  <p className="text-sm font-medium">
+                    Selected: <span className="text-primary font-bold">{selectedUser.username}</span>
                   </p>
                   <Select value={selectedVip} onValueChange={setSelectedVip}>
                     <SelectTrigger>
@@ -506,11 +377,11 @@ export default function AdminCP() {
                   <Button
                     onClick={() => assignSubscriptionMutation.mutate()}
                     disabled={assignSubscriptionMutation.isPending}
-                    className="w-full mt-2"
+                    className="w-full"
                   >
                     {assignSubscriptionMutation.isPending
                       ? "Assigning..."
-                      : "Assign"}
+                      : "Assign Subscription"}
                   </Button>
                 </div>
               )}
@@ -519,13 +390,13 @@ export default function AdminCP() {
         </TabsContent>
 
         <TabsContent value="announcements" className="space-y-4">
-          <div className="flex justify-between">
-            <h2 className="text-lg font-semibold">Announcements</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Announcements</h2>
             <Dialog>
               <DialogTrigger asChild>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
-                  New
+                  New Announcement
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -541,20 +412,21 @@ export default function AdminCP() {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="space-y-2">
+          <div className="grid gap-3">
             {announcements.map((a: any) => (
-              <Card key={a.id}>
+              <Card key={a.id} className="hover-elevate">
                 <CardContent className="pt-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold">{a.title}</h3>
+                      <h3 className="font-bold">{a.title}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-1">
                         {a.content}
                       </p>
                     </div>
                     <Button
-                      size="sm"
-                      variant="destructive"
+                      size="icon"
+                      variant="ghost"
+                      className="text-destructive hover:bg-destructive/10"
                       onClick={() => deleteAnnouncementMutation.mutate(a.id)}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -569,179 +441,84 @@ export default function AdminCP() {
         <TabsContent value="users" className="space-y-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Filter users by username or email..."
+              value={userSearchTerm}
+              onChange={(e) => setUserSearchTerm(e.target.value)}
             />
           </div>
-          <div className="space-y-2">
+          <div className="grid gap-3">
             {users
               .filter(
                 (u) =>
-                  u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  u.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+                  u.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                  u.email?.toLowerCase().includes(userSearchTerm.toLowerCase()),
               )
+              .slice(0, 50)
               .map((u) => (
-                <Card key={u.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-semibold">{u.username}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {u.email}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          <Badge variant="outline">{u.userRank}</Badge>
-                          {(u.additionalRanks || []).map((r) => (
-                            <Badge key={r} variant="secondary">
-                              {r}
-                            </Badge>
-                          ))}
-                          <Badge variant="outline">{u.vipTier}</Badge>
-                        </div>
+                <Card key={u.id} className="hover-elevate">
+                  <CardContent className="p-4 flex justify-between items-center">
+                    <div>
+                      <p className="font-bold">{u.username}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {u.email}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <Badge variant="outline" className="text-[10px]">{u.userRank}</Badge>
+                        <Badge variant="secondary" className="text-[10px]">{u.vipTier}</Badge>
                       </div>
-                      <Dialog
-                        open={userToSetPassword?.id === u.id}
-                        onOpenChange={(open) => {
-                          if (!open) setUserToSetPassword(null);
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setUserToSetPassword(u)}
-                          >
-                            Set Password
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>
-                              Set Password for {u.username}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium">
-                                New Password
-                              </label>
-                              <Input
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="Minimum 6 characters"
-                              />
-                            </div>
-                            <Button
-                              onClick={() => setPasswordMutation.mutate()}
-                              disabled={
-                                setPasswordMutation.isPending ||
-                                newPassword.length < 6
-                              }
-                              className="w-full"
-                            >
-                              {setPasswordMutation.isPending
-                                ? "Setting..."
-                                : "Set Password"}
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
                     </div>
+                    <Dialog
+                      open={userToSetPassword?.id === u.id}
+                      onOpenChange={(open) => {
+                        if (!open) setUserToSetPassword(null);
+                      }}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setUserToSetPassword(u)}
+                        >
+                          Set Password
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Set Password for {u.username}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 pt-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                              New Password
+                            </label>
+                            <Input
+                              type="password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              placeholder="Minimum 6 characters"
+                            />
+                          </div>
+                          <Button
+                            onClick={() => setPasswordMutation.mutate()}
+                            disabled={
+                              setPasswordMutation.isPending ||
+                              newPassword.length < 6
+                            }
+                            className="w-full"
+                          >
+                            {setPasswordMutation.isPending ? "Updating..." : "Update Password"}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </CardContent>
                 </Card>
               ))}
           </div>
         </TabsContent>
-
-        <TabsContent value="ranks" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Rank System</CardTitle>
-              <CardDescription>Staff ranks and permissions</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {RANK_OPTIONS.map((rank) => (
-                <div
-                  key={rank.value}
-                  className="flex justify-between p-2 border rounded"
-                >
-                  <span className="font-medium">{rank.label}</span>
-                  <Badge variant="outline">
-                    {users.filter((u) => u.userRank === rank.value).length}
-                  </Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="site" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Site Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={isOffline}
-                  onChange={(e) => setIsOffline(e.target.checked)}
-                  id="offline"
-                />
-                <label htmlFor="offline" className="font-medium">
-                  Take Site Offline
-                </label>
-              </div>
-              {isOffline && (
-                <Textarea
-                  value={offlineMessage}
-                  onChange={(e) => setOfflineMessage(e.target.value)}
-                  placeholder="Enter offline message..."
-                />
-              )}
-              <Button
-                onClick={() => updateSiteSettingsMutation.mutate()}
-                disabled={updateSiteSettingsMutation.isPending}
-              >
-                {updateSiteSettingsMutation.isPending
-                  ? "Updating..."
-                  : "Update"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="system" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>System Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm font-medium">Database</p>
-                <p className="text-muted-foreground">PostgreSQL</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Platform</p>
-                <p className="text-muted-foreground">RIVET Studios v1.0</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
-}
-function setUserToSetPassword(_arg0: null) {
-  throw new Error("Function not implemented.");
-}
-
-function setSelectedUser(_arg0: null) {
-  throw new Error("Function not implemented.");
-}
-
-function setNewPassword(_arg0: null) {
-  throw new Error("Function not implemented.");
 }
