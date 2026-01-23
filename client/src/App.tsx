@@ -55,65 +55,155 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <MainHeader />
-      <main className="flex-1 w-full">
-        {children}
-      </main>
+      <main className="flex-1 w-full">{children}</main>
       <footer className="bg-card border-t border-border/50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="bg-slate-900 p-1.5 rounded-lg">
-                  <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert" />
+                  <img
+                    src="/attached_assets/logo.svg"
+                    alt="RS"
+                    className="w-5 h-5 invert"
+                  />
                 </div>
-                <h3 className="font-bold text-lg">REACT Studios™</h3>
+                <h3 className="font-bold text-lg">RIVET Studios™</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Building the future of digital experiences with innovative
                 solutions and community-driven development.
               </p>
               <div className="space-y-2 text-sm text-muted-foreground font-medium">
-                <p className="flex items-center gap-2">✉️ contact@reactstudios.com</p>
-                <p className="flex items-center gap-2">📍 3655 Torrance Blvd, 3rd Floor 6015, Torrance, CA, 90503</p>
+                <p className="flex items-center gap-2">
+                  {" "}
+                  support@resyncstudios.com
+                </p>
+                <p className="flex items-center gap-2">
+                  3655 Torrance Blvd, 3rd Floor 6015, Torrance, CA, 90503
+                </p>
               </div>
             </div>
-            
+
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Navigation</h4>
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+                Navigation
+              </h4>
               <ul className="space-y-3 text-sm font-semibold">
-                <li><Link href="/" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🏠 Home</Link></li>
-                <li><Link href="/blog" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📰 Blog</Link></li>
-                <li><Link href="/forums" className="text-muted-foreground hover:text-foreground flex items-center gap-2">⚖️ Forums</Link></li>
-                <li><Link href="/store" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🛒 Store</Link></li>
-                <li><Link href="/subscriptions" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🔄 Subscriptions</Link></li>
+                <li>
+                  <Link
+                    href="/"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blog"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/forums"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Forums
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/store"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Store
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/subscriptions"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Subscriptions
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Support & Resources</h4>
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+                Support & Resources
+              </h4>
               <ul className="space-y-3 text-sm font-semibold">
-                <li><Link href="/support" className="text-muted-foreground hover:text-foreground flex items-center gap-2">❓ Knowledge Base</Link></li>
-                <li><Link href="/policies" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📋 Policies</Link></li>
-                <li><Link href="/guidelines" className="text-muted-foreground hover:text-foreground flex items-center gap-2">📖 Support</Link></li>
+                <li>
+                  <Link
+                    href="/support"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Knowledge Base
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/policies"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Policies
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://support.resyncstudios.com"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Support
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">Other</h4>
+              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+                Other
+              </h4>
               <ul className="space-y-3 text-sm font-semibold">
-                <li><Link href="/settings" className="text-muted-foreground hover:text-foreground flex items-center gap-2">👤 My Account</Link></li>
-                <li><Link href="/search" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🔍 Search</Link></li>
-                <li><Link href="/store" className="text-muted-foreground hover:text-foreground flex items-center gap-2">🛍️ Shopping Cart</Link></li>
+                <li>
+                  <Link
+                    href="/user"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    My Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/search"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Search
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/team"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  >
+                    Staff Directory
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground font-medium">
-              © 2026 REACT Studios™. All rights reserved.
+              © 2026 RIVET Studios™. All rights reserved.
             </p>
             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-              Made with <span className="text-red-500">❤️</span> by Deschutes Design Group LLC
+              Made with <span className="text-red-500">❤️</span> by cxiqlne
             </p>
           </div>
         </div>

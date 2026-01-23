@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { SearchDialog } from "@/components/search-dialog";
-import logoSvg from "@assets/logo.svg";
+import logoSvg from "@assets/favicon.svg";
 
 export function MainHeader() {
   const { user } = useAuth();
@@ -47,11 +47,16 @@ export function MainHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo & Brand */}
-            <Link href="/" className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity group">
+            <Link
+              href="/"
+              className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity group"
+            >
               <div className="bg-slate-900 p-1.5 rounded-lg">
                 <img src={logoSvg} alt="RS" className="w-5 h-5 invert" />
               </div>
-              <span className="font-bold text-lg tracking-tight text-foreground">REACT Studios™</span>
+              <span className="font-bold text-lg tracking-tight text-foreground">
+                RIVET Studios™
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -84,20 +89,40 @@ export function MainHeader() {
                 <Search className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon" asChild className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground" data-testid="button-cart">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
+                data-testid="button-cart"
+              >
                 <Link href="/store">
                   <ShoppingCart className="w-5 h-5" />
                 </Link>
               </Button>
 
-              <Button variant="ghost" size="icon" asChild data-testid="button-policies">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                data-testid="button-policies"
+              >
                 <Link href="/policies">
                   <FolderOpen className="w-5 h-5" />
                 </Link>
               </Button>
 
-              <Button variant="ghost" size="icon" asChild data-testid="button-support">
-                <a href="https://support.resyncstudios.com" target="_blank" rel="noopener noreferrer">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                data-testid="button-support"
+              >
+                <a
+                  href="https://support.resyncstudios.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <BookOpen className="w-5 h-5" />
                 </a>
               </Button>
@@ -114,7 +139,12 @@ export function MainHeader() {
                   <LogOut className="w-5 h-5" />
                 </Button>
               ) : (
-                <Button variant="default" size="sm" asChild data-testid="button-login">
+                <Button
+                  variant="default"
+                  size="sm"
+                  asChild
+                  data-testid="button-login"
+                >
                   <Link href="/login">Login</Link>
                 </Button>
               )}
@@ -127,7 +157,11 @@ export function MainHeader() {
                 className="md:hidden"
                 data-testid="button-menu"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </Button>
             </div>
           </div>
