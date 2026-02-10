@@ -11,7 +11,7 @@ import { Users, Crown, Shield, Headphones, Cpu, Trophy } from "lucide-react";
 interface TeamMember {
   name: string;
   role: string;
-  unit?: string;
+  additionalInfo?: string;
   joinDate: string;
   endDate?: string;
 }
@@ -34,6 +34,11 @@ const departments: Department[] = [
         role: "Chief Executive Officer (CEO) & Founder",
         joinDate: "2018-Present",
       },
+      {
+        name: "silentdirective.",
+        role: "Chief Operations Officer (COO) & Co Founder",
+        joinDate: "2024-Present",
+      },
     ],
   },
   {
@@ -41,11 +46,6 @@ const departments: Department[] = [
     icon: Shield,
     color: "text-blue-500",
     members: [
-      {
-        name: "silentdirective.",
-        role: "Operations Manager & Co Founder",
-        joinDate: "2024-Present",
-      },
       {
         name: "ArielOperations",
         role: "Company Representative, Team Member",
@@ -59,7 +59,7 @@ const departments: Department[] = [
     ],
   },
   {
-    name: "RS Trust & Safety Director",
+    name: "RS Staff Department Administration",
     icon: Shield,
     color: "text-red-500",
     members: [
@@ -67,6 +67,11 @@ const departments: Department[] = [
         name: "Iceberg1038",
         role: "Staff Department Director",
         joinDate: "2023-Present",
+      },
+      {
+        name: "Menzay",
+        role: "Assistant Staff Department Director",
+        joinDate: "2025-Present",
       },
     ],
   },
@@ -78,20 +83,17 @@ const departments: Department[] = [
       {
         name: "bobby283543",
         role: "Customer Relations Director",
-        unit: "Customer Support & Account Support",
         joinDate: "2025-Present",
       },
       {
-        name: "Vacant",
-        role: "Unknown",
-        unit: " ",
-        joinDate: "Unknown",
+        name: "silentdirective.",
+        role: "Partnership Relations",
+        joinDate: "2024-Present",
       },
       {
-        name: "Vacant",
-        role: "Unknown",
-        unit: " ",
-        joinDate: "Unknown",
+        name: "ArielOperations",
+        role: "DMCA Relations",
+        joinDate: "2026-Present",
       },
     ],
   },
@@ -103,37 +105,31 @@ const departments: Department[] = [
       {
         name: "ArielOperations",
         role: "Chief Development Officer, Lead Developer",
-        unit: "Overseeing all development operations",
         joinDate: "2024-Present",
       },
       {
         name: "cxiqlne",
         role: "Gameplay Systems Developer",
-        unit: "Handling Company-Wide Gameplay & Systems Development",
         joinDate: "2018-Present",
       },
       {
         name: "Reni",
-        role: "Gameplay Systems Developer @ Project Sydney",
-        unit: "Handling Project Sydney Systems & Gameplay Development",
+        role: "Gameplay Systems Developer",
         joinDate: "2019-Present",
       },
       {
         name: "silentdirective.",
-        role: "Gameplay Systems Developer @ Project Sandy",
-        unit: "Handling Project Sandy Systems & Gameplay Development",
+        role: "Gameplay Systems Developer, Vehicle Artist",
         joinDate: "2024-Present",
       },
       {
         name: "cxiqlne",
         role: "Programmer",
-        unit: "Handling Website Infrastructure, Data Migrations, OAuth, API, Backend & Frontend, Systems, Network, Software, Hardware, Datastores & databases, domain management",
         joinDate: "2018-Present",
       },
       {
         name: "cxiqlne",
         role: "Vehicle Engineer",
-        unit: "Handling Vehicle Development",
         joinDate: "2018-Present",
       },
     ],
@@ -146,12 +142,14 @@ const departments: Department[] = [
       {
         name: "Reni",
         role: "Operations Manager & Co Founder",
+        additionalInfo: "Reinstated for development early 2026",
         joinDate: "2019",
         endDate: "2025",
       },
       {
         name: "Alexx",
         role: "Trust & Safety Director",
+        additionalInfo: "Reinstated as Senior Administrator late 2025",
         joinDate: "2023",
         endDate: "2025",
       },
@@ -237,12 +235,13 @@ export default function StaffDirectory() {
             opportunities. We're always looking for talented individuals to help
             grow our community.
             <CardDescription className="text-xs"></CardDescription> To become a
-            team member at RS, please contact us at{" "}
+            team member at RS, please contact us at or apply for a volunteer
+            staff position at https://resyncstudios.com/volunteer.
             <a
-              href="mailto:recruitment@resyncstudios.com"
+              href="mailto:support@resyncstudios.com"
               className="text-primary hover:underline"
             >
-              recruitment@resyncstudios.com
+              support@resyncstudios.com
             </a>
           </p>
         </CardContent>

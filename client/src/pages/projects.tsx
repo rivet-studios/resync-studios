@@ -23,11 +23,11 @@ const RS_PROJECTS = [
     projectManager: "Project Manager: silentdirective.",
     game: "ROBLOX",
     status: "active",
-    location: "External",
+    location: "Los Angeles County, CA",
     notes:
-      "Project Sundown is one of our flagship roleplay games based on the real-world location Sandy Shores, located in the county of Los Angeles, California",
+      "Project Sundown is one of our pre-released roleplay games based on the real-world location Sandy Shores, located in the county of Los Angeles, California",
     banner:
-      "https://media.discordapp.net/attachments/1428251062078410845/1463818518255374398/RS-DOJ.png?ex=6974883b&is=697336bb&hm=80122861df33fa806aa288f57b59b5092fb2a75803a7c51b1b911efdfd626a80&=&format=webp&quality=lossless&width=1692&height=348",
+      "https://media.discordapp.net/attachments/1428251062078410845/1463818518255374398/RS-DOJ.png?ex=698cebfb&is=698b9a7b&hm=2ef2ac080089ec3671ca5b74d61439a9c66f9f318037e65d4a113f90801b3e17&=&format=webp&quality=lossless&width=1500&height=309",
   },
   {
     name: "Project Catalina",
@@ -36,9 +36,9 @@ const RS_PROJECTS = [
     status: "development",
     location: "Catalina Islands, California",
     notes:
-      "Project Catalina is our main flagship roleplay games based on the real-world location Catalina Islands, California",
+      "Project Catalina is our main flagship roleplay game based on the real-world location Catalina Islands, California. Catalina is expected to release within the next few months.",
     banner:
-      "https://media.discordapp.net/attachments/1428251062078410845/1463818773894266969/RS-CATALINA_1.png?ex=69748878&is=697336f8&hm=96470f949e15690ede51d09741675c03bd0cbf4589a428d719369b36e5e3f08e&=&format=webp&quality=lossless&width=1692&height=348",
+      "https://media.discordapp.net/attachments/1428251062078410845/1463818773894266969/RS-CATALINA_1.png?ex=698cec38&is=698b9ab8&hm=20e3fd2980c732cf50cc36e7386d09e284fde4b2f201fea574801933d34f22d6&=&format=webp&quality=lossless&width=1500&height=309",
   },
   {
     name: "Fort Loredo: Reimagined",
@@ -50,25 +50,10 @@ const RS_PROJECTS = [
       "Reason for Discontinuation: The project does not match RS themes and was inconsistent for theme adjustment. The project was originally accquired from Mountain Interactive",
   },
   {
-    name: "State of Florida, Miami Dade County",
-    projectManager: "Project Manager: cxiqlne, LA5TIC",
-    game: "ROBLOX",
-    status: "discontinued",
-    location: "Miami, FL",
-    notes: "Reason for Discontinuation: Project was scrapped",
-  },
-  {
-    name: "San Ramon, California",
-    projectManager: "Project Manager: cxiqlne",
-    game: "ROBLOX",
-    status: "discontinued",
-    location: "San Ramon, CA",
-    notes:
-      "Reason for Discontinuation: Outdated systems provided complications",
-  },
-  {
     name: "Project Sydney",
     projectManager: "Project Manager: cxiqlne, Reni, silentdirective.",
+    notes:
+      "Project Sydney is currently paused while we shift our main focus on our flagship, Project Catalina",
     game: "ROBLOX",
     status: "development",
     location: "Victoria, AU",
