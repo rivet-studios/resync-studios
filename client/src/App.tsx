@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 
 import NotFound from "@/pages/not-found";
-import Unauthorized from "@/pages/unauthorized";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
@@ -81,7 +80,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
                   support@resyncstudios.com
                 </p>
                 <p className="flex items-center gap-2">
-                  3655 Torrance Blvd, 3rd Floor 6015, Torrance, CA, 90503
+                  101 Duke Street, Sunshine, VIC, 3020, Australia
                 </p>
               </div>
             </div>
@@ -201,10 +200,14 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
           <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground font-medium">
-              © 2026 RIVET Studios™. All rights reserved.
+              © 2026 RIVET Studios™. All rights reserved. Metro Interactive,
+              Metro Interactive: A New Era Begins™, Catalina, Sundown, RESYNC
+              Studios, Reimagined™, The City Never Sleeps ― and Neither Do
+              We™, "Creative Development. Visible Execution. RIVET Studios.",
+              and all other logos and brands are trademarks of RIVET Studios™.
             </p>
             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-              Made with <span className="text-red-500">❤️</span> by cxiqlne
+              Formerly RESYNC Studios™
             </p>
           </div>
         </div>
@@ -244,7 +247,9 @@ function Router() {
           <Route path="/forums" component={ForumHome} />
           <Route path="/forums/category/:id" component={ForumCategory} />
           <Route path="/forums/thread/:id" component={ForumThread} />
-          <Route path="/forums/new">{user ? <CreateThread /> : <Login />}</Route>
+          <Route path="/forums/new">
+            {user ? <CreateThread /> : <Login />}
+          </Route>
           <Route path="/subscriptions">
             <Redirect to="/store/subscriptions" />
           </Route>
@@ -261,13 +266,21 @@ function Router() {
           <Route path="/groups" component={Groups} />
           <Route path="/admin" component={Admin} />
           <Route path="/modcp">
-            {user?.isModerator || user?.isAdmin ? <ModCP /> : <Unauthorized />}
+            {user?.isModerator ||
+            user?.isAdmin ||
+            user?.userRank === "RS Trust & Safety Team" ? (
+              <ModCP />
+            ) : (
+              <NotFound />
+            )}
           </Route>
           <Route path="/admincp">
-            {user?.isAdmin || user?.email?.endsWith("@resyncstudios.com") ? (
+            {user?.isAdmin ||
+            user?.userRank === "Team Member" ||
+            user?.userRank === "Company Director" ? (
               <AdminCP />
             ) : (
-              <Unauthorized />
+              <NotFound />
             )}
           </Route>
           <Route path="/guidelines" component={Guidelines} />
@@ -289,7 +302,6 @@ function Router() {
           <Route path="/catalina" component={Catalina} />
           <Route path="/onboarding" component={Onboarding} />
           <Route component={NotFound} />
-          <Route path="/unauthorized" component={Unauthorized} />
         </Switch>
       </div>
     </PublicLayout>

@@ -30,12 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Shield,
-  Plus,
-  Trash2,
-  AlertTriangle,
-} from "lucide-react";
+import { Shield, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { type Announcement } from "@shared/schema";
 
 interface User {
@@ -53,10 +48,10 @@ interface Stats {
 
 const VIP_OPTIONS = [
   { value: "none", label: "None" },
-  { value: "Bronze VIP", label: "Bronze ($12.99)" },
-  { value: "Diamond VIP", label: "Diamond ($19.99)" },
-  { value: "Founders Edition VIP", label: "Founders ($45.99)" },
-  { value: "Lifetime", label: "Lifetime ($64.99)" },
+  { value: "Bronze VIP", label: "Bronze VIP ($12.99)" },
+  { value: "Diamond VIP", label: "Diamond VIP ($19.99)" },
+  { value: "Founders Edition VIP", label: "Founders Edition VIP ($45.99)" },
+  { value: "Lifetime", label: "Founders Edition Lifetime ($64.99)" },
 ];
 
 function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
@@ -129,7 +124,7 @@ function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
 export default function AdminCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  
+
   const [subscriptionSearch, setSubscriptionSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedVip, setSelectedVip] = useState("none");
@@ -138,8 +133,6 @@ export default function AdminCP() {
   const [newPassword, setNewPassword] = useState("");
 
   const adminRanks = [
-    "Community Administrator",
-    "Community Senior Administrator",
     "Community Developer",
     "Staff Internal Affairs",
     "Company Representative",
@@ -149,9 +142,8 @@ export default function AdminCP() {
     "Operations Manager",
     "Company Director",
   ];
-  
+
   const isAdmin =
-    user?.email?.endsWith("@resyncstudios.com") ||
     adminRanks.includes(user?.userRank || "") ||
     (user?.additionalRanks || []).some((r) => adminRanks.includes(r));
 
@@ -173,7 +165,7 @@ export default function AdminCP() {
               <div>
                 <h2 className="font-bold text-lg mb-2">Access Denied</h2>
                 <p className="text-muted-foreground">
-                  You don't have admin access.
+                  You don't have access to this area.
                 </p>
               </div>
             </div>
@@ -233,7 +225,10 @@ export default function AdminCP() {
       });
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || "Failed to create announcement");
+        throw new Error(
+          errData.message ||
+            "Failed to create announcement. Check console for details",
+        );
       }
       return response.json();
     },
@@ -243,7 +238,8 @@ export default function AdminCP() {
     },
     onError: (error) => {
       const errorMsg =
-        (error as Error).message || "Failed to create announcement";
+        (error as Error).message ||
+        "Failed to create announcement. Check console for details";
       toast({ title: "Error", description: errorMsg, variant: "destructive" });
     },
   });
@@ -281,7 +277,9 @@ export default function AdminCP() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: (error as Error).message || "Failed to set password",
+        description:
+          (error as Error).message ||
+          "Failed to set password. Check console for details",
         variant: "destructive",
       });
     },
@@ -313,7 +311,9 @@ export default function AdminCP() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Total Members</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground">
+                  Total Members
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -323,7 +323,9 @@ export default function AdminCP() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Announcements</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground">
+                  Announcements
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{announcements.length}</div>
@@ -337,7 +339,7 @@ export default function AdminCP() {
             <CardHeader>
               <CardTitle>Assign Subscription</CardTitle>
               <CardDescription>
-                Manually assign VIP tiers to users
+                Manually assign VIP tiers to users (bypasses every charge)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -368,7 +370,10 @@ export default function AdminCP() {
               {selectedUser && (
                 <div className="space-y-4 pt-4 border-t">
                   <p className="text-sm font-medium">
-                    Selected: <span className="text-primary font-bold">{selectedUser.username}</span>
+                    Selected:{" "}
+                    <span className="text-primary font-bold">
+                      {selectedUser.username}
+                    </span>
                   </p>
                   <Select value={selectedVip} onValueChange={setSelectedVip}>
                     <SelectTrigger>
@@ -458,7 +463,9 @@ export default function AdminCP() {
             {users
               .filter(
                 (u) =>
-                  u.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                  u.username
+                    .toLowerCase()
+                    .includes(userSearchTerm.toLowerCase()) ||
                   u.email?.toLowerCase().includes(userSearchTerm.toLowerCase()),
               )
               .slice(0, 50)
@@ -467,12 +474,14 @@ export default function AdminCP() {
                   <CardContent className="p-4 flex justify-between items-center">
                     <div>
                       <p className="font-bold">{u.username}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {u.email}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{u.email}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <Badge variant="outline" className="text-[10px]">{u.userRank}</Badge>
-                        <Badge variant="secondary" className="text-[10px]">{u.vipTier}</Badge>
+                        <Badge variant="outline" className="text-[10px]">
+                          {u.userRank}
+                        </Badge>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {u.vipTier}
+                        </Badge>
                       </div>
                     </div>
                     <Dialog
@@ -505,18 +514,20 @@ export default function AdminCP() {
                               type="password"
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
-                              placeholder="Minimum 6 characters"
+                              placeholder="Minimum 5 characters"
                             />
                           </div>
                           <Button
                             onClick={() => setPasswordMutation.mutate()}
                             disabled={
                               setPasswordMutation.isPending ||
-                              newPassword.length < 6
+                              newPassword.length < 5
                             }
                             className="w-full"
                           >
-                            {setPasswordMutation.isPending ? "Updating..." : "Update Password"}
+                            {setPasswordMutation.isPending
+                              ? "Updating..."
+                              : "Update Password"}
                           </Button>
                         </div>
                       </DialogContent>

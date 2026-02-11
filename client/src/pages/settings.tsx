@@ -158,7 +158,8 @@ export default function Settings() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to update profile.",
+        description:
+          "Failed to update profile. Contact support to manually update profile.",
         variant: "destructive",
       });
     },
@@ -198,7 +199,8 @@ export default function Settings() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to unlink Discord.",
+        description:
+          "Failed to unlink Discord. Contact support to have it removed manually.",
         variant: "destructive",
       });
     },
@@ -219,7 +221,8 @@ export default function Settings() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to unlink Roblox.",
+        description:
+          "Failed to unlink Roblox connection. Contact support to have it removed manually.",
         variant: "destructive",
       });
     },
@@ -325,6 +328,7 @@ export default function Settings() {
                     <p className="font-medium">Profile Photo</p>
                     <p className="text-sm text-muted-foreground">
                       Your profile photo is managed by your login provider
+                      (Discord)
                     </p>
                   </div>
                 </div>

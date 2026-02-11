@@ -1,22 +1,23 @@
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 
-const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+const BOT_TOKEN =
+  process.env.DISCORD_BOT_TOKEN ||
+  "MTQyODY0NDUwNTMxNzQxMjg4NA.GtH9ev.5hJxbELIjyJHQ2S0rnJg_t_SLIDXyCV7Fx5TVg";
 const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 let discordClient: Client | null = null;
 
 export async function initializeDiscordBot() {
   if (!BOT_TOKEN) {
-    console.warn("⚠️ DISCORD_BOT_TOKEN not configured. Discord nickname sync will be disabled.");
+    console.warn(
+      "⚠️ DISCORD_BOT_TOKEN not configured. Discord nickname sync will be disabled.",
+    );
     return null;
   }
 
   try {
     discordClient = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.DirectMessages,
-      ],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
     });
 
     discordClient.once("ready", () => {
@@ -33,7 +34,7 @@ export async function initializeDiscordBot() {
 
 export async function updateDiscordNickname(
   discordId: string,
-  newNickname: string
+  newNickname: string,
 ): Promise<boolean> {
   if (!discordClient) {
     console.warn("⚠️ Discord bot not initialized. Cannot update nickname.");
@@ -50,10 +51,15 @@ export async function updateDiscordNickname(
     }
 
     await member.setNickname(newNickname);
-    console.log(`✅ Updated Discord nickname for ${discordId} to "${newNickname}"`);
+    console.log(
+      `✅ Updated Discord nickname for ${discordId} to "${newNickname}"`,
+    );
     return true;
   } catch (error) {
-    console.error(`❌ Failed to update Discord nickname for ${discordId}:`, error);
+    console.error(
+      `❌ Failed to update Discord nickname for ${discordId}:`,
+      error,
+    );
     return false;
   }
 }

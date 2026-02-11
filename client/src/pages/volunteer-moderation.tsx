@@ -363,7 +363,9 @@ export default function VolunteerModeration() {
           <h2 className="font-display text-2xl font-bold mb-2">Apply Now</h2>
           <p className="text-muted-foreground">
             Fill out the form below to apply for our volunteer moderation
-            program. We review all applications and will be in touch soon!
+            program. Applications are reviewed in batches and may take up to 3
+            weeks for results. Updates are sent to the email you provided on the
+            application form.
           </p>
         </div>
 

@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield, Users as UsersIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Unauthorized from "@/pages/unauthorized";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
   id: string;
@@ -60,7 +61,10 @@ const RANK_OPTIONS = [
   { value: "Staff Internal Affairs", label: "Staff Internal Affairs" },
   { value: "Company Representative", label: "Company Representative" },
   { value: "Team Member", label: "Team Member" },
-  { value: "MI Trust & Safety Director", label: "MI Trust & Safety Director" },
+  {
+    value: "MI Trust & Safety Director",
+    label: "Assistant Staff Department Director",
+  },
   { value: "Staff Department Director", label: "Staff Department Director" },
   { value: "Operations Manager", label: "Operations Manager" },
   { value: "Company Director", label: "Company Director" },
@@ -79,7 +83,6 @@ export default function AdminPanel() {
     "Company Director",
   ];
   const hasAccess =
-    currentUser?.email?.endsWith("@resyncstudios.com") ||
     staffRanks.includes(currentUser?.userRank || "") ||
     (currentUser?.additionalRanks || []).some((r: string) =>
       staffRanks.includes(r),

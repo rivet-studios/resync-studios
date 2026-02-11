@@ -25,7 +25,7 @@ const blogPosts = [
     date: "Dec 19, 2025",
     image:
       "https://i.imgur.com/a/car-fire-sbi-resync-studios-project-foxtrot-teaser-AjnovPK.png",
-    featured: true,
+    featured: false,
     readTime: 10,
     views: 156,
     comments: 12,
@@ -38,7 +38,10 @@ export default function Blog() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const isAdmin = user?.isAdmin || user?.email?.endsWith("@resyncstudios.com");
+  const isAdmin =
+    user?.isAdmin ||
+    user?.userRank === "Team Member" ||
+    user?.userRank === "Company Director";
 
   const handleCreatePost = async () => {
     if (!title || !content) return;
@@ -54,8 +57,12 @@ export default function Blog() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Latest News</h1>
-            <p className="text-slate-500 font-medium text-lg">Stay updated with the latest from RIVET Studios™</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+              Latest News
+            </h1>
+            <p className="text-slate-500 font-medium text-lg">
+              Stay updated with the latest from RIVET Studios™
+            </p>
           </div>
           {isAdmin && (
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -67,11 +74,15 @@ export default function Blog() {
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white/90 backdrop-blur-xl border-none shadow-2xl">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">Create Blog Post</DialogTitle>
+                  <DialogTitle className="text-2xl font-bold">
+                    Create Blog Post
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">Title</label>
+                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">
+                      Title
+                    </label>
                     <Input
                       placeholder="Post title..."
                       value={title}
@@ -80,7 +91,9 @@ export default function Blog() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">Content</label>
+                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">
+                      Content
+                    </label>
                     <Textarea
                       placeholder="Write your article here..."
                       value={content}
@@ -89,8 +102,19 @@ export default function Blog() {
                     />
                   </div>
                   <div className="flex justify-end gap-3">
-                    <Button variant="ghost" onClick={() => setIsCreateOpen(false)} className="h-12 px-6 font-bold">Cancel</Button>
-                    <Button onClick={handleCreatePost} className="bg-slate-900 text-white hover:bg-slate-800 h-12 px-8 font-bold">Publish Article</Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsCreateOpen(false)}
+                      className="h-12 px-6 font-bold"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleCreatePost}
+                      className="bg-slate-900 text-white hover:bg-slate-800 h-12 px-8 font-bold"
+                    >
+                      Publish Article
+                    </Button>
                   </div>
                 </div>
               </DialogContent>
@@ -109,7 +133,9 @@ export default function Blog() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-6 left-6">
-                  <Badge className="bg-white/90 backdrop-blur-md text-slate-900 font-black px-4 py-1 rounded-full shadow-sm">FEATURED</Badge>
+                  <Badge className="bg-white/90 backdrop-blur-md text-slate-900 font-black px-4 py-1 rounded-full shadow-sm">
+                    FEATURED
+                  </Badge>
                 </div>
               </div>
               <CardContent className="p-8 lg:p-12 flex flex-col justify-center space-y-6">
@@ -127,13 +153,21 @@ export default function Blog() {
                       <User className="w-5 h-5 text-slate-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-slate-900">{blogPosts[0].author}</p>
-                      <p className="text-xs font-bold text-slate-400">Founder</p>
+                      <p className="text-sm font-black text-slate-900">
+                        {blogPosts[0].author}
+                      </p>
+                      <p className="text-xs font-bold text-slate-400">
+                        Founder
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-sm font-black text-slate-900">{blogPosts[0].date}</p>
-                    <p className="text-xs font-bold text-slate-400">{blogPosts[0].readTime} min read</p>
+                    <p className="text-sm font-black text-slate-900">
+                      {blogPosts[0].date}
+                    </p>
+                    <p className="text-xs font-bold text-slate-400">
+                      {blogPosts[0].readTime} min read
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -144,16 +178,31 @@ export default function Blog() {
         {/* Latest Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.slice(1).map((post) => (
-            <Card key={post.id} className="border-none shadow-sm bg-white hover:shadow-xl transition-all duration-300 group cursor-pointer rounded-2xl overflow-hidden">
+            <Card
+              key={post.id}
+              className="border-none shadow-sm bg-white hover:shadow-xl transition-all duration-300 group cursor-pointer rounded-2xl overflow-hidden"
+            >
               <div className="h-48 overflow-hidden">
-                <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
               </div>
               <CardContent className="p-6 space-y-4">
-                <h4 className="text-xl font-bold text-slate-900 line-clamp-2 leading-snug">{post.title}</h4>
-                <p className="text-slate-500 text-sm line-clamp-3 font-medium leading-relaxed">{post.excerpt}</p>
+                <h4 className="text-xl font-bold text-slate-900 line-clamp-2 leading-snug">
+                  {post.title}
+                </h4>
+                <p className="text-slate-500 text-sm line-clamp-3 font-medium leading-relaxed">
+                  {post.excerpt}
+                </p>
                 <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                  <span className="text-xs font-black text-slate-900 uppercase tracking-widest">{post.date}</span>
-                  <span className="text-xs font-bold text-slate-400">{post.readTime} MIN READ</span>
+                  <span className="text-xs font-black text-slate-900 uppercase tracking-widest">
+                    {post.date}
+                  </span>
+                  <span className="text-xs font-bold text-slate-400">
+                    {post.readTime} MIN READ
+                  </span>
                 </div>
               </CardContent>
             </Card>

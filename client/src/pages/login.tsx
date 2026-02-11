@@ -24,7 +24,10 @@ export default function Login() {
       navigate("/dashboard");
     },
     onError: (err: any) => {
-      setError(err.message || "Invalid email or password. Please try again.");
+      setError(
+        err.message ||
+          "Incorrect email or password. Please try again. If the issue persists, contact support.",
+      );
     },
   });
 
@@ -43,8 +46,12 @@ export default function Login() {
       <Card className="w-full max-w-md border-border/50">
         <CardHeader className="space-y-2 text-center pb-6">
           <CardTitle className="text-3xl font-bold">RS</CardTitle>
-          <p className="text-sm text-muted-foreground">Log in to your account</p>
-          <p className="text-xs text-muted-foreground">Enter your email and password below to log in</p>
+          <p className="text-sm text-muted-foreground">
+            Log in to your account
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Enter your email and password below to log in
+          </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -93,7 +100,10 @@ export default function Login() {
                 className="w-4 h-4 rounded border-border"
                 data-testid="checkbox-remember"
               />
-              <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+              <label
+                htmlFor="remember"
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
                 Remember me
               </label>
             </div>
@@ -114,7 +124,9 @@ export default function Login() {
               <div className="w-full border-t border-border/50"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="px-2 bg-card text-muted-foreground">Or login with</span>
+              <span className="px-2 bg-card text-muted-foreground">
+                Or login with
+              </span>
             </div>
           </div>
 
@@ -134,7 +146,10 @@ export default function Login() {
           {/* Sign Up Link */}
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <a href="/signup" className="text-primary hover:underline font-medium">
+            <a
+              href="/signup"
+              className="text-primary hover:underline font-medium"
+            >
               Sign up
             </a>
           </p>

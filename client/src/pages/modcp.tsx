@@ -90,7 +90,6 @@ export default function ModCP() {
     "Company Director",
   ];
   const isMod =
-    user?.email?.endsWith("@resyncstudios.com") ||
     staffRanks.includes(user?.userRank || "") ||
     (user?.additionalRanks || []).some((r) => staffRanks.includes(r));
 
