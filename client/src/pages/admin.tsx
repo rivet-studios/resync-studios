@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Users as UsersIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import Unauthorized from "@/pages/unauthorized";
+import NotFound from "@/pages/not-found";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
@@ -97,7 +97,7 @@ export default function AdminPanel() {
   }
 
   if (!hasAccess) {
-    return <Unauthorized />;
+    return <NotFound />;
   }
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>(
