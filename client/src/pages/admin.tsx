@@ -81,17 +81,36 @@ export default function AdminPanel() {
     "Staff Department Director",
     "Operations Manager",
     "Company Director",
+    "Community Developer",
+    "Staff Internal Affairs",
   ];
   const hasAccess =
     staffRanks.includes(currentUser?.userRank || "") ||
     (currentUser?.additionalRanks || []).some((r: string) =>
       staffRanks.includes(r),
-    );
+    ) ||
+    currentUser?.email.toLowerCase().endsWith("@resyncstudios.com");
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Skeleton className="h-[400px] w-full max-w-4xl" />
+      <div className="flex items-center justify-center min-h-[60vh] bg-white">
+        <div className="space-y-4 w-full max-w-4xl px-4">
+          <Skeleton className="h-12 w-[250px]" />
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please log in to access the Admin Panel.</CardDescription>
+          </CardHeader>
+        </Card>
       </div>
     );
   }

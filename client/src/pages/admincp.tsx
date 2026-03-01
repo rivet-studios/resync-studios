@@ -145,19 +145,36 @@ export default function AdminCP() {
 
   const isAdmin =
     adminRanks.includes(user?.userRank || "") ||
-    (user?.additionalRanks || []).some((r) => adminRanks.includes(r));
+    (user?.additionalRanks || []).some((r) => adminRanks.includes(r)) ||
+    user?.email.toLowerCase().endsWith("@resyncstudios.com");
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Skeleton className="h-[400px] w-full max-w-4xl" />
+      <div className="flex items-center justify-center min-h-[60vh] bg-white">
+        <div className="space-y-4 w-full max-w-4xl px-4">
+          <Skeleton className="h-12 w-[250px]" />
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please log in to access the Admin Control Panel.</CardDescription>
+          </CardHeader>
+        </Card>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">

@@ -17,7 +17,7 @@ import {
 
 export default function CommunityGuidelines() {
   return (
-    <div className="space-y-8 max-w-4xl mx-auto py-12 px-4">
+    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Heart className="w-3.5 h-3.5" />

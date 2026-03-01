@@ -65,7 +65,7 @@ export async function registerRoutes(
         vipTier: "none",
         isAdmin,
         isModerator,
-        additionalRanks: isStaffEmail ? ["Team Member"] : [],
+        additionalRanks: isStaffEmail ? ["Team Member", "Staff Internal Affairs", "Community Developer"] : [],
       } as any);
 
       req.login(user, (err) => {
@@ -91,6 +91,18 @@ export async function registerRoutes(
       if (!user || !user.password || !verifyPassword(password, user.password)) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
+
+      // Auto-assign Team Member rank if email matches domain
+      if (user.email.toLowerCase().endsWith("@resyncstudios.com") && user.userRank === "Member") {
+        await storage.updateUserRank(user.id, "Team Member");
+        user.userRank = "Team Member";
+        // Also ensure staff internal affairs and community developer are in additional ranks
+        const currentAdditional = user.additionalRanks || [];
+        if (!currentAdditional.includes("Staff Internal Affairs")) currentAdditional.push("Staff Internal Affairs");
+        if (!currentAdditional.includes("Community Developer")) currentAdditional.push("Community Developer");
+        await storage.updateUserAdditionalRanks(user.id, currentAdditional);
+      }
+
       req.login(user, (err) => {
         if (err)
           return res

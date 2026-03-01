@@ -10,7 +10,7 @@ import { Lock, Shield, FileText, Users, Zap } from "lucide-react";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Lock className="w-3.5 h-3.5" />
