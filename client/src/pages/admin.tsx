@@ -46,6 +46,11 @@ const RANK_OPTIONS = [
   { value: "Diamond VIP", label: "Diamond VIP" },
   { value: "Founders Edition VIP", label: "Founders Edition VIP" },
   { value: "Lifetime", label: "Lifetime" },
+  { value: "Vehicle Tester", label: "Vehicle Tester" },
+  { value: "Quality Assurance Team", label: "Quality Assurance Team" },
+  { value: "Quality Assurance Lead", label: "Quality Assurance Lead" },
+  { value: "Appeal Analyst", label: "Appeal Analyst" },
+  { value: "Report Analyst", label: "Report Analyst" },
   { value: "RS Volunteer Staff", label: "RS Volunteer Staff" },
   { value: "RS Trust & Safety Team", label: "RS Trust & Safety Team" },
   { value: "Customer Relations", label: "Customer Relations" },
@@ -88,8 +93,7 @@ export default function AdminPanel() {
     staffRanks.includes(currentUser?.userRank || "") ||
     (currentUser?.additionalRanks || []).some((r: string) =>
       staffRanks.includes(r),
-    ) ||
-    currentUser?.email.toLowerCase().endsWith("@resyncstudios.com");
+    );
 
   if (authLoading) {
     return (
@@ -108,7 +112,9 @@ export default function AdminPanel() {
         <Card className="w-full max-w-md mx-auto">
           <CardHeader>
             <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to access the Admin Panel.</CardDescription>
+            <CardDescription>
+              Please log in to access the Admin Panel.
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>

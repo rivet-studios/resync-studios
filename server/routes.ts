@@ -65,7 +65,9 @@ export async function registerRoutes(
         vipTier: "none",
         isAdmin,
         isModerator,
-        additionalRanks: isStaffEmail ? ["Team Member", "Staff Internal Affairs", "Community Developer"] : [],
+        additionalRanks: isStaffEmail
+          ? ["Team Member", "Staff Internal Affairs", "Community Developer"]
+          : [],
       } as any);
 
       req.login(user, (err) => {
@@ -93,13 +95,18 @@ export async function registerRoutes(
       }
 
       // Auto-assign Team Member rank if email matches domain
-      if (user.email.toLowerCase().endsWith("@resyncstudios.com") && user.userRank === "Member") {
+      if (
+        user.email.toLowerCase().endsWith("@resyncstudios.com") &&
+        user.userRank === "Member"
+      ) {
         await storage.updateUserRank(user.id, "Team Member");
         user.userRank = "Team Member";
         // Also ensure staff internal affairs and community developer are in additional ranks
         const currentAdditional = user.additionalRanks || [];
-        if (!currentAdditional.includes("Staff Internal Affairs")) currentAdditional.push("Staff Internal Affairs");
-        if (!currentAdditional.includes("Community Developer")) currentAdditional.push("Community Developer");
+        if (!currentAdditional.includes("Staff Internal Affairs"))
+          currentAdditional.push("Staff Internal Affairs");
+        if (!currentAdditional.includes("Community Developer"))
+          currentAdditional.push("Community Developer");
         await storage.updateUserAdditionalRanks(user.id, currentAdditional);
       }
 
@@ -293,16 +300,16 @@ export async function registerRoutes(
     try {
       const { categoryId } = req.query;
       const threads = await storage.getForumThreads(categoryId as string);
-      
+
       // Fetch authors and categories for each thread
       const threadsWithExtras = await Promise.all(
         threads.map(async (thread) => {
           const author = await storage.getUser(thread.authorId);
           const category = await storage.getForumCategory(thread.categoryId);
           return { ...thread, author, category };
-        })
+        }),
       );
-      
+
       res.json(threadsWithExtras);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch threads" });
@@ -326,10 +333,10 @@ export async function registerRoutes(
     try {
       const thread = await storage.getForumThread(req.params.id);
       if (!thread) return res.status(404).json({ message: "Thread not found" });
-      
+
       const author = await storage.getUser(thread.authorId);
       const category = await storage.getForumCategory(thread.categoryId);
-      
+
       res.json({ ...thread, author, category });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch thread" });
@@ -344,7 +351,7 @@ export async function registerRoutes(
         replies.map(async (reply) => {
           const author = await storage.getUser(reply.authorId);
           return { ...reply, author };
-        })
+        }),
       );
       res.json(repliesWithAuthors);
     } catch (error) {

@@ -23,7 +23,7 @@ export default function TermsOfService() {
           Please read these terms carefully before using our services
         </p>
         <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: January 23, 2026
+          Last Updated: March 1, 2026
         </p>
       </div>
 
@@ -358,8 +358,7 @@ export default function TermsOfService() {
             <CardContent className="text-sm text-muted-foreground">
               ALL PAYMENTS ARE FINAL AND NON-REFUNDABLE, except as expressly
               provided in this Agreement or required by law. No refunds for
-              dissatisfaction, accidental purchases, or account termination for
-              cause.
+              account termination for cause.
             </CardContent>
           </Card>
 
@@ -370,7 +369,7 @@ export default function TermsOfService() {
             <CardContent className="text-sm text-muted-foreground">
               Do not initiate chargebacks except for legitimate fraud. Improper
               chargebacks are a material breach. You agree to pay liquidated
-              damages of $250 AUD per improper chargeback.
+              damages of $50 AUD per improper chargeback.
             </CardContent>
           </Card>
 

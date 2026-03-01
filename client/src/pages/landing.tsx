@@ -14,10 +14,10 @@ import {
 import { Link } from "wouter";
 
 const stats = [
-  { value: 15, label: "Connected Members", suffix: "K+" },
-  { value: 20, label: "Discord Members", suffix: "K+" },
-  { value: 25, label: "Roblox Members", suffix: "K+" },
-  { value: 36.6, label: "Active Discussions", suffix: "K+" },
+  { value: 23, label: "Connected Members", suffix: "+" },
+  { value: 28, label: "Discord Members", suffix: "+" },
+  { value: 25, label: "Roblox Members", suffix: "+" },
+  { value: 12.6, label: "Active Discussions", suffix: "+" },
   { value: 99.9, label: "Uptime", suffix: "%" },
   { value: 24, label: "Support", suffix: "/7" },
 ];

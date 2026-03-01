@@ -24,11 +24,25 @@ const blogPosts = [
     author: "cxiqlne",
     date: "Dec 19, 2025",
     image:
-      "https://i.imgur.com/a/car-fire-sbi-resync-studios-project-foxtrot-teaser-AjnovPK.png",
+      "https://media.discordapp.net/attachments/1428251062078410845/1474666409865773127/01KAXDED6P3QM4N7B2WZTFVBY1.png?ex=69a490de&is=69a33f5e&hm=c5347fc7d91d54579d7031460da84fb89c08cfdc4fc0479b014e660f6321b0fe&animated=true",
     featured: false,
     readTime: 10,
     views: 156,
     comments: 12,
+  },
+  {
+    id: "2",
+    title: "Project Update - Project Rosewood",
+    excerpt:
+      "After internal review and development alignment, Project Catalina has officially been renamed to Project Rosewood. This decision was made to better reflect the foundation of the project’s world and map direction, which is based on Johnson Studios’ Once Upon a Time in Rosewood. As development has progressed, it became clear that aligning the project name with its core setting creates stronger thematic consistency and long-term brand clarity. To be clear, this is a branding refinement — not a shift in scope, direction, or vision. All development plans, structural planning, and world design remain unchanged. The rename ensures that the project identity properly represents the environment it is built upon from the outset. Moving forward, all official references will use Project Rosewood. We appreciate the continued support as we refine and strengthen the foundation of this project.",
+    author: "cxiqlne",
+    date: "Mar 1, 2026",
+    image:
+      "https://media.discordapp.net/attachments/1428251062078410845/1474666411363274852/01KHYET9DC0A94JWNBZ23Y9S18.webp?ex=69a490de&is=69a33f5e&hm=5d1c065d0ef6f63ebc54400a56df8ac08bedbd95c32f77ab0cbfc09cb9bca707&animated=true",
+    featured: true,
+    readTime: 5,
+    views: 10,
+    comments: 0,
   },
 ];
 

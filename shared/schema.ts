@@ -80,6 +80,12 @@ export const userRankEnum = pgEnum("user_rank", [
   "Diamond VIP",
   "Founders Edition VIP",
   "Lifetime",
+  "Vehicle Tester",
+  "Report Analyst",
+  "Appeal Analyst",
+  "Quality Assurance Team",
+  "Quality Assurance Lead",
+  "Governor of the State of Rosewood",
   "RS Volunteer Staff",
   "RS Trust & Safety Team",
   "Customer Relations",
@@ -150,16 +156,6 @@ export const users = pgTable("users", {
     .default(sql`'{}'::text[]`),
   secondaryUserRank: text("secondary_user_rank").default("Active Member"), // Legacy
   tertiaryUserRank: userRankEnum("tertiary_user_rank").default("Lifetime"), // Legacy
-  // Banning
-  isBanned: boolean("is_banned").default(false),
-  banReason: text("ban_reason"),
-  bannedAt: timestamp("banned_at"),
-  bannedBy: varchar("banned_by"),
-  // Website Ban
-  isWebsiteBanned: boolean("is_website_banned").default(false),
-  websiteBanReason: text("website_ban_reason"),
-  websiteBannedAt: timestamp("website_banned_at"),
-  websiteBannedBy: varchar("website_banned_by"),
   // Moderator Dashboard
   isModerator: boolean("is_moderator").default(false),
   // Admin Dashboard

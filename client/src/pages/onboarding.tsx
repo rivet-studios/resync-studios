@@ -80,169 +80,176 @@ export default function Onboarding() {
             <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0 px-12" />
           </div>
 
-            <div className="space-y-8">
-              {step === 1 && (
+          <div className="space-y-8">
+            {step === 1 && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                    Create your account
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Enter your details to get started.
+                  </p>
+                </div>
+
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                      Create your account
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Enter your details to get started.
-                    </p>
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      placeholder="John Doe"
+                      className="h-12 bg-gray-50/50 border-gray-200"
+                    />
                   </div>
 
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        placeholder="John Doe"
-                        className="h-12 bg-gray-50/50 border-gray-200"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="john@example.com"
-                        className="h-12 bg-gray-50/50 border-gray-200"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="••••••••"
-                        className="h-12 bg-gray-50/50 border-gray-200"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm password</Label>
-                      <Input
-                        id="confirm-password"
-                        type="password"
-                        placeholder="••••••••"
-                        className="h-12 bg-gray-50/50 border-gray-200"
-                      />
-                    </div>
-
-                    <div className="space-y-4 pt-4">
-                      <p className="text-sm text-gray-500 font-medium">
-                        By creating an account, you agree to the following policies:
-                      </p>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          I agree to the Terms & Conditions
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="privacy" />
-                        <label
-                          htmlFor="privacy"
-                          className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          I agree to the Privacy Policy
-                        </label>
-                      </div>
-                    </div>
-
-                    <Button
-                      className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(2)}
-                    >
-                      Continue
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-6">
-                  <div className="space-y-2 text-center">
-                    <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                      Link your accounts
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Connect your Discord and Roblox accounts.
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <Button variant="outline" className="w-full h-14 justify-between px-6">
-                      <span className="font-bold">Connect Discord</span>
-                      <ChevronRight className="w-5 h-5" />
-                    </Button>
-                    <Button variant="outline" className="w-full h-14 justify-between px-6">
-                      <span className="font-bold">Connect Roblox</span>
-                      <ChevronRight className="w-5 h-5" />
-                    </Button>
-                    <Button
-                      className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(4)}
-                    >
-                      Continue
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
-                <div className="space-y-6">
-                  <div className="space-y-2 text-center">
-                    <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                      Complete your profile
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Tell us a bit about yourself.
-                    </p>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="bio">Bio</Label>
-                      <Input
-                        id="bio"
-                        placeholder="Tell us about yourself..."
-                        className="h-12"
-                      />
-                    </div>
-                    <Button
-                      className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                      onClick={() => setStep(5)}
-                    >
-                      Complete Setup
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {step === 5 && (
-                <div className="space-y-6 text-center">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                      You're all set!
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Your account has been successfully created.
-                    </p>
+                    <Label htmlFor="email">Email address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      className="h-12 bg-gray-50/50 border-gray-200"
+                    />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-12 bg-gray-50/50 border-gray-200"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-12 bg-gray-50/50 border-gray-200"
+                    />
+                  </div>
+
+                  <div className="space-y-4 pt-4">
+                    <p className="text-sm text-gray-500 font-medium">
+                      By creating an account, you agree to the following
+                      policies:
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="terms" />
+                      <label
+                        htmlFor="terms"
+                        className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        I agree to the Terms & Conditions
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="privacy" />
+                      <label
+                        htmlFor="privacy"
+                        className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        I agree to the Privacy Policy
+                      </label>
+                    </div>
+                  </div>
+
                   <Button
-                    asChild
                     className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    onClick={() => setStep(2)}
                   >
-                    <Link href="/dashboard">Go to Dashboard</Link>
+                    Continue
                   </Button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6">
+                <div className="space-y-2 text-center">
+                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                    Link your accounts
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Connect your Discord and Roblox accounts.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <Button
+                    variant="outline"
+                    className="w-full h-14 justify-between px-6"
+                  >
+                    <span className="font-bold">Connect Discord</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-14 justify-between px-6"
+                  >
+                    <span className="font-bold">Connect Roblox</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    onClick={() => setStep(4)}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <div className="space-y-2 text-center">
+                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                    Complete your profile
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Tell us a bit about yourself.
+                  </p>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="bio">Bio</Label>
+                    <Input
+                      id="bio"
+                      placeholder="Tell us about yourself..."
+                      className="h-12"
+                    />
+                  </div>
+                  <Button
+                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    onClick={() => setStep(5)}
+                  >
+                    Complete Setup
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="space-y-6 text-center">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                    You're all set!
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Your account has been successfully created.
+                  </p>
+                </div>
+                <Button
+                  asChild
+                  className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                >
+                  <Link href="/dashboard">Go to Dashboard</Link>
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
