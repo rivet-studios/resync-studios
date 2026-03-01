@@ -96,9 +96,7 @@ export default function UserProfile() {
                     {profile.username}
                   </h1>
                   {profile.vipTier !== "none" && (
-                    <Badge className="bg-slate-900 text-white font-black rounded px-2 py-0.5 text-[10px] shadow-sm uppercase tracking-tighter">
-                      VIP
-                    </Badge>
+                    <Badge className="https://media.discordapp.net/attachments/1428251062078410845/1474666410528477277/01KBHCHB6WEB3HC7Z0Z66NWPHA.png?ex=69a490de&is=69a33f5e&hm=9753c1a9b1b96799908da01f216a956c0316af4e14054d54838cf3c635f7aa9f&animated=truer"></Badge>
                   )}
                 </div>
 
