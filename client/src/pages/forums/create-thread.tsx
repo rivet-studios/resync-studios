@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocation } from "wouter";
@@ -29,12 +30,14 @@ export default function CreateThread() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: categories } = useQuery<ForumCategory[]>({
+  const { data: categories, isLoading: isLoadingCategories } = useQuery<ForumCategory[]>({
     queryKey: ["/api/forums/categories"],
   });
 
   const form = useForm({
-    resolver: zodResolver(insertForumThreadSchema),
+    resolver: zodResolver(insertForumThreadSchema.extend({
+      categoryId: z.string().min(1, "Please select a category"),
+    })),
     defaultValues: {
       title: "",
       content: "",
@@ -79,21 +82,26 @@ export default function CreateThread() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value}
+                      disabled={isLoadingCategories}
+                    >
                       <FormControl>
-                        <SelectTrigger className="h-12 border-slate-200">
-                          <SelectValue placeholder="Select a category" />
+                        <SelectTrigger className="h-12 border-slate-200 bg-white">
+                          <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select a category"} />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {categories && categories.length > 0 ? (
-                          categories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                              {cat.name}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <div className="p-2 text-sm text-slate-500">No categories found</div>
+                      <SelectContent className="z-[100] bg-white">
+                        {categories?.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                        {!isLoadingCategories && (!categories || categories.length === 0) && (
+                          <div className="p-2 text-sm text-slate-500 text-center">
+                            No categories found
+                          </div>
                         )}
                       </SelectContent>
                     </Select>
@@ -131,7 +139,7 @@ export default function CreateThread() {
                         placeholder="Share your thoughts..." 
                         className="min-h-[200px] border-slate-200 resize-none text-base"
                         {...field} 
-                      />
+                        />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

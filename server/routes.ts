@@ -278,6 +278,94 @@ export async function registerRoutes(
     res.json(await storage.getBuilds()),
   );
 
+  // Forum Categories
+  app.get("/api/forums/categories", async (req, res) => {
+    try {
+      const categories = await storage.getForumCategories();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Forum Threads
+  app.get("/api/forums/threads", async (req, res) => {
+    try {
+      const { categoryId } = req.query;
+      const threads = await storage.getForumThreads(categoryId as string);
+      
+      // Fetch authors and categories for each thread
+      const threadsWithExtras = await Promise.all(
+        threads.map(async (thread) => {
+          const author = await storage.getUser(thread.authorId);
+          const category = await storage.getForumCategory(thread.categoryId);
+          return { ...thread, author, category };
+        })
+      );
+      
+      res.json(threadsWithExtras);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch threads" });
+    }
+  });
+
+  app.post("/api/forums/threads", requireAuth, async (req, res) => {
+    try {
+      const data = insertForumThreadSchema.parse({
+        ...req.body,
+        authorId: (req.user as any).id,
+      });
+      const thread = await storage.createForumThread(data);
+      res.status(201).json(thread);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid data" });
+    }
+  });
+
+  app.get("/api/forums/threads/:id", async (req, res) => {
+    try {
+      const thread = await storage.getForumThread(req.params.id);
+      if (!thread) return res.status(404).json({ message: "Thread not found" });
+      
+      const author = await storage.getUser(thread.authorId);
+      const category = await storage.getForumCategory(thread.categoryId);
+      
+      res.json({ ...thread, author, category });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch thread" });
+    }
+  });
+
+  // Forum Replies
+  app.get("/api/forums/threads/:id/replies", async (req, res) => {
+    try {
+      const replies = await storage.getForumReplies(req.params.id);
+      const repliesWithAuthors = await Promise.all(
+        replies.map(async (reply) => {
+          const author = await storage.getUser(reply.authorId);
+          return { ...reply, author };
+        })
+      );
+      res.json(repliesWithAuthors);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch replies" });
+    }
+  });
+
+  app.post("/api/forums/threads/:id/replies", requireAuth, async (req, res) => {
+    try {
+      const data = insertForumReplySchema.parse({
+        ...req.body,
+        threadId: req.params.id,
+        authorId: (req.user as any).id,
+      });
+      const reply = await storage.createForumReply(data);
+      res.status(201).json(reply);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid data" });
+    }
+  });
+
   app.get("/api/auth/discord", passport.authenticate("discord"));
   app.get(
     "/api/auth/discord/callback",

@@ -3,12 +3,12 @@
 ## Project Overview
 Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, user profiles, and comprehensive rank system.
 
-## Current Status (December 21, 2025)
+## Current Status (March 01, 2026)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
 - ✅ Comprehensive user rank system (40+ ranks including staff, leadership, VIP, member types)
-- ✅ Landing page with hero, stats counter, and features grid
+- ✅ Landing page with hero, stats counter, and features grid (Original white background design)
 - ✅ Blog functionality (admin-only posting)
-- ✅ Forums with categories and threading
+- ✅ Forums with categories and threading (Fixed category selection dropdown)
 - ✅ User profiles with redesigned layout and badges
 - ✅ VIP subscription system with 4 tiers
 - ✅ Store page with product catalog and cart
@@ -22,42 +22,22 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Site offline mode
 - ✅ Staff Directory
 - ✅ Chat system
+- ✅ Scroll position fixed on navigation (ScrollToTop component)
+- ✅ Legal and policy pages centered and optimized for readability
 
-## Recent Additions (Turn 3-4)
+## Recent Additions
 
-### New Pages Created:
-- **Store Page** (`/store`) - Product catalog with search, filters, cart functionality, 9 sample items
-- **Policies Hub** (`/policies`) - Aggregated policies linking to Privacy, Terms, Guidelines, Community Rules, DMCA, Project Foxtrot Rules
+### Infrastructure & Bug Fixes:
+- **Forum Fix**: Fixed category selection in "Create Thread" page by implementing missing backend routes and refining frontend `Select` component with loading states.
+- **Landing Page**: Fixed a critical syntax error (extra closing tags) that caused application crashes.
+- **Authentication**: Updated email login flow to automatically assign "Team Member" rank and admin access to users with `@resyncstudios.com` email addresses.
+- **Layouts**: Standardized container widths for all legal/policy pages (DMCA, Privacy, Terms, etc.) for better centering and professional appearance.
+- **Scroll Management**: Added `ScrollToTop` utility to ensure consistent user experience across page transitions.
 
-### Profile Redesign:
-- New React Studios-inspired layout
-- Cleaner header with avatar, name, badges, join date
-- Member info card with status, posts, reputation
-- Linked accounts section (Discord/Roblox)
-- About section with bio details
-- Activity stats grid
-
-### Rank System Expansion:
-Added 13+ new ranks to match workflow & position entitlement:
-- **Leadership**: RS Trust & Safety Director (existing)
-- **Team**: RS Trust & Safety Team (new)
-- **Staff**: 
-  - Staff Internal Affairs (new)
-  - Staff Department Director (new)
-  - Appeals Moderator (new)
-  - Community Senior Administrator (new)
-  - Community Administrator (new)
-  - Community Moderator (existing)
-  - Community Senior Moderator (existing)
-  - Community Developer (existing)
-- **Member Types**:
-  - Trusted Member (new - green)
-  - Active Member (new - blue)
-  - Community Partner (new - purple)
-  - Banned (new - red)
-
-### Bug Fixes:
-- Fixed AnimatedCounter prop type mismatch (value → end)
+### Design System:
+- **Color Palette**: Primary color adjusted to professional blue (`202 100% 35%`) in `index.css`.
+- **Typography**: Instrument Sans.
+- **Components**: Shadcn UI with Tailwind CSS.
 
 ## Database Schema
 - Users (with VIP tier, Discord/Roblox linking, user ranks)
@@ -67,69 +47,13 @@ Added 13+ new ranks to match workflow & position entitlement:
 - Site Settings (offline mode, custom message)
 - Forums, Clans, Chat, and other community features
 
-## Design System
-- **Color Scheme**: Professional slate (#4B5563) as primary
-- **Theme**: Light mode by default (with dark mode toggle)
-- **Font**: Instrument Sans
-- **Components**: Shadcn UI with Tailwind CSS
-- **Responsiveness**: Mobile-first, responsive across all devices
-
-## Environment Variables Configured
-- DATABASE_URL
-- DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_BOT_TOKEN
-- SESSION_SECRET
-- Node environment configured for production
-
-## User Preferences
-- Light theme as default experience
-- Professional slate color scheme throughout
-- Instrument Sans typography
-- Manual payment system with direct card charging
-- Admin-approved subscription changes only after payment success
-- RS-themed UI throughout
-- Public platform with auth required only for interactive features
-
-## Navigation Structure
-
-### Public Pages (No Auth Required):
-- Landing (`/`)
-- Blog (`/blog`)
-- Forums (`/forums`)
-- Store (`/store`)
-- Policies (`/policies`)
-- Support (`/support`)
-- Projects (`/projects`)
-- Announcements (`/announcements`)
-- Staff Directory (`/team`)
-- Community Rules (`/community-rules`)
-
-### Authenticated Pages:
-- Profile (`/profile`)
-- Settings (`/settings`)
-- VIP (`/vip`)
-- Chat (`/chat`)
-- Clans (`/clans`)
-- Admin (`/admin`)
-- ModCP (`/modcp`)
-- AdminCP (`/admin-cp`)
-
-### Legal/Policy Pages:
-- Privacy (`/privacy`)
-- Terms (`/terms`)
-- Guidelines (`/guidelines`)
-- DMCA (`/dmca`)
-- Project Foxtrot Rules (`/project-foxtrot-rules`)
-- Volunteer Agreement (`/volunteer-agreement`)
-- LEO Guidelines (`/leo-guidelines`)
-
-## Deployment
-- Render-deployed via git integration
-- Production builds from main branch
-- Automatic deployments on git push
-
-## Next Steps if Continuing
+## Next Steps
 1. Customize store items with real products
 2. Implement actual checkout/payment integration
 3. Add more user profile customization options
 4. Enhance forum features (search, tagging, reputation)
 5. Analytics and user engagement tracking
+
+## Deployment
+- Configured for deployment on Render
+- Domain: resyncstudios.com
