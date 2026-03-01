@@ -32,12 +32,12 @@ import Projects from "@/pages/projects";
 import Support from "@/pages/support";
 import VolunteerModeration from "@/pages/volunteer-moderation";
 import DMCA from "@/pages/dmca";
-import ProjectCatalinarules from "@/pages/project-catalina-rules";
+import ProjectRosewoodrules from "@/pages/project-rosewood-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
 import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
 import AboutRS from "@/pages/about-rs";
-import Catalina from "@/pages/catalina";
+import Rosewood from "@/pages/rosewood";
 import Chat from "@/pages/chat";
 import Admin from "@/pages/admin";
 import ModCP from "@/pages/modcp";
@@ -291,7 +291,7 @@ function Router() {
           <Route path="/support" component={Support} />
           <Route path="/volunteer" component={VolunteerModeration} />
           <Route path="/dmca" component={DMCA} />
-          <Route path="/catalina-rules" component={ProjectCatalinarules} />
+          <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
           <Route
             path="/volunteer-agreement"
             component={VolunteerStaffAgreement}
@@ -299,7 +299,7 @@ function Router() {
           <Route path="/leo-guidelines" component={LEOGuidelines} />
           <Route path="/community-rules" component={CommunityRules} />
           <Route path="/about" component={AboutRS} />
-          <Route path="/catalina" component={Catalina} />
+          <Route path="/rosewood" component={Rosewood} />
           <Route path="/onboarding" component={Onboarding} />
           <Route component={NotFound} />
         </Switch>

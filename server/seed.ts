@@ -1,6 +1,5 @@
 import { db } from "./db";
 import { forumCategories } from "@shared/schema";
-import { eq } from "drizzle-orm";
 
 async function seed() {
   console.log("Seeding database...");

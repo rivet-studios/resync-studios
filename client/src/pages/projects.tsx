@@ -30,13 +30,13 @@ const RS_PROJECTS = [
       "https://media.discordapp.net/attachments/1428251062078410845/1463818518255374398/RS-DOJ.png?ex=698cebfb&is=698b9a7b&hm=2ef2ac080089ec3671ca5b74d61439a9c66f9f318037e65d4a113f90801b3e17&=&format=webp&quality=lossless&width=1500&height=309",
   },
   {
-    name: "Project Catalina",
+    name: "Project Rosewood",
     projectManager: "Project Manager: cxiqlne, silentdirective.",
     game: "ROBLOX",
     status: "development",
-    location: "Catalina Islands, California",
+    location: "Rosewod County California",
     notes:
-      "Project Catalina is our main flagship roleplay game based on the real-world location Catalina Islands, California. Catalina is expected to release within the next few months.",
+      "Project Rosewood is our main flagship roleplay game based on the real-world location Rosewood County, California. Rosewood is expected to release within the next few months.",
     banner:
       "https://media.discordapp.net/attachments/1428251062078410845/1463818773894266969/RS-CATALINA_1.png?ex=698cec38&is=698b9ab8&hm=20e3fd2980c732cf50cc36e7386d09e284fde4b2f201fea574801933d34f22d6&=&format=webp&quality=lossless&width=1500&height=309",
   },

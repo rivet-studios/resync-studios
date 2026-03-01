@@ -10,7 +10,7 @@ import { AlertCircle, FileText, Zap, Scale } from "lucide-react";
 
 export default function TermsOfService() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Scale className="w-3.5 h-3.5" />

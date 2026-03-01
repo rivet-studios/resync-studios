@@ -10,7 +10,7 @@ import { AlertCircle, Shield, Radio, Target } from "lucide-react";
 
 export default function LEOGuidelines() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Shield className="w-3.5 h-3.5" />

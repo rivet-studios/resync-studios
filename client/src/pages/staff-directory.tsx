@@ -64,13 +64,8 @@ const departments: Department[] = [
     color: "text-red-500",
     members: [
       {
-        name: "Iceberg1038",
+        name: "Vision",
         role: "Staff Department Director",
-        joinDate: "2023-Present",
-      },
-      {
-        name: "Menzay",
-        role: "Assistant Staff Department Director",
         joinDate: "2025-Present",
       },
     ],
@@ -140,13 +135,6 @@ const departments: Department[] = [
     color: "text-gray-500",
     members: [
       {
-        name: "Reni",
-        role: "Operations Manager & Co Founder",
-        additionalInfo: "Reinstated for development early 2026",
-        joinDate: "2019",
-        endDate: "2025",
-      },
-      {
         name: "Alexx",
         role: "Trust & Safety Director",
         additionalInfo: "Reinstated as Senior Administrator late 2025",
@@ -154,10 +142,10 @@ const departments: Department[] = [
         endDate: "2025",
       },
       {
-        name: "LA5TIC",
-        role: "Developer",
-        joinDate: "2018",
-        endDate: "2023",
+        name: "Iceberg1038",
+        role: "Staff Department Director",
+        joinDate: "2024",
+        endDate: "2026",
       },
     ],
   },

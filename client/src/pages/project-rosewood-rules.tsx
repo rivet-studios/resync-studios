@@ -15,16 +15,16 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function ProjectCatalinarules() {
+export default function ProjectRosewoodrules() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <BookOpen className="w-3.5 h-3.5" />
           Server Rules
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Project Catalina Rules
+          Project Rosewood Rules
         </h1>
         <p className="text-lg text-muted-foreground">
           Official roleplay standards and expectations for all players
@@ -40,7 +40,7 @@ export default function ProjectCatalinarules() {
                 Serious Roleplay Environment
               </p>
               <p className="text-muted-foreground text-sm">
-                Project Catalina is a serious roleplay environment with a strong
+                Project Rosewood is a serious roleplay environment with a strong
                 focus on realism, immersive storytelling, and consistent
                 character portrayal. All rules are enforced using a common-sense
                 approach—if an action is clearly disruptive, unrealistic, or
