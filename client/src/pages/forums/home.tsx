@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Plus, ChevronRight, Clock, User as UserIcon } from "lucide-react";
+import { MessageSquare, Plus, ChevronRight, Clock, User as UserIcon, Star } from "lucide-react";
 import type { ForumCategory, ForumThread, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 
@@ -18,108 +18,118 @@ export default function ForumHome() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">Forums</h1>
-          <p className="text-slate-500 mt-1">Connect with our community and get support</p>
+    <div className="min-h-screen bg-[#050505] text-white pt-12">
+      <div className="max-w-7xl mx-auto p-6 sm:p-10 space-y-12 animate-in fade-in duration-700 pb-24">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black tracking-tight text-white uppercase">Forums</h1>
+          <p className="text-white/40 font-medium">Connect with our community and get support</p>
         </div>
-        <Button asChild className="bg-slate-900 text-white hover:bg-slate-800 shadow-lg px-6">
-          <Link href="/forums/new">
-            <Plus className="w-4 h-4 mr-2" /> Start Discussion
-          </Link>
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sidebar Categories */}
-        <aside className="lg:col-span-3 space-y-6">
-          <Card className="border-none shadow-sm bg-white/50 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">
-                Categories
-              </CardTitle>
-              <p className="text-xs text-slate-400 mt-1">{categories?.length || 0} categories</p>
-            </CardHeader>
-            <CardContent className="p-2">
-              <div className="space-y-1">
-                <Link href="/forums">
-                  <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100/80 transition-colors group">
-                    <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                    All Discussions
-                  </button>
-                </Link>
-                {categories?.map((cat) => (
-                  <Link key={cat.id} href={`/forums/category/${cat.id}`}>
-                    <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100/80 transition-colors group">
-                      <div 
-                        className="w-1.5 h-1.5 rounded-full transition-colors" 
-                        style={{ backgroundColor: cat.color || '#cbd5e1' }}
-                      />
-                      {cat.name}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Sidebar Categories */}
+          <aside className="lg:col-span-3 space-y-6">
+            <Card className="border-white/5 bg-[#121212] rounded-3xl overflow-hidden shadow-2xl">
+              <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
+                <CardTitle className="text-sm font-black uppercase tracking-widest text-white/90">
+                  News & Information
+                </CardTitle>
+                <p className="text-[11px] font-bold text-white/20 mt-1 uppercase tracking-wider">{threads?.length || 0} posts</p>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="space-y-2">
+                  <Link href="/forums">
+                    <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
+                      <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-white transition-colors" />
+                      All Discussions
                     </button>
                   </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </aside>
-
-        {/* Main Thread List */}
-        <div className="lg:col-span-9 space-y-4">
-          <Card className="border-none shadow-sm bg-white overflow-hidden">
-            <div className="divide-y divide-slate-100">
-              {threads?.map((thread) => (
-                <div key={thread.id} className="p-5 flex items-start gap-5 hover:bg-slate-50/50 transition-colors group">
-                  <Avatar className="w-10 h-10 border-2 border-white shadow-sm flex-shrink-0">
-                    <AvatarImage src={thread.author?.profileImageUrl || undefined} />
-                    <AvatarFallback className="bg-slate-100 text-slate-500">
-                      <UserIcon className="w-5 h-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <Link href={`/forums/thread/${thread.id}`}>
-                      <h3 className="font-bold text-lg text-slate-900 leading-tight group-hover:text-slate-700 transition-colors cursor-pointer truncate">
-                        {thread.title}
-                      </h3>
+                  {categories?.map((cat) => (
+                    <Link key={cat.id} href={`/forums/category/${cat.id}`}>
+                      <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
+                        <div 
+                          className="w-2 h-2 rounded-full opacity-40 group-hover:opacity-100 transition-all" 
+                          style={{ backgroundColor: cat.color || '#fff' }}
+                        />
+                        {cat.name}
+                      </button>
                     </Link>
-                    <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
-                      <span className="flex items-center gap-1.5">
-                        Started by <span className="font-semibold text-slate-700">{thread.author?.username}</span>
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        {formatDistanceToNow(new Date(thread.createdAt!), { addSuffix: true })}
-                      </span>
-                      {thread.category && (
-                        <Badge variant="outline" className="px-2 py-0 h-5 text-[10px] font-bold bg-slate-50 text-slate-500 border-slate-200">
-                          {thread.category.name}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-                  <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                    <div className="flex items-center gap-1 text-slate-400">
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="text-sm font-bold">{thread.replyCount}</span>
+            <Button asChild className="w-full h-14 bg-white text-black hover:bg-white/90 shadow-xl rounded-2xl font-black uppercase tracking-tighter transition-transform active:scale-95">
+              <Link href="/forums/new">
+                <Plus className="w-5 h-5 mr-2" strokeWidth={3} /> Start Discussion
+              </Link>
+            </Button>
+          </aside>
+
+          {/* Main Thread List */}
+          <div className="lg:col-span-9 space-y-4">
+            <Card className="border-white/5 bg-[#121212] rounded-[2rem] overflow-hidden shadow-2xl">
+              <div className="divide-y divide-white/5">
+                {threads?.map((thread) => (
+                  <div key={thread.id} className="p-8 flex items-center gap-6 hover:bg-white/[0.02] transition-all group cursor-pointer">
+                    <Avatar className="w-12 h-12 border-2 border-white/5 shadow-xl flex-shrink-0">
+                      <AvatarImage src={thread.author?.profileImageUrl || undefined} />
+                      <AvatarFallback className="bg-white/5 text-white/20">
+                        <UserIcon className="w-6 h-6" />
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        {thread.isPinned && <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />}
+                        <Link href={`/forums/thread/${thread.id}`}>
+                          <h3 className="font-bold text-lg text-white/90 leading-tight group-hover:text-white transition-colors truncate">
+                            {thread.title}
+                          </h3>
+                        </Link>
+                      </div>
+                      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-[12px] font-bold uppercase tracking-wider text-white/30">
+                        <span className="flex items-center gap-1.5">
+                          Started by <span className="text-white/60 hover:text-white transition-colors">{thread.author?.username}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 opacity-60">
+                          <Clock className="w-3.5 h-3.5" />
+                          {formatDistanceToNow(new Date(thread.createdAt!), { addSuffix: true })}
+                        </span>
+                        {thread.category && (
+                          <div 
+                            className="px-2 py-0.5 rounded-md text-[10px] font-black border border-white/5 bg-white/[0.03] transition-colors hover:bg-white/10"
+                            style={{ color: thread.category.color || '#666' }}
+                          >
+                            {thread.category.name}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {thread.isPinned && <Badge className="bg-amber-50 text-amber-600 border-amber-100 text-[10px] px-1.5">PINNED</Badge>}
+
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <div className="flex items-center gap-2 text-white/20">
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="text-sm font-black">{thread.replyCount}</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-white/10 group-hover:text-white/40 transition-all group-hover:translate-x-1" />
+                    </div>
                   </div>
-                </div>
-              ))}
-              
-              {threads?.length === 0 && (
-                <div className="p-12 text-center space-y-3">
-                  <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto">
-                    <MessageSquare className="w-6 h-6 text-slate-300" />
+                ))}
+                
+                {threads?.length === 0 && (
+                  <div className="p-24 text-center space-y-6">
+                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/5 shadow-inner">
+                      <MessageSquare className="w-10 h-10 text-white/10" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xl font-black text-white/80 uppercase tracking-tight">No discussions yet</p>
+                      <p className="text-white/30 font-medium">Be the first to start a conversation with the community!</p>
+                    </div>
                   </div>
-                  <p className="text-slate-500">No discussions yet. Be the first to start one!</p>
-                </div>
-              )}
-            </div>
-          </Card>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

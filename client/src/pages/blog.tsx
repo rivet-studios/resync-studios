@@ -14,8 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Calendar, User, Loader2 } from "lucide-react";
+import { Plus, Calendar, User, Loader2, MessageSquare, Eye, Clock } from "lucide-react";
 import type { Announcement } from "@shared/schema";
+import { Link } from "wouter";
 
 export default function Blog() {
   const { user } = useAuth();
@@ -52,161 +53,147 @@ export default function Blog() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-screen bg-[#050505]">
+        <Loader2 className="w-8 h-8 animate-spin text-white/20" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/30">
-      <div className="max-w-7xl mx-auto px-4 py-16 space-y-12">
+    <div className="min-h-screen bg-[#050505] text-white pt-20">
+      <div className="max-w-7xl mx-auto px-6 space-y-16 pb-32">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-              Latest News
-            </h1>
-            <p className="text-slate-500 font-medium text-lg">
-              Stay updated with the latest from RIVET Studios™
-            </p>
-          </div>
-          {isAdmin && (
-            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-slate-900 text-white hover:bg-slate-800 shadow-lg px-6 h-12 font-bold">
-                  <Plus className="w-5 h-5 mr-2" />
-                  New Article
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white/90 backdrop-blur-xl border-none shadow-2xl">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">
-                    Create Blog Post
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6 py-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">
-                      Title
-                    </label>
-                    <Input
-                      placeholder="Post title..."
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 border-slate-200 text-lg font-medium"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-slate-400">
-                      Content
-                    </label>
-                    <Textarea
-                      placeholder="Write your article here..."
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      className="min-h-[300px] border-slate-200 resize-none text-base font-medium"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-3">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsCreateOpen(false)}
-                      className="h-12 px-6 font-bold"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleCreatePost}
-                      disabled={createPostMutation.isPending}
-                      className="bg-slate-900 text-white hover:bg-slate-800 h-12 px-8 font-bold"
-                    >
-                      {createPostMutation.isPending ? "Publishing..." : "Publish Article"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+        <div className="space-y-4">
+          <h1 className="text-5xl font-black tracking-tighter uppercase text-white">Blog</h1>
+          <p className="text-white/40 text-lg font-medium">Browse our latest blog posts and articles</p>
         </div>
 
         {/* Featured Post */}
         {posts.length > 0 && (
-          <Card className="border-none shadow-xl bg-white overflow-hidden rounded-3xl group cursor-pointer hover:shadow-2xl transition-all duration-500">
-            <div className="grid lg:grid-cols-2 gap-0">
-              <div className="relative h-[300px] lg:h-[450px] overflow-hidden">
-                <img
-                  src={posts[0].imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
-                  alt={posts[0].title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-6 left-6">
-                  <Badge className="bg-white/90 backdrop-blur-md text-slate-900 font-black px-4 py-1 rounded-full shadow-sm">
-                    FEATURED
-                  </Badge>
-                </div>
-              </div>
-              <CardContent className="p-8 lg:p-12 flex flex-col justify-center space-y-6">
-                <div className="space-y-4">
-                  <h2 className="text-3xl lg:text-4xl font-black text-slate-900 leading-tight">
-                    {posts[0].title}
-                  </h2>
-                  <p className="text-slate-500 text-lg leading-relaxed font-medium line-clamp-4">
-                    {posts[0].content}
-                  </p>
-                </div>
-                <div className="flex items-center gap-6 pt-4 border-t border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                      <User className="w-5 h-5 text-slate-400" />
+          <div className="group relative">
+            <Link href={`/blog/${posts[0].id}`}>
+              <Card className="border-none bg-transparent overflow-hidden cursor-pointer">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                  <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <img
+                      src={posts[0].imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
+                      alt={posts[0].title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute top-8 left-8 z-20">
+                      <Badge className="bg-white/10 backdrop-blur-xl text-white font-black px-4 py-1.5 rounded-full border border-white/10 uppercase tracking-widest text-[10px]">
+                        Featured
+                      </Badge>
                     </div>
-                    <div>
-                      <p className="text-sm font-black text-slate-900">
-                        Admin
+                  </div>
+                  
+                  <CardContent className="p-0 space-y-8">
+                    <div className="space-y-6">
+                      <div className="flex flex-wrap items-center gap-6 text-[12px] font-bold uppercase tracking-[0.2em] text-white/30">
+                        <span className="flex items-center gap-2">
+                          {new Date(posts[0].createdAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                        <span className="flex items-center gap-2"><Eye className="w-4 h-4" /> 2.4K views</span>
+                        <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> 12 comments</span>
+                        <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> 3 min read</span>
+                      </div>
+                      
+                      <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter">
+                        {posts[0].title}
+                      </h2>
+                      <p className="text-white/40 text-xl font-medium leading-relaxed line-clamp-3">
+                        {posts[0].content}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm font-black text-slate-900">
-                      {new Date(posts[0].createdAt!).toLocaleDateString()}
-                    </p>
-                  </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center border border-white/5 shadow-xl">
+                        <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert opacity-60" />
+                      </div>
+                      <span className="text-sm font-black uppercase tracking-widest text-white/80">David</span>
+                    </div>
+                  </CardContent>
                 </div>
-              </CardContent>
-            </div>
-          </Card>
+              </Card>
+            </Link>
+          </div>
         )}
 
         {/* Latest Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 pt-12 border-t border-white/5">
           {posts.slice(1).map((post) => (
-            <Card
-              key={post.id}
-              className="border-none shadow-sm bg-white hover:shadow-xl transition-all duration-300 group cursor-pointer rounded-2xl overflow-hidden"
-            >
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={post.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </div>
-              <CardContent className="p-6 space-y-4">
-                <h4 className="text-xl font-bold text-slate-900 line-clamp-2 leading-snug">
-                  {post.title}
-                </h4>
-                <p className="text-slate-500 text-sm line-clamp-3 font-medium leading-relaxed">
-                  {post.content}
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                  <span className="text-xs font-black text-slate-900 uppercase tracking-widest">
-                    {new Date(post.createdAt!).toLocaleDateString()}
-                  </span>
+            <Link key={post.id} href={`/blog/${post.id}`}>
+              <Card className="border-none bg-transparent hover:translate-y-[-8px] transition-all duration-500 group cursor-pointer space-y-6">
+                <div className="aspect-[16/10] rounded-[2rem] overflow-hidden shadow-xl relative">
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
+                  <img
+                    src={post.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
                 </div>
-              </CardContent>
-            </Card>
+                <CardContent className="p-0 space-y-4">
+                  <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/20">
+                    <span>{new Date(post.createdAt!).toLocaleDateString()}</span>
+                    <span>•</span>
+                    <span>5 min read</span>
+                  </div>
+                  <h4 className="text-2xl font-black text-white leading-snug tracking-tight line-clamp-2 group-hover:text-white/80 transition-colors">
+                    {post.title}
+                  </h4>
+                  <p className="text-white/30 text-base font-medium line-clamp-2 leading-relaxed">
+                    {post.content}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
+
+        {isAdmin && (
+          <div className="fixed bottom-12 right-12 z-50">
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button className="h-16 w-16 rounded-full bg-white text-black hover:bg-white/90 shadow-2xl active:scale-90 transition-all">
+                  <Plus className="w-8 h-8" strokeWidth={3} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-[#121212] border-white/5 text-white">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black uppercase tracking-tight">Create Blog Post</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Title</label>
+                    <Input
+                      placeholder="Post title..."
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="bg-white/5 border-white/10 h-14 text-white font-bold"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Content</label>
+                    <Textarea
+                      placeholder="Write your article here..."
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="bg-white/5 border-white/10 min-h-[300px] text-white font-medium resize-none"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleCreatePost}
+                    disabled={createPostMutation.isPending}
+                    className="w-full h-14 bg-white text-black font-black uppercase tracking-widest hover:bg-white/90"
+                  >
+                    {createPostMutation.isPending ? "Publishing..." : "Publish Article"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
       </div>
     </div>
   );

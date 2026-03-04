@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Search,
   ShoppingCart,
@@ -11,27 +10,27 @@ import {
   LogOut,
   Menu,
   X,
+  User as UserIcon,
+  Shield,
+  LayoutDashboard,
+  Settings
 } from "lucide-react";
 import { SearchDialog } from "@/components/search-dialog";
 import logoSvg from "@assets/logo.svg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function MainHeader() {
-  const { user } = useAuth();
-  const [, navigate] = useLocation();
+  const { user, logoutMutation } = useAuth();
+  const [location] = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -41,148 +40,198 @@ export function MainHeader() {
     { label: "Subscriptions", href: "/store/subscriptions" },
   ];
 
+  const isActive = (path: string) => {
+    if (path === "/" && location === "/") return true;
+    if (path !== "/" && location.startsWith(path)) return true;
+    return false;
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background/80 border-b border-border/50 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo & Brand */}
+      <header className="sticky top-0 z-50 bg-[#050505]/80 border-b border-white/5 backdrop-blur-xl">
+        <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-8">
             <Link
               href="/"
-              className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity group"
+              className="flex items-center gap-3 shrink-0 group"
             >
-              <div className="bg-slate-900 p-1.5 rounded-lg">
+              <div className="bg-white p-2 rounded-xl transition-transform group-hover:scale-105 shadow-lg">
                 <img src={logoSvg} alt="RS" className="w-5 h-5 invert" />
               </div>
-              <span className="font-bold text-lg tracking-tight text-foreground">
+              <span className="font-black text-xl tracking-tighter text-white uppercase">
                 RIVET Studios™
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1 ml-8">
+            <nav className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => (
-                <Button
-                  key={item.href}
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  className={`text-sm font-semibold h-10 px-4 rounded-xl ${window.location.pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                  data-testid={`nav-${item.label.toLowerCase()}`}
-                >
-                  <Link href={item.href}>{item.label}</Link>
-                </Button>
+                <Link key={item.href} href={item.href}>
+                  <button
+                    className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all ${
+                      isActive(item.href)
+                        ? "text-white bg-white/5 shadow-inner"
+                        : "text-white/40 hover:text-white/70 hover:bg-white/[0.02]"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                </Link>
               ))}
             </nav>
+          </div>
 
-            <div className="flex-1" />
-
-            {/* Right Actions */}
-            <div className="flex items-center gap-1">
+          {/* Right Actions */}
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-1 mr-4">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(true)}
-                className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
-                data-testid="button-search"
+                className="text-white/40 hover:text-white hover:bg-white/5 rounded-xl h-10 w-10 transition-all"
               >
                 <Search className="w-5 h-5" />
               </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                className="rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
-                data-testid="button-cart"
-              >
-                <Link href="/store">
-                  <ShoppingCart className="w-5 h-5" />
-                </Link>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                data-testid="button-policies"
-              >
-                <Link href="/policies">
-                  <FolderOpen className="w-5 h-5" />
-                </Link>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                data-testid="button-support"
-              >
-                <a
-                  href="https://support.resyncstudios.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <BookOpen className="w-5 h-5" />
-                </a>
-              </Button>
-
-              <ThemeToggle />
-
-              {user ? (
+              <Link href="/store">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleLogout}
-                  data-testid="button-logout"
+                  className="text-white/40 hover:text-white hover:bg-white/5 rounded-xl h-10 w-10 transition-all"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5" />
                 </Button>
-              ) : (
-                <Button
-                  variant="default"
-                  size="sm"
-                  asChild
-                  data-testid="button-login"
-                >
-                  <Link href="/login">Login</Link>
-                </Button>
-              )}
+              </Link>
 
-              {/* Mobile Menu Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden"
-                data-testid="button-menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
-            <nav className="md:hidden pb-4 space-y-1">
-              {navItems.map((item) => (
+              <Link href="/projects">
                 <Button
-                  key={item.href}
                   variant="ghost"
-                  className="w-full justify-start text-sm"
-                  asChild
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  size="icon"
+                  className="text-white/40 hover:text-white hover:bg-white/5 rounded-xl h-10 w-10 transition-all"
                 >
-                  <Link href={item.href}>{item.label}</Link>
+                  <FolderOpen className="w-5 h-5" />
                 </Button>
+              </Link>
+
+              <a
+                href="https://support.resyncstudios.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white/40 hover:text-white hover:bg-white/5 rounded-xl h-10 w-10 transition-all"
+                >
+                  <BookOpen className="w-5 h-5" />
+                </Button>
+              </a>
+            </div>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-xl p-0 border border-white/10 hover:border-white/20 transition-all overflow-hidden">
+                    <Avatar className="h-full w-full rounded-xl">
+                      <AvatarImage src={user.profileImageUrl || undefined} />
+                      <AvatarFallback className="bg-white/5 text-white/40 font-bold uppercase">
+                        {user.username[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-64 mt-2 bg-[#121212] border-white/5 p-2 rounded-2xl shadow-2xl" align="end">
+                  <div className="flex items-center gap-3 p-4 border-b border-white/5 mb-2">
+                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                        <UserIcon className="w-5 h-5 text-white/40" />
+                     </div>
+                     <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-black text-white truncate">{user.username}</span>
+                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest truncate">{user.userRank}</span>
+                     </div>
+                  </div>
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
+                    <Link href="/dashboard" className="flex items-center gap-3 w-full">
+                      <LayoutDashboard className="w-4 h-4 opacity-50" />
+                      <span className="font-bold text-sm">Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
+                    <Link href={`/profile/${user.id}`} className="flex items-center gap-3 w-full">
+                      <UserIcon className="w-4 h-4 opacity-50" />
+                      <span className="font-bold text-sm">My Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {(user.isAdmin || user.isModerator) && (
+                    <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
+                      <Link href={user.isAdmin ? "/admincp" : "/modcp"} className="flex items-center gap-3 w-full">
+                        <Shield className="w-4 h-4 opacity-50" />
+                        <span className="font-bold text-sm">Control Panel</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
+                    <Link href="/settings" className="flex items-center gap-3 w-full">
+                      <Settings className="w-4 h-4 opacity-50" />
+                      <span className="font-bold text-sm">Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/5 my-2" />
+                  <DropdownMenuItem
+                    className="rounded-xl focus:bg-red-500/10 focus:text-red-500 py-3 cursor-pointer text-red-500/70"
+                    onClick={() => logoutMutation.mutate()}
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    <span className="font-bold text-sm">Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button className="h-11 px-8 bg-white text-black hover:bg-white/90 rounded-xl font-black uppercase tracking-tighter text-[13px] shadow-xl transition-all active:scale-95">
+                  Login
+                </Button>
+              </Link>
+            )}
+
+            {/* Mobile Menu Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden text-white/40 hover:text-white hover:bg-white/5 rounded-xl ml-2"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden absolute top-20 left-0 w-full bg-[#0a0a0a] border-b border-white/5 p-6 space-y-4 animate-in slide-in-from-top duration-300 shadow-2xl z-50">
+            <nav className="flex flex-col gap-2">
+              {navItems.map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-black uppercase tracking-tight transition-all ${
+                      isActive(item.href)
+                        ? "text-white bg-white/5"
+                        : "text-white/30 hover:text-white hover:bg-white/[0.02]"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                </Link>
               ))}
             </nav>
-          )}
-        </div>
+          </div>
+        )}
       </header>
 
       <SearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />

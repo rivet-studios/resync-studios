@@ -240,6 +240,7 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route path="/blog" component={Blog} />
+          <Route path="/blog/:id" component={News} />
           <Route path="/store" component={Store} />
           <Route path="/store/subscriptions" component={Subscriptions} />
           <Route path="/checkout/:tierId" component={Checkout} />
