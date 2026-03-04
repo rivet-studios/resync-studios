@@ -7,8 +7,8 @@ const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const CALLBACK_URL =
   process.env.DISCORD_CALLBACK_URL ||
-  (process.env.NODE_ENV === "production"
-    ? "https://resyncstudios.com/api/auth/discord/callback"
+  (process.env.REPL_SLUG && process.env.REPL_OWNER
+    ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`
     : "https://resyncstudios.com/api/auth/discord/callback");
 
 console.log(`🔐 Discord OAuth Callback URL: ${CALLBACK_URL}`);

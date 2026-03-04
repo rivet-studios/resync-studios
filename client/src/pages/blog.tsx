@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,39 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Calendar, User } from "lucide-react";
-
-const blogPosts = [
-  {
-    id: "1",
-    title:
-      "Introducing Our New Website - Bigger, Better, and Built for the Future",
-    excerpt:
-      "After more than 12 months of work, we are finally ready to share our new website along with a new subscription system, new integrations, and a look at what is coming next.",
-    author: "cxiqlne",
-    date: "Dec 19, 2025",
-    image:
-      "https://media.discordapp.net/attachments/1428251062078410845/1474666409865773127/01KAXDED6P3QM4N7B2WZTFVBY1.png?ex=69a490de&is=69a33f5e&hm=c5347fc7d91d54579d7031460da84fb89c08cfdc4fc0479b014e660f6321b0fe&animated=true",
-    featured: false,
-    readTime: 10,
-    views: 156,
-    comments: 12,
-  },
-  {
-    id: "2",
-    title: "Project Update - Project Rosewood",
-    excerpt:
-      "After internal review and development alignment, Project Catalina has officially been renamed to Project Rosewood. This decision was made to better reflect the foundation of the project’s world and map direction, which is based on Johnson Studios’ Once Upon a Time in Rosewood. As development has progressed, it became clear that aligning the project name with its core setting creates stronger thematic consistency and long-term brand clarity. To be clear, this is a branding refinement — not a shift in scope, direction, or vision. All development plans, structural planning, and world design remain unchanged. The rename ensures that the project identity properly represents the environment it is built upon from the outset. Moving forward, all official references will use Project Rosewood. We appreciate the continued support as we refine and strengthen the foundation of this project.",
-    author: "cxiqlne",
-    date: "Mar 1, 2026",
-    image:
-      "https://media.discordapp.net/attachments/1428251062078410845/1474666411363274852/01KHYET9DC0A94JWNBZ23Y9S18.webp?ex=69a490de&is=69a33f5e&hm=5d1c065d0ef6f63ebc54400a56df8ac08bedbd95c32f77ab0cbfc09cb9bca707&animated=true",
-    featured: true,
-    readTime: 5,
-    views: 10,
-    comments: 0,
-  },
-];
+import { Plus, Calendar, User, Loader2 } from "lucide-react";
+import type { Announcement } from "@shared/schema";
 
 export default function Blog() {
   const { user } = useAuth();
@@ -52,18 +23,40 @@ export default function Blog() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const { data: posts = [], isLoading } = useQuery<Announcement[]>({
+    queryKey: ["/api/blog"],
+  });
+
+  const createPostMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/blog", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blog"] });
+      setIsCreateOpen(false);
+      setTitle("");
+      setContent("");
+    },
+  });
+
   const isAdmin =
     user?.isAdmin ||
     user?.userRank === "Team Member" ||
     user?.userRank === "Company Director";
 
-  const handleCreatePost = async () => {
+  const handleCreatePost = () => {
     if (!title || !content) return;
-    // Implementation would save to database
-    setTitle("");
-    setContent("");
-    setIsCreateOpen(false);
+    createPostMutation.mutate({ title, content, category: "General" });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/30">
@@ -125,9 +118,10 @@ export default function Blog() {
                     </Button>
                     <Button
                       onClick={handleCreatePost}
+                      disabled={createPostMutation.isPending}
                       className="bg-slate-900 text-white hover:bg-slate-800 h-12 px-8 font-bold"
                     >
-                      Publish Article
+                      {createPostMutation.isPending ? "Publishing..." : "Publish Article"}
                     </Button>
                   </div>
                 </div>
@@ -137,13 +131,13 @@ export default function Blog() {
         </div>
 
         {/* Featured Post */}
-        {blogPosts[0] && (
+        {posts.length > 0 && (
           <Card className="border-none shadow-xl bg-white overflow-hidden rounded-3xl group cursor-pointer hover:shadow-2xl transition-all duration-500">
             <div className="grid lg:grid-cols-2 gap-0">
               <div className="relative h-[300px] lg:h-[450px] overflow-hidden">
                 <img
-                  src={blogPosts[0].image}
-                  alt={blogPosts[0].title}
+                  src={posts[0].imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
+                  alt={posts[0].title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-6 left-6">
@@ -155,10 +149,10 @@ export default function Blog() {
               <CardContent className="p-8 lg:p-12 flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
                   <h2 className="text-3xl lg:text-4xl font-black text-slate-900 leading-tight">
-                    {blogPosts[0].title}
+                    {posts[0].title}
                   </h2>
-                  <p className="text-slate-500 text-lg leading-relaxed font-medium">
-                    {blogPosts[0].excerpt}
+                  <p className="text-slate-500 text-lg leading-relaxed font-medium line-clamp-4">
+                    {posts[0].content}
                   </p>
                 </div>
                 <div className="flex items-center gap-6 pt-4 border-t border-slate-100">
@@ -168,19 +162,13 @@ export default function Blog() {
                     </div>
                     <div>
                       <p className="text-sm font-black text-slate-900">
-                        {blogPosts[0].author}
-                      </p>
-                      <p className="text-xs font-bold text-slate-400">
-                        Founder
+                        Admin
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col">
                     <p className="text-sm font-black text-slate-900">
-                      {blogPosts[0].date}
-                    </p>
-                    <p className="text-xs font-bold text-slate-400">
-                      {blogPosts[0].readTime} min read
+                      {new Date(posts[0].createdAt!).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -191,14 +179,14 @@ export default function Blog() {
 
         {/* Latest Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.slice(1).map((post) => (
+          {posts.slice(1).map((post) => (
             <Card
               key={post.id}
               className="border-none shadow-sm bg-white hover:shadow-xl transition-all duration-300 group cursor-pointer rounded-2xl overflow-hidden"
             >
               <div className="h-48 overflow-hidden">
                 <img
-                  src={post.image}
+                  src={post.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
                   alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -208,14 +196,11 @@ export default function Blog() {
                   {post.title}
                 </h4>
                 <p className="text-slate-500 text-sm line-clamp-3 font-medium leading-relaxed">
-                  {post.excerpt}
+                  {post.content}
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-slate-50">
                   <span className="text-xs font-black text-slate-900 uppercase tracking-widest">
-                    {post.date}
-                  </span>
-                  <span className="text-xs font-bold text-slate-400">
-                    {post.readTime} MIN READ
+                    {new Date(post.createdAt!).toLocaleDateString()}
                   </span>
                 </div>
               </CardContent>

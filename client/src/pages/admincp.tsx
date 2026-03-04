@@ -146,7 +146,7 @@ export default function AdminCP() {
   const isAdmin =
     adminRanks.includes(user?.userRank || "") ||
     (user?.additionalRanks || []).some((r) => adminRanks.includes(r)) ||
-    user?.email.toLowerCase().endsWith("@resyncstudios.com");
+    user?.email?.toLowerCase().endsWith("@resyncstudios.com");
 
   if (authLoading) {
     return (

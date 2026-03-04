@@ -1,22 +1,65 @@
-import { useState } from "react";
-import { Link } from "wouter";
-import { Check, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
+import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 const steps = [
-  { id: 1, label: "Account", sub: "Create your account" },
-  { id: 2, label: "Email", sub: "Verify your email" },
+  { id: 1, label: "Account", sub: "Verify your status" },
+  { id: 2, label: "Profile", sub: "Complete your profile" },
   { id: 3, label: "Integrations", sub: "Link your accounts" },
-  { id: 4, label: "Profile", sub: "Complete your profile" },
-  { id: 5, label: "Subscriptions", sub: "Start a subscription" },
+  { id: 4, label: "Subscriptions", sub: "Start a subscription" },
 ];
 
 export default function Onboarding() {
+  const { user, isLoading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [step, setStep] = useState(1);
+  const [bio, setBio] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    if (user?.bio) setBio(user.bio);
+  }, [user]);
+
+  const handleCompleteProfile = async () => {
+    try {
+      setIsUpdating(true);
+      await apiRequest("PATCH", "/api/users/profile", {
+        username: user?.username,
+        bio,
+      });
+      toast({ title: "Profile updated!" });
+      setStep(3);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Link href="/login" />;
+  }
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -38,11 +81,11 @@ export default function Onboarding() {
       </div>
 
       {/* Right side - Onboarding Content */}
-      <div className="flex-1 p-8 lg:p-24 flex flex-col items-center">
+      <div className="flex-1 p-8 lg:p-24 flex flex-col items-center overflow-y-auto">
         <div className="w-full max-w-2xl space-y-12">
           {/* Welcome Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-[#0A0A0A]">Welcome</h1>
+            <h1 className="text-3xl font-bold text-[#0A0A0A]">Welcome, {user.username}</h1>
             <p className="text-muted-foreground">
               Let's get your account set up in just a few steps.
             </p>
@@ -70,98 +113,60 @@ export default function Onboarding() {
                   >
                     {s.label}
                   </p>
-                  <p className="text-[10px] text-gray-400 hidden sm:block">
-                    {s.sub}
-                  </p>
                 </div>
               </div>
             ))}
             {/* Connector Lines */}
-            <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0 px-12" />
+            <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0" />
           </div>
 
           <div className="space-y-8">
             {step === 1 && (
-              <div className="space-y-6">
+              <div className="space-y-6 text-center">
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                    Create your account
+                    Account Verified
                   </h2>
                   <p className="text-muted-foreground">
-                    Enter your details to get started.
+                    You're logged in as <span className="font-bold text-black">{user.username}</span>.
                   </p>
                 </div>
+                <Button
+                  className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                  onClick={() => setStep(2)}
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
 
+            {step === 2 && (
+              <div className="space-y-6">
+                <div className="space-y-2 text-center">
+                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                    Complete your profile
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Tell the community a bit about yourself.
+                  </p>
+                </div>
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      placeholder="John Doe"
-                      className="h-12 bg-gray-50/50 border-gray-200"
+                    <Label htmlFor="bio">Bio</Label>
+                    <textarea
+                      id="bio"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Tell us about yourself..."
+                      className="w-full min-h-[120px] p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      className="h-12 bg-gray-50/50 border-gray-200"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="h-12 bg-gray-50/50 border-gray-200"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="h-12 bg-gray-50/50 border-gray-200"
-                    />
-                  </div>
-
-                  <div className="space-y-4 pt-4">
-                    <p className="text-sm text-gray-500 font-medium">
-                      By creating an account, you agree to the following
-                      policies:
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        I agree to the Terms & Conditions
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="privacy" />
-                      <label
-                        htmlFor="privacy"
-                        className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        I agree to the Privacy Policy
-                      </label>
-                    </div>
-                  </div>
-
                   <Button
                     className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                    onClick={() => setStep(2)}
+                    onClick={handleCompleteProfile}
+                    disabled={isUpdating}
                   >
-                    Continue
+                    {isUpdating ? <Loader2 className="animate-spin" /> : "Save & Continue"}
                   </Button>
                 </div>
               </div>
@@ -174,23 +179,27 @@ export default function Onboarding() {
                     Link your accounts
                   </h2>
                   <p className="text-muted-foreground">
-                    Connect your Discord and Roblox accounts.
+                    Connect your Discord and Roblox accounts for full access.
                   </p>
                 </div>
                 <div className="space-y-4">
                   <Button
                     variant="outline"
                     className="w-full h-14 justify-between px-6"
+                    asChild
                   >
-                    <span className="font-bold">Connect Discord</span>
-                    <ChevronRight className="w-5 h-5" />
+                    <a href="/api/auth/discord">
+                      <span className="font-bold">Connect Discord</span>
+                      {user.discordId ? <Check className="text-green-500" /> : <ChevronRight className="w-5 h-5" />}
+                    </a>
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full h-14 justify-between px-6"
+                    onClick={() => toast({ title: "Coming soon!" })}
                   >
                     <span className="font-bold">Connect Roblox</span>
-                    <ChevronRight className="w-5 h-5" />
+                    {user.robloxId ? <Check className="text-green-500" /> : <ChevronRight className="w-5 h-5" />}
                   </Button>
                   <Button
                     className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
@@ -203,50 +212,30 @@ export default function Onboarding() {
             )}
 
             {step === 4 && (
-              <div className="space-y-6">
-                <div className="space-y-2 text-center">
-                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
-                    Complete your profile
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Tell us a bit about yourself.
-                  </p>
-                </div>
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Input
-                      id="bio"
-                      placeholder="Tell us about yourself..."
-                      className="h-12"
-                    />
-                  </div>
-                  <Button
-                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                    onClick={() => setStep(5)}
-                  >
-                    Complete Setup
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {step === 5 && (
               <div className="space-y-6 text-center">
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-[#0A0A0A]">
                     You're all set!
                   </h2>
                   <p className="text-muted-foreground">
-                    Your account has been successfully created.
+                    Your account is configured and ready to go.
                   </p>
                 </div>
-                <Button
-                  asChild
-                  className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
-                >
-                  <Link href="/dashboard">Go to Dashboard</Link>
-                </Button>
+                <div className="grid gap-4">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full h-14 text-lg font-bold rounded-xl"
+                  >
+                    <Link href="/store/subscriptions">View VIP Tiers</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                  >
+                    <Link href="/dashboard">Go to Dashboard</Link>
+                  </Button>
+                </div>
               </div>
             )}
           </div>

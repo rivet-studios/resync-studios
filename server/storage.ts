@@ -117,8 +117,23 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  updateUserAdditionalRanks: any;
-    updateUserRank: any;
+  async updateUserRank(userId: string, rank: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ userRank: rank as any, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserAdditionalRanks(
+    userId: string,
+    ranks: string[],
+  ): Promise<void> {
+    await db
+      .update(users)
+      .set({ additionalRanks: ranks, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;

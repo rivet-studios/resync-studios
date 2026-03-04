@@ -252,7 +252,7 @@ export default function Dashboard() {
                       className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-black h-12 rounded-xl"
                       asChild
                     >
-                      <Link href="/integrations">
+                      <Link href="/settings">
                         <SiDiscord className="w-5 h-5 mr-3" />
                         Link Discord
                       </Link>
@@ -263,7 +263,7 @@ export default function Dashboard() {
                       className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black h-12 rounded-xl"
                       asChild
                     >
-                      <Link href="/integrations">
+                      <Link href="/settings">
                         <SiRoblox className="w-5 h-5 mr-3" />
                         Link Roblox
                       </Link>

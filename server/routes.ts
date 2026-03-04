@@ -336,8 +336,15 @@ export async function registerRoutes(
 
       const author = await storage.getUser(thread.authorId);
       const category = await storage.getForumCategory(thread.categoryId);
+      const replies = await storage.getForumReplies(req.params.id);
+      const repliesWithAuthors = await Promise.all(
+        replies.map(async (reply) => {
+          const replyAuthor = await storage.getUser(reply.authorId);
+          return { ...reply, author: replyAuthor };
+        }),
+      );
 
-      res.json({ ...thread, author, category });
+      res.json({ ...thread, author, category, replies: repliesWithAuthors });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch thread" });
     }
@@ -373,6 +380,64 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/set-user-password", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+
+      const { userId, password } = req.body;
+      const hashedPassword = hashPassword(password);
+      await storage.updateUser(userId, { password: hashedPassword });
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to set password" });
+    }
+  });
+
+  app.post("/api/admin/assign-subscription", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+
+      const { targetUsername, vipTier } = req.body;
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser) return res.status(404).json({ message: "User not found" });
+
+      await storage.updateUser(targetUser.id, { vipTier: vipTier as any });
+      res.json({ message: "Subscription assigned successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to assign subscription" });
+    }
+  });
+
+  app.post("/api/admin/announcements", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+
+      const data = insertAnnouncementSchema.parse({
+        ...req.body,
+        authorId: user.id,
+      });
+      const announcement = await storage.createAnnouncement(data);
+      res.status(201).json(announcement);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid data" });
+    }
+  });
+
+  app.delete("/api/admin/announcements/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+
+      await storage.deleteAnnouncement(req.params.id);
+      res.json({ message: "Announcement deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete announcement" });
+    }
+  });
+
   app.get("/api/auth/discord", passport.authenticate("discord"));
   app.get(
     "/api/auth/discord/callback",
@@ -402,6 +467,41 @@ export async function registerRoutes(
       res.json({ message: "Profile updated" });
     } catch (error) {
       res.status(500).json({ message: "Update failed" });
+    }
+  });
+
+  // Blog routes
+  app.get("/api/blog", async (req, res) => {
+    try {
+      const announcements = await storage.getAnnouncements();
+      res.json(announcements);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch blog posts" });
+    }
+  });
+
+  app.post("/api/blog", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const adminRanks = [
+        "Team Member",
+        "Operations Manager",
+        "Company Director",
+      ];
+      const hasAccess =
+        user.isAdmin || adminRanks.includes(user.userRank);
+
+      if (!hasAccess) return res.status(403).json({ message: "Forbidden" });
+
+      const data = insertAnnouncementSchema.parse({
+        ...req.body,
+        authorId: user.id,
+        isPublished: true,
+      });
+      const post = await storage.createAnnouncement(data);
+      res.status(201).json(post);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid data" });
     }
   });
 

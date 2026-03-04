@@ -59,7 +59,7 @@ const RANK_OPTIONS = [
   { value: "Community Senior Moderator", label: "Community Senior Moderator" },
   { value: "Community Administrator", label: "Community Administrator" },
   {
-    value: "Community Senior Sdministrator",
+    value: "Community Senior Administrator",
     label: "Community Senior Administrator",
   },
   { value: "Community Developer", label: "Community Developer" },
