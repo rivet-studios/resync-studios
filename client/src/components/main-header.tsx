@@ -13,7 +13,8 @@ import {
   User as UserIcon,
   Shield,
   LayoutDashboard,
-  Settings
+  Settings,
+  ShieldAlert,
 } from "lucide-react";
 import { SearchDialog } from "@/components/search-dialog";
 import logoSvg from "@assets/logo.svg";
@@ -52,10 +53,7 @@ export function MainHeader() {
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-8">
-            <Link
-              href="/"
-              className="flex items-center gap-3 shrink-0 group"
-            >
+            <Link href="/" className="flex items-center gap-3 shrink-0 group">
               <div className="bg-white p-2 rounded-xl transition-transform group-hover:scale-105 shadow-lg">
                 <img src={logoSvg} alt="RS" className="w-5 h-5 invert" />
               </div>
@@ -132,7 +130,10 @@ export function MainHeader() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-xl p-0 border border-white/10 hover:border-white/20 transition-all overflow-hidden">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-xl p-0 border border-white/10 hover:border-white/20 transition-all overflow-hidden"
+                  >
                     <Avatar className="h-full w-full rounded-xl">
                       <AvatarImage src={user.profileImageUrl || undefined} />
                       <AvatarFallback className="bg-white/5 text-white/40 font-bold uppercase">
@@ -141,38 +142,88 @@ export function MainHeader() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64 mt-2 bg-[#121212] border-white/5 p-2 rounded-2xl shadow-2xl" align="end">
+                <DropdownMenuContent
+                  className="w-64 mt-2 bg-[#121212] border-white/5 p-2 rounded-2xl shadow-2xl"
+                  align="end"
+                >
                   <div className="flex items-center gap-3 p-4 border-b border-white/5 mb-2">
-                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                        <UserIcon className="w-5 h-5 text-white/40" />
-                     </div>
-                     <div className="flex flex-col overflow-hidden">
-                        <span className="text-sm font-black text-white truncate">{user.username}</span>
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest truncate">{user.userRank}</span>
-                     </div>
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                      <UserIcon className="w-5 h-5 text-white/40" />
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-sm font-black text-white truncate">
+                        {user.username}
+                      </span>
+                      <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest truncate">
+                        {user.userRank}
+                      </span>
+                    </div>
                   </div>
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
-                    <Link href="/dashboard" className="flex items-center gap-3 w-full">
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer"
+                  >
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-3 w-full"
+                    >
                       <LayoutDashboard className="w-4 h-4 opacity-50" />
                       <span className="font-bold text-sm">Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
-                    <Link href={`/profile/${user.id}`} className="flex items-center gap-3 w-full">
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer"
+                  >
+                    <Link
+                      href={`/profile/${user.id}`}
+                      className="flex items-center gap-3 w-full"
+                    >
                       <UserIcon className="w-4 h-4 opacity-50" />
                       <span className="font-bold text-sm">My Profile</span>
                     </Link>
                   </DropdownMenuItem>
-                  {(user.isAdmin || user.isModerator) && (
-                    <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
-                      <Link href={user.isAdmin ? "/admincp" : "/modcp"} className="flex items-center gap-3 w-full">
-                        <Shield className="w-4 h-4 opacity-50" />
-                        <span className="font-bold text-sm">Control Panel</span>
-                      </Link>
-                    </DropdownMenuItem>
+
+                  {(user.isAdmin ||
+                    user.isModerator ||
+                    [
+                      "Community Moderator",
+                      "Community Senior Moderator",
+                      "Community Administrator",
+                      "Community Senior Administrator",
+                      "Community Developer",
+                      "Staff Internal Affairs",
+                      "Company Representative",
+                      "Team Member",
+                      "MI Trust & Safety Director",
+                      "Staff Department Director",
+                      "Operations Manager",
+                      "Company Director",
+                    ].includes(user.userRank)) && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/modcp" className="cursor-pointer">
+                          <Shield className="mr-2 h-4 w-4" />
+                          <span>ModCP</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admincp" className="cursor-pointer">
+                          <ShieldAlert className="mr-2 h-4 w-4" />
+                          <span>AdminCP</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer">
-                    <Link href="/settings" className="flex items-center gap-3 w-full">
+
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-xl focus:bg-white/5 focus:text-white py-3 cursor-pointer"
+                  >
+                    <Link
+                      href="/settings"
+                      className="flex items-center gap-3 w-full"
+                    >
                       <Settings className="w-4 h-4 opacity-50" />
                       <span className="font-bold text-sm">Settings</span>
                     </Link>
