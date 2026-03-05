@@ -39,6 +39,10 @@ export default function Blog() {
       setTitle("");
       setContent("");
     },
+    onError: (error: any) => {
+      console.error("Blog post error:", error);
+      alert(`Failed to publish: ${error.message || "Unknown error"}`);
+    },
   });
 
   const isAdmin =

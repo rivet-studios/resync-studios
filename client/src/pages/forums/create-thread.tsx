@@ -34,10 +34,16 @@ export default function CreateThread() {
     queryKey: ["/api/forums/categories"],
   });
 
-  const form = useForm({
-    resolver: zodResolver(insertForumThreadSchema.extend({
+  const formSchema = insertForumThreadSchema
+    .omit({ authorId: true, isPinned: true, isLocked: true, viewCount: true, replyCount: true, upvotes: true, lastReplyAt: true })
+    .extend({
       categoryId: z.string().min(1, "Please select a category"),
-    })),
+      title: z.string().min(3, "Title must be at least 3 characters"),
+      content: z.string().min(10, "Content must be at least 10 characters"),
+    });
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       content: "",

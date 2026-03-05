@@ -78,52 +78,6 @@ const RANK_OPTIONS = [
 export default function AdminPanel() {
   const { user: currentUser, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-
-  const staffRanks = [
-    "Company Representative",
-    "Team Member",
-    "MI Trust & Safety Director",
-    "Staff Department Director",
-    "Operations Manager",
-    "Company Director",
-    "Community Developer",
-    "Staff Internal Affairs",
-  ];
-  const hasAccess =
-    staffRanks.includes(currentUser?.userRank || "") ||
-    (currentUser?.additionalRanks || []).some((r: string) =>
-      staffRanks.includes(r),
-    );
-
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-white">
-        <div className="space-y-4 w-full max-w-4xl px-4">
-          <Skeleton className="h-12 w-[250px]" />
-          <Skeleton className="h-[400px] w-full" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
-        <Card className="w-full max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>
-              Please log in to access the Admin Panel.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!hasAccess) {
-    return <NotFound />;
-  }
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRanks, setSelectedRanks] = useState<Record<string, string>>(
     {},
@@ -135,11 +89,9 @@ export default function AdminPanel() {
     error: queryError,
   } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
+    enabled: !!currentUser,
   });
 
-  const isLoading = usersLoading || authLoading;
-
-  // Show error toast if there's a query error
   useEffect(() => {
     if (queryError) {
       console.error("Query error:", queryError);
@@ -153,7 +105,6 @@ export default function AdminPanel() {
 
   const assignRankMutation = useMutation({
     mutationFn: async ({ userId, rank }: { userId: string; rank: string }) => {
-      console.log(`🔐 Assigning rank: user=${userId}, rank=${rank}`);
       const response = await fetch("/api/admin/assign-rank", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -162,7 +113,6 @@ export default function AdminPanel() {
       });
 
       const data = await response.json();
-      console.log(`📊 Response:`, response.status, data);
 
       if (!response.ok) {
         throw new Error(data.message || `HTTP ${response.status}`);
@@ -184,6 +134,54 @@ export default function AdminPanel() {
       });
     },
   });
+
+  const staffRanks = [
+    "Company Representative",
+    "Team Member",
+    "MI Trust & Safety Director",
+    "Staff Department Director",
+    "Operations Manager",
+    "Company Director",
+    "Community Developer",
+    "Staff Internal Affairs",
+  ];
+  const hasAccess =
+    staffRanks.includes(currentUser?.userRank || "") ||
+    (currentUser?.additionalRanks || []).some((r: string) =>
+      staffRanks.includes(r),
+    );
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="space-y-4 w-full max-w-4xl px-4">
+          <Skeleton className="h-12 w-[250px]" />
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>
+              Please log in to access the Admin Panel.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return <NotFound />;
+  }
+
+  const isLoading = usersLoading || authLoading;
 
   const filteredUsers = users.filter(
     (user: User) =>

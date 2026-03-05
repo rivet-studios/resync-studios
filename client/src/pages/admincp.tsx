@@ -30,8 +30,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Shield, Plus, Trash2, AlertTriangle } from "lucide-react";
-import { type Announcement } from "@shared/schema";
+import {
+  Shield,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  LayoutDashboard,
+  Users,
+  MessageSquare,
+  Search,
+  Clock,
+  History,
+} from "lucide-react";
 
 interface User {
   id: string;

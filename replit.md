@@ -28,11 +28,16 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 ## Recent Additions
 
 ### Infrastructure & Bug Fixes:
-- **Forum Fix**: Fixed category selection in "Create Thread" page.
+- **Forum Fix**: Fixed category selection in "Create Thread" page. Fixed form schema to omit server-only fields (`authorId`, `isPinned`, etc.) so form validation no longer silently blocks submission.
 - **Landing Page**: Fixed syntax errors.
 - **Authentication**: Updated email login flow to automatically assign "Team Member" rank and admin access to users with `@resyncstudios.com` email addresses.
 - **Layouts**: Standardized container widths for all legal/policy pages.
 - **Scroll Management**: Added `ScrollToTop` utility.
+- **Admin Panel**: Fixed React hooks-after-returns violation that caused blank screen crash.
+- **AdminCP**: Added missing lucide-react icon imports (`LayoutDashboard`, `Users`, `MessageSquare`, `Search`, `Clock`, `History`) that caused render crash.
+- **ModCP**: Added `isAdmin`/`isModerator` boolean checks to access guard so staff flagged via those fields can access the panel.
+- **Blog/News**: Added `GET /api/blog/:id` backend route, fixed missing `Button`/`Textarea` imports in news.tsx, added error handler to blog post creation mutation.
+- **Query Keys**: News page queryKey uses array format `["/api/blog", id]` for proper URL construction with default fetcher (`queryKey.join("/")`).
 
 ### Design System:
 - **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).

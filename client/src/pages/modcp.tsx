@@ -58,8 +58,10 @@ export default function ModCP() {
   ];
 
   const isMod =
+    user?.isAdmin ||
+    user?.isModerator ||
     staffRanks.includes(user?.userRank || "") ||
-    (user?.additionalRanks || []).some((r) => staffRanks.includes(r));
+    (user?.additionalRanks || []).some((r: string) => staffRanks.includes(r));
 
   if (authLoading) {
     return (

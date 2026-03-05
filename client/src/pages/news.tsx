@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Calendar, User, Eye, MessageSquare, Clock, Heart, Share2, Send, Loader2 } from "lucide-react";
 import type { Announcement } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +13,7 @@ export default function News() {
   const { id } = useParams<{ id: string }>();
 
   const { data: post, isLoading } = useQuery<Announcement>({
-    queryKey: [`/api/blog/${id}`],
+    queryKey: ["/api/blog", id],
     enabled: !!id,
   });
 

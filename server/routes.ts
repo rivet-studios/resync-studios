@@ -480,6 +480,16 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/blog/:id", async (req, res) => {
+    try {
+      const announcement = await storage.getAnnouncement(req.params.id);
+      if (!announcement) return res.status(404).json({ message: "Post not found" });
+      res.json(announcement);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch blog post" });
+    }
+  });
+
   app.post("/api/blog", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
