@@ -269,7 +269,6 @@ function Router() {
           <Route path="/modcp">
           <Route path="/modcp">
             {user?.isModerator ||
-            user?.userRank === "RS Trust & Safety Team" ||
             user?.userRank === "Community Moderator" ||
             user?.userRank === "Community Senior Moderator" ||
             user?.userRank === "Community Administrator" ||
