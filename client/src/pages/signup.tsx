@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Gamepad2, Mail, AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
+import { SiDiscord } from "react-icons/si";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import logoSvg from "@assets/logo.svg";
 
 export default function Signup() {
   const [, navigate] = useLocation();
@@ -55,195 +49,127 @@ export default function Signup() {
     signupMutation.mutate({ email, username, password });
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex flex-col">
-        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <Gamepad2 className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="font-display font-bold text-xl">
-                  RIVET Studios
-                </span>
-              </div>
-              <ThemeToggle />
-            </div>
-          </div>
-        </nav>
-
-        <div className="flex-1 flex items-center justify-center px-4 pt-20">
-          <Card className="w-full max-w-md border border-border/50 shadow-xl text-center">
-            <CardHeader className="space-y-2 pb-8">
-              <div className="flex justify-center mb-4">
-                <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <CardTitle className="text-2xl font-bold">
-                Account created!
-              </CardTitle>
-              <CardDescription className="text-base text-muted-foreground">
-                Your account has been created successfully. Redirecting to
-                login...
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex flex-col">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <Gamepad2 className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-display font-bold text-xl">
-                RIVET Studios
-              </span>
-            </div>
-            <ThemeToggle />
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: "linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(243,232,255,0.3) 25%, rgba(255,255,255,0.9) 50%, rgba(220,252,231,0.3) 75%, rgba(252,231,243,0.4) 100%)",
+        }}
+      />
+      <div className="absolute inset-0 z-0 bg-white/60 dark:bg-[#050505]/90" />
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 pt-20">
-        <Card className="w-full max-w-md border border-border/50 shadow-xl">
-          <CardHeader className="space-y-2 text-center pb-8">
-            <div className="flex justify-center mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Gamepad2 className="w-6 h-6 text-primary-foreground" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl font-bold">
+      <div className="relative z-10 w-full max-w-[420px] space-y-8">
+        <div className="flex flex-col items-center space-y-4">
+          <img src={logoSvg} alt="RS" className="w-12 h-12 invert dark:invert-0" data-testid="img-logo" />
+          <div className="text-center space-y-1">
+            <h1 className="text-xl font-semibold text-[#09090B] dark:text-white" data-testid="heading-signup">
               Create your account
-            </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Join the RIVET Studios gaming community
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3 flex gap-2">
-                <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Username
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Choose your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  data-testid="input-username"
-                  className="bg-background border-border/50"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  data-testid="input-email"
-                  className="bg-background border-border/50"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Password
-                </label>
-                <Input
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  data-testid="input-password"
-                  className="bg-background border-border/50"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                disabled={signupMutation.isPending}
-                data-testid="button-signup"
-              >
-                {signupMutation.isPending
-                  ? "Creating account..."
-                  : "Create account"}
-              </Button>
-            </form>
-
-            {/* Already have account */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <button
-                  onClick={() => navigate("/login")}
-                  className="text-primary hover:underline font-medium"
-                  data-testid="button-back-to-login"
-                >
-                  Log in
-                </button>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t border-border/50 bg-background/50 backdrop-blur-sm py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-            <div>© 2026 RIVET Studios. All rights reserved.</div>
-            <div className="flex gap-4">
-              <a
-                href="/terms"
-                className="hover:text-foreground transition-colors"
-                data-testid="link-terms"
-              >
-                Terms
-              </a>
-              <a
-                href="/privacy"
-                className="hover:text-foreground transition-colors"
-                data-testid="link-privacy"
-              >
-                Privacy
-              </a>
-              <a
-                href="/community-rules"
-                className="hover:text-foreground transition-colors"
-                data-testid="link-rules"
-              >
-                Rules
-              </a>
-            </div>
+            </h1>
+            <p className="text-sm text-[#71717A] dark:text-white/50">
+              Join the RIVET Studios community
+            </p>
           </div>
         </div>
-      </footer>
+
+        {success && (
+          <div className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-lg p-3 flex gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-green-600 dark:text-green-400">Account created! Redirecting to login...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[#09090B] dark:text-white">Username</label>
+            <Input
+              type="text"
+              placeholder="Choose your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={signupMutation.isPending}
+              data-testid="input-username"
+              className="rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white placeholder:text-[#A1A1AA]"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[#09090B] dark:text-white">Email address</label>
+            <Input
+              type="email"
+              placeholder="email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={signupMutation.isPending}
+              data-testid="input-email"
+              className="rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white placeholder:text-[#A1A1AA]"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[#09090B] dark:text-white">Password</label>
+            <Input
+              type="password"
+              placeholder="At least 6 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={signupMutation.isPending}
+              data-testid="input-password"
+              className="rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white placeholder:text-[#A1A1AA]"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full bg-[#18181B] text-white rounded-lg font-medium text-sm shadow-sm"
+            disabled={signupMutation.isPending}
+            data-testid="button-signup"
+          >
+            {signupMutation.isPending ? "Creating account..." : "Create account"}
+          </Button>
+        </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#E4E4E7] dark:border-white/10"></div>
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="px-3 bg-white dark:bg-[#050505] text-[#A1A1AA] dark:text-white/40">
+              Or sign up with
+            </span>
+          </div>
+        </div>
+
+        <Button
+          asChild
+          variant="outline"
+          className="w-full gap-2 rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white font-medium text-sm shadow-sm"
+          data-testid="button-signup-discord"
+        >
+          <a href="/api/login">
+            <SiDiscord className="w-4 h-4" />
+            Sign up with Discord
+          </a>
+        </Button>
+
+        <p className="text-center text-sm text-[#71717A] dark:text-white/50">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="text-[#09090B] dark:text-white hover:underline font-medium"
+            data-testid="link-login"
+          >
+            Log in
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

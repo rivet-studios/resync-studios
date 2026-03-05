@@ -22,133 +22,166 @@ export default function UserProfile() {
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto p-8 space-y-6 bg-[#0a0a0a] min-h-screen">
-        <Skeleton className="h-48 w-full rounded-2xl bg-white/5" />
-        <Skeleton className="h-64 w-full rounded-2xl bg-white/5" />
+      <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
       </div>
     );
   }
 
-  if (!profile) return <div className="p-8 text-center text-white bg-[#0a0a0a] min-h-screen">User not found</div>;
+  if (!profile) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-20 text-center">
+        <p className="text-muted-foreground" data-testid="text-user-not-found">User not found</p>
+      </div>
+    );
+  }
 
-  const renderBadge = (rank: string, colorClass: string) => (
-    <Badge
-      key={rank}
-      variant="outline"
-      className={`rounded-lg px-3 py-1 text-[11px] font-bold border-2 ${colorClass} uppercase tracking-tight shadow-sm`}
-    >
-      {rank}
-    </Badge>
-  );
-
-  const getRankBadge = (rank: string) => {
-    const badges: Record<string, string> = {
-      Lifetime: "border-[#1e3a8a] bg-[#1e3a8a]/20 text-[#3b82f6]",
-      "Founders Edition VIP": "border-[#451a03] bg-[#451a03]/20 text-[#f59e0b]",
-      "Active Member": "border-[#1e293b] bg-[#1e293b]/20 text-[#94a3b8]",
-      "Company Director": "border-[#1e3a8a] bg-[#1e3a8a]/20 text-[#3b82f6]",
-      "Operational Manager": "border-[#450a0a] bg-[#450a0a]/20 text-[#ef4444]",
-      "Community Moderator": "border-[#064e3b] bg-[#064e3b]/20 text-[#10b981]",
-      "Appeals Moderator": "border-[#1e3a8a] bg-[#1e3a8a]/20 text-[#3b82f6]",
-      "Customer Relations": "border-[#422006] bg-[#422006]/20 text-[#d97706]",
-      "Trusted Member": "border-[#4c1d95] bg-[#4c1d95]/20 text-[#a855f7]",
-      "Team Member": "border-[#1e293b] bg-[#1e293b]/20 text-[#94a3b8]",
-    };
-    return renderBadge(rank, badges[rank] || "border-white/10 bg-white/5 text-white/60");
+  const vipBadgeStyles: Record<string, string> = {
+    "Lifetime": "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
+    "Founders Edition VIP": "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
+    "Diamond VIP": "border-cyan-500 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 dark:border-cyan-500/30",
+    "Sapphire VIP": "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
+    "Bronze VIP": "border-amber-600 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
   };
 
+  const rankBadgeStyles: Record<string, string> = {
+    "Company Director": "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
+    "Operations Manager": "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
+    "Community Moderator": "border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
+    "Community Senior Moderator": "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
+    "Community Administrator": "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
+    "Team Member": "border-gray-400 bg-gray-50 text-gray-600 dark:bg-white/5 dark:text-white/60 dark:border-white/10",
+    "Active Member": "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10",
+    "Trusted Member": "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/30",
+    "Customer Relations": "border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30",
+    "Appeals Moderator": "border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/30",
+    "Staff Internal Affairs": "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30",
+    "Staff Department Director": "border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
+  };
+
+  const getVipLabel = (tier: string) => {
+    if (tier === "founders_edition") return "Founders Edition VIP";
+    if (tier === "diamond") return "Diamond VIP";
+    if (tier === "sapphire") return "Sapphire VIP";
+    if (tier === "bronze") return "Bronze VIP";
+    if (tier === "lifetime") return "Lifetime";
+    return null;
+  };
+
+  const vipLabel = getVipLabel(profile.vipTier || "");
+  const defaultStyle = "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10";
+
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-white/10">
-      {/* Mesh Background Pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-
-      <div className="max-w-5xl mx-auto w-full px-6 pt-16 pb-24 space-y-10 relative z-10">
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-white/30">
-          <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-white/60">{profile.username}</span>
-        </div>
-
-        {/* Profile Card */}
-        <Card className="bg-[#121212] border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-          <CardContent className="p-10 md:p-14">
-            <div className="flex flex-col md:flex-row gap-10 items-start">
-              <div className="relative group shrink-0">
-                <div className="absolute -inset-1 bg-gradient-to-tr from-white/20 to-transparent rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500" />
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-[#121212] shadow-2xl relative">
-                  <AvatarImage src={profile.profileImageUrl || undefined} />
-                  <AvatarFallback className="bg-[#1a1a1a] text-white/20">
-                    <UserIcon className="w-16 h-16" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-
-              <div className="flex-1 space-y-8">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-4">
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
-                      {profile.username}
-                    </h1>
-                    {profile.vipTier !== "none" && (
-                      <div className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg shadow-lg shadow-purple-500/20">
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">VIP</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2.5">
-                    {profile.vipTier !== "none" && getRankBadge("Lifetime")}
-                    {profile.vipTier === "founders_edition" && getRankBadge("Founders Edition VIP")}
-                    {profile.userRank && getRankBadge(profile.userRank)}
-                    {(profile as any).additionalRanks?.map((rank: string) => getRankBadge(rank))}
-                    {getRankBadge("Active Member")}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t border-white/5">
-                  <div className="flex items-center gap-3 text-white/40">
-                    <div className="p-2 bg-white/5 rounded-lg"><UserIcon className="w-4 h-4" /></div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Identity</span>
-                      <span className="text-sm font-bold text-white/80">Member since {profile.createdAt ? formatDistanceToNow(new Date(profile.createdAt)) : '5 months'} ago</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-white/40">
-                    <div className="p-2 bg-white/5 rounded-lg"><Calendar className="w-4 h-4" /></div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Registration</span>
-                      <span className="text-sm font-bold text-white/80">Joined {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'October 8, 2025'}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Signature Card */}
-        <Card className="bg-[#121212] border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-          <CardContent className="p-10 md:p-14 space-y-8">
-            <div className="flex items-center gap-4">
-              <h3 className="text-xl font-black uppercase tracking-tighter text-white/90">Signature</h3>
-              <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-            </div>
-            <div className="space-y-6 text-base font-medium text-white/50 leading-relaxed max-w-2xl">
-              {profile.signature ? (
-                <div className="prose prose-invert prose-sm" dangerouslySetInnerHTML={{ __html: profile.signature }} />
-              ) : (
-                <div className="space-y-1">
-                  <p className="font-bold text-white/70">{profile.username}</p>
-                  <p>Ventura County Board</p>
-                  <p>Former QA Team Member</p>
-                  <p>RIVET Studios</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/dashboard" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-dashboard">
+          Dashboard
+        </Link>
+        <ChevronRight className="w-3.5 h-3.5" />
+        <span className="text-foreground font-medium" data-testid="text-breadcrumb-username">{profile.username}</span>
       </div>
+
+      <Card className="border border-border/50 dark:border-white/5 rounded-xl overflow-hidden shadow-sm" data-testid="card-profile">
+        <CardContent className="p-8 md:p-10">
+          <div className="flex flex-col sm:flex-row gap-6 items-start">
+            <Avatar className="w-24 h-24 rounded-full border-2 border-border/30 dark:border-white/10 shrink-0" data-testid="img-avatar">
+              <AvatarImage src={profile.profileImageUrl || undefined} />
+              <AvatarFallback className="bg-muted text-muted-foreground">
+                <UserIcon className="w-10 h-10" />
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1 space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground" data-testid="text-username">
+                  {profile.username}
+                </h1>
+                {profile.vipTier && profile.vipTier !== "none" && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-gradient-to-r from-indigo-500 to-purple-500 text-[10px] font-bold text-white uppercase tracking-wider shadow-sm" data-testid="badge-vip">
+                    VIP
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2" data-testid="container-badges">
+                {vipLabel && (
+                  <Badge
+                    variant="outline"
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${vipBadgeStyles[vipLabel] || defaultStyle}`}
+                    data-testid={`badge-vip-tier`}
+                  >
+                    {vipLabel}
+                  </Badge>
+                )}
+                {profile.vipTier === "founders_edition" && (
+                  <Badge
+                    variant="outline"
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${vipBadgeStyles["Founders Edition VIP"]}`}
+                    data-testid="badge-founders"
+                  >
+                    Founders Edition VIP
+                  </Badge>
+                )}
+                {profile.userRank && profile.userRank !== "Member" && (
+                  <Badge
+                    variant="outline"
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${rankBadgeStyles[profile.userRank] || defaultStyle}`}
+                    data-testid="badge-rank"
+                  >
+                    {profile.userRank}
+                  </Badge>
+                )}
+                {(profile as any).additionalRanks?.map((rank: string) => (
+                  <Badge
+                    key={rank}
+                    variant="outline"
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${rankBadgeStyles[rank] || defaultStyle}`}
+                    data-testid={`badge-additional-${rank}`}
+                  >
+                    {rank}
+                  </Badge>
+                ))}
+                <Badge
+                  variant="outline"
+                  className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${defaultStyle}`}
+                  data-testid="badge-active"
+                >
+                  Active Member
+                </Badge>
+              </div>
+
+              <div className="flex flex-col gap-1.5 pt-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2" data-testid="text-member-since">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>Member since {profile.createdAt ? formatDistanceToNow(new Date(profile.createdAt)) : "recently"} ago</span>
+                </div>
+                <div className="flex items-center gap-2" data-testid="text-joined-date">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Joined {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "recently"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border border-border/50 dark:border-white/5 rounded-xl overflow-hidden shadow-sm" data-testid="card-signature">
+        <CardContent className="p-8 md:p-10 space-y-4">
+          <h3 className="text-lg font-bold text-foreground" data-testid="heading-signature">Signature</h3>
+          <div className="text-sm text-muted-foreground leading-relaxed space-y-1">
+            {profile.signature ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: profile.signature }} />
+            ) : (
+              <div className="space-y-0.5">
+                <p className="font-medium text-foreground">{profile.username}</p>
+                <p>RIVET Studios</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
