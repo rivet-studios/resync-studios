@@ -267,9 +267,21 @@ function Router() {
           <Route path="/groups" component={Groups} />
           <Route path="/admin" component={Admin} />
           <Route path="/modcp">
+          <Route path="/modcp">
             {user?.isModerator ||
-            user?.isAdmin ||
-            user?.userRank === "RS Trust & Safety Team" ? (
+            user?.userRank === "RS Trust & Safety Team" ||
+            user?.userRank === "Community Moderator" ||
+            user?.userRank === "Community Senior Moderator" ||
+            user?.userRank === "Community Administrator" ||
+            user?.userRank === "Community Senior Administrator" ||
+            user?.userRank === "Community Developer" ||
+            user?.userRank === "Staff Internal Affairs" ||
+            user?.userRank === "Company Representative" ||
+            user?.userRank === "Team Member" ||
+            user?.userRank === "MI Trust & Safety Director" ||
+            user?.userRank === "Staff Department Director" ||
+            user?.userRank === "Operations Manager" ||
+            user?.userRank === "Company Director" ? (
               <ModCP />
             ) : (
               <NotFound />
@@ -278,7 +290,14 @@ function Router() {
           <Route path="/admincp">
             {user?.isAdmin ||
             user?.userRank === "Team Member" ||
-            user?.userRank === "Company Director" ? (
+            user?.userRank === "Company Director" ||
+            user?.userRank === "Community Developer" ||
+            user?.userRank === "Staff Internal Affairs" ||
+            user?.userRank === "Company Representative" ||
+            user?.userRank === "MI Trust & Safety Director" ||
+            user?.userRank === "Staff Department Director" ||
+            user?.userRank === "Operations Manager" ||
+            user?.email?.toLowerCase().endsWith("@resyncstudios.com") ? (
               <AdminCP />
             ) : (
               <NotFound />

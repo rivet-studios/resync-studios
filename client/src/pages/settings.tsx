@@ -81,7 +81,7 @@ const SETTINGS_TABS = [
     category: "Core Settings",
   },
   {
-    id: "connections",
+    id: "integrations",
     label: "Integrations",
     icon: LinkIcon,
     category: "Core Settings",
@@ -464,164 +464,107 @@ export default function Settings() {
         )}
 
         {/* Integrations Tab */}
-        {activeTab === "connections" && (
+        {activeTab === "integrations" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold">
-                Integrations
-              </h1>
-              <p className="text-muted-foreground mt-1">
+              <h1 className="font-black text-4xl tracking-tighter uppercase">Integrations</h1>
+              <p className="text-white/40 font-bold uppercase tracking-tight mt-1">
                 Link your accounts and services
               </p>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Connected Accounts</CardTitle>
-                <CardDescription>
-                  Link your accounts to access in-game features, activate your
-                  subscription perks in-game, and sync data
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Discord Connection */}
-                <div className="flex items-start justify-between p-4 rounded-lg border">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#5865F2]/10 flex items-center justify-center">
-                      <SiDiscord className="w-6 h-6 text-[#5865F2]" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">Discord</h4>
-                        {user?.discordId ? (
-                          <Badge
-                            variant="secondary"
-                            className="gap-1 bg-green-500/10 text-green-500"
-                          >
-                            <CheckCircle className="w-3 h-3" />
-                            Connected
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="gap-1">
-                            <XCircle className="w-3 h-3" />
-                            Not Connected
-                          </Badge>
-                        )}
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Discord Connection */}
+              <Card className="bg-[#121212] border-white/5 rounded-3xl p-6 flex flex-col justify-between">
+                <div className="flex items-start gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-[#5865F2]/10 flex items-center justify-center">
+                    <SiDiscord className="w-8 h-8 text-[#5865F2]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-black text-xl uppercase tracking-tighter">Discord</h4>
                       {user?.discordId ? (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Connected as{" "}
-                          <span className="font-medium">
-                            {user.discordUsername}
-                          </span>
-                        </p>
+                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-black uppercase">Connected</Badge>
                       ) : (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Connect your Discord to verify your account and
-                          receive your roles automatically.
-                        </p>
+                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest">Not Linked</Badge>
                       )}
                     </div>
+                    <p className="text-xs font-bold text-white/40 uppercase leading-tight">
+                      {user?.discordId 
+                        ? `Connected as ${user.discordUsername}` 
+                        : "Connect Discord to sync roles and verify account."}
+                    </p>
                   </div>
-                  {user?.discordId ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => unlinkDiscordMutation.mutate()}
-                      disabled={unlinkDiscordMutation.isPending}
-                      data-testid="button-unlink-discord"
-                    >
-                      Disconnect
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => linkDiscordMutation.mutate()}
-                      disabled={linkDiscordMutation.isPending}
-                      data-testid="button-link-discord"
-                    >
-                      Connect
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
-                  )}
                 </div>
+                {user?.discordId ? (
+                  <Button
+                    variant="outline"
+                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
+                    onClick={() => unlinkDiscordMutation.mutate()}
+                    disabled={unlinkDiscordMutation.isPending}
+                  >
+                    Unlink Account
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full bg-[#5865F2] hover:bg-[#4752C4] h-12 rounded-xl font-black uppercase tracking-tighter text-xs transition-all"
+                    onClick={() => linkDiscordMutation.mutate()}
+                    disabled={linkDiscordMutation.isPending}
+                  >
+                    Link Discord <ExternalLink className="w-3 h-3 ml-2" />
+                  </Button>
+                )}
+              </Card>
 
-                {/* Roblox Connection */}
-                <div className="flex items-start justify-between p-4 rounded-lg border">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
-                      <SiRoblox className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">Roblox</h4>
-                        {user?.robloxId ? (
-                          <Badge
-                            variant="secondary"
-                            className="gap-1 bg-green-500/10 text-green-500"
-                          >
-                            <CheckCircle className="w-3 h-3" />
-                            Verified
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="gap-1">
-                            <XCircle className="w-3 h-3" />
-                            Not Verified
-                          </Badge>
-                        )}
-                      </div>
+              {/* Roblox Connection */}
+              <Card className="bg-[#121212] border-white/5 rounded-3xl p-6 flex flex-col justify-between">
+                <div className="flex items-start gap-4 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
+                    <SiRoblox className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-black text-xl uppercase tracking-tighter">Roblox</h4>
                       {user?.robloxId ? (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Verified as{" "}
-                          <span className="font-medium">
-                            {user.robloxDisplayName || user.robloxUsername}
-                          </span>
-                        </p>
+                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-black uppercase">Linked</Badge>
                       ) : (
-                        <div className="mt-2 space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            Connect your Roblox account to access features,
-                            subscription perks (if subscribed) in-game, and sync
-                            data.
-                          </p>
-                          <div className="flex gap-2">
-                            <Input
-                              placeholder="Your Roblox username"
-                              value={robloxUsername}
-                              onChange={(e) =>
-                                setRobloxUsername(e.target.value)
-                              }
-                              className="max-w-xs"
-                              data-testid="input-roblox-username"
-                            />
-                          </div>
-                        </div>
+                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest">Not Linked</Badge>
                       )}
                     </div>
+                    <p className="text-xs font-bold text-white/40 uppercase leading-tight">
+                      {user?.robloxId 
+                        ? `Linked as ${user.robloxDisplayName || user.robloxUsername}` 
+                        : "Link Roblox to receive your in-game rewards."}
+                    </p>
                   </div>
-                  {user?.robloxId ? (
+                </div>
+                {user?.robloxId ? (
+                  <Button
+                    variant="outline"
+                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
+                    onClick={() => unlinkRobloxMutation.mutate()}
+                    disabled={unlinkRobloxMutation.isPending}
+                  >
+                    Unlink Account
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="Username" 
+                      className="bg-white/5 border-white/5 rounded-xl h-12 flex-1"
+                      value={robloxUsername}
+                      onChange={(e) => setRobloxUsername(e.target.value)}
+                    />
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => unlinkRobloxMutation.mutate()}
-                      disabled={unlinkRobloxMutation.isPending}
-                      data-testid="button-unlink-roblox"
-                    >
-                      Disconnect
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => {}}
+                      className="bg-white text-black hover:bg-white/90 px-6 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
                       disabled={!robloxUsername}
-                      data-testid="button-verify-roblox"
                     >
                       Verify
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                )}
+              </Card>
+            </div>
           </div>
         )}
 

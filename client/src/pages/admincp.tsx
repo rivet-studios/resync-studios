@@ -42,95 +42,17 @@ interface User {
   vipTier: string;
 }
 
-interface Stats {
-  totalMembers: number;
-}
-
-const VIP_OPTIONS = [
-  { value: "none", label: "None" },
-  { value: "Bronze VIP", label: "Bronze VIP ($12.99)" },
-  { value: "Diamond VIP", label: "Diamond VIP ($19.99)" },
-  { value: "Founders Edition VIP", label: "Founders Edition VIP ($45.99)" },
-  { value: "Lifetime", label: "Founders Edition Lifetime ($64.99)" },
-];
-
-function AnnouncementForm({ initialData, onSubmit, isLoading }: any) {
-  const [title, setTitle] = useState(initialData?.title || "");
-  const [content, setContent] = useState(initialData?.content || "");
-  const [type, setType] = useState(initialData?.type || "update");
-  const [isPublished, setIsPublished] = useState(
-    initialData?.isPublished !== false,
-  );
-
-  return (
-    <div className="space-y-4">
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-      />
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Content"
-      />
-      <Select value={type} onValueChange={setType}>
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="launch">Launch</SelectItem>
-          <SelectItem value="roadmap">Roadmap</SelectItem>
-          <SelectItem value="feature">Feature</SelectItem>
-          <SelectItem value="update">Update</SelectItem>
-          <SelectItem value="maintenance">Maintenance</SelectItem>
-          <SelectItem value="event">Event</SelectItem>
-          <SelectItem value="announcement">Announcement</SelectItem>
-          <SelectItem value="news">News</SelectItem>
-          <SelectItem value="alert">Alert</SelectItem>
-          <SelectItem value="warning">Warning</SelectItem>
-        </SelectContent>
-      </Select>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={isPublished}
-          onChange={(e) => setIsPublished(e.target.checked)}
-          id="publish"
-        />
-        <label htmlFor="publish" className="text-sm">
-          Publish
-        </label>
-      </div>
-      <Button
-        onClick={() =>
-          onSubmit({
-            title,
-            content,
-            type,
-            details: [],
-            isPublished,
-          })
-        }
-        disabled={isLoading}
-        className="w-full"
-      >
-        {isLoading ? "Saving..." : "Save"}
-      </Button>
-    </div>
-  );
+interface ModStats {
+  bansIssued: number;
+  warningsGiven: number;
+  notesAdded: number;
+  hoursLogged: number;
 }
 
 export default function AdminCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-
-  const [subscriptionSearch, setSubscriptionSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedVip, setSelectedVip] = useState("none");
-  const [userSearchTerm, setUserSearchTerm] = useState("");
-  const [userToSetPassword, setUserToSetPassword] = useState<User | null>(null);
-  const [newPassword, setNewPassword] = useState("");
+  const [activePlayerSearch, setActivePlayerSearch] = useState("");
 
   const adminRanks = [
     "Community Developer",
@@ -150,39 +72,23 @@ export default function AdminCP() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-white">
-        <div className="space-y-4 w-full max-w-4xl px-4">
-          <Skeleton className="h-12 w-[250px]" />
-          <Skeleton className="h-[400px] w-full" />
-        </div>
+      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-3xl" />
       </div>
     );
   }
 
-  if (!user) {
+  if (!user || !isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
-        <Card className="w-full max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to access the Admin Control Panel.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-white text-slate-900">
-        <Card className="w-full max-w-md">
+      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
+        <Card className="w-full max-w-md bg-[#121212] border-white/5">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
-              <AlertTriangle className="w-12 h-12 text-destructive" />
+              <AlertTriangle className="w-12 h-12 text-red-500" />
               <div>
-                <h2 className="font-bold text-lg mb-2">Access Denied</h2>
-                <p className="text-muted-foreground">
-                  You don't have access to this area.
+                <h2 className="font-black text-xl text-white uppercase tracking-tighter">Access Denied</h2>
+                <p className="text-white/40 text-sm mt-2">
+                  You do not have permission to access the Administrator Control Panel.
                 </p>
               </div>
             </div>
@@ -192,369 +98,145 @@ export default function AdminCP() {
     );
   }
 
-  const { data: stats } = useQuery<Stats>({ queryKey: ["/api/stats"] });
-  const { data: users = [] } = useQuery<User[]>({
-    queryKey: ["/api/admin/users"],
-  });
-  const { data: announcements = [] } = useQuery<Announcement[]>({
-    queryKey: ["/api/announcements"],
-  });
-
-  const { data: searchResults = [] } = useQuery<User[]>({
-    queryKey: ["/api/admin/search-users", subscriptionSearch],
-    enabled: subscriptionSearch.length > 0,
-  });
-
-  const assignSubscriptionMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/admin/assign-subscription", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          targetUsername: selectedUser?.username,
-          vipTier: selectedVip,
-        }),
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to assign subscription");
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Subscription assigned" });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      setSelectedUser(null);
-    },
-    onError: () =>
-      toast({
-        title: "Error",
-        description: "Failed to assign subscription",
-        variant: "destructive",
-      }),
-  });
-
-  const createAnnouncementMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch("/api/admin/announcements", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(
-          errData.message ||
-            "Failed to create announcement. Check console for details",
-        );
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Announcement created" });
-      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
-    },
-    onError: (error) => {
-      const errorMsg =
-        (error as Error).message ||
-        "Failed to create announcement. Check console for details";
-      toast({ title: "Error", description: errorMsg, variant: "destructive" });
-    },
-  });
-
-  const deleteAnnouncementMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/announcements/${id}`, {});
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Deleted" });
-      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
-    },
-  });
-
-  const setPasswordMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/admin/set-user-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userToSetPassword?.id,
-          password: newPassword,
-        }),
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed");
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Password set successfully" });
-      setUserToSetPassword(null);
-      setNewPassword("");
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description:
-          (error as Error).message ||
-          "Failed to set password. Check console for details",
-        variant: "destructive",
-      });
-    },
-  });
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Shield className="w-8 h-8 text-primary" />
-        <div>
-          <h1 className="font-display text-3xl font-bold">
-            Admin Control Panel
-          </h1>
-          <p className="text-muted-foreground">
-            Manage platform, users, subscriptions, and content
-          </p>
+    <div className="flex min-h-screen bg-[#050505] text-white">
+      {/* Sidebar */}
+      <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
+        <div className="flex items-center gap-3 px-4 py-6 mb-4">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <span className="text-black font-black text-sm italic">RS</span>
+          </div>
+          <span className="font-black text-sm tracking-tighter uppercase">RIVET Studios™</span>
         </div>
+
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-white font-bold text-sm transition-all text-left">
+          <LayoutDashboard className="w-4 h-4" />
+          Admin Dashboard
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all text-left">
+          <Users className="w-4 h-4" />
+          User Management
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all text-left">
+          <Shield className="w-4 h-4" />
+          Platform Settings
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all text-left">
+          <MessageSquare className="w-4 h-4" />
+          Announcements
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all text-left">
+          <AlertTriangle className="w-4 h-4" />
+          System Reports
+        </button>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 overflow-x-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-          <TabsTrigger value="announcements">Announcements</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">
-                  Total Members
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats?.totalMembers || 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">
-                  Announcements
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{announcements.length}</div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="subscriptions" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Assign Subscription</CardTitle>
-              <CardDescription>
-                Manually assign VIP tiers to users (bypasses every charge)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Search User</label>
-                <Input
-                  placeholder="Username or email..."
-                  value={subscriptionSearch}
-                  onChange={(e) => setSubscriptionSearch(e.target.value)}
-                />
-              </div>
-
-              {subscriptionSearch && searchResults.length > 0 && (
-                <div className="space-y-2 max-h-48 overflow-y-auto border rounded-xl p-2 bg-muted/30">
-                  {searchResults.map((u: User) => (
-                    <div
-                      key={u.id}
-                      className="p-3 border rounded-xl cursor-pointer hover:bg-background transition-colors"
-                      onClick={() => setSelectedUser(u)}
-                    >
-                      <p className="font-medium">{u.username}</p>
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {selectedUser && (
-                <div className="space-y-4 pt-4 border-t">
-                  <p className="text-sm font-medium">
-                    Selected:{" "}
-                    <span className="text-primary font-bold">
-                      {selectedUser.username}
-                    </span>
-                  </p>
-                  <Select value={selectedVip} onValueChange={setSelectedVip}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {VIP_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    onClick={() => assignSubscriptionMutation.mutate()}
-                    disabled={assignSubscriptionMutation.isPending}
-                    className="w-full"
-                  >
-                    {assignSubscriptionMutation.isPending
-                      ? "Assigning..."
-                      : "Assign Subscription"}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="announcements" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">Announcements</h2>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Announcement
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Announcement</DialogTitle>
-                </DialogHeader>
-                <AnnouncementForm
-                  onSubmit={(data: any) =>
-                    createAnnouncementMutation.mutate(data)
-                  }
-                  isLoading={createAnnouncementMutation.isPending}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-          <div className="grid gap-3">
-            {announcements.map((a: any) => (
-              <Card key={a.id} className="hover-elevate">
-                <CardContent className="pt-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold">{a.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-1">
-                        {a.content}
-                      </p>
-                    </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="text-destructive hover:bg-destructive/10"
-                      onClick={() => deleteAnnouncementMutation.mutate(a.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Filter users by username or email..."
-              value={userSearchTerm}
-              onChange={(e) => setUserSearchTerm(e.target.value)}
+      {/* Main Content */}
+      <div className="flex-1 p-8 space-y-8 overflow-y-auto">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-black tracking-tighter uppercase">Administrator Dashboard</h1>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+            <Input 
+              placeholder="Search users..." 
+              className="pl-10 bg-white/5 border-white/5 rounded-xl w-64 focus:ring-primary"
             />
           </div>
-          <div className="grid gap-3">
-            {users
-              .filter(
-                (u) =>
-                  u.username
-                    .toLowerCase()
-                    .includes(userSearchTerm.toLowerCase()) ||
-                  u.email?.toLowerCase().includes(userSearchTerm.toLowerCase()),
-              )
-              .slice(0, 50)
-              .map((u) => (
-                <Card key={u.id} className="hover-elevate">
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <div>
-                      <p className="font-bold">{u.username}</p>
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <Badge variant="outline" className="text-[10px]">
-                          {u.userRank}
-                        </Badge>
-                        <Badge variant="secondary" className="text-[10px]">
-                          {u.vipTier}
-                        </Badge>
-                      </div>
-                    </div>
-                    <Dialog
-                      open={userToSetPassword?.id === u.id}
-                      onOpenChange={(open) => {
-                        if (!open) setUserToSetPassword(null);
-                      }}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setUserToSetPassword(u)}
-                        >
-                          Set Password
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>
-                            Set Password for {u.username}
-                          </DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 pt-4">
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium">
-                              New Password
-                            </label>
-                            <Input
-                              type="password"
-                              value={newPassword}
-                              onChange={(e) => setNewPassword(e.target.value)}
-                              placeholder="Minimum 5 characters"
-                            />
-                          </div>
-                          <Button
-                            onClick={() => setPasswordMutation.mutate()}
-                            disabled={
-                              setPasswordMutation.isPending ||
-                              newPassword.length < 5
-                            }
-                            className="w-full"
-                          >
-                            {setPasswordMutation.isPending
-                              ? "Updating..."
-                              : "Update Password"}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </CardContent>
-                </Card>
-              ))}
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <Users className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Total Members</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">24,562</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Growth: +12%</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <Clock className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Active Now</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">1,842</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Peak: 2,450</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <Shield className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Admin Actions</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">452</div>
+              <div className="text-xs font-bold text-white/20 uppercase tracking-tighter">Today: 12</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <AlertTriangle className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Pending Reports</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">14</div>
+              <div className="text-xs font-bold text-red-500 uppercase tracking-tighter">Critical: 2</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 bg-[#121212] border-white/5 rounded-3xl p-8">
+            <h3 className="text-2xl font-black uppercase tracking-tighter mb-8">Platform Health</h3>
+            <div className="min-h-[250px] flex items-center justify-center border border-white/5 rounded-2xl bg-white/[0.02]">
+               <div className="text-center">
+                  <History className="w-12 h-12 text-white/10 mx-auto mb-4" />
+                  <p className="text-xs font-black text-white/20 uppercase tracking-widest">Live metrics visualization</p>
+               </div>
+            </div>
+          </Card>
+
+          <div className="space-y-6">
+            <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+              <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full justify-start border-white/5 hover:bg-white/5 h-12 rounded-xl font-bold">
+                  <Plus className="w-4 h-4 mr-3" /> New Announcement
+                </Button>
+                <Button variant="outline" className="w-full justify-start border-white/5 hover:bg-white/5 h-12 rounded-xl font-bold">
+                  <Shield className="w-4 h-4 mr-3" /> Manage Staff
+                </Button>
+                <Button variant="outline" className="w-full justify-start border-white/5 hover:bg-white/5 h-12 rounded-xl font-bold">
+                  <Users className="w-4 h-4 mr-3" /> Export User Data
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="bg-red-500/10 border-red-500/20 rounded-3xl p-8">
+              <h3 className="text-xl font-black uppercase tracking-tighter text-red-500 mb-2">Emergency</h3>
+              <p className="text-xs font-bold text-red-500/60 uppercase mb-4">Maintenance Mode</p>
+              <Button className="w-full bg-red-600 hover:bg-red-700 h-14 rounded-xl font-black uppercase tracking-tighter active:scale-95 transition-all">
+                Enable Offline Mode
+              </Button>
+            </Card>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

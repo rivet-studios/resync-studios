@@ -3,19 +3,19 @@
 ## Project Overview
 Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, user profiles, and comprehensive rank system.
 
-## Current Status (March 01, 2026)
+## Current Status (March 05, 2026)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
-- ✅ Comprehensive user rank system (40+ ranks including staff, leadership, VIP, member types)
-- ✅ Landing page with hero, stats counter, and features grid (Original white background design)
+- ✅ Comprehensive user rank system (40+ ranks)
+- ✅ Landing page with hero, stats counter, and features grid
 - ✅ Blog functionality (admin-only posting)
-- ✅ Forums with categories and threading (Fixed category selection dropdown)
+- ✅ Forums with categories and threading
 - ✅ User profiles with redesigned layout and badges
 - ✅ VIP subscription system with 4 tiers
 - ✅ Store page with product catalog and cart
 - ✅ Policies hub aggregating all legal documents
-- ✅ Settings page with account, connections, and billing
+- ✅ Settings page with redesigned Integrations tab
 - ✅ Professional navigation header with search
-- ✅ AdminCP with 7 management tabs
+- ✅ AdminCP and ModCP with sidebar-based dark layout
 - ✅ Live announcement management system
 - ✅ Support page with FAQ and contact form
 - ✅ Projects showcase page
@@ -28,16 +28,16 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 ## Recent Additions
 
 ### Infrastructure & Bug Fixes:
-- **Forum Fix**: Fixed category selection in "Create Thread" page by implementing missing backend routes and refining frontend `Select` component with loading states.
-- **Landing Page**: Fixed a critical syntax error (extra closing tags) that caused application crashes.
+- **Forum Fix**: Fixed category selection in "Create Thread" page.
+- **Landing Page**: Fixed syntax errors.
 - **Authentication**: Updated email login flow to automatically assign "Team Member" rank and admin access to users with `@resyncstudios.com` email addresses.
-- **Layouts**: Standardized container widths for all legal/policy pages (DMCA, Privacy, Terms, etc.) for better centering and professional appearance.
-- **Scroll Management**: Added `ScrollToTop` utility to ensure consistent user experience across page transitions.
+- **Layouts**: Standardized container widths for all legal/policy pages.
+- **Scroll Management**: Added `ScrollToTop` utility.
 
 ### Design System:
-- **Color Palette**: Primary color adjusted to professional blue (`202 100% 35%`) in `index.css`.
+- **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).
 - **Typography**: Instrument Sans.
-- **Components**: Shadcn UI with Tailwind CSS.
+- **Components**: Redesigned AdminCP, ModCP, and Settings Integrations using a professional dark sidebar layout.
 
 ## Database Schema
 - Users (with VIP tier, Discord/Roblox linking, user ranks)

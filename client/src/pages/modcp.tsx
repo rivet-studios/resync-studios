@@ -16,55 +16,31 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
+  Search,
+  Users,
+  MessageSquare,
   Shield,
-  Trash2,
-  Lock,
-  Unlock,
-  Eye,
-  EyeOff,
   AlertTriangle,
+  Ban,
+  FileText,
+  Clock,
+  History,
+  LayoutDashboard
 } from "lucide-react";
 
-interface ForumThread {
-  id: string;
-  title: string;
-  content: string;
-  authorId: string;
-  categoryId: string;
-  isLocked: boolean;
-  isPinned: boolean;
-  createdAt: string;
-  author?: { username: string };
-}
-
-interface ForumReply {
-  id: string;
-  content: string;
-  threadId: string;
-  authorId: string;
-  createdAt: string;
-  author?: { username: string };
+interface ModStats {
+  bansIssued: number;
+  warningsGiven: number;
+  notesAdded: number;
+  hoursLogged: number;
 }
 
 export default function ModCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [activePlayerSearch, setActivePlayerSearch] = useState("");
 
-  // Check if user is moderator or above
   const staffRanks = [
-    "Customer Relations",
-    "Appeals Moderator",
     "RS Volunteer Staff",
     "RS Trust & Safety Team",
     "Community Moderator",
@@ -80,30 +56,30 @@ export default function ModCP() {
     "Operations Manager",
     "Company Director",
   ];
+
   const isMod =
     staffRanks.includes(user?.userRank || "") ||
     (user?.additionalRanks || []).some((r) => staffRanks.includes(r));
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Skeleton className="h-[400px] w-full max-w-4xl" />
+      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-3xl" />
       </div>
     );
   }
 
   if (!isMod) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="w-full max-w-md">
+      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
+        <Card className="w-full max-w-md bg-[#121212] border-white/5">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
-              <AlertTriangle className="w-12 h-12 text-destructive" />
+              <AlertTriangle className="w-12 h-12 text-red-500" />
               <div>
-                <h2 className="font-bold text-lg mb-2">Access Denied</h2>
-                <p className="text-muted-foreground">
-                  You don't have permission to access the Moderator Control
-                  Panel.
+                <h2 className="font-black text-xl text-white uppercase tracking-tighter">Access Denied</h2>
+                <p className="text-white/40 text-sm mt-2">
+                  You do not have permission to access the Moderator Control Panel.
                 </p>
               </div>
             </div>
@@ -113,333 +89,163 @@ export default function ModCP() {
     );
   }
 
-  const { data: threads = [], isLoading: threadsLoading } = useQuery<
-    ForumThread[]
-  >({
-    queryKey: ["/api/modcp/threads"],
-  });
-
-  const { data: replies = [], isLoading: repliesLoading } = useQuery<
-    ForumReply[]
-  >({
-    queryKey: ["/api/modcp/replies"],
-  });
-
-  const lockThreadMutation = useMutation({
-    mutationFn: async ({
-      threadId,
-      isLocked,
-    }: {
-      threadId: string;
-      isLocked: boolean;
-    }) => {
-      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/lock`, {
-        isLocked,
-      });
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Thread updated" });
-      queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update thread",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const pinThreadMutation = useMutation({
-    mutationFn: async ({
-      threadId,
-      isPinned,
-    }: {
-      threadId: string;
-      isPinned: boolean;
-    }) => {
-      await apiRequest("PATCH", `/api/modcp/threads/${threadId}/pin`, {
-        isPinned,
-      });
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Thread updated" });
-      queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update thread",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const deleteThreadMutation = useMutation({
-    mutationFn: async (threadId: string) => {
-      await apiRequest("DELETE", `/api/modcp/threads/${threadId}`, {});
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Thread deleted" });
-      queryClient.invalidateQueries({ queryKey: ["/api/modcp/threads"] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete thread",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const deleteReplyMutation = useMutation({
-    mutationFn: async (replyId: string) => {
-      await apiRequest("DELETE", `/api/modcp/replies/${replyId}`, {});
-    },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Reply deleted" });
-      queryClient.invalidateQueries({ queryKey: ["/api/modcp/replies"] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete reply",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const filteredThreads = threads.filter((t) =>
-    t.title.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Shield className="w-8 h-8 text-primary" />
-        <div>
-          <h1 className="font-display text-3xl font-bold">
-            Moderator Control Panel
-          </h1>
-          <p className="text-muted-foreground">
-            Manage forums, threads, and community content
-          </p>
+    <div className="flex min-h-screen bg-[#050505] text-white">
+      {/* Sidebar */}
+      <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
+        <div className="flex items-center gap-3 px-4 py-6 mb-4">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <span className="text-black font-black text-sm italic">RS</span>
+          </div>
+          <span className="font-black text-sm tracking-tighter uppercase">RIVET Studios™</span>
         </div>
+
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-white font-bold text-sm transition-all">
+          <LayoutDashboard className="w-4 h-4" />
+          Moderator Dashboard
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all">
+          <AlertTriangle className="w-4 h-4" />
+          Blacklist
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all">
+          <Users className="w-4 h-4" />
+          User Lookup
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all">
+          <Shield className="w-4 h-4" />
+          Moderation Actions
+        </button>
+        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 font-bold text-sm transition-all">
+          <FileText className="w-4 h-4" />
+          Reports
+        </button>
       </div>
 
-      <Tabs defaultValue="threads" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="threads">Threads</TabsTrigger>
-          <TabsTrigger value="replies">Replies</TabsTrigger>
-          <TabsTrigger value="actions">Actions</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="threads" className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Search threads..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              data-testid="input-search-threads"
+      {/* Main Content */}
+      <div className="flex-1 p-8 space-y-8 overflow-y-auto">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-black tracking-tighter uppercase">Moderator Dashboard</h1>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+            <Input 
+              placeholder="Search..." 
+              className="pl-10 bg-white/5 border-white/5 rounded-xl w-64 focus:ring-primary"
             />
           </div>
+        </div>
 
-          {threadsLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-20" />
-              <Skeleton className="h-20" />
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredThreads.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center text-muted-foreground">
-                    No threads found
-                  </CardContent>
-                </Card>
-              ) : (
-                filteredThreads.map((thread) => (
-                  <Card key={thread.id} className="hover-elevate">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold mb-2 flex items-center gap-2">
-                            {thread.title}
-                            {thread.isPinned && (
-                              <Badge variant="outline">Pinned</Badge>
-                            )}
-                            {thread.isLocked && (
-                              <Badge variant="outline">Locked</Badge>
-                            )}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {thread.content.substring(0, 100)}...
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            By {thread.author?.username || "Unknown"} •{" "}
-                            {new Date(thread.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex gap-2 flex-wrap">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              lockThreadMutation.mutate({
-                                threadId: thread.id,
-                                isLocked: !thread.isLocked,
-                              })
-                            }
-                            data-testid={`button-lock-${thread.id}`}
-                          >
-                            {thread.isLocked ? (
-                              <Unlock className="w-4 h-4" />
-                            ) : (
-                              <Lock className="w-4 h-4" />
-                            )}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              pinThreadMutation.mutate({
-                                threadId: thread.id,
-                                isPinned: !thread.isPinned,
-                              })
-                            }
-                            data-testid={`button-pin-${thread.id}`}
-                          >
-                            {thread.isPinned ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button size="sm" variant="destructive">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Delete Thread
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this thread?
-                                  This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <div className="flex gap-2">
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    deleteThreadMutation.mutate(thread.id)
-                                  }
-                                  className="bg-destructive"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </div>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          )}
-        </TabsContent>
+        {/* Sub-Tabs */}
+        <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl w-fit">
+          <button className="px-6 py-2 rounded-lg bg-white/10 text-white text-xs font-bold flex items-center gap-2">
+            <LayoutDashboard className="w-3 h-3" /> Dashboard
+          </button>
+          <button className="px-6 py-2 rounded-lg text-white/40 hover:text-white text-xs font-bold flex items-center gap-2">
+            <MessageSquare className="w-3 h-3" /> Comments <span className="bg-white/10 px-1.5 rounded-md text-[10px]">0</span>
+          </button>
+          <button className="px-6 py-2 rounded-lg text-white/40 hover:text-white text-xs font-bold flex items-center gap-2">
+            <Users className="w-3 h-3" /> Forums
+          </button>
+          <button className="px-6 py-2 rounded-lg text-white/40 hover:text-white text-xs font-bold flex items-center gap-2">
+            <Shield className="w-3 h-3" /> Support
+          </button>
+        </div>
 
-        <TabsContent value="replies" className="space-y-4">
-          {repliesLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-20" />
-              <Skeleton className="h-20" />
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {replies.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center text-muted-foreground">
-                    No replies found
-                  </CardContent>
-                </Card>
-              ) : (
-                replies.map((reply) => (
-                  <Card key={reply.id} className="hover-elevate">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="text-sm mb-2">{reply.content}</p>
-                          <p className="text-xs text-muted-foreground">
-                            By {reply.author?.username || "Unknown"} •{" "}
-                            {new Date(reply.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button size="sm" variant="destructive">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Reply</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete this reply?
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <div className="flex gap-2">
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() =>
-                                  deleteReplyMutation.mutate(reply.id)
-                                }
-                                className="bg-destructive"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </div>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="actions" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Moderation Actions</CardTitle>
-              <CardDescription>Common moderator tasks</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4">
-                <Button variant="outline" className="justify-start" disabled>
-                  <Shield className="w-4 h-4 mr-2" />
-                  View User Reports (Coming Soon)
-                </Button>
-                <Button variant="outline" className="justify-start" disabled>
-                  <AlertTriangle className="w-4 h-4 mr-2" />
-                  View Spam Reports (Coming Soon)
-                </Button>
-                <Button variant="outline" className="justify-start" disabled>
-                  <Lock className="w-4 h-4 mr-2" />
-                  Manage Bans (Coming Soon)
-                </Button>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <Ban className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Bans Issued</CardTitle>
               </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">1,245</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Last 30 Days: +87</div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <AlertTriangle className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Warnings Given</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">3,567</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Last 30 Days: +314</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <Users className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Active Player Lookup</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Input 
+                placeholder="Enter Player ID or Name" 
+                className="bg-white/5 border-white/5 rounded-xl text-sm h-12"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                <FileText className="w-4 h-4" />
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Notes Added</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-black mb-1">8,901</div>
+              <div className="text-xs font-bold text-white/20 uppercase tracking-tighter">New registrations for today: 12</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Lower Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+            <h3 className="text-2xl font-black uppercase tracking-tighter mb-8">Your Contribution</h3>
+            <div className="space-y-6">
+              <div>
+                <div className="text-sm font-bold text-white/40 uppercase mb-2">Hours Logged This Month</div>
+                <div className="text-5xl font-black text-green-500">52.3</div>
+              </div>
+              <div className="text-sm font-bold text-white/40 uppercase">Total Hours: 142.8</div>
+            </div>
+          </Card>
+
+          <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 flex flex-col justify-between">
+            <div>
+              <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">Redeem Your Hours</h3>
+              <p className="text-sm text-white/40 font-bold uppercase tracking-tight">Redeem hours for rewards and gift cards</p>
+            </div>
+            <div className="space-y-4">
+              <Button className="w-full bg-green-600 hover:bg-green-700 h-16 rounded-2xl text-lg font-black uppercase tracking-tighter shadow-xl shadow-green-900/20 active:scale-[0.98] transition-all">
+                Redeem Gift Card
+              </Button>
+              <div className="text-center text-[10px] font-black text-white/20 uppercase tracking-widest">
+                100 Hours = $10 Gift Card <br /> Terms & Conditions Apply
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Activity Chart Placeholder */}
+        <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 min-h-[300px] flex flex-col items-center justify-center">
+           <div className="text-center space-y-2">
+              <History className="w-12 h-12 text-white/10 mx-auto" />
+              <h4 className="font-black uppercase tracking-tighter text-white/40">Daily Moderator Activity</h4>
+              <p className="text-xs font-bold text-white/10 uppercase tracking-widest">Analytics visualization loading...</p>
+           </div>
+        </Card>
+      </div>
     </div>
   );
 }
