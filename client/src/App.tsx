@@ -267,7 +267,6 @@ function Router() {
           <Route path="/groups" component={Groups} />
           <Route path="/admin" component={Admin} />
           <Route path="/modcp">
-          <Route path="/modcp">
             {user?.isModerator ||
             user?.userRank === "Community Moderator" ||
             user?.userRank === "Community Senior Moderator" ||
