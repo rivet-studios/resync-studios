@@ -138,7 +138,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 py-8 px-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight" data-testid="heading-chat">
           Community Chat

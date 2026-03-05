@@ -10,7 +10,7 @@ import { AlertCircle, Handshake, Shield, AlertTriangle } from "lucide-react";
 
 export default function VolunteerStaffAgreement() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Handshake className="w-3.5 h-3.5" />

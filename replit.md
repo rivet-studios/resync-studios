@@ -54,6 +54,9 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **AdminCP**: Added missing lucide-react icon imports that caused render crash.
 - **Blog/News**: Added `GET /api/blog/:id` backend route, fixed missing imports in news.tsx.
 - **Public Access**: Forums, blogs, store, subscriptions, and news are all accessible without login.
+- **Layout Fix**: Removed duplicate `container mx-auto` wrapper from App.tsx Router; each page now manages its own container/centering consistently.
+- **ScrollToTop**: Component implemented and rendered at App level to reset scroll position on navigation.
+- **CSS Optimization**: Removed duplicate `scroll-behavior: smooth` from body (kept on html only), removed `transition-colors duration-300` from body to reduce layout lag.
 
 ### Design System:
 - **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).

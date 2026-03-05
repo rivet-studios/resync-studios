@@ -256,7 +256,7 @@ export default function Settings() {
   );
 
   return (
-    <div className="flex gap-6 max-w-6xl mx-auto">
+    <div className="flex gap-6 max-w-6xl mx-auto py-8 px-4">
       {/* Left Sidebar Navigation */}
       <div className="w-full sm:w-56 flex-shrink-0">
         <div className="sticky top-0 space-y-6">

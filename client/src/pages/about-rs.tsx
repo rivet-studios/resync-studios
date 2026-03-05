@@ -10,7 +10,7 @@ import { Sparkles, Zap, Users, Target, Rocket } from "lucide-react";
 
 export default function AboutRS() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-4">
         <Badge variant="outline" className="mx-auto gap-2">
           <Sparkles className="w-3.5 h-3.5" />

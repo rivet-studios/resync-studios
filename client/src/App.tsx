@@ -235,8 +235,7 @@ function Router() {
 
   return (
     <PublicLayout>
-      <div className="container mx-auto">
-        <Switch>
+      <Switch>
           <Route path="/" component={Landing} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/login" component={Login} />
@@ -325,7 +324,6 @@ function Router() {
           <Route path="/onboarding" component={Onboarding} />
           <Route component={NotFound} />
         </Switch>
-      </div>
     </PublicLayout>
   );
 }

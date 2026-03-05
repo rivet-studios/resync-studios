@@ -1,0 +1,132 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Instrument Sans",
+      "role": "unknown"
+    }
+  ],
+  "colors": {
+    "primary": "#4B5563",
+    "accent": "#4B5563",
+    "background": "#FFFFFF",
+    "textPrimary": "#09090B",
+    "link": "#4B5563"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Instrument Sans",
+      "heading": "Instrument Sans"
+    },
+    "fontStacks": {
+      "heading": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "body": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ],
+      "paragraph": [
+        "Instrument Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji"
+      ]
+    },
+    "fontSizes": {
+      "h1": "16px",
+      "h2": "18px",
+      "body": "14px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 8,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "buttonPrimary": {
+      "background": "#F4F4F5",
+      "textColor": "#09090B",
+      "borderRadius": "10px",
+      "borderRadiusCorners": {
+        "topLeft": "10px",
+        "topRight": "10px",
+        "bottomRight": "10px",
+        "bottomLeft": "10px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "File saved at: attached_assets/logo.svg",
+    "favicon": "https://reactstudios.com/favicon.ico",
+    "ogImage": "File saved at: attached_assets/ogImage.svg",
+    "logoHref": "https://reactstudios.com/"
+  },
+  "__llm_logo_reasoning": {
+    "selectedIndex": 6,
+    "reasoning": "Selected #6 because it is visible, located in the header, links to the homepage, and matches the brand inferred from the URL and page title.",
+    "confidence": 0.9,
+    "source": "llm"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 0,
+      "text": "Addons",
+      "reasoning": "Button #0 with text 'Addons' is selected as the primary CTA because it is more generic and likely to lead to a broader category of products, making it a more prominent action for users exploring the store."
+    },
+    "secondary": {
+      "index": 1,
+      "text": "Ventura Vehicle Addons",
+      "reasoning": "Button #1 with text 'Ventura Vehicle Addons' is more specific and likely targets a niche category, making it a suitable secondary action."
+    },
+    "confidence": 0.8
+  },
+  "personality": {
+    "tone": "modern",
+    "energy": "medium",
+    "targetAudience": "tech-savvy individuals interested in digital products"
+  },
+  "designSystem": {
+    "framework": "tailwind",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.8,
+    "colors": 0.9,
+    "overall": 0.8500000000000001
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": true,
+      "llmSucceeded": true,
+      "finalSource": "llm",
+      "rawLogoSelection": {
+        "selectedLogoIndex": 6,
+        "selectedLogoReasoning": "Selected #6 because it is visible, located in the header, links to the homepage, and matches the brand inferred from the URL and page title.",
+        "confidence": 0.9
+      }
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}

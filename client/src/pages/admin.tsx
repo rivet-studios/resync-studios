@@ -201,7 +201,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 py-8 px-4">
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2 mb-2">
           <Shield className="w-8 h-8" />

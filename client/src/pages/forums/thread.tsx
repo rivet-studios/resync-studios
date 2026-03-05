@@ -93,7 +93,7 @@ export default function ForumThread() {
 
   if (threadLoading) {
     return (
-      <div className="space-y-4">
+      <div className="max-w-5xl mx-auto space-y-4 py-8 px-4">
         <Skeleton className="h-32" />
         <Skeleton className="h-64" />
         <Skeleton className="h-32" />
@@ -103,7 +103,7 @@ export default function ForumThread() {
 
   if (!thread) {
     return (
-      <div className="space-y-4">
+      <div className="max-w-5xl mx-auto space-y-4 py-8 px-4">
         <Link href="/forums">
           <Button variant="ghost">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -122,7 +122,7 @@ export default function ForumThread() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6 py-8 px-4">
       {/* Header */}
       <div className="space-y-4">
         <Link href="/forums">
