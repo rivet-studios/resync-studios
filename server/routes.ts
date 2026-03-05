@@ -10,6 +10,10 @@ import {
   insertForumThreadSchema,
   insertForumReplySchema,
   insertReportSchema,
+  insertProductSchema,
+  insertBanSchema,
+  insertAppealSchema,
+  insertAnnouncementSchema,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -476,6 +480,7 @@ export async function registerRoutes(
       const announcements = await storage.getAnnouncements();
       res.json(announcements);
     } catch (error) {
+      console.error("Blog fetch error:", error);
       res.status(500).json({ message: "Failed to fetch blog posts" });
     }
   });
@@ -512,6 +517,318 @@ export async function registerRoutes(
       res.status(201).json(post);
     } catch (error) {
       res.status(400).json({ message: "Invalid data" });
+    }
+  });
+
+  // Product routes
+  app.get("/api/products", async (req, res) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const prods = await storage.getProducts(status || "approved");
+      const prodsWithSubmitters = await Promise.all(
+        prods.map(async (p) => {
+          const submitter = await storage.getUser(p.submitterId);
+          return { ...p, submitter: submitter ? { id: submitter.id, username: submitter.username, userRank: submitter.userRank } : null };
+        })
+      );
+      res.json(prodsWithSubmitters);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.get("/api/products/all", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const opsRanks = ["Operations Manager", "Company Director"];
+      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const prods = await storage.getProducts();
+      const prodsWithSubmitters = await Promise.all(
+        prods.map(async (p) => {
+          const submitter = await storage.getUser(p.submitterId);
+          return { ...p, submitter: submitter ? { id: submitter.id, username: submitter.username, userRank: submitter.userRank } : null };
+        })
+      );
+      res.json(prodsWithSubmitters);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.get("/api/products/my", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const allProducts = await storage.getProducts();
+      const myProducts = allProducts.filter((p) => p.submitterId === user.id);
+      res.json(myProducts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.post("/api/products", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const data = insertProductSchema.parse({
+        ...req.body,
+        submitterId: user.id,
+      });
+      const product = await storage.createProduct(data);
+      res.status(201).json(product);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid product data" });
+    }
+  });
+
+  app.patch("/api/products/:id/review", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const opsRanks = ["Operations Manager", "Company Director"];
+      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Only Operations Managers can review products" });
+      }
+      const { status, reviewNotes } = req.body;
+      if (!["approved", "denied"].includes(status)) {
+        return res.status(400).json({ message: "Status must be approved or denied" });
+      }
+      const updates: any = {
+        status,
+        reviewedBy: user.id,
+        reviewNotes: reviewNotes || null,
+      };
+      if (status === "approved") {
+        updates.isCommunityProvided = true;
+      }
+      const product = await storage.updateProduct(req.params.id, updates);
+      if (!product) return res.status(404).json({ message: "Product not found" });
+      res.json(product);
+    } catch (error) {
+      res.status(500).json({ message: "Review failed" });
+    }
+  });
+
+  app.patch("/api/products/:id/badges", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const opsRanks = ["Operations Manager", "Company Director"];
+      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Only Operations Managers can assign badges" });
+      }
+      const { isFeatured, isLimitedEdition, isVerified, isCommunityProvided } = req.body;
+      const updates: any = {};
+      if (typeof isFeatured === "boolean") updates.isFeatured = isFeatured;
+      if (typeof isLimitedEdition === "boolean") updates.isLimitedEdition = isLimitedEdition;
+      if (typeof isVerified === "boolean") updates.isVerified = isVerified;
+      if (typeof isCommunityProvided === "boolean") updates.isCommunityProvided = isCommunityProvided;
+      const product = await storage.updateProduct(req.params.id, updates);
+      if (!product) return res.status(404).json({ message: "Product not found" });
+      res.json(product);
+    } catch (error) {
+      res.status(500).json({ message: "Badge update failed" });
+    }
+  });
+
+  // Ban routes
+  app.get("/api/bans", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Community Moderator", "Community Senior Moderator", "Community Administrator",
+        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
+        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Staff Department Director", "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const activeOnly = req.query.active === "true";
+      const banList = await storage.getBans(activeOnly);
+      const bansWithUsers = await Promise.all(
+        banList.map(async (b) => {
+          const bannedUser = await storage.getUser(b.userId);
+          const bannedByUser = await storage.getUser(b.bannedBy);
+          return {
+            ...b,
+            user: bannedUser ? { id: bannedUser.id, username: bannedUser.username } : null,
+            bannedByUser: bannedByUser ? { id: bannedByUser.id, username: bannedByUser.username } : null,
+          };
+        })
+      );
+      res.json(bansWithUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch bans" });
+    }
+  });
+
+  app.post("/api/bans", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Community Moderator", "Community Senior Moderator", "Community Administrator",
+        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
+        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Staff Department Director", "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const data = insertBanSchema.parse({
+        ...req.body,
+        bannedBy: user.id,
+      });
+      const ban = await storage.createBan(data);
+      res.status(201).json(ban);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid ban data" });
+    }
+  });
+
+  app.delete("/api/bans/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Community Moderator", "Community Senior Moderator", "Community Administrator",
+        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
+        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Staff Department Director", "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const ban = await storage.deactivateBan(req.params.id);
+      if (!ban) return res.status(404).json({ message: "Ban not found" });
+      res.json({ message: "Ban lifted", ban });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to lift ban" });
+    }
+  });
+
+  // Appeal routes
+  app.get("/api/appeals", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Appeal Analyst", "Appeals Moderator", "Community Moderator",
+        "Community Senior Moderator", "Community Administrator",
+        "Community Senior Administrator", "Community Developer",
+        "Staff Internal Affairs", "Company Representative", "Team Member",
+        "MI Trust & Safety Director", "Staff Department Director",
+        "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const status = req.query.status as string | undefined;
+      const appealList = await storage.getAppeals(status);
+      const appealsWithUsers = await Promise.all(
+        appealList.map(async (a) => {
+          const appellant = await storage.getUser(a.userId);
+          return {
+            ...a,
+            user: appellant ? { id: appellant.id, username: appellant.username, email: appellant.email } : null,
+          };
+        })
+      );
+      res.json(appealsWithUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch appeals" });
+    }
+  });
+
+  app.get("/api/appeals/my", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const myAppeals = await storage.getUserAppeals(user.id);
+      res.json(myAppeals);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch appeals" });
+    }
+  });
+
+  app.post("/api/appeals", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const data = insertAppealSchema.parse({
+        ...req.body,
+        userId: user.id,
+      });
+      const appeal = await storage.createAppeal(data);
+      res.status(201).json(appeal);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid appeal data" });
+    }
+  });
+
+  app.patch("/api/appeals/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Appeal Analyst", "Appeals Moderator", "Community Moderator",
+        "Community Senior Moderator", "Community Administrator",
+        "Community Senior Administrator", "Community Developer",
+        "Staff Internal Affairs", "Company Representative", "Team Member",
+        "MI Trust & Safety Director", "Staff Department Director",
+        "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { status, reviewNotes } = req.body;
+      if (!["approved", "denied"].includes(status)) {
+        return res.status(400).json({ message: "Status must be approved or denied" });
+      }
+      const appeal = await storage.getAppeal(req.params.id);
+      if (!appeal) return res.status(404).json({ message: "Appeal not found" });
+
+      const updated = await storage.updateAppeal(req.params.id, {
+        status: status as any,
+        reviewedBy: user.id,
+        reviewNotes,
+      });
+
+      if (status === "approved" && appeal.banId) {
+        await storage.deactivateBan(appeal.banId);
+      }
+
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Appeal update failed" });
+    }
+  });
+
+  // Report status update route
+  app.patch("/api/reports/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const staffRanks = [
+        "Report Analyst", "Community Moderator", "Community Senior Moderator",
+        "Community Administrator", "Community Senior Administrator",
+        "Community Developer", "Staff Internal Affairs", "Company Representative",
+        "Team Member", "MI Trust & Safety Director", "Staff Department Director",
+        "Operations Manager", "Company Director",
+      ];
+      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { status, moderatorNotes } = req.body;
+      const report = await storage.updateReportStatus(req.params.id, status, moderatorNotes);
+      if (!report) return res.status(404).json({ message: "Report not found" });
+      res.json(report);
+    } catch (error) {
+      res.status(500).json({ message: "Report update failed" });
+    }
+  });
+
+  // User bans check (public for banned users to see their status)
+  app.get("/api/bans/my", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userBans = await storage.getUserBans(user.id);
+      res.json(userBans);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch bans" });
     }
   });
 

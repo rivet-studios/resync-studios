@@ -20,6 +20,12 @@ import {
   type SiteSettings,
   type Payment,
   type InsertPayment,
+  type Product,
+  type InsertProduct,
+  type Ban,
+  type InsertBan,
+  type Appeal,
+  type InsertAppeal,
   reports,
   type Report,
   type InsertReport,
@@ -35,6 +41,9 @@ import {
   announcements,
   siteSettings,
   payments,
+  products,
+  bans,
+  appeals,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, lt } from "drizzle-orm";
@@ -108,6 +117,20 @@ export interface IStorage {
     status: string,
     notes?: string,
   ): Promise<Report | undefined>;
+  getProducts(status?: string): Promise<Product[]>;
+  getProduct(id: string): Promise<Product | undefined>;
+  createProduct(product: InsertProduct): Promise<Product>;
+  updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined>;
+  getBans(activeOnly?: boolean): Promise<Ban[]>;
+  getBan(id: string): Promise<Ban | undefined>;
+  getUserBans(userId: string): Promise<Ban[]>;
+  createBan(ban: InsertBan): Promise<Ban>;
+  deactivateBan(id: string): Promise<Ban | undefined>;
+  getAppeals(status?: string): Promise<Appeal[]>;
+  getAppeal(id: string): Promise<Appeal | undefined>;
+  getUserAppeals(userId: string): Promise<Appeal[]>;
+  createAppeal(appeal: InsertAppeal): Promise<Appeal>;
+  updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined>;
   getStats(): Promise<{
     totalMembers: number;
     activeLfg: number;
@@ -526,6 +549,73 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reports.id, id))
       .returning();
     return report;
+  }
+  async getProducts(status?: string): Promise<Product[]> {
+    if (status) {
+      return db.select().from(products).where(eq(products.status, status as any)).orderBy(desc(products.createdAt));
+    }
+    return db.select().from(products).orderBy(desc(products.createdAt));
+  }
+  async getProduct(id: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product;
+  }
+  async createProduct(productData: InsertProduct): Promise<Product> {
+    const [product] = await db.insert(products).values(productData).returning();
+    return product;
+  }
+  async updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined> {
+    const [product] = await db.update(products).set({ ...updates, updatedAt: new Date() }).where(eq(products.id, id)).returning();
+    return product;
+  }
+  async getBans(activeOnly?: boolean): Promise<Ban[]> {
+    if (activeOnly) {
+      return db.select().from(bans).where(eq(bans.isActive, true)).orderBy(desc(bans.createdAt));
+    }
+    return db.select().from(bans).orderBy(desc(bans.createdAt));
+  }
+  async getBan(id: string): Promise<Ban | undefined> {
+    const [ban] = await db.select().from(bans).where(eq(bans.id, id));
+    return ban;
+  }
+  async getUserBans(userId: string): Promise<Ban[]> {
+    return db.select().from(bans).where(and(eq(bans.userId, userId), eq(bans.isActive, true))).orderBy(desc(bans.createdAt));
+  }
+  async createBan(banData: InsertBan): Promise<Ban> {
+    const targetUser = await this.getUser(banData.userId);
+    const priorRank = targetUser?.userRank || "Member";
+    const [ban] = await db.insert(bans).values({ ...banData, priorRank }).returning();
+    await db.update(users).set({ userRank: "Banned" as any, updatedAt: new Date() }).where(eq(users.id, banData.userId));
+    return ban;
+  }
+  async deactivateBan(id: string): Promise<Ban | undefined> {
+    const [ban] = await db.update(bans).set({ isActive: false }).where(eq(bans.id, id)).returning();
+    if (ban) {
+      const restoreRank = (ban.priorRank || "Member") as any;
+      await db.update(users).set({ userRank: restoreRank, updatedAt: new Date() }).where(eq(users.id, ban.userId));
+    }
+    return ban;
+  }
+  async getAppeals(status?: string): Promise<Appeal[]> {
+    if (status) {
+      return db.select().from(appeals).where(eq(appeals.status, status as any)).orderBy(desc(appeals.createdAt));
+    }
+    return db.select().from(appeals).orderBy(desc(appeals.createdAt));
+  }
+  async getAppeal(id: string): Promise<Appeal | undefined> {
+    const [appeal] = await db.select().from(appeals).where(eq(appeals.id, id));
+    return appeal;
+  }
+  async getUserAppeals(userId: string): Promise<Appeal[]> {
+    return db.select().from(appeals).where(eq(appeals.userId, userId)).orderBy(desc(appeals.createdAt));
+  }
+  async createAppeal(appealData: InsertAppeal): Promise<Appeal> {
+    const [appeal] = await db.insert(appeals).values(appealData).returning();
+    return appeal;
+  }
+  async updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined> {
+    const [appeal] = await db.update(appeals).set({ ...updates, updatedAt: new Date() }).where(eq(appeals.id, id)).returning();
+    return appeal;
   }
   async getStats(): Promise<{
     totalMembers: number;

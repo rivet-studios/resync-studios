@@ -370,6 +370,96 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
   createdAt: true,
 });
 
+export const productStatusEnum = pgEnum("product_status", [
+  "pending",
+  "approved",
+  "denied",
+]);
+
+export const products = pgTable("products", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  price: integer("price").notNull(),
+  imageUrl: varchar("image_url"),
+  category: varchar("category"),
+  submitterId: varchar("submitter_id").notNull(),
+  status: productStatusEnum("status").default("pending"),
+  isCommunityProvided: boolean("is_community_provided").default(false),
+  isFeatured: boolean("is_featured").default(false),
+  isLimitedEdition: boolean("is_limited_edition").default(false),
+  isVerified: boolean("is_verified").default(false),
+  reviewedBy: varchar("reviewed_by"),
+  reviewNotes: text("review_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  status: true,
+  isCommunityProvided: true,
+  isFeatured: true,
+  isLimitedEdition: true,
+  isVerified: true,
+  reviewedBy: true,
+  reviewNotes: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const bans = pgTable("bans", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  reason: text("reason").notNull(),
+  bannedBy: varchar("banned_by").notNull(),
+  isPermanent: boolean("is_permanent").default(true),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  priorRank: varchar("prior_rank").default("Member"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBanSchema = createInsertSchema(bans).omit({
+  id: true,
+  isActive: true,
+  priorRank: true,
+  createdAt: true,
+});
+
+export const appealStatusEnum = pgEnum("appeal_status", [
+  "pending",
+  "approved",
+  "denied",
+]);
+
+export const appeals = pgTable("appeals", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  banId: varchar("ban_id"),
+  reason: text("reason").notNull(),
+  status: appealStatusEnum("status").default("pending"),
+  reviewedBy: varchar("reviewed_by"),
+  reviewNotes: text("review_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertAppealSchema = createInsertSchema(appeals).omit({
+  id: true,
+  status: true,
+  reviewedBy: true,
+  reviewNotes: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = Partial<User> & { id?: string };
@@ -396,3 +486,9 @@ export type InsertSiteSettings = z.infer<
 >;
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
+export type Ban = typeof bans.$inferSelect;
+export type InsertBan = z.infer<typeof insertBanSchema>;
+export type Appeal = typeof appeals.$inferSelect;
+export type InsertAppeal = z.infer<typeof insertAppealSchema>;

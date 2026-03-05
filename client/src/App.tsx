@@ -48,6 +48,8 @@ import Store from "@/pages/store";
 import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
 import Checkout from "@/pages/checkout";
+import Marketplace from "@/pages/marketplace";
+import Appeals from "@/pages/appeals";
 
 import Onboarding from "@/pages/onboarding";
 
@@ -265,6 +267,8 @@ function Router() {
           <Route path="/builds" component={Builds} />
           <Route path="/chat" component={Chat} />
           <Route path="/groups" component={Groups} />
+          <Route path="/marketplace" component={Marketplace} />
+          <Route path="/appeals" component={Appeals} />
           <Route path="/admin" component={Admin} />
           <Route path="/modcp">
             {user?.isModerator ||

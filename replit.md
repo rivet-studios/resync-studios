@@ -1,7 +1,7 @@
 # RIVET Studios Platform - Development Notes
 
 ## Project Overview
-Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, user profiles, and comprehensive rank system.
+Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, marketplace, user profiles, comprehensive rank system, moderation tools, and ban/appeal system.
 
 ## Current Status (March 05, 2026)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
@@ -11,11 +11,18 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Forums with categories and threading
 - ✅ User profiles with redesigned layout and badges
 - ✅ VIP subscription system with 4 tiers
-- ✅ Store page with product catalog and cart
+- ✅ Store page with product catalog, categories, and badges
+- ✅ Marketplace page for community product submissions
+- ✅ Product badges: Community Provided (grey), Featured (blue), LIMITED EDITION (golden), VERIFIED (green)
+- ✅ Operations Manager product review and badge assignment
+- ✅ User reporting system with ReportDialog component
+- ✅ Ban management (issue/lift bans via ModCP)
+- ✅ Appeal system for banned users
 - ✅ Policies hub aggregating all legal documents
 - ✅ Settings page with redesigned Integrations tab
 - ✅ Professional navigation header with search
 - ✅ AdminCP and ModCP with sidebar-based dark layout
+- ✅ ModCP tabs: Dashboard, Ban Management, Reports, Appeals
 - ✅ Live announcement management system
 - ✅ Support page with FAQ and contact form
 - ✅ Projects showcase page
@@ -24,20 +31,29 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Chat system
 - ✅ Scroll position fixed on navigation (ScrollToTop component)
 - ✅ Legal and policy pages centered and optimized for readability
+- ✅ Public access to forums, blogs, store, subscriptions (no login required to view)
 
 ## Recent Additions
 
+### Marketplace & Products:
+- **Products Table**: New `products` table with fields for name, description, price (cents), category, badges, and review status.
+- **Marketplace Page**: Users can submit products for review; Operations Managers approve/deny and assign badges.
+- **Store Page**: Rebuilt to display approved products with category browsing, featured/limited sections, and badge display.
+- **Product Badges**: Grey "Community Provided", blue "Featured", golden yellow "LIMITED EDITION", green "VERIFIED".
+
+### Moderation & Safety:
+- **Ban System**: `bans` table tracks active bans with reason, issuer, and duration. Creating a ban auto-sets user rank to "Banned".
+- **Appeal System**: `appeals` table lets banned users submit appeals. Staff can approve (auto-lifts ban) or deny with notes.
+- **Report Dialog**: Reusable `ReportDialog` component for reporting users, threads, replies, or products.
+- **ModCP Overhaul**: Functional tabs for Dashboard, Ban Management (issue/lift), Reports (review/dismiss/action), Appeals (approve/deny).
+- **Report Status Updates**: PATCH `/api/reports/:id` for staff to update report status with moderator notes.
+
 ### Infrastructure & Bug Fixes:
-- **Forum Fix**: Fixed category selection in "Create Thread" page. Fixed form schema to omit server-only fields (`authorId`, `isPinned`, etc.) so form validation no longer silently blocks submission.
-- **Landing Page**: Fixed syntax errors.
-- **Authentication**: Updated email login flow to automatically assign "Team Member" rank and admin access to users with `@resyncstudios.com` email addresses.
-- **Layouts**: Standardized container widths for all legal/policy pages.
-- **Scroll Management**: Added `ScrollToTop` utility.
+- **Forum Fix**: Fixed category selection in "Create Thread" page. Fixed form schema to omit server-only fields.
 - **Admin Panel**: Fixed React hooks-after-returns violation that caused blank screen crash.
-- **AdminCP**: Added missing lucide-react icon imports (`LayoutDashboard`, `Users`, `MessageSquare`, `Search`, `Clock`, `History`) that caused render crash.
-- **ModCP**: Added `isAdmin`/`isModerator` boolean checks to access guard so staff flagged via those fields can access the panel.
-- **Blog/News**: Added `GET /api/blog/:id` backend route, fixed missing `Button`/`Textarea` imports in news.tsx, added error handler to blog post creation mutation.
-- **Query Keys**: News page queryKey uses array format `["/api/blog", id]` for proper URL construction with default fetcher (`queryKey.join("/")`).
+- **AdminCP**: Added missing lucide-react icon imports that caused render crash.
+- **Blog/News**: Added `GET /api/blog/:id` backend route, fixed missing imports in news.tsx.
+- **Public Access**: Forums, blogs, store, subscriptions, and news are all accessible without login.
 
 ### Design System:
 - **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).
@@ -45,19 +61,22 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Components**: Redesigned AdminCP, ModCP, and Settings Integrations using a professional dark sidebar layout.
 
 ## Database Schema
-- Users (with VIP tier, Discord/Roblox linking, user ranks)
+- Users (with VIP tier, Discord/Roblox linking, user ranks, isAdmin, isModerator)
+- Products (marketplace submissions with badges and review status)
+- Bans (active ban records with reason and duration)
+- Appeals (ban appeal submissions with review status)
+- Reports (user/content reports with status tracking)
 - Announcements (live-edited by admins)
 - Payments (tracks card charges with status)
-- Projects (RIVET Studios projects list)
 - Site Settings (offline mode, custom message)
-- Forums, Clans, Chat, and other community features
+- Forums (categories, threads, replies)
+- Groups/Clans, Chat, Builds
 
-## Next Steps
-1. Customize store items with real products
-2. Implement actual checkout/payment integration
-3. Add more user profile customization options
-4. Enhance forum features (search, tagging, reputation)
-5. Analytics and user engagement tracking
+## API Routes Summary
+- **Products**: GET /api/products, GET /api/products/all (ops), GET /api/products/my, POST /api/products, PATCH /api/products/:id/review, PATCH /api/products/:id/badges
+- **Bans**: GET /api/bans, GET /api/bans/my, POST /api/bans, DELETE /api/bans/:id
+- **Appeals**: GET /api/appeals, GET /api/appeals/my, POST /api/appeals, PATCH /api/appeals/:id
+- **Reports**: GET /api/reports, POST /api/reports, PATCH /api/reports/:id
 
 ## Deployment
 - Configured for deployment on Render
