@@ -53,11 +53,9 @@ export function MainHeader() {
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-3 shrink-0 group">
-              <div className="bg-white p-2 rounded-xl transition-transform group-hover:scale-105 shadow-lg">
-                <img src={logoSvg} alt="RS" className="w-5 h-5 invert" />
-              </div>
-              <span className="font-black text-xl tracking-tighter text-white uppercase">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+              <img src={logoSvg} alt="RS" className="w-7 h-7 transition-transform group-hover:scale-105" />
+              <span className="font-semibold text-[15px] tracking-tight text-white">
                 RIVET Studios™
               </span>
             </Link>
@@ -67,10 +65,10 @@ export function MainHeader() {
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}>
                   <button
-                    className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all ${
+                    className={`px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${
                       isActive(item.href)
-                        ? "text-white bg-white/5 shadow-inner"
-                        : "text-white/40 hover:text-white/70 hover:bg-white/[0.02]"
+                        ? "text-white bg-white/5"
+                        : "text-white/50 hover:text-white/80"
                     }`}
                   >
                     {item.label}
@@ -151,10 +149,10 @@ export function MainHeader() {
                       <UserIcon className="w-5 h-5 text-white/40" />
                     </div>
                     <div className="flex flex-col overflow-hidden">
-                      <span className="text-sm font-black text-white truncate">
+                      <span className="text-sm font-semibold text-white truncate">
                         {user.username}
                       </span>
-                      <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest truncate">
+                      <span className="text-[10px] font-medium text-white/30 uppercase tracking-widest truncate">
                         {user.userRank}
                       </span>
                     </div>
@@ -168,7 +166,7 @@ export function MainHeader() {
                       className="flex items-center gap-3 w-full"
                     >
                       <LayoutDashboard className="w-4 h-4 opacity-50" />
-                      <span className="font-bold text-sm">Dashboard</span>
+                      <span className="font-medium text-sm">Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -180,7 +178,7 @@ export function MainHeader() {
                       className="flex items-center gap-3 w-full"
                     >
                       <UserIcon className="w-4 h-4 opacity-50" />
-                      <span className="font-bold text-sm">My Profile</span>
+                      <span className="font-medium text-sm">My Profile</span>
                     </Link>
                   </DropdownMenuItem>
 
@@ -225,7 +223,7 @@ export function MainHeader() {
                       className="flex items-center gap-3 w-full"
                     >
                       <Settings className="w-4 h-4 opacity-50" />
-                      <span className="font-bold text-sm">Settings</span>
+                      <span className="font-medium text-sm">Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/5 my-2" />
@@ -234,14 +232,14 @@ export function MainHeader() {
                     onClick={() => logoutMutation.mutate()}
                   >
                     <LogOut className="w-4 h-4 mr-3" />
-                    <span className="font-bold text-sm">Sign Out</span>
+                    <span className="font-medium text-sm">Sign Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button className="h-11 px-8 bg-white text-black hover:bg-white/90 rounded-xl font-black uppercase tracking-tighter text-[13px] shadow-xl transition-all active:scale-95">
-                  Login
+                <Button className="h-10 px-6 bg-white text-black rounded-lg font-medium text-[13px] transition-all active:scale-95">
+                  LOGIN
                 </Button>
               </Link>
             )}
@@ -270,10 +268,10 @@ export function MainHeader() {
                 <Link key={item.href} href={item.href}>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-black uppercase tracking-tight transition-all ${
+                    className={`w-full text-left px-5 py-3 rounded-xl text-base font-medium transition-all ${
                       isActive(item.href)
                         ? "text-white bg-white/5"
-                        : "text-white/30 hover:text-white hover:bg-white/[0.02]"
+                        : "text-white/40 hover:text-white hover:bg-white/[0.02]"
                     }`}
                   >
                     {item.label}

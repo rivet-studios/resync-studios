@@ -165,7 +165,7 @@ export default function ModCP() {
             <div className="flex flex-col items-center gap-4 text-center">
               <AlertTriangle className="w-12 h-12 text-red-500" />
               <div>
-                <h2 className="font-black text-xl text-white uppercase tracking-tighter">Access Denied</h2>
+                <h2 className="font-semibold text-xl text-white uppercase tracking-tight">Access Denied</h2>
                 <p className="text-white/40 text-sm mt-2">
                   You do not have permission to access the Moderator Control Panel.
                 </p>
@@ -189,9 +189,9 @@ export default function ModCP() {
       <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
         <div className="flex items-center gap-3 px-4 py-6 mb-4">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-black font-black text-sm italic">RS</span>
+            <span className="text-black font-semibold text-sm italic">RS</span>
           </div>
-          <span className="font-black text-sm tracking-tighter uppercase">ModCP</span>
+          <span className="font-semibold text-sm tracking-tight uppercase">ModCP</span>
         </div>
         {sidebarItems.map((item) => (
           <button
@@ -213,56 +213,56 @@ export default function ModCP() {
       <div className="flex-1 p-8 space-y-8 overflow-y-auto">
         {activeTab === "dashboard" && (
           <>
-            <h1 className="text-4xl font-black tracking-tighter uppercase">Moderator Dashboard</h1>
+            <h1 className="text-4xl font-semibold tracking-tight uppercase">Moderator Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Ban className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest">Active Bans</CardTitle>
+                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Active Bans</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black mb-1">{activeBans.filter((b: any) => b.isActive).length || "—"}</div>
+                  <div className="text-4xl font-semibold mb-1">{activeBans.filter((b: any) => b.isActive).length || "—"}</div>
                 </CardContent>
               </Card>
               <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <FileText className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest">Open Reports</CardTitle>
+                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Open Reports</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black mb-1">{reports.filter((r: any) => r.status === "Pending").length || "—"}</div>
+                  <div className="text-4xl font-semibold mb-1">{reports.filter((r: any) => r.status === "Pending").length || "—"}</div>
                 </CardContent>
               </Card>
               <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Scale className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest">Pending Appeals</CardTitle>
+                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Pending Appeals</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black mb-1">{pendingAppeals.filter((a: any) => a.status === "pending").length || "—"}</div>
+                  <div className="text-4xl font-semibold mb-1">{pendingAppeals.filter((a: any) => a.status === "pending").length || "—"}</div>
                 </CardContent>
               </Card>
               <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Clock className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest">Mod Since</CardTitle>
+                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Mod Since</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-lg font-black mb-1">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
+                  <div className="text-lg font-semibold mb-1">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
                 </CardContent>
               </Card>
             </div>
             <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 min-h-[200px] flex flex-col items-center justify-center">
               <History className="w-12 h-12 text-white/10 mx-auto mb-2" />
-              <h4 className="font-black uppercase tracking-tighter text-white/40">Recent Activity</h4>
+              <h4 className="font-semibold uppercase tracking-tight text-white/40">Recent Activity</h4>
               <p className="text-xs font-bold text-white/10 uppercase tracking-widest">Select a tab to manage moderation</p>
             </Card>
           </>
@@ -270,9 +270,9 @@ export default function ModCP() {
 
         {activeTab === "bans" && (
           <>
-            <h1 className="text-4xl font-black tracking-tighter uppercase">Ban Management</h1>
+            <h1 className="text-4xl font-semibold tracking-tight uppercase">Ban Management</h1>
             <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
-              <h3 className="font-black uppercase tracking-tighter text-lg mb-4 flex items-center gap-2">
+              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4 flex items-center gap-2">
                 <Gavel className="w-5 h-5" /> Issue New Ban
               </h3>
               <div className="space-y-4">
@@ -327,7 +327,7 @@ export default function ModCP() {
             </Card>
 
             <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
-              <h3 className="font-black uppercase tracking-tighter text-lg mb-4">Active Bans</h3>
+              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">Active Bans</h3>
               <div className="space-y-3">
                 {activeBans.length === 0 ? (
                   <p className="text-white/40 text-sm text-center py-8">No active bans</p>
@@ -366,7 +366,7 @@ export default function ModCP() {
 
         {activeTab === "reports" && (
           <>
-            <h1 className="text-4xl font-black tracking-tighter uppercase">Reports</h1>
+            <h1 className="text-4xl font-semibold tracking-tight uppercase">Reports</h1>
             <div className="space-y-3">
               {reports.length === 0 ? (
                 <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 text-center">
@@ -444,7 +444,7 @@ export default function ModCP() {
 
         {activeTab === "appeals" && (
           <>
-            <h1 className="text-4xl font-black tracking-tighter uppercase">Appeals Queue</h1>
+            <h1 className="text-4xl font-semibold tracking-tight uppercase">Appeals Queue</h1>
             <div className="space-y-3">
               {pendingAppeals.length === 0 ? (
                 <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 text-center">

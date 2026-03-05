@@ -67,7 +67,7 @@ export default function Onboarding() {
       <div className="hidden lg:flex w-[35%] bg-[#0A0A0A] p-12 flex-col justify-between text-white">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white flex items-center justify-center rounded">
-            <span className="text-black font-black text-xl italic">RS</span>
+            <span className="text-black font-semibold text-xl italic">RS</span>
           </div>
           <span className="font-bold text-xl tracking-tight">
             RIVET Studios™

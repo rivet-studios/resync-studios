@@ -133,7 +133,7 @@ export default function Subscriptions() {
 
               <div className="text-center space-y-1">
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl font-black">${tier.price}</span>
+                  <span className="text-3xl font-semibold">${tier.price}</span>
                   <span className="text-sm text-muted-foreground">/ month</span>
                 </div>
               </div>

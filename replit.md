@@ -28,7 +28,6 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Projects showcase page
 - ✅ Site offline mode
 - ✅ Staff Directory
-- ✅ Chat system
 - ✅ Scroll position fixed on navigation (ScrollToTop component)
 - ✅ Legal and policy pages centered and optimized for readability
 - ✅ Public access to forums, blogs, store, subscriptions (no login required to view)
@@ -58,9 +57,13 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **ScrollToTop**: Component implemented and rendered at App level to reset scroll position on navigation.
 - **CSS Optimization**: Removed duplicate `scroll-behavior: smooth` from body (kept on html only), removed `transition-colors duration-300` from body to reduce layout lag.
 
+### Deprecated Pages Removed:
+- **Groups/Clans**, **Builds**, **Chat** pages removed from routing and deleted.
+
 ### Design System:
 - **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).
-- **Typography**: Instrument Sans.
+- **Typography**: Inter (font-sans), with semibold/medium weights throughout (no font-black/900).
+- **Logo**: Clean inline SVG without container box, displayed directly in header and footer.
 - **Components**: Redesigned AdminCP, ModCP, and Settings Integrations using a professional dark sidebar layout.
 
 ## Database Schema
@@ -73,7 +76,7 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - Payments (tracks card charges with status)
 - Site Settings (offline mode, custom message)
 - Forums (categories, threads, replies)
-- Groups/Clans, Chat, Builds
+- ~~Groups/Clans, Chat, Builds~~ (deprecated and removed)
 
 ## API Routes Summary
 - **Products**: GET /api/products, GET /api/products/all (ops), GET /api/products/my, POST /api/products, PATCH /api/products/:id/review, PATCH /api/products/:id/badges

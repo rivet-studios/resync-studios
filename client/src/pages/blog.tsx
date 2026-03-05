@@ -68,7 +68,7 @@ export default function Blog() {
       <div className="max-w-7xl mx-auto px-6 space-y-16 pb-32">
         {/* Header */}
         <div className="space-y-4">
-          <h1 className="text-5xl font-black tracking-tighter uppercase text-white">Blog</h1>
+          <h1 className="text-5xl font-semibold tracking-tight uppercase text-white">Blog</h1>
           <p className="text-white/40 text-lg font-medium">Browse our latest blog posts and articles</p>
         </div>
 
@@ -86,7 +86,7 @@ export default function Blog() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-8 left-8 z-20">
-                      <Badge className="bg-white/10 backdrop-blur-xl text-white font-black px-4 py-1.5 rounded-full border border-white/10 uppercase tracking-widest text-[10px]">
+                      <Badge className="bg-white/10 backdrop-blur-xl text-white font-semibold px-4 py-1.5 rounded-full border border-white/10 uppercase tracking-widest text-[10px]">
                         Featured
                       </Badge>
                     </div>
@@ -103,7 +103,7 @@ export default function Blog() {
                         <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> 3 min read</span>
                       </div>
                       
-                      <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter">
+                      <h2 className="text-4xl md:text-5xl font-semibold text-white leading-tight tracking-tight">
                         {posts[0].title}
                       </h2>
                       <p className="text-white/40 text-xl font-medium leading-relaxed line-clamp-3">
@@ -115,7 +115,7 @@ export default function Blog() {
                       <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center border border-white/5 shadow-xl">
                         <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert opacity-60" />
                       </div>
-                      <span className="text-sm font-black uppercase tracking-widest text-white/80">David</span>
+                      <span className="text-sm font-semibold uppercase tracking-widest text-white/80">David</span>
                     </div>
                   </CardContent>
                 </div>
@@ -138,12 +138,12 @@ export default function Blog() {
                   />
                 </div>
                 <CardContent className="p-0 space-y-4">
-                  <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/20">
+                  <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest text-white/20">
                     <span>{new Date(post.createdAt!).toLocaleDateString()}</span>
                     <span>•</span>
                     <span>5 min read</span>
                   </div>
-                  <h4 className="text-2xl font-black text-white leading-snug tracking-tight line-clamp-2 group-hover:text-white/80 transition-colors">
+                  <h4 className="text-2xl font-semibold text-white leading-snug tracking-tight line-clamp-2 group-hover:text-white/80 transition-colors">
                     {post.title}
                   </h4>
                   <p className="text-white/30 text-base font-medium line-clamp-2 leading-relaxed">
@@ -165,11 +165,11 @@ export default function Blog() {
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-[#121212] border-white/5 text-white">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-black uppercase tracking-tight">Create Blog Post</DialogTitle>
+                  <DialogTitle className="text-2xl font-semibold uppercase tracking-tight">Create Blog Post</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Title</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Title</label>
                     <Input
                       placeholder="Post title..."
                       value={title}
@@ -178,7 +178,7 @@ export default function Blog() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Content</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Content</label>
                     <Textarea
                       placeholder="Write your article here..."
                       value={content}
@@ -189,7 +189,7 @@ export default function Blog() {
                   <Button
                     onClick={handleCreatePost}
                     disabled={createPostMutation.isPending}
-                    className="w-full h-14 bg-white text-black font-black uppercase tracking-widest hover:bg-white/90"
+                    className="w-full h-14 bg-white text-black font-semibold uppercase tracking-widest hover:bg-white/90"
                   >
                     {createPostMutation.isPending ? "Publishing..." : "Publish Article"}
                   </Button>

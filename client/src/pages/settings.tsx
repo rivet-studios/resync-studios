@@ -467,7 +467,7 @@ export default function Settings() {
         {activeTab === "integrations" && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-black text-4xl tracking-tighter uppercase">Integrations</h1>
+              <h1 className="font-semibold text-4xl tracking-tight uppercase">Integrations</h1>
               <p className="text-white/40 font-bold uppercase tracking-tight mt-1">
                 Link your accounts and services
               </p>
@@ -482,11 +482,11 @@ export default function Settings() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-black text-xl uppercase tracking-tighter">Discord</h4>
+                      <h4 className="font-semibold text-xl uppercase tracking-tight">Discord</h4>
                       {user?.discordId ? (
-                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-black uppercase">Connected</Badge>
+                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-semibold uppercase">Connected</Badge>
                       ) : (
-                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest">Not Linked</Badge>
+                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-semibold uppercase tracking-widest">Not Linked</Badge>
                       )}
                     </div>
                     <p className="text-xs font-bold text-white/40 uppercase leading-tight">
@@ -499,7 +499,7 @@ export default function Settings() {
                 {user?.discordId ? (
                   <Button
                     variant="outline"
-                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
+                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                     onClick={() => unlinkDiscordMutation.mutate()}
                     disabled={unlinkDiscordMutation.isPending}
                   >
@@ -507,7 +507,7 @@ export default function Settings() {
                   </Button>
                 ) : (
                   <Button
-                    className="w-full bg-[#5865F2] hover:bg-[#4752C4] h-12 rounded-xl font-black uppercase tracking-tighter text-xs transition-all"
+                    className="w-full bg-[#5865F2] hover:bg-[#4752C4] h-12 rounded-xl font-semibold uppercase tracking-tight text-xs transition-all"
                     onClick={() => linkDiscordMutation.mutate()}
                     disabled={linkDiscordMutation.isPending}
                   >
@@ -524,11 +524,11 @@ export default function Settings() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-black text-xl uppercase tracking-tighter">Roblox</h4>
+                      <h4 className="font-semibold text-xl uppercase tracking-tight">Roblox</h4>
                       {user?.robloxId ? (
-                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-black uppercase">Linked</Badge>
+                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg text-[10px] font-semibold uppercase">Linked</Badge>
                       ) : (
-                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest">Not Linked</Badge>
+                        <Badge className="bg-white/5 text-white/40 border-white/10 rounded-lg text-[10px] font-semibold uppercase tracking-widest">Not Linked</Badge>
                       )}
                     </div>
                     <p className="text-xs font-bold text-white/40 uppercase leading-tight">
@@ -541,7 +541,7 @@ export default function Settings() {
                 {user?.robloxId ? (
                   <Button
                     variant="outline"
-                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
+                    className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                     onClick={() => unlinkRobloxMutation.mutate()}
                     disabled={unlinkRobloxMutation.isPending}
                   >
@@ -556,7 +556,7 @@ export default function Settings() {
                       onChange={(e) => setRobloxUsername(e.target.value)}
                     />
                     <Button
-                      className="bg-white text-black hover:bg-white/90 px-6 h-12 rounded-xl font-black uppercase tracking-tighter text-xs"
+                      className="bg-white text-black hover:bg-white/90 px-6 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                       disabled={!robloxUsername}
                     >
                       Verify

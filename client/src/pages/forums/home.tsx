@@ -21,7 +21,7 @@ export default function ForumHome() {
     <div className="min-h-screen bg-[#050505] text-white pt-12">
       <div className="max-w-7xl mx-auto p-6 sm:p-10 space-y-12 animate-in fade-in duration-700 pb-24">
         <div className="space-y-2">
-          <h1 className="text-4xl font-black tracking-tight text-white uppercase">Forums</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-white uppercase">Forums</h1>
           <p className="text-white/40 font-medium">Connect with our community and get support</p>
         </div>
 
@@ -30,7 +30,7 @@ export default function ForumHome() {
           <aside className="lg:col-span-3 space-y-6">
             <Card className="border-white/5 bg-[#121212] rounded-3xl overflow-hidden shadow-2xl">
               <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
-                <CardTitle className="text-sm font-black uppercase tracking-widest text-white/90">
+                <CardTitle className="text-sm font-semibold uppercase tracking-widest text-white/90">
                   News & Information
                 </CardTitle>
                 <p className="text-[11px] font-bold text-white/20 mt-1 uppercase tracking-wider">{threads?.length || 0} posts</p>
@@ -58,7 +58,7 @@ export default function ForumHome() {
               </CardContent>
             </Card>
 
-            <Button asChild className="w-full h-14 bg-white text-black hover:bg-white/90 shadow-xl rounded-2xl font-black uppercase tracking-tighter transition-transform active:scale-95">
+            <Button asChild className="w-full h-14 bg-white text-black hover:bg-white/90 shadow-xl rounded-2xl font-semibold uppercase tracking-tight transition-transform active:scale-95">
               <Link href="/forums/new">
                 <Plus className="w-5 h-5 mr-2" strokeWidth={3} /> Start Discussion
               </Link>
@@ -97,7 +97,7 @@ export default function ForumHome() {
                         </span>
                         {thread.category && (
                           <div 
-                            className="px-2 py-0.5 rounded-md text-[10px] font-black border border-white/5 bg-white/[0.03] transition-colors hover:bg-white/10"
+                            className="px-2 py-0.5 rounded-md text-[10px] font-semibold border border-white/5 bg-white/[0.03] transition-colors hover:bg-white/10"
                             style={{ color: thread.category.color || '#666' }}
                           >
                             {thread.category.name}
@@ -109,7 +109,7 @@ export default function ForumHome() {
                     <div className="flex items-center gap-4 flex-shrink-0">
                       <div className="flex items-center gap-2 text-white/20">
                         <MessageSquare className="w-4 h-4" />
-                        <span className="text-sm font-black">{thread.replyCount}</span>
+                        <span className="text-sm font-semibold">{thread.replyCount}</span>
                       </div>
                       <ChevronRight className="w-5 h-5 text-white/10 group-hover:text-white/40 transition-all group-hover:translate-x-1" />
                     </div>
@@ -122,7 +122,7 @@ export default function ForumHome() {
                       <MessageSquare className="w-10 h-10 text-white/10" />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xl font-black text-white/80 uppercase tracking-tight">No discussions yet</p>
+                      <p className="text-xl font-semibold text-white/80 uppercase tracking-tight">No discussions yet</p>
                       <p className="text-white/30 font-medium">Be the first to start a conversation with the community!</p>
                     </div>
                   </div>

@@ -15,7 +15,7 @@ import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
-import Groups from "@/pages/groups";
+
 import ForumHome from "@/pages/forums/home";
 import ForumCategory from "@/pages/forums/category";
 import ForumThread from "@/pages/forums/thread";
@@ -38,11 +38,11 @@ import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
 import AboutRS from "@/pages/about-rs";
 import Rosewood from "@/pages/rosewood";
-import Chat from "@/pages/chat";
+
 import Admin from "@/pages/admin";
 import ModCP from "@/pages/modcp";
 import AdminCP from "@/pages/admincp";
-import Builds from "@/pages/builds";
+
 import Blog from "@/pages/blog";
 import Store from "@/pages/store";
 import Policies from "@/pages/policies";
@@ -62,15 +62,13 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="bg-slate-900 p-1.5 rounded-lg">
-                  <img
-                    src="/attached_assets/logo.svg"
-                    alt="RS"
-                    className="w-5 h-5 invert"
-                  />
-                </div>
-                <h3 className="font-bold text-lg">RIVET Studios™</h3>
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/attached_assets/logo.svg"
+                  alt="RS"
+                  className="w-6 h-6"
+                />
+                <h3 className="font-semibold text-base">RIVET Studios™</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Building the future of digital experiences with innovative
@@ -88,10 +86,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
                 Navigation
               </h4>
-              <ul className="space-y-3 text-sm font-semibold">
+              <ul className="space-y-3 text-sm font-normal">
                 <li>
                   <Link
                     href="/"
@@ -136,10 +134,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
                 Support & Resources
               </h4>
-              <ul className="space-y-3 text-sm font-semibold">
+              <ul className="space-y-3 text-sm font-normal">
                 <li>
                   <Link
                     href="/support"
@@ -168,10 +166,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-sm tracking-wider uppercase opacity-50">
+              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
                 Other
               </h4>
-              <ul className="space-y-3 text-sm font-semibold">
+              <ul className="space-y-3 text-sm font-normal">
                 <li>
                   <Link
                     href="/user"
@@ -201,14 +199,14 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-muted-foreground font-medium">
+            <p className="text-xs text-muted-foreground font-normal">
               © 2026 RIVET Studios™. All rights reserved. Metro Interactive,
               Metro Interactive: A New Era Begins™, Catalina, Sundown, RESYNC
               Studios, Reimagined™, The City Never Sleeps ― and Neither Do
               We™, "Creative Development. Visible Execution. RIVET Studios.",
               and all other logos and brands are trademarks of RIVET Studios™.
             </p>
-            <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+            <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
               Formerly RESYNC Studios™
             </p>
           </div>
@@ -263,9 +261,6 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/team" component={StaffDirectory} />
           <Route path="/search" component={UserSearch} />
-          <Route path="/builds" component={Builds} />
-          <Route path="/chat" component={Chat} />
-          <Route path="/groups" component={Groups} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/appeals" component={Appeals} />
           <Route path="/admin" component={Admin} />

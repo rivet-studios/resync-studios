@@ -96,7 +96,7 @@ export default function AdminCP() {
             <div className="flex flex-col items-center gap-4 text-center">
               <AlertTriangle className="w-12 h-12 text-red-500" />
               <div>
-                <h2 className="font-black text-xl text-white uppercase tracking-tighter">Access Denied</h2>
+                <h2 className="font-semibold text-xl text-white uppercase tracking-tight">Access Denied</h2>
                 <p className="text-white/40 text-sm mt-2">
                   You do not have permission to access the Administrator Control Panel.
                 </p>
@@ -114,9 +114,9 @@ export default function AdminCP() {
       <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
         <div className="flex items-center gap-3 px-4 py-6 mb-4">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-black font-black text-sm italic">RS</span>
+            <span className="text-black font-semibold text-sm italic">RS</span>
           </div>
-          <span className="font-black text-sm tracking-tighter uppercase">RIVET Studios™</span>
+          <span className="font-semibold text-sm tracking-tight uppercase">RIVET Studios™</span>
         </div>
 
         <button className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-white font-bold text-sm transition-all text-left">
@@ -144,7 +144,7 @@ export default function AdminCP() {
       {/* Main Content */}
       <div className="flex-1 p-8 space-y-8 overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-black tracking-tighter uppercase">Administrator Dashboard</h1>
+          <h1 className="text-4xl font-semibold tracking-tight uppercase">Administrator Dashboard</h1>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
             <Input 
@@ -160,12 +160,12 @@ export default function AdminCP() {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                 <Users className="w-4 h-4" />
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Total Members</CardTitle>
+                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Total Members</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-black mb-1">24,562</div>
-              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Growth: +12%</div>
+              <div className="text-4xl font-semibold mb-1">24,562</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tight">Growth: +12%</div>
             </CardContent>
           </Card>
 
@@ -173,12 +173,12 @@ export default function AdminCP() {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                 <Clock className="w-4 h-4" />
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Active Now</CardTitle>
+                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Active Now</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-black mb-1">1,842</div>
-              <div className="text-xs font-bold text-green-500 uppercase tracking-tighter">Peak: 2,450</div>
+              <div className="text-4xl font-semibold mb-1">1,842</div>
+              <div className="text-xs font-bold text-green-500 uppercase tracking-tight">Peak: 2,450</div>
             </CardContent>
           </Card>
 
@@ -186,12 +186,12 @@ export default function AdminCP() {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                 <Shield className="w-4 h-4" />
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Admin Actions</CardTitle>
+                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Admin Actions</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-black mb-1">452</div>
-              <div className="text-xs font-bold text-white/20 uppercase tracking-tighter">Today: 12</div>
+              <div className="text-4xl font-semibold mb-1">452</div>
+              <div className="text-xs font-bold text-white/20 uppercase tracking-tight">Today: 12</div>
             </CardContent>
           </Card>
 
@@ -199,12 +199,12 @@ export default function AdminCP() {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                 <AlertTriangle className="w-4 h-4" />
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest">Pending Reports</CardTitle>
+                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Pending Reports</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-black mb-1">14</div>
-              <div className="text-xs font-bold text-red-500 uppercase tracking-tighter">Critical: 2</div>
+              <div className="text-4xl font-semibold mb-1">14</div>
+              <div className="text-xs font-bold text-red-500 uppercase tracking-tight">Critical: 2</div>
             </CardContent>
           </Card>
         </div>
@@ -212,18 +212,18 @@ export default function AdminCP() {
         {/* Action Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2 bg-[#121212] border-white/5 rounded-3xl p-8">
-            <h3 className="text-2xl font-black uppercase tracking-tighter mb-8">Platform Health</h3>
+            <h3 className="text-2xl font-semibold uppercase tracking-tight mb-8">Platform Health</h3>
             <div className="min-h-[250px] flex items-center justify-center border border-white/5 rounded-2xl bg-white/[0.02]">
                <div className="text-center">
                   <History className="w-12 h-12 text-white/10 mx-auto mb-4" />
-                  <p className="text-xs font-black text-white/20 uppercase tracking-widest">Live metrics visualization</p>
+                  <p className="text-xs font-semibold text-white/20 uppercase tracking-widest">Live metrics visualization</p>
                </div>
             </div>
           </Card>
 
           <div className="space-y-6">
             <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
-              <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Quick Actions</h3>
+              <h3 className="text-xl font-semibold uppercase tracking-tight mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <Button variant="outline" className="w-full justify-start border-white/5 hover:bg-white/5 h-12 rounded-xl font-bold">
                   <Plus className="w-4 h-4 mr-3" /> New Announcement
@@ -238,9 +238,9 @@ export default function AdminCP() {
             </Card>
 
             <Card className="bg-red-500/10 border-red-500/20 rounded-3xl p-8">
-              <h3 className="text-xl font-black uppercase tracking-tighter text-red-500 mb-2">Emergency</h3>
+              <h3 className="text-xl font-semibold uppercase tracking-tight text-red-500 mb-2">Emergency</h3>
               <p className="text-xs font-bold text-red-500/60 uppercase mb-4">Maintenance Mode</p>
-              <Button className="w-full bg-red-600 hover:bg-red-700 h-14 rounded-xl font-black uppercase tracking-tighter active:scale-95 transition-all">
+              <Button className="w-full bg-red-600 hover:bg-red-700 h-14 rounded-xl font-semibold uppercase tracking-tight active:scale-95 transition-all">
                 Enable Offline Mode
               </Button>
             </Card>

@@ -42,8 +42,8 @@ export default function News() {
         {/* Header Section */}
         <div className="space-y-8">
           <div className="space-y-4">
-            <Badge className="bg-white/5 text-white/40 border-white/10 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">Featured Post</Badge>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-tight text-white">{post.title}</h1>
+            <Badge className="bg-white/5 text-white/40 border-white/10 px-4 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.2em]">Featured Post</Badge>
+            <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight text-white">{post.title}</h1>
             <p className="text-white/40 text-xl font-medium leading-relaxed">A first look at our brand new digital ecosystem.</p>
           </div>
 
@@ -53,7 +53,7 @@ export default function News() {
                 <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert opacity-60" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-black uppercase tracking-widest text-white">David</span>
+                <span className="text-sm font-semibold uppercase tracking-widest text-white">David</span>
                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Founder</span>
               </div>
             </div>
@@ -92,21 +92,21 @@ export default function News() {
           ].map((react, i) => (
             <button key={i} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 hover:bg-white/10 transition-all active:scale-95 group">
               <react.icon className={`w-4 h-4 ${react.color} opacity-70 group-hover:opacity-100`} />
-              <span className="text-xs font-black">{react.count}</span>
+              <span className="text-xs font-semibold">{react.count}</span>
             </button>
           ))}
         </div>
 
         {/* Recently Viewed */}
         <div className="space-y-6 pt-12">
-           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Recently viewed</h4>
+           <h4 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/20">Recently viewed</h4>
            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-xl border border-white/5">
                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10" />
                    <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-white/60">User {i+1}</span>
-                      <span className="text-[8px] font-medium text-white/20 uppercase tracking-tighter">about 2 hours ago</span>
+                      <span className="text-[8px] font-medium text-white/20 uppercase tracking-tight">about 2 hours ago</span>
                    </div>
                 </div>
               ))}
@@ -117,7 +117,7 @@ export default function News() {
         <div className="space-y-12 pt-20">
           <div className="flex items-center gap-4">
             <MessageSquare className="w-6 h-6 text-white/40" />
-            <h3 className="text-2xl font-black uppercase tracking-tight">Comments (12)</h3>
+            <h3 className="text-2xl font-semibold uppercase tracking-tight">Comments (12)</h3>
           </div>
 
           <div className="space-y-6">
@@ -126,7 +126,7 @@ export default function News() {
                 placeholder="Share your thoughts..." 
                 className="bg-white/5 border-white/10 rounded-[2rem] min-h-[160px] p-8 text-white font-medium resize-none focus:bg-white/[0.08] transition-all"
               />
-              <Button className="absolute bottom-6 right-6 bg-white text-black font-black uppercase tracking-widest px-8 rounded-xl hover:bg-white/90 shadow-xl transition-all active:scale-95">Post comment</Button>
+              <Button className="absolute bottom-6 right-6 bg-white text-black font-semibold uppercase tracking-widest px-8 rounded-xl hover:bg-white/90 shadow-xl transition-all active:scale-95">Post comment</Button>
             </div>
 
             <div className="space-y-8 pt-8">
@@ -138,14 +138,14 @@ export default function News() {
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-black text-white">Guest User</span>
-                        <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[8px] font-black uppercase rounded">Founders Edition VIP</span>
+                        <span className="text-sm font-semibold text-white">Guest User</span>
+                        <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[8px] font-semibold uppercase rounded">Founders Edition VIP</span>
                       </div>
                       <span className="text-[10px] font-bold text-white/20 uppercase">Feb 27, 2026 12:45 PM</span>
                     </div>
                     <p className="text-white/60 font-medium leading-relaxed">Wow, this looks amazing! Can't wait for the new update to drop. The team has been working really hard on this.</p>
                     <div className="flex items-center gap-6">
-                       <button className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white transition-colors">Reply</button>
+                       <button className="text-[10px] font-semibold uppercase tracking-widest text-white/20 hover:text-white transition-colors">Reply</button>
                        <div className="flex items-center gap-3">
                           <Heart className="w-3 h-3 text-white/20 cursor-pointer hover:text-red-500 transition-colors" />
                           <MessageSquare className="w-3 h-3 text-white/20 cursor-pointer hover:text-blue-500 transition-colors" />

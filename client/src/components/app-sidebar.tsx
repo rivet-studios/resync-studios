@@ -27,7 +27,7 @@ import {
   Home,
   Target,
   Users,
-  Swords,
+
   MessageSquare,
   Crown,
   Settings,
@@ -56,8 +56,6 @@ const mainNavItems = [
   { title: "Announcements", url: "/news", icon: Megaphone },
   { title: "nil", url: "/not-found", icon: Target },
   { title: "Unauthorized", url: "/unauthorized", icon: Target },
-  { title: "Groups", url: "/groups", icon: Users },
-  { title: "Builds & Meta", url: "/builds", icon: Swords },
   { title: "Forums", url: "/forums", icon: MessageSquare },
   { title: "Our Team", url: "/team", icon: UsersRound },
 ];

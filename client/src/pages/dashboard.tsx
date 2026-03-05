@@ -36,7 +36,7 @@ export default function Dashboard() {
           <Shield className="w-10 h-10 text-slate-400" />
         </div>
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+          <h2 className="text-2xl font-semibold text-slate-900 uppercase tracking-tight">
             Access Restricted
           </h2>
           <p className="text-slate-500 font-medium">
@@ -68,7 +68,6 @@ export default function Dashboard() {
       color: "text-teal-500",
       hide: !user.isModerator && !user.isAdmin,
     },
-    { icon: Users, label: "Groups", href: "/groups", color: "text-indigo-500" },
     {
       icon: MessageSquare,
       label: "Forums",
@@ -86,7 +85,7 @@ export default function Dashboard() {
             <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center">
               <Activity className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tight">
+            <h1 className="text-4xl font-semibold text-slate-900 uppercase tracking-tight">
               Dashboard
             </h1>
           </div>
@@ -98,7 +97,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           {user?.vipTier && user.vipTier !== "none" ? (
-            <Badge className="bg-amber-400 text-white font-black rounded-xl px-4 py-2 text-sm shadow-lg border-none uppercase">
+            <Badge className="bg-amber-400 text-white font-semibold rounded-xl px-4 py-2 text-sm shadow-lg border-none uppercase">
               {user.vipTier.replace("_", " ")}
             </Badge>
           ) : (
@@ -127,10 +126,10 @@ export default function Dashboard() {
                     <Users className="w-6 h-6 text-blue-500" />
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">
                       Posts
                     </p>
-                    <p className="text-3xl font-black text-slate-900">
+                    <p className="text-3xl font-semibold text-slate-900">
                       {(user as any).totalPosts || 0}
                     </p>
                   </div>
@@ -144,10 +143,10 @@ export default function Dashboard() {
                     <Crown className="w-6 h-6 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">
                       Reputation
                     </p>
-                    <p className="text-3xl font-black text-slate-900">
+                    <p className="text-3xl font-semibold text-slate-900">
                       {(user as any).reputation || 0}
                     </p>
                   </div>
@@ -161,10 +160,10 @@ export default function Dashboard() {
                     <Activity className="w-6 h-6 text-teal-500" />
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">
                       Status
                     </p>
-                    <p className="text-3xl font-black text-slate-900 uppercase">
+                    <p className="text-3xl font-semibold text-slate-900 uppercase">
                       Active
                     </p>
                   </div>
@@ -176,7 +175,7 @@ export default function Dashboard() {
           {/* Featured Content Area */}
           <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden">
             <CardHeader className="p-8 pb-4 border-b border-slate-50 flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">
+              <CardTitle className="text-xl font-semibold text-slate-900 uppercase tracking-tight">
                 Recent Activity
               </CardTitle>
               <Button
@@ -208,7 +207,7 @@ export default function Dashboard() {
           {/* Quick Actions */}
           <Card className="border-none shadow-xl bg-slate-900 rounded-[2rem] overflow-hidden text-white">
             <CardHeader className="p-8 pb-4">
-              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-400">
+              <CardTitle className="text-sm font-semibold uppercase tracking-widest text-slate-400">
                 Quick Access
               </CardTitle>
             </CardHeader>
@@ -237,7 +236,7 @@ export default function Dashboard() {
           {(!user?.discordId || !user?.robloxId) && (
             <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden">
               <CardHeader className="p-8 pb-4">
-                <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-400">
+                <CardTitle className="text-sm font-semibold uppercase tracking-widest text-slate-400">
                   Security & Linking
                 </CardTitle>
               </CardHeader>
@@ -249,7 +248,7 @@ export default function Dashboard() {
                 <div className="space-y-2">
                   {!user?.discordId && (
                     <Button
-                      className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-black h-12 rounded-xl"
+                      className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold h-12 rounded-xl"
                       asChild
                     >
                       <Link href="/settings">
@@ -260,7 +259,7 @@ export default function Dashboard() {
                   )}
                   {!user?.robloxId && (
                     <Button
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black h-12 rounded-xl"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold h-12 rounded-xl"
                       asChild
                     >
                       <Link href="/settings">

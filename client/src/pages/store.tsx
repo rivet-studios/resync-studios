@@ -133,7 +133,7 @@ export default function Store() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-16 animate-in fade-in duration-500">
       <div className="space-y-2">
-        <h1 className="text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
+        <h1 className="text-3xl font-semibold uppercase tracking-tight text-white flex items-center gap-3">
           <ShoppingBag className="w-8 h-8" />
           Store
         </h1>

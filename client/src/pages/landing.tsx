@@ -81,10 +81,10 @@ export default function Landing() {
             <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-md px-4 py-1 hover:bg-white/30 transition-colors">
               Building the Future of Digital Experiences
             </Badge>
-            <h1 className="text-6xl sm:text-8xl font-bold tracking-tight text-white leading-tight drop-shadow-2xl">
+            <h1 className="text-5xl sm:text-7xl font-semibold tracking-tight text-white leading-tight drop-shadow-2xl">
               RIVET Studios™
             </h1>
-            <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto font-semibold drop-shadow-lg">
+            <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-normal drop-shadow-lg">
               We don’t just build games. We build worlds that breathe, stories
               that live, and brands that command attention. RIVET Studios sits
               at the crossroads of development, branding, and long-term creative
@@ -96,7 +96,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
             <Button
               size="lg"
-              className="bg-[#0071b2] text-white hover:bg-[#005d92] px-10 h-16 text-xl font-bold shadow-2xl rounded-2xl transition-all hover:scale-105 active:scale-95"
+              className="bg-[#0071b2] text-white px-10 h-14 text-lg font-medium shadow-2xl rounded-xl transition-all hover:scale-105 active:scale-95"
               asChild
             >
               <Link href="/signup">Join Community</Link>
@@ -104,7 +104,7 @@ export default function Landing() {
             <Button
               size="lg"
               variant="outline"
-              className="border-white/40 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-10 h-16 text-xl font-bold rounded-2xl transition-all hover:scale-105 active:scale-95"
+              className="border-white/40 bg-white/10 text-white backdrop-blur-md px-10 h-14 text-lg font-medium rounded-xl transition-all hover:scale-105 active:scale-95"
               asChild
             >
               <Link href="/about">Learn More</Link>
@@ -119,10 +119,10 @@ export default function Landing() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center space-y-3">
-                <div className="text-5xl font-black text-[#0071b2] tracking-tighter">
+                <div className="text-4xl font-semibold text-[#0071b2] tracking-tight">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
                   {stat.label}
                 </p>
               </div>
@@ -135,10 +135,10 @@ export default function Landing() {
       <section className="py-32 bg-white">
         <div className="container mx-auto px-4 space-y-20">
           <div className="text-center space-y-6 max-w-3xl mx-auto">
-            <h2 className="text-5xl font-black tracking-tight text-slate-900 sm:text-6xl">
+            <h2 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
               Everything you need for thriving communities
             </h2>
-            <p className="text-xl text-slate-600 font-medium leading-relaxed">
+            <p className="text-lg text-slate-600 font-normal leading-relaxed">
               Our gaming platform provides all the essential tools needed to
               build thriving communities
             </p>
@@ -157,16 +157,16 @@ export default function Landing() {
                       <Icon className="w-8 h-8" />
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-2xl font-bold text-slate-900 group-hover:text-[#0071b2] transition-colors">
+                      <h3 className="text-xl font-semibold text-slate-900 group-hover:text-[#0071b2] transition-colors">
                         {feature.title}
                       </h3>
-                      <p className="text-slate-600 leading-relaxed font-medium text-lg">
+                      <p className="text-slate-600 leading-relaxed font-normal text-base">
                         {feature.description}
                       </p>
                     </div>
                     <Button
                       variant="ghost"
-                      className="p-0 h-auto hover:bg-transparent text-[#0071b2] text-lg font-bold group-hover:gap-3 transition-all"
+                      className="p-0 h-auto hover:bg-transparent text-[#0071b2] text-sm font-medium group-hover:gap-3 transition-all"
                     >
                       Learn more <ArrowRight className="w-5 h-5" />
                     </Button>
