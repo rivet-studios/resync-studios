@@ -197,7 +197,7 @@ export function MainHeader() {
                       "Staff Department Director",
                       "Operations Manager",
                       "Company Director",
-                    ].includes(user.userRank)) && (
+                    ].includes(user.userRank || "")) && (
                     <>
                       <DropdownMenuItem asChild>
                         <Link href="/modcp" className="cursor-pointer">
