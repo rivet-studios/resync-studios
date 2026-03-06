@@ -471,16 +471,41 @@ export async function registerRoutes(
   app.patch("/api/users/profile", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const { username, bio, signature } = req.body;
-      await storage.updateUser(userId, {
-        username,
-        bio,
-        signature,
-        updatedAt: new Date(),
-      } as any);
+      const profileUpdateSchema = z.object({
+        username: z.string().min(3).max(30).optional(),
+        bio: z.string().max(500).optional(),
+        signature: z.string().max(500).optional(),
+        profileImageUrl: z.string().url().or(z.literal("")).optional(),
+        dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format").or(z.literal("")).optional(),
+      });
+      const parsed = profileUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten() });
+      }
+      const { username, bio, signature, profileImageUrl, dateOfBirth } = parsed.data;
+      const updates: any = { updatedAt: new Date() };
+      if (username !== undefined) updates.username = username;
+      if (bio !== undefined) updates.bio = bio;
+      if (signature !== undefined) updates.signature = signature;
+      if (profileImageUrl !== undefined) updates.profileImageUrl = profileImageUrl || null;
+      if (dateOfBirth !== undefined) updates.dateOfBirth = dateOfBirth || null;
+      await storage.updateUser(userId, updates);
       res.json({ message: "Profile updated" });
     } catch (error) {
       res.status(500).json({ message: "Update failed" });
+    }
+  });
+
+  app.delete("/api/users/account", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      await storage.deleteUser(userId);
+      req.logout((err) => {
+        if (err) return res.status(500).json({ message: "Account deleted but logout failed" });
+        res.json({ message: "Account deleted" });
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete account" });
     }
   });
 

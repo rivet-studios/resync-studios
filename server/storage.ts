@@ -57,6 +57,7 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
+  deleteUser(id: string): Promise<void>;
   createMagicLinkToken(email: string): Promise<string>;
   verifyMagicLinkToken(token: string): Promise<string | undefined>;
   markMagicLinkTokenAsUsed(token: string): Promise<void>;
@@ -226,6 +227,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(reports).where(eq(reports.reporterId, id));
+    await db.delete(appeals).where(eq(appeals.userId, id));
+    await db.delete(bans).where(eq(bans.userId, id));
+    await db.delete(forumReplies).where(eq(forumReplies.authorId, id));
+    await db.delete(forumThreads).where(eq(forumThreads.authorId, id));
+    await db.delete(payments).where(eq(payments.userId, id));
+    await db.delete(users).where(eq(users.id, id));
   }
   async createMagicLinkToken(email: string): Promise<string> {
     const token = randomUUID();

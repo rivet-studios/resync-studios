@@ -166,6 +166,7 @@ export const users = pgTable("users", {
   Staff_Department_Director: boolean("Staff Department Director").default(
     false,
   ),
+  dateOfBirth: varchar("date_of_birth"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

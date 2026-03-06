@@ -3,7 +3,7 @@
 ## Project Overview
 Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, marketplace, user profiles, comprehensive rank system, moderation tools, and ban/appeal system.
 
-## Current Status (March 05, 2026)
+## Current Status (March 06, 2026)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
 - ✅ Comprehensive user rank system (40+ ranks)
 - ✅ Landing page with hero, stats counter, and features grid
@@ -19,7 +19,8 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Ban management (issue/lift bans via ModCP)
 - ✅ Appeal system for banned users
 - ✅ Policies hub aggregating all legal documents
-- ✅ Settings page with redesigned Integrations tab
+- ✅ Settings page with profile image URL, multiline signature, DOB, theme/layout preferences, delete account
+- ✅ Settings Integrations tab redesigned
 - ✅ Professional navigation header with search
 - ✅ AdminCP and ModCP with sidebar-based dark layout
 - ✅ ModCP tabs: Dashboard, Ban Management, Reports, Appeals

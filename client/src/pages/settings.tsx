@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useTheme } from "@/components/theme-provider";
 import {
   Card,
   CardContent,
@@ -33,6 +34,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -41,19 +53,19 @@ import {
   User,
   Link as LinkIcon,
   CreditCard,
-  Bell,
-  Shield,
-  CheckCircle,
-  XCircle,
-  ExternalLink,
-  AlertCircle,
   Crown,
   Palette,
   Download,
   Package,
-  Gift,
-  Lock,
-  ArrowRight,
+  ExternalLink,
+  Trash2,
+  AlertTriangle,
+  Sun,
+  Moon,
+  Monitor,
+  ImagePlus,
+  Calendar,
+  ShieldAlert,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
 
@@ -66,8 +78,14 @@ const profileSchema = z.object({
   bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
   signature: z
     .string()
-    .max(200, "Signature must be 200 characters or less")
+    .max(500, "Signature must be 500 characters or less")
     .optional(),
+  profileImageUrl: z
+    .string()
+    .url("Must be a valid URL")
+    .or(z.literal(""))
+    .optional(),
+  dateOfBirth: z.string().optional(),
 });
 
 type ProfileForm = z.infer<typeof profileSchema>;
@@ -116,13 +134,22 @@ const SETTINGS_TABS = [
     icon: Package,
     category: "Account Management",
   },
+  {
+    id: "danger",
+    label: "Danger Zone",
+    icon: ShieldAlert,
+    category: "Account Management",
+  },
 ];
 
 export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [location] = useLocation();
-  const [theme, setTheme] = useState("dark");
+  const [location, navigate] = useLocation();
+  const { theme, setTheme } = useTheme();
+  const [navLayout, setNavLayout] = useState(
+    () => localStorage.getItem("resync-nav-layout") || "top",
+  );
 
   const params = new URLSearchParams(window.location.search);
   const initialTab = params.get("tab") || "account";
@@ -140,8 +167,12 @@ export default function Settings() {
       username: user?.username || "",
       bio: user?.bio || "",
       signature: (user as any)?.signature || "",
+      profileImageUrl: user?.profileImageUrl || "",
+      dateOfBirth: (user as any)?.dateOfBirth || "",
     },
   });
+
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileForm) => {
@@ -160,6 +191,28 @@ export default function Settings() {
         title: "Error",
         description:
           "Failed to update profile. Contact support to manually update profile.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("DELETE", "/api/users/account");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      queryClient.clear();
+      navigate("/");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete account. Please contact support.",
         variant: "destructive",
       });
     },
@@ -244,7 +297,6 @@ export default function Settings() {
     return "U";
   };
 
-  // Group tabs by category
   const groupedTabs = SETTINGS_TABS.reduce(
     (acc, tab) => {
       const category = tab.category;
@@ -257,7 +309,6 @@ export default function Settings() {
 
   return (
     <div className="flex gap-6 max-w-6xl mx-auto py-8 px-4">
-      {/* Left Sidebar Navigation */}
       <div className="w-full sm:w-56 flex-shrink-0">
         <div className="sticky top-0 space-y-6">
           {Object.entries(groupedTabs).map(([category, tabs]) => (
@@ -277,7 +328,7 @@ export default function Settings() {
                         isActive
                           ? "bg-primary text-primary-foreground"
                           : "text-foreground hover:bg-muted"
-                      }`}
+                      } ${tab.id === "danger" ? "text-red-400" : ""}`}
                       data-active={isActive}
                       data-testid={`settings-tab-${tab.id}`}
                     >
@@ -292,9 +343,7 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Right Content Area */}
       <div className="flex-1 space-y-6">
-        {/* Account Tab */}
         {activeTab === "account" && (
           <div className="space-y-6">
             <div>
@@ -314,30 +363,51 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-20 h-20">
-                    <AvatarImage
-                      src={user?.profileImageUrl || undefined}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="text-xl">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">Profile Photo</p>
-                    <p className="text-sm text-muted-foreground">
-                      Your profile photo is managed by your login provider
-                      (Discord)
-                    </p>
-                  </div>
-                </div>
-
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmitProfile)}
-                    className="space-y-4"
+                    className="space-y-6"
                   >
+                    <div className="flex items-start gap-6">
+                      <div className="flex flex-col items-center gap-2">
+                        <Avatar className="w-24 h-24">
+                          <AvatarImage
+                            src={form.watch("profileImageUrl") || user?.profileImageUrl || undefined}
+                            className="object-cover"
+                          />
+                          <AvatarFallback className="text-xl">
+                            {getInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <ImagePlus className="w-3 h-3" />
+                          <span>Set below</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="profileImageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Profile Image URL</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="https://example.com/your-avatar.png"
+                                  {...field}
+                                  data-testid="input-settings-profile-image"
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Enter a direct link to an image. Supports PNG, JPG, GIF, and WebP.
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="username"
@@ -388,14 +458,43 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>Signature</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Your custom signature..."
+                            <Textarea
+                              placeholder="Your custom signature... Supports **markdown** formatting."
+                              className="resize-vertical min-h-[80px]"
+                              rows={3}
                               {...field}
                               data-testid="input-settings-signature"
                             />
                           </FormControl>
                           <FormDescription>
-                            Appears at the bottom of your profile and posts.
+                            Appears at the bottom of your profile and posts. Supports basic markdown formatting.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dateOfBirth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Date of Birth
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              data-testid="input-settings-dob"
+                            />
+                          </FormControl>
+                          <FormDescription className="flex items-start gap-2">
+                            <ShieldAlert className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                            <span>
+                              This is private information and will <strong>never</strong> be shown publicly on your profile or to other users. It is only used for age verification and compliance purposes.
+                            </span>
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -418,7 +517,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Appearance Tab */}
         {activeTab === "appearance" && (
           <div className="space-y-6">
             <div>
@@ -438,32 +536,102 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FormLabel>Theme Mode</FormLabel>
-                <Select
-                  value={theme}
-                  onValueChange={(value) => {
-                    setTheme(value);
-                    localStorage.setItem("react-studios-theme", value);
-                  }}
-                >
-                  <SelectTrigger className="w-full sm:w-64">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Your theme preference is saved locally.
-                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: "light" as const, label: "Light", icon: Sun },
+                    { value: "system" as const, label: "System", icon: Monitor },
+                    { value: "dark" as const, label: "Dark", icon: Moon },
+                  ].map((option) => {
+                    const Icon = option.icon;
+                    const isSelected = theme === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setTheme(option.value)}
+                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/5"
+                            : "border-white/10 hover:border-white/20"
+                        }`}
+                        data-testid={`button-theme-${option.value}`}
+                      >
+                        <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                        <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          {option.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Navigation Layout</CardTitle>
+                <CardDescription>
+                  Choose how the navigation bar is displayed
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { value: "top", label: "Top Navigation", description: "Classic horizontal navigation bar at the top" },
+                    { value: "sidebar", label: "Side Navigation", description: "Vertical sidebar navigation on the left" },
+                  ].map((option) => {
+                    const isSelected = navLayout === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setNavLayout(option.value);
+                          localStorage.setItem("resync-nav-layout", option.value);
+                          toast({
+                            title: "Layout updated",
+                            description: `Navigation set to ${option.label.toLowerCase()}. Refresh to see changes.`,
+                          });
+                        }}
+                        className={`flex flex-col items-start gap-2 p-4 rounded-xl border-2 transition-all text-left ${
+                          isSelected
+                            ? "border-primary bg-primary/5"
+                            : "border-white/10 hover:border-white/20"
+                        }`}
+                        data-testid={`button-nav-${option.value}`}
+                      >
+                        <div className={`w-full h-16 rounded-lg border ${isSelected ? "border-primary/30" : "border-white/10"} relative overflow-hidden`}>
+                          {option.value === "top" ? (
+                            <>
+                              <div className={`w-full h-3 ${isSelected ? "bg-primary/20" : "bg-white/5"}`} />
+                              <div className="p-1 space-y-1">
+                                <div className={`w-3/4 h-1.5 rounded ${isSelected ? "bg-primary/10" : "bg-white/5"}`} />
+                                <div className={`w-1/2 h-1.5 rounded ${isSelected ? "bg-primary/10" : "bg-white/5"}`} />
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex h-full">
+                              <div className={`w-5 h-full ${isSelected ? "bg-primary/20" : "bg-white/5"}`} />
+                              <div className="flex-1 p-1 space-y-1">
+                                <div className={`w-3/4 h-1.5 rounded ${isSelected ? "bg-primary/10" : "bg-white/5"}`} />
+                                <div className={`w-1/2 h-1.5 rounded ${isSelected ? "bg-primary/10" : "bg-white/5"}`} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          {option.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
           </div>
         )}
 
-        {/* Integrations Tab */}
         {activeTab === "integrations" && (
           <div className="space-y-6">
             <div>
@@ -474,7 +642,6 @@ export default function Settings() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Discord Connection */}
               <Card className="bg-[#121212] border-white/5 rounded-3xl p-6 flex flex-col justify-between">
                 <div className="flex items-start gap-4 mb-8">
                   <div className="w-16 h-16 rounded-2xl bg-[#5865F2]/10 flex items-center justify-center">
@@ -502,6 +669,7 @@ export default function Settings() {
                     className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                     onClick={() => unlinkDiscordMutation.mutate()}
                     disabled={unlinkDiscordMutation.isPending}
+                    data-testid="button-unlink-discord"
                   >
                     Unlink Account
                   </Button>
@@ -510,13 +678,13 @@ export default function Settings() {
                     className="w-full bg-[#5865F2] hover:bg-[#4752C4] h-12 rounded-xl font-semibold uppercase tracking-tight text-xs transition-all"
                     onClick={() => linkDiscordMutation.mutate()}
                     disabled={linkDiscordMutation.isPending}
+                    data-testid="button-link-discord"
                   >
                     Link Discord <ExternalLink className="w-3 h-3 ml-2" />
                   </Button>
                 )}
               </Card>
 
-              {/* Roblox Connection */}
               <Card className="bg-[#121212] border-white/5 rounded-3xl p-6 flex flex-col justify-between">
                 <div className="flex items-start gap-4 mb-8">
                   <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
@@ -544,6 +712,7 @@ export default function Settings() {
                     className="w-full border-white/5 hover:bg-white/5 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                     onClick={() => unlinkRobloxMutation.mutate()}
                     disabled={unlinkRobloxMutation.isPending}
+                    data-testid="button-unlink-roblox"
                   >
                     Unlink Account
                   </Button>
@@ -554,10 +723,12 @@ export default function Settings() {
                       className="bg-white/5 border-white/5 rounded-xl h-12 flex-1"
                       value={robloxUsername}
                       onChange={(e) => setRobloxUsername(e.target.value)}
+                      data-testid="input-roblox-username"
                     />
                     <Button
                       className="bg-white text-black hover:bg-white/90 px-6 h-12 rounded-xl font-semibold uppercase tracking-tight text-xs"
                       disabled={!robloxUsername}
+                      data-testid="button-verify-roblox"
                     >
                       Verify
                     </Button>
@@ -568,7 +739,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Billing Tab */}
         {activeTab === "billing" && (
           <div className="space-y-6">
             <div>
@@ -605,7 +775,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Payment Methods Tab */}
         {activeTab === "payments" && (
           <div className="space-y-6">
             <div>
@@ -642,7 +811,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Subscription Tab */}
         {activeTab === "subscription" && (
           <div className="space-y-6">
             <div>
@@ -681,7 +849,7 @@ export default function Settings() {
                       Upgrade to VIP to unlock exclusive features!
                     </p>
                     <Button asChild>
-                      <Link href="/vip">View Membership Plans</Link>
+                      <Link href="/vip" data-testid="link-view-vip-plans">View Membership Plans</Link>
                     </Button>
                   </div>
                 )}
@@ -690,7 +858,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Downloads Tab */}
         {activeTab === "downloads" && (
           <div className="space-y-6">
             <div>
@@ -715,7 +882,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Orders Tab */}
         {activeTab === "orders" && (
           <div className="space-y-6">
             <div>
@@ -733,6 +899,98 @@ export default function Settings() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">No orders on file</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "danger" && (
+          <div className="space-y-6">
+            <div>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold text-red-500">
+                Danger Zone
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Irreversible actions for your account
+              </p>
+            </div>
+
+            <Card className="border-red-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-red-500">
+                  <Trash2 className="w-5 h-5" />
+                  Delete Account
+                </CardTitle>
+                <CardDescription>
+                  Permanently delete your account and all associated data
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-2 text-sm">
+                      <p className="font-semibold text-red-400">
+                        This action is permanent and cannot be undone.
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Your profile, posts, and all content will be permanently removed</li>
+                        <li>Your forum threads and replies will be deleted</li>
+                        <li>All linked accounts (Discord, Roblox) will be disconnected</li>
+                        <li>Active subscriptions will be cancelled immediately</li>
+                        <li>You will not be able to recover your account or data</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <FormLabel className="text-sm text-muted-foreground">
+                    Type <span className="font-mono font-semibold text-red-400">DELETE</span> to confirm
+                  </FormLabel>
+                  <Input
+                    placeholder="Type DELETE to confirm"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    className="border-red-500/20"
+                    data-testid="input-delete-confirm"
+                  />
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        disabled={deleteConfirmText !== "DELETE" || deleteAccountMutation.isPending}
+                        className="w-full"
+                        data-testid="button-delete-account"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {deleteAccountMutation.isPending ? "Deleting..." : "Delete My Account"}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-500" />
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete your account and all of your data. This action cannot be undone and your account cannot be recovered.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteAccountMutation.mutate()}
+                          className="bg-red-600 hover:bg-red-700"
+                          data-testid="button-confirm-delete"
+                        >
+                          Yes, delete my account
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </CardContent>
             </Card>
           </div>
