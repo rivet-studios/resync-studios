@@ -133,6 +133,18 @@ export interface IStorage {
   getUserAppeals(userId: string): Promise<Appeal[]>;
   createAppeal(appeal: InsertAppeal): Promise<Appeal>;
   updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined>;
+  getAdminStats(): Promise<{
+    totalUsers: number;
+    totalThreads: number;
+    totalReplies: number;
+    totalProducts: number;
+    activeBans: number;
+    pendingReports: number;
+    pendingAppeals: number;
+    totalPayments: number;
+    totalAnnouncements: number;
+  }>;
+  getRecentActivity(limit?: number): Promise<any[]>;
   getStats(): Promise<{
     totalMembers: number;
     activeLfg: number;
@@ -646,6 +658,64 @@ export class DatabaseStorage implements IStorage {
       totalGroups: Number(groupCount.count),
       totalBuilds: Number(buildCount.count),
     };
+  }
+
+  async getAdminStats() {
+    const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
+    const [threadCount] = await db.select({ count: sql`count(*)` }).from(forumThreads);
+    const [replyCount] = await db.select({ count: sql`count(*)` }).from(forumReplies);
+    const [productCount] = await db.select({ count: sql`count(*)` }).from(products);
+    const [banCount] = await db.select({ count: sql`count(*)` }).from(bans).where(eq(bans.isActive, true));
+    const [reportCount] = await db.select({ count: sql`count(*)` }).from(reports).where(sql`${reports.status} = 'Pending'`);
+    const [appealCount] = await db.select({ count: sql`count(*)` }).from(appeals).where(sql`${appeals.status} = 'pending'`);
+    const [paymentCount] = await db.select({ count: sql`count(*)` }).from(payments);
+    const [announcementCount] = await db.select({ count: sql`count(*)` }).from(announcements);
+    return {
+      totalUsers: Number(userCount.count),
+      totalThreads: Number(threadCount.count),
+      totalReplies: Number(replyCount.count),
+      totalProducts: Number(productCount.count),
+      activeBans: Number(banCount.count),
+      pendingReports: Number(reportCount.count),
+      pendingAppeals: Number(appealCount.count),
+      totalPayments: Number(paymentCount.count),
+      totalAnnouncements: Number(announcementCount.count),
+    };
+  }
+
+  async getRecentActivity(limit = 20): Promise<any[]> {
+    const recentBans = await db.select({
+      id: bans.id,
+      type: sql`'ban'`.as('type'),
+      description: bans.reason,
+      targetId: bans.userId,
+      actorId: bans.bannedBy,
+      createdAt: bans.createdAt,
+    }).from(bans).orderBy(desc(bans.createdAt)).limit(limit);
+
+    const recentReports = await db.select({
+      id: reports.id,
+      type: sql`'report'`.as('type'),
+      description: reports.reason,
+      targetId: reports.targetId,
+      actorId: reports.reporterId,
+      createdAt: reports.createdAt,
+    }).from(reports).orderBy(desc(reports.createdAt)).limit(limit);
+
+    const recentAppeals = await db.select({
+      id: appeals.id,
+      type: sql`'appeal'`.as('type'),
+      description: appeals.reason,
+      targetId: appeals.userId,
+      actorId: appeals.userId,
+      createdAt: appeals.createdAt,
+    }).from(appeals).orderBy(desc(appeals.createdAt)).limit(limit);
+
+    const combined = [...recentBans, ...recentReports, ...recentAppeals]
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+      .slice(0, limit);
+
+    return combined;
   }
 }
 

@@ -898,6 +898,79 @@ export async function registerRoutes(
 
   // ---- Stripe Payment Routes ----
 
+  app.get("/api/admin/stats", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/admin/activity", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.isAdmin && !user?.isModerator && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const activity = await storage.getRecentActivity(20);
+      res.json(activity);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch activity" });
+    }
+  });
+
+  app.patch("/api/admin/site-settings", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { isOffline, offlineMessage } = req.body;
+      const settings = await storage.updateSiteSettings({ isOffline, offlineMessage });
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  app.get("/api/admin/site-settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id/rank", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { userRank } = req.body;
+      await storage.updateUserRank(req.params.id, userRank);
+      const updatedUser = await storage.getUser(req.params.id);
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update rank" });
+    }
+  });
+
+  app.get("/api/payments/my", requireAuth, async (req, res) => {
+    try {
+      const payments = await storage.getUserPayments((req.user as any).id);
+      res.json(payments);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch payments" });
+    }
+  });
+
   app.get("/api/stripe/publishable-key", async (_req, res) => {
     try {
       const key = await getStripePublishableKey();

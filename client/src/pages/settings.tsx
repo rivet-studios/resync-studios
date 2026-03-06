@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useTheme } from "@/components/theme-provider";
+import type { Payment } from "@shared/schema";
 import {
   Card,
   CardContent,
@@ -32,6 +33,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   User,
   Link as LinkIcon,
@@ -50,6 +61,9 @@ import {
   ExternalLink,
   Tag,
   Lock,
+  Crown,
+  ShoppingBag,
+  Loader2,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
 
@@ -111,6 +125,348 @@ function formatConnectedDate(dateStr: string | Date | null | undefined): string 
           ? "rd"
           : "th";
   return `Connected ${month} ${day}${suffix}, ${year}`;
+}
+
+const VIP_TIER_LABELS: Record<string, { label: string; color: string }> = {
+  none: { label: "Free", color: "text-muted-foreground" },
+  "Bronze VIP": { label: "Bronze VIP", color: "text-amber-500" },
+  "Diamond VIP": { label: "Diamond VIP", color: "text-cyan-400" },
+  "Founders Edition VIP": { label: "Founders Edition VIP", color: "text-purple-400" },
+  "Lifetime": { label: "Lifetime", color: "text-yellow-400" },
+};
+
+function BillingTab({ user, toast }: { user: any; toast: any }) {
+  const { data: subscription, isLoading: subLoading } = useQuery<{ subscription: any }>({
+    queryKey: ["/api/stripe/subscription"],
+  });
+
+  const portalMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/stripe/portal", {});
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      if (data.url) window.location.href = data.url;
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Unable to open billing portal. You may not have a Stripe account yet.", variant: "destructive" });
+    },
+  });
+
+  const tierKey = user?.vipTier || "none";
+  const tierInfo = VIP_TIER_LABELS[tierKey] || VIP_TIER_LABELS.none;
+  const sub = subscription?.subscription;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-billing-title">Billing</h2>
+        <p className="text-sm text-muted-foreground mt-1">Manage your subscription and billing</p>
+      </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-2">
+          <div>
+            <CardTitle className="flex items-center gap-2 flex-wrap">
+              <Crown className="w-5 h-5" />
+              Current Plan
+            </CardTitle>
+            <CardDescription>Your active subscription tier</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {subLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <span className={`text-xl font-bold ${tierInfo.color}`} data-testid="text-current-tier">
+                  {tierInfo.label}
+                </span>
+                {tierKey !== "none" && (
+                  <Badge variant="secondary" data-testid="badge-tier-active">Active</Badge>
+                )}
+              </div>
+              {sub ? (
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  <p data-testid="text-sub-status">
+                    Status: <span className="capitalize">{sub.status}</span>
+                  </p>
+                  {sub.current_period_end && (
+                    <p data-testid="text-sub-renews">
+                      {sub.status === "active" ? "Renews" : "Expires"}: {new Date(sub.current_period_end * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    </p>
+                  )}
+                </div>
+              ) : tierKey === "none" ? (
+                <p className="text-sm text-muted-foreground" data-testid="text-no-subscription">
+                  You don't have an active subscription. Visit the store to upgrade.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground" data-testid="text-manually-assigned">
+                  Your VIP tier was manually assigned by an administrator.
+                </p>
+              )}
+
+              <div className="flex items-center gap-3 pt-2 flex-wrap">
+                {user?.stripeCustomerId && (
+                  <Button
+                    variant="outline"
+                    onClick={() => portalMutation.mutate()}
+                    disabled={portalMutation.isPending}
+                    data-testid="button-manage-subscription"
+                  >
+                    {portalMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                    )}
+                    Manage Subscription
+                  </Button>
+                )}
+                {tierKey === "none" && (
+                  <Button variant="default" asChild data-testid="link-upgrade-plan">
+                    <Link href="/store">
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      Browse Plans
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function OrdersTab() {
+  const { data: payments, isLoading } = useQuery<Payment[]>({
+    queryKey: ["/api/payments/my"],
+  });
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-orders-title">Orders</h2>
+        <p className="text-sm text-muted-foreground mt-1">View your payment and order history</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="p-6 space-y-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : !payments || payments.length === 0 ? (
+            <div className="py-12 text-center">
+              <Package className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground" data-testid="text-no-orders">No orders on file</p>
+              <Button variant="outline" className="mt-4" asChild data-testid="link-browse-store">
+                <Link href="/store">Browse Store</Link>
+              </Button>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((payment) => (
+                  <TableRow key={payment.id} data-testid={`row-order-${payment.id}`}>
+                    <TableCell className="text-sm">
+                      {payment.createdAt
+                        ? new Date(payment.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {payment.tierId || "Payment"}
+                    </TableCell>
+                    <TableCell className="text-sm font-medium">
+                      ${(payment.amount / 100).toFixed(2)} {payment.currency?.toUpperCase()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={payment.status === "succeeded" || payment.status === "completed" ? "default" : "secondary"}
+                        data-testid={`badge-order-status-${payment.id}`}
+                      >
+                        {payment.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function PaymentMethodsTab({ user, toast }: { user: any; toast: any }) {
+  const portalMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/stripe/portal", {});
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      if (data.url) window.location.href = data.url;
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Unable to open billing portal. You may not have a Stripe account yet.", variant: "destructive" });
+    },
+  });
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-payment-methods-title">Payment Methods</h2>
+        <p className="text-sm text-muted-foreground mt-1">Manage your saved payment methods</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 flex-wrap">
+            <CreditCard className="w-5 h-5" />
+            Stripe Payment Methods
+          </CardTitle>
+          <CardDescription>
+            Payment methods are managed securely through Stripe
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {user?.stripeCustomerId ? (
+            <>
+              <p className="text-sm text-muted-foreground" data-testid="text-stripe-connected">
+                Your account is linked to Stripe. Use the button below to add, remove, or update your payment methods.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => portalMutation.mutate()}
+                disabled={portalMutation.isPending}
+                data-testid="button-manage-payment-methods"
+              >
+                {portalMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                )}
+                Manage Payment Methods
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground" data-testid="text-no-stripe">
+                No payment methods on file. Payment methods will be created when you make your first purchase.
+              </p>
+              <Button variant="default" asChild data-testid="link-visit-store">
+                <Link href="/store">
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Visit Store
+                </Link>
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function DownloadsTab() {
+  const { data: products, isLoading } = useQuery<any[]>({
+    queryKey: ["/api/products/my"],
+  });
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-downloads-title">Downloads</h2>
+        <p className="text-sm text-muted-foreground mt-1">Your purchased and owned products</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="p-6 space-y-3">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ) : !products || products.length === 0 ? (
+            <div className="py-12 text-center">
+              <Download className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground" data-testid="text-no-downloads">No downloads available</p>
+              <p className="text-xs text-muted-foreground mt-1">Products you purchase or submit will appear here</p>
+              <Button variant="outline" className="mt-4" asChild data-testid="link-browse-marketplace">
+                <Link href="/store">Browse Store</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="divide-y">
+              {products.map((product) => (
+                <div key={product.id} className="flex items-center gap-4 p-4" data-testid={`row-download-${product.id}`}>
+                  <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Package className="w-5 h-5 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate" data-testid={`text-product-name-${product.id}`}>{product.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{product.category || "Uncategorized"}</p>
+                  </div>
+                  <Badge variant="secondary" data-testid={`badge-product-status-${product.id}`}>
+                    {product.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function DiscountsTab() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-discounts-title">Discounts</h2>
+        <p className="text-sm text-muted-foreground mt-1">Your available discount codes and promotions</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 flex-wrap">
+            <Tag className="w-5 h-5" />
+            Active Promotions
+          </CardTitle>
+          <CardDescription>Discount codes and special offers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="py-8 text-center">
+            <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground font-medium" data-testid="text-no-discounts">No active promotions</p>
+            <p className="text-xs text-muted-foreground mt-1">Check back later for special offers and discount codes</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function Settings() {
@@ -659,80 +1015,15 @@ export default function Settings() {
             </div>
           )}
 
-          {activeTab === "billing" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Billing</h2>
-                <p className="text-sm text-muted-foreground mt-1">Manage your billing information</p>
-              </div>
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <CreditCard className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No billing information on file</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {activeTab === "billing" && <BillingTab user={user} toast={toast} />}
 
-          {activeTab === "discounts" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Discounts</h2>
-                <p className="text-sm text-muted-foreground mt-1">Your available discount codes and promotions</p>
-              </div>
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No discount codes available</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {activeTab === "discounts" && <DiscountsTab />}
 
-          {activeTab === "downloads" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Downloads</h2>
-                <p className="text-sm text-muted-foreground mt-1">Access downloadable resources</p>
-              </div>
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Download className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No downloads available at this time</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {activeTab === "downloads" && <DownloadsTab />}
 
-          {activeTab === "orders" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Orders</h2>
-                <p className="text-sm text-muted-foreground mt-1">View your order history</p>
-              </div>
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Package className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No orders on file</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {activeTab === "orders" && <OrdersTab />}
 
-          {activeTab === "payments" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Payment Methods</h2>
-                <p className="text-sm text-muted-foreground mt-1">Manage your payment methods</p>
-              </div>
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <CreditCard className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No payment methods on file</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {activeTab === "payments" && <PaymentMethodsTab user={user} toast={toast} />}
         </div>
       </div>
     </div>
