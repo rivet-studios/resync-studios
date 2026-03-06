@@ -57,6 +57,11 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **ScrollToTop**: Component implemented and rendered at App level to reset scroll position on navigation.
 - **CSS Optimization**: Removed duplicate `scroll-behavior: smooth` from body (kept on html only), removed `transition-colors duration-300` from body to reduce layout lag.
 
+### Dashboard & Cases:
+- **Dashboard Redesign**: 2x2 grid layout with Top Rated Products (red cart icon), Latest Blog Posts (green signal icon), Trending Topics (orange flame icon), Your Moderation Cases (blue gavel icon).
+- **My Cases Page**: `/my-cases` page showing user's submitted reports and appeals with status tracking, staff responses, and outcome notes.
+- **Landing CTA**: "Join The Community" → /onboarding (or "My Dashboard" → /dashboard if logged in), "Browse Store" → /store.
+
 ### Deprecated Pages Removed:
 - **Groups/Clans**, **Builds**, **Chat** pages removed from routing and deleted.
 
@@ -82,7 +87,7 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Products**: GET /api/products, GET /api/products/all (ops), GET /api/products/my, POST /api/products, PATCH /api/products/:id/review, PATCH /api/products/:id/badges
 - **Bans**: GET /api/bans, GET /api/bans/my, POST /api/bans, DELETE /api/bans/:id
 - **Appeals**: GET /api/appeals, GET /api/appeals/my, POST /api/appeals, PATCH /api/appeals/:id
-- **Reports**: GET /api/reports, POST /api/reports, PATCH /api/reports/:id
+- **Reports**: GET /api/reports, GET /api/reports/my, POST /api/reports, PATCH /api/reports/:id
 
 ## Deployment
 - Configured for deployment on Render

@@ -112,6 +112,7 @@ export interface IStorage {
   ): Promise<Payment | undefined>;
   createReport(report: InsertReport): Promise<Report>;
   getReports(): Promise<Report[]>;
+  getUserReports(userId: string): Promise<Report[]>;
   updateReportStatus(
     id: string,
     status: string,
@@ -537,6 +538,9 @@ export class DatabaseStorage implements IStorage {
   }
   async getReports(): Promise<Report[]> {
     return db.select().from(reports).orderBy(desc(reports.createdAt));
+  }
+  async getUserReports(userId: string): Promise<Report[]> {
+    return db.select().from(reports).where(eq(reports.reporterId, userId)).orderBy(desc(reports.createdAt));
   }
   async updateReportStatus(
     id: string,

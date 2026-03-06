@@ -50,6 +50,7 @@ import UserSearch from "@/pages/user-search";
 import Checkout from "@/pages/checkout";
 import Marketplace from "@/pages/marketplace";
 import Appeals from "@/pages/appeals";
+import MyCases from "@/pages/my-cases";
 
 import Onboarding from "@/pages/onboarding";
 
@@ -263,6 +264,7 @@ function Router() {
           <Route path="/search" component={UserSearch} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/appeals" component={Appeals} />
+          <Route path="/my-cases" component={MyCases} />
           <Route path="/admin" component={Admin} />
           <Route path="/modcp">
             {user?.isModerator ||

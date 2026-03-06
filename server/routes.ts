@@ -174,6 +174,16 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/reports/my", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const myReports = await storage.getUserReports(user.id);
+      res.json(myReports);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch your reports" });
+    }
+  });
+
   app.get("/api/reports", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;

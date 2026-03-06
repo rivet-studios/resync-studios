@@ -10,8 +10,10 @@ import {
   Shield,
   Globe,
   ArrowRight,
+  ShoppingCart,
 } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 const stats = [
   { value: 23, label: "Connected Members", suffix: "+" },
@@ -62,9 +64,10 @@ const features = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
-      {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"
@@ -85,7 +88,7 @@ export default function Landing() {
               RIVET Studios™
             </h1>
             <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-normal drop-shadow-lg">
-              We don’t just build games. We build worlds that breathe, stories
+              We don't just build games. We build worlds that breathe, stories
               that live, and brands that command attention. RIVET Studios sits
               at the crossroads of development, branding, and long-term creative
               collaboration, where every project is treated like a city —
@@ -93,27 +96,34 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <Button
               size="lg"
-              className="bg-[#0071b2] text-white px-10 h-14 text-lg font-medium shadow-2xl rounded-xl transition-all hover:scale-105 active:scale-95"
+              className="bg-[#18181B] text-white px-8 h-12 text-sm font-medium rounded-lg transition-all active:scale-95 gap-2"
               asChild
+              data-testid="button-cta-primary"
             >
-              <Link href="/signup">Join Community</Link>
+              <Link href={user ? "/dashboard" : "/onboarding"}>
+                <Users className="w-4 h-4" />
+                {user ? "My Dashboard" : "Join The Community"}
+              </Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white/40 bg-white/10 text-white backdrop-blur-md px-10 h-14 text-lg font-medium rounded-xl transition-all hover:scale-105 active:scale-95"
+              className="border-white/30 bg-white/10 text-white backdrop-blur-md px-8 h-12 text-sm font-medium rounded-lg transition-all active:scale-95 gap-2"
               asChild
+              data-testid="button-cta-store"
             >
-              <Link href="/about">Learn More</Link>
+              <Link href="/store">
+                <ShoppingCart className="w-4 h-4" />
+                Browse Store
+              </Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12">
@@ -131,7 +141,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-32 bg-white">
         <div className="container mx-auto px-4 space-y-20">
           <div className="text-center space-y-6 max-w-3xl mx-auto">
