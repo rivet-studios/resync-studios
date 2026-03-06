@@ -63,11 +63,18 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Routes**: GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/portal, GET /api/stripe/subscription
 - **Webhook**: Registered BEFORE express.json() middleware for raw body handling
 
+### UI Simplification (March 2026):
+- Reduced global `--radius` from `0.75rem` to `0.5rem` for cleaner, less bubbly corners
+- Replaced all `rounded-3xl`, `rounded-[2.5rem]`, `rounded-[2rem]` with `rounded-xl` across all pages
+- Store page fully redesigned to match reactstudios.com reference: gradient category cards, featured product image overlays, 4-column product grid
+- Header dropdown and sidebar items use `rounded-xl` instead of `rounded-2xl`
+
 ### Design System:
 - **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).
 - **Typography**: Inter (font-sans), with semibold/medium weights throughout (no font-black/900).
 - **Logo**: Clean inline SVG without container box, displayed directly in header and footer.
 - **Components**: Redesigned AdminCP, ModCP, and Settings using professional dark sidebar layout.
+- **Corner Radius**: `--radius: 0.5rem` globally; `rounded-xl` max for cards/panels (no rounded-3xl).
 
 ## Database Schema
 - Users (with VIP tier, Discord/Roblox linking, user ranks, isAdmin, isModerator, stripeCustomerId, stripeSubscriptionId)

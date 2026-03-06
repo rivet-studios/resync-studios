@@ -235,7 +235,7 @@ export default function Projects() {
         </div>
       )}
 
-      <Card className="bg-primary/5 border-primary/20 rounded-3xl overflow-hidden">
+      <Card className="bg-primary/5 border-primary/20 rounded-xl overflow-hidden">
         <CardContent className="p-10 text-center space-y-4">
           <h3 className="text-2xl font-bold">Innovation is in our DNA</h3>
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto">

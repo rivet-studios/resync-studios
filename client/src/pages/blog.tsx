@@ -78,7 +78,7 @@ export default function Blog() {
             <Link href={`/blog/${posts[0].id}`}>
               <Card className="border-none bg-transparent overflow-hidden cursor-pointer">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
-                  <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl">
+                  <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
                     <img
                       src={posts[0].imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
@@ -129,7 +129,7 @@ export default function Blog() {
           {posts.slice(1).map((post) => (
             <Link key={post.id} href={`/blog/${post.id}`}>
               <Card className="border-none bg-transparent hover:translate-y-[-8px] transition-all duration-500 group cursor-pointer space-y-6">
-                <div className="aspect-[16/10] rounded-[2rem] overflow-hidden shadow-xl relative">
+                <div className="aspect-[16/10] rounded-xl overflow-hidden shadow-xl relative">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
                   <img
                     src={post.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}

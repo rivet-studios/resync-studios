@@ -22,7 +22,7 @@ export default function News() {
       <div className="min-h-screen bg-[#050505] pt-20">
         <div className="max-w-4xl mx-auto px-6 space-y-8">
           <Skeleton className="h-12 w-3/4 bg-white/5" />
-          <Skeleton className="h-[400px] w-full rounded-[2.5rem] bg-white/5" />
+          <Skeleton className="h-[400px] w-full rounded-xl bg-white/5" />
           <Skeleton className="h-64 w-full bg-white/5" />
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function News() {
             <div className="relative group">
               <Textarea 
                 placeholder="Share your thoughts..." 
-                className="bg-white/5 border-white/10 rounded-[2rem] min-h-[160px] p-8 text-white font-medium resize-none focus:bg-white/[0.08] transition-all"
+                className="bg-white/5 border-white/10 rounded-xl min-h-[160px] p-8 text-white font-medium resize-none focus:bg-white/[0.08] transition-all"
               />
               <Button className="absolute bottom-6 right-6 bg-white text-black font-semibold uppercase tracking-widest px-8 rounded-xl hover:bg-white/90 shadow-xl transition-all active:scale-95">Post comment</Button>
             </div>

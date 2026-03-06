@@ -28,7 +28,7 @@ export default function ForumHome() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Sidebar Categories */}
           <aside className="lg:col-span-3 space-y-6">
-            <Card className="border-white/5 bg-[#121212] rounded-3xl overflow-hidden shadow-2xl">
+            <Card className="border-white/5 bg-[#121212] rounded-xl overflow-hidden shadow-2xl">
               <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
                 <CardTitle className="text-sm font-semibold uppercase tracking-widest text-white/90">
                   News & Information
@@ -38,14 +38,14 @@ export default function ForumHome() {
               <CardContent className="p-4">
                 <div className="space-y-2">
                   <Link href="/forums">
-                    <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
+                    <button className="w-full flex items-center gap-4 px-6 py-4 rounded-lg text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
                       <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-white transition-colors" />
                       All Discussions
                     </button>
                   </Link>
                   {categories?.map((cat) => (
                     <Link key={cat.id} href={`/forums/category/${cat.id}`}>
-                      <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
+                      <button className="w-full flex items-center gap-4 px-6 py-4 rounded-lg text-[13px] font-bold text-white/40 hover:bg-white/[0.03] hover:text-white transition-all group">
                         <div 
                           className="w-2 h-2 rounded-full opacity-40 group-hover:opacity-100 transition-all" 
                           style={{ backgroundColor: cat.color || '#fff' }}
@@ -58,7 +58,7 @@ export default function ForumHome() {
               </CardContent>
             </Card>
 
-            <Button asChild className="w-full h-14 bg-white text-black hover:bg-white/90 shadow-xl rounded-2xl font-semibold uppercase tracking-tight transition-transform active:scale-95">
+            <Button asChild className="w-full h-14 bg-white text-black hover:bg-white/90 shadow-xl rounded-lg font-semibold uppercase tracking-tight transition-transform active:scale-95">
               <Link href="/forums/new">
                 <Plus className="w-5 h-5 mr-2" strokeWidth={3} /> Start Discussion
               </Link>
@@ -67,7 +67,7 @@ export default function ForumHome() {
 
           {/* Main Thread List */}
           <div className="lg:col-span-9 space-y-4">
-            <Card className="border-white/5 bg-[#121212] rounded-[2rem] overflow-hidden shadow-2xl">
+            <Card className="border-white/5 bg-[#121212] rounded-xl overflow-hidden shadow-2xl">
               <div className="divide-y divide-white/5">
                 {threads?.map((thread) => (
                   <div key={thread.id} className="p-8 flex items-center gap-6 hover:bg-white/[0.02] transition-all group cursor-pointer">

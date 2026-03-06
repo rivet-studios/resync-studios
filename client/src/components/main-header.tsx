@@ -145,7 +145,7 @@ export function MainHeader() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-64 mt-2 bg-[#121212] border-white/5 p-2 rounded-2xl shadow-2xl"
+                  className="w-64 mt-2 bg-[#121212] border-white/5 p-2 rounded-xl shadow-2xl"
                   align="end"
                 >
                   <div className="flex items-center gap-3 p-4 border-b border-white/5 mb-2">

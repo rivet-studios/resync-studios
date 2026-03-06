@@ -227,7 +227,7 @@ export default function ModCP() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-3xl" />
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-xl" />
       </div>
     );
   }
@@ -312,7 +312,7 @@ export default function ModCP() {
           <>
             <h1 className="text-4xl font-semibold tracking-tight uppercase">Moderator Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Ban className="w-4 h-4" />
@@ -323,7 +323,7 @@ export default function ModCP() {
                   <div className="text-4xl font-semibold mb-1" data-testid="text-active-bans-count">{activeBans.filter((b: any) => b.isActive).length || "—"}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <FileText className="w-4 h-4" />
@@ -334,7 +334,7 @@ export default function ModCP() {
                   <div className="text-4xl font-semibold mb-1" data-testid="text-open-reports-count">{reports.filter((r: any) => r.status === "Pending").length || "—"}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Scale className="w-4 h-4" />
@@ -345,7 +345,7 @@ export default function ModCP() {
                   <div className="text-4xl font-semibold mb-1" data-testid="text-pending-appeals-count">{pendingAppeals.filter((a: any) => a.status === "pending").length || "—"}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40">
                     <Clock className="w-4 h-4" />
@@ -357,7 +357,7 @@ export default function ModCP() {
                 </CardContent>
               </Card>
             </div>
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <History className="w-5 h-5 text-white/40" />
                 <h4 className="font-semibold uppercase tracking-tight">Recent Activity</h4>
@@ -403,7 +403,7 @@ export default function ModCP() {
         {activeTab === "bans" && (
           <>
             <h1 className="text-4xl font-semibold tracking-tight uppercase">Ban Management</h1>
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
               <h3 className="font-semibold uppercase tracking-tight text-lg mb-4 flex items-center gap-2">
                 <Gavel className="w-5 h-5" /> Issue New Ban
               </h3>
@@ -519,7 +519,7 @@ export default function ModCP() {
               </div>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
               <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">Active Bans</h3>
               <div className="space-y-3">
                 {activeBans.length === 0 ? (
@@ -584,12 +584,12 @@ export default function ModCP() {
             </div>
             <div className="space-y-3">
               {filteredReports.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 text-center">
+                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
                   <p className="text-white/40">No reports to review{reportFilter !== "All" ? ` with status "${reportFilter}"` : ""}</p>
                 </Card>
               ) : (
                 filteredReports.map((report: any) => (
-                  <Card key={report.id} className="bg-[#121212] border-white/5 rounded-3xl p-6" data-testid={`card-report-${report.id}`}>
+                  <Card key={report.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-report-${report.id}`}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -685,12 +685,12 @@ export default function ModCP() {
             </div>
             <div className="space-y-3">
               {filteredAppeals.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 text-center">
+                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
                   <p className="text-white/40">No appeals to review{appealFilter !== "All" ? ` with status "${appealFilter}"` : ""}</p>
                 </Card>
               ) : (
                 filteredAppeals.map((appeal: any) => (
-                  <Card key={appeal.id} className="bg-[#121212] border-white/5 rounded-3xl p-6" data-testid={`card-appeal-${appeal.id}`}>
+                  <Card key={appeal.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-appeal-${appeal.id}`}>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge

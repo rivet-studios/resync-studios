@@ -159,10 +159,10 @@ export default function Landing() {
               return (
                 <Card
                   key={feature.title}
-                  className="border-none shadow-xl bg-slate-50 hover:bg-white hover:shadow-2xl transition-all duration-500 group rounded-[2.5rem] overflow-hidden"
+                  className="border-none shadow-xl bg-slate-50 hover:bg-white hover:shadow-2xl transition-all duration-500 group rounded-xl overflow-hidden"
                 >
                   <CardContent className="p-10 space-y-8">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center group-hover:bg-[#0071b2] group-hover:text-white transition-all duration-500 shadow-lg group-hover:scale-110">
+                    <div className="w-16 h-16 rounded-lg bg-white flex items-center justify-center group-hover:bg-[#0071b2] group-hover:text-white transition-all duration-500 shadow-lg group-hover:scale-110">
                       <Icon className="w-8 h-8" />
                     </div>
                     <div className="space-y-4">

@@ -201,7 +201,7 @@ export default function AdminCP() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-3xl" />
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-xl" />
       </div>
     );
   }
@@ -295,7 +295,7 @@ export default function AdminCP() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                     <Users className="w-4 h-4" />
@@ -310,7 +310,7 @@ export default function AdminCP() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                     <MessageSquare className="w-4 h-4" />
@@ -325,7 +325,7 @@ export default function AdminCP() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                     <Ban className="w-4 h-4" />
@@ -340,7 +340,7 @@ export default function AdminCP() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#121212] border-white/5 rounded-3xl overflow-hidden group">
+              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
                     <AlertTriangle className="w-4 h-4" />
@@ -357,7 +357,7 @@ export default function AdminCP() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 bg-[#121212] border-white/5 rounded-3xl p-8">
+              <Card className="lg:col-span-2 bg-[#121212] border-white/5 rounded-xl p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-semibold uppercase tracking-tight">Recent Activity</h3>
                   <Badge variant="outline" className="border-white/10 text-white/40">{activity.length} events</Badge>
@@ -398,7 +398,7 @@ export default function AdminCP() {
               </Card>
 
               <div className="space-y-6">
-                <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+                <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
                   <h3 className="text-xl font-semibold uppercase tracking-tight mb-4">Quick Actions</h3>
                   <div className="space-y-3">
                     <Button
@@ -428,7 +428,7 @@ export default function AdminCP() {
                   </div>
                 </Card>
 
-                <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+                <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
                   <h3 className="text-xl font-semibold uppercase tracking-tight mb-2">Platform Stats</h3>
                   <div className="space-y-3 mt-4">
                     <div className="flex justify-between text-sm">
@@ -446,7 +446,7 @@ export default function AdminCP() {
                   </div>
                 </Card>
 
-                <Card className="bg-red-500/10 border-red-500/20 rounded-3xl p-8">
+                <Card className="bg-red-500/10 border-red-500/20 rounded-xl p-8">
                   <h3 className="text-xl font-semibold uppercase tracking-tight text-red-500 mb-2">Emergency</h3>
                   <p className="text-xs font-bold text-red-500/60 uppercase mb-4">Maintenance Mode</p>
                   <Button
@@ -479,7 +479,7 @@ export default function AdminCP() {
               />
             </div>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
               <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">Change User Rank</h3>
               <div className="flex items-end gap-4">
                 <div className="flex-1">
@@ -519,7 +519,7 @@ export default function AdminCP() {
               </div>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-6">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
               <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">
                 {userSearch ? `Search Results (${displayUsers.length})` : `All Users (${displayUsers.length})`}
               </h3>
@@ -569,7 +569,7 @@ export default function AdminCP() {
           <>
             <h1 className="text-4xl font-semibold tracking-tight uppercase">Platform Settings</h1>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
               <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">Site Status</h3>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -615,7 +615,7 @@ export default function AdminCP() {
               </div>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
               <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">Platform Overview</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
@@ -643,7 +643,7 @@ export default function AdminCP() {
           <>
             <h1 className="text-4xl font-semibold tracking-tight uppercase">Announcements</h1>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
               <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">Create Announcement</h3>
               <div className="space-y-4">
                 <div>
@@ -712,7 +712,7 @@ export default function AdminCP() {
               </div>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-3xl p-8">
+            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
               <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">Existing Announcements ({announcements.length})</h3>
               <div className="space-y-3">
                 {announcements.length === 0 ? (
@@ -752,12 +752,12 @@ export default function AdminCP() {
             <h1 className="text-4xl font-semibold tracking-tight uppercase">System Reports</h1>
             <div className="space-y-3">
               {reports.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-3xl p-8 text-center">
+                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
                   <p className="text-white/40">No reports to review</p>
                 </Card>
               ) : (
                 reports.map((report: any) => (
-                  <Card key={report.id} className="bg-[#121212] border-white/5 rounded-3xl p-6" data-testid={`card-report-${report.id}`}>
+                  <Card key={report.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-report-${report.id}`}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2">
