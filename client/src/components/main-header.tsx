@@ -100,7 +100,7 @@ export function MainHeader() {
                 </Button>
               </Link>
 
-              <Link href="/projects">
+              <Link href="/policies">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -135,7 +135,7 @@ export function MainHeader() {
                     <Avatar className="h-full w-full rounded-xl">
                       <AvatarImage src={user.profileImageUrl || undefined} />
                       <AvatarFallback className="bg-white/5 text-white/40 font-bold uppercase">
-                        {user.username[0]}
+                        {(user.username || user.email || "U")[0]}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
