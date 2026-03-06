@@ -35,6 +35,28 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 
 ## Recent Additions
 
+### Global Search (March 2026):
+- **API Route**: `GET /api/search?q=:query&type=:type` — searches across members, forum topics, products, blog posts
+- **SearchDialog**: Fully functional with debounced input, filter buttons, grouped results, click-to-navigate
+- **Keyboard Shortcut**: `Cmd+K` / `Ctrl+K` opens search dialog
+
+### Discord Bot Role Sync (March 2026):
+- **Role Mapping**: `RANK_TO_ROLE` map in `server/discord-bot.ts` uses env vars (`DISCORD_ROLE_*`) for rank-to-Discord-role mapping
+- **Auto-sync**: When admin changes a user's rank via `/api/admin/users/:id/rank`, Discord roles are updated automatically
+- **Nickname Sync**: Discord nickname also updated on rank change
+- **Function**: `updateDiscordRoles(discordId, newRank, oldRank)` exported from `server/discord-bot.ts`
+
+### Report Buttons (March 2026):
+- **Forum Threads**: Report button on thread OP and each reply (only visible when logged in, hidden for own posts)
+- **User Profiles**: Report button in profile header (only visible for other users' profiles)
+- **ReportDialog**: Pre-existing component now wired into thread.tsx and user.tsx
+
+### Roblox Account Linking (March 2026):
+- **Verification Flow**: Enter username → server looks up via Roblox API → generates verification code → user adds to Roblox profile description → server verifies
+- **API Routes**: `POST /api/roblox/start-verification`, `POST /api/roblox/verify`, `POST /api/roblox/unlink`
+- **Settings UI**: Roblox card in Integrations tab shows link/unlink buttons, inline verification form with code copy
+- **Uses Roblox public API**: `users.roblox.com/v1/users/search` and `users.roblox.com/v1/users/:id`
+
 ### Policy Management:
 - **Policies Table**: New `policies` table with slug, title, content (HTML), updatedBy, updatedAt
 - **API Routes**: `GET /api/policies`, `GET /api/policies/:slug`, `PUT /api/policies/:slug` (Operations Manager+ only)
@@ -108,6 +130,8 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Reports**: GET /api/reports, GET /api/reports/my, POST /api/reports, PATCH /api/reports/:id
 - **Payments**: GET /api/payments/my
 - **Stripe**: GET /api/stripe/publishable-key, GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/portal, GET /api/stripe/subscription
+- **Search**: GET /api/search?q=:query&type=:type
+- **Roblox**: POST /api/roblox/start-verification, POST /api/roblox/verify, POST /api/roblox/unlink
 
 ## Deployment
 - Configured for deployment on Render

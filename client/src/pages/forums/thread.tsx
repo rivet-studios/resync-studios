@@ -28,8 +28,10 @@ import {
   ThumbsUp,
   Clock,
   Lock,
+  Flag,
   ArrowLeft,
 } from "lucide-react";
+import { ReportDialog } from "@/components/report-dialog";
 import type { ForumThread, ForumReply, User, ForumCategory } from "@shared/schema";
 
 const replySchema = z.object({
@@ -207,6 +209,20 @@ export default function ForumThread() {
           <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
             {thread.content}
           </p>
+          {user && thread.author?.id !== user.id && (
+            <div className="flex justify-end mt-4 pt-3 border-t border-white/5">
+              <ReportDialog
+                targetId={thread.id}
+                targetType="thread"
+                trigger={
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-thread">
+                    <Flag className="w-3.5 h-3.5" />
+                    Report
+                  </Button>
+                }
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -309,6 +325,20 @@ export default function ForumThread() {
                   <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
                     {reply.content}
                   </p>
+                  {user && reply.author?.id !== user.id && (
+                    <div className="flex justify-end mt-4 pt-3 border-t border-white/5">
+                      <ReportDialog
+                        targetId={reply.id}
+                        targetType="reply"
+                        trigger={
+                          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid={`button-report-reply-${reply.id}`}>
+                            <Flag className="w-3.5 h-3.5" />
+                            Report
+                          </Button>
+                        }
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

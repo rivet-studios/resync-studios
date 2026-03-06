@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
-import { updateDiscordNickname } from "./discord-bot";
+import { updateDiscordNickname, updateDiscordRoles } from "./discord-bot";
 import {
   insertGroupSchema,
   insertBuildSchema,
@@ -1001,8 +1001,22 @@ export async function registerRoutes(
         return res.status(403).json({ message: "Forbidden" });
       }
       const { userRank } = req.body;
+      const targetUser = await storage.getUser(req.params.id);
+      const oldRank = targetUser?.userRank || undefined;
       await storage.updateUserRank(req.params.id, userRank);
       const updatedUser = await storage.getUser(req.params.id);
+
+      if (updatedUser?.discordId) {
+        updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch((err) =>
+          console.error("Discord role sync error:", err)
+        );
+        if (updatedUser.username) {
+          updateDiscordNickname(updatedUser.discordId, updatedUser.username).catch((err) =>
+            console.error("Discord nickname sync error:", err)
+          );
+        }
+      }
+
       res.json(updatedUser);
     } catch (error) {
       res.status(500).json({ message: "Failed to update rank" });
@@ -1133,6 +1147,183 @@ export async function registerRoutes(
       res.json({ subscription: result.rows[0] || null });
     } catch (error) {
       res.json({ subscription: null });
+    }
+  });
+
+  app.get("/api/search", async (req, res) => {
+    try {
+      const q = ((req.query.q as string) || "").trim().toLowerCase();
+      const type = (req.query.type as string) || "";
+      if (!q || q.length < 2) return res.json({ members: [], topics: [], products: [], posts: [] });
+
+      const results: Record<string, any[]> = { members: [], topics: [], products: [], posts: [] };
+
+      if (!type || type === "members") {
+        const allUsers = await storage.getAllUsers();
+        results.members = allUsers
+          .filter((u) => u.username?.toLowerCase().includes(q))
+          .slice(0, 10)
+          .map((u) => ({
+            id: u.id,
+            title: u.username,
+            description: u.userRank || "Civilian",
+            url: `/profile/${u.id}`,
+            image: u.profileImageUrl,
+          }));
+      }
+
+      if (!type || type === "topics") {
+        const threads = await storage.getForumThreads();
+        results.topics = threads
+          .filter((t) => t.title.toLowerCase().includes(q))
+          .slice(0, 10)
+          .map((t) => ({
+            id: t.id,
+            title: t.title,
+            description: `${t.replyCount} replies · ${t.viewCount} views`,
+            url: `/forums/thread/${t.id}`,
+          }));
+      }
+
+      if (!type || type === "products") {
+        const prods = await storage.getProducts("approved");
+        results.products = prods
+          .filter((p) => p.name.toLowerCase().includes(q) || (p.description || "").toLowerCase().includes(q))
+          .slice(0, 10)
+          .map((p) => ({
+            id: p.id,
+            title: p.name,
+            description: p.description ? p.description.substring(0, 100) : "",
+            url: `/store`,
+            image: p.imageUrl,
+          }));
+      }
+
+      if (!type || type === "posts") {
+        const posts = await storage.getAnnouncements();
+        results.posts = posts
+          .filter((a) => a.title.toLowerCase().includes(q) || (a.content || "").toLowerCase().includes(q))
+          .slice(0, 10)
+          .map((a) => ({
+            id: a.id,
+            title: a.title,
+            description: a.content ? a.content.substring(0, 100) : "",
+            url: `/blog/${a.id}`,
+          }));
+      }
+
+      res.json(results);
+    } catch (error) {
+      console.error("Search error:", error);
+      res.status(500).json({ message: "Search failed" });
+    }
+  });
+
+  const pendingRobloxVerifications = new Map<string, { robloxId: number; verificationCode: string; expiresAt: number }>();
+
+  app.post("/api/roblox/start-verification", requireAuth, async (req, res) => {
+    try {
+      const { robloxUsername } = req.body;
+      if (!robloxUsername || typeof robloxUsername !== "string") {
+        return res.status(400).json({ message: "Roblox username is required" });
+      }
+
+      const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=10`);
+      if (!searchRes.ok) {
+        return res.status(400).json({ message: "Failed to look up Roblox user. Try again later." });
+      }
+      const searchData = await searchRes.json() as { data: Array<{ id: number; name: string; displayName: string }> };
+      const robloxUser = searchData.data?.find(
+        (u: any) => u.name.toLowerCase() === robloxUsername.toLowerCase()
+      );
+      if (!robloxUser) {
+        return res.status(404).json({ message: "Roblox user not found. Check the username and try again." });
+      }
+
+      const existingUser = await storage.getUserByRobloxId(String(robloxUser.id));
+      if (existingUser && existingUser.id !== (req.user as any).id) {
+        return res.status(409).json({ message: "This Roblox account is already linked to another user." });
+      }
+
+      const code = `RIVET-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+      pendingRobloxVerifications.set((req.user as any).id, {
+        robloxId: robloxUser.id,
+        verificationCode: code,
+        expiresAt: Date.now() + 15 * 60 * 1000,
+      });
+
+      res.json({
+        robloxId: robloxUser.id,
+        robloxUsername: robloxUser.name,
+        robloxDisplayName: robloxUser.displayName,
+        verificationCode: code,
+      });
+    } catch (error) {
+      console.error("Roblox start verification error:", error);
+      res.status(500).json({ message: "Verification failed. Try again later." });
+    }
+  });
+
+  app.post("/api/roblox/verify", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const pending = pendingRobloxVerifications.get(userId);
+
+      if (!pending) {
+        return res.status(400).json({ message: "No pending verification. Please start the linking process first." });
+      }
+
+      if (Date.now() > pending.expiresAt) {
+        pendingRobloxVerifications.delete(userId);
+        return res.status(400).json({ message: "Verification expired. Please start over." });
+      }
+
+      const profileRes = await fetch(`https://users.roblox.com/v1/users/${pending.robloxId}`);
+      if (!profileRes.ok) {
+        return res.status(400).json({ message: "Failed to fetch Roblox profile" });
+      }
+      const profileData = await profileRes.json() as { description: string; name: string; displayName: string };
+
+      if (!profileData.description || !profileData.description.includes(pending.verificationCode)) {
+        return res.status(400).json({
+          message: "Verification code not found in your Roblox profile description. Please add the code and try again.",
+        });
+      }
+
+      const existingUser = await storage.getUserByRobloxId(String(pending.robloxId));
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(409).json({ message: "This Roblox account is already linked to another user." });
+      }
+
+      await storage.updateUser(userId, {
+        robloxId: String(pending.robloxId),
+        robloxUsername: profileData.name,
+        robloxDisplayName: profileData.displayName,
+        robloxLinkedAt: new Date(),
+      });
+
+      pendingRobloxVerifications.delete(userId);
+      const updatedUser = await storage.getUser(userId);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Roblox verify error:", error);
+      res.status(500).json({ message: "Verification failed. Try again later." });
+    }
+  });
+
+  app.post("/api/roblox/unlink", requireAuth, async (req, res) => {
+    try {
+      await storage.updateUser((req.user as any).id, {
+        robloxId: null as any,
+        robloxUsername: null as any,
+        robloxDisplayName: null as any,
+        robloxLinkedAt: null as any,
+      });
+      const updatedUser = await storage.getUser((req.user as any).id);
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to unlink Roblox account" });
     }
   });
 

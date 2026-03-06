@@ -3,9 +3,11 @@ import { useParams } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User as UserIcon, Calendar, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { User as UserIcon, Calendar, ChevronRight, Flag } from "lucide-react";
 import type { User } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { ReportDialog } from "@/components/report-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
@@ -77,12 +79,26 @@ export default function UserProfile() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/dashboard" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-dashboard">
-          Dashboard
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-foreground font-medium" data-testid="text-breadcrumb-username">{profile.username}</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-dashboard">
+            Dashboard
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="text-foreground font-medium" data-testid="text-breadcrumb-username">{profile.username}</span>
+        </div>
+        {currentUser && currentUser.id !== profile.id && (
+          <ReportDialog
+            targetId={profile.id}
+            targetType="user"
+            trigger={
+              <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-user">
+                <Flag className="w-3.5 h-3.5" />
+                Report
+              </Button>
+            }
+          />
+        )}
       </div>
 
       <Card className="border border-border/50 dark:border-white/5 rounded-xl overflow-hidden shadow-sm" data-testid="card-profile">
