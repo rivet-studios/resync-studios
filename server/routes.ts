@@ -496,6 +496,32 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/users/change-password", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const passwordSchema = z.object({
+        currentPassword: z.string().min(1),
+        newPassword: z.string().min(8, "Password must be at least 8 characters"),
+      });
+      const parsed = passwordSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten() });
+      }
+      const user = await storage.getUser(userId);
+      if (!user || !user.password) {
+        return res.status(400).json({ message: "Password change not available for this account type" });
+      }
+      if (!verifyPassword(parsed.data.currentPassword, user.password)) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+      const hashedPassword = hashPassword(parsed.data.newPassword);
+      await storage.updateUser(userId, { password: hashedPassword } as any);
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   app.delete("/api/users/account", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;

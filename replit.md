@@ -20,7 +20,9 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Appeal system for banned users
 - ✅ Policies hub aggregating all legal documents
 - ✅ Settings page with profile image URL, multiline signature, DOB, theme/layout preferences, delete account
-- ✅ Settings Integrations tab redesigned
+- ✅ Settings Integrations tab with Sync Accounts, Roblox/Discord cards with connected dates
+- ✅ Change password functionality
+- ✅ Discounts tab placeholder
 - ✅ Professional navigation header with search
 - ✅ AdminCP and ModCP with sidebar-based dark layout
 - ✅ ModCP tabs: Dashboard, Ban Management, Reports, Appeals
