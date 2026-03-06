@@ -54,7 +54,11 @@ export function MainHeader() {
           {/* Logo & Brand */}
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-              <img src={logoSvg} alt="RS" className="w-7 h-7 transition-transform group-hover:scale-105" />
+              <img
+                src={logoSvg}
+                alt="RS"
+                className="w-7 h-7 transition-transform group-hover:scale-105"
+              />
               <span className="font-semibold text-[15px] tracking-tight text-white">
                 RIVET Studios™
               </span>

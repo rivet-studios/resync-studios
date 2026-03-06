@@ -56,7 +56,7 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
 
       toast({
         title: "Payment Processed",
-        description: data.message || "Your card has been charged and VIP tier activated!",
+        description: data.message || "Your purchase was successful and your items have been added to your account",
       });
 
       onSuccess?.();
@@ -159,7 +159,7 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-sm font-medium">Expires (MM/YY)</label>
+          <label className="text-sm font-medium">Expir (MM/YY)</label>
           <Input
             placeholder="12/25"
             value={formData.cardExpiry}

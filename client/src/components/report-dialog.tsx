@@ -24,7 +24,8 @@ const REPORT_REASONS = [
   "Harassment",
   "Spam",
   "Inappropriate Content",
-  "Cheating",
+  "Cheating / EXP",
+  "Legal",
   "Impersonation",
   "Other",
 ] as const;
@@ -35,7 +36,11 @@ interface ReportDialogProps {
   trigger: React.ReactNode;
 }
 
-export function ReportDialog({ targetId, targetType, trigger }: ReportDialogProps) {
+export function ReportDialog({
+  targetId,
+  targetType,
+  trigger,
+}: ReportDialogProps) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
@@ -53,7 +58,8 @@ export function ReportDialog({ targetId, targetType, trigger }: ReportDialogProp
     onSuccess: () => {
       toast({
         title: "Report Submitted",
-        description: "Thank you for your report. Our team will review it shortly.",
+        description:
+          "Thank you for your report. Our team will review it shortly.",
       });
       setOpen(false);
       setReason("");
@@ -95,7 +101,8 @@ export function ReportDialog({ targetId, targetType, trigger }: ReportDialogProp
             Report {targetType.charAt(0).toUpperCase() + targetType.slice(1)}
           </DialogTitle>
           <DialogDescription data-testid="text-report-description">
-            Help us keep the community safe by reporting inappropriate content or behavior.
+            Help us keep the community safe by reporting inappropriate content
+            or behavior.
           </DialogDescription>
         </DialogHeader>
 
@@ -108,7 +115,11 @@ export function ReportDialog({ targetId, targetType, trigger }: ReportDialogProp
               </SelectTrigger>
               <SelectContent>
                 {REPORT_REASONS.map((r) => (
-                  <SelectItem key={r} value={r} data-testid={`select-item-reason-${r.toLowerCase().replace(/\s+/g, "-")}`}>
+                  <SelectItem
+                    key={r}
+                    value={r}
+                    data-testid={`select-item-reason-${r.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
                     {r}
                   </SelectItem>
                 ))}
@@ -117,7 +128,9 @@ export function ReportDialog({ targetId, targetType, trigger }: ReportDialogProp
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-muted-foreground">Additional Details (optional)</label>
+            <label className="text-sm text-muted-foreground">
+              Additional Details (optional)
+            </label>
             <Textarea
               value={details}
               onChange={(e) => setDetails(e.target.value)}
