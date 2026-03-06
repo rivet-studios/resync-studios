@@ -61,79 +61,83 @@ function ProductBadges({ product }: { product: ProductWithSubmitter }) {
 
 function ProductCard({ product }: { product: ProductWithSubmitter }) {
   return (
-    <div
-      className="group cursor-pointer"
-      data-testid={`card-product-${product.id}`}
-    >
-      <div className="aspect-[4/3] bg-[#1a1a1a] rounded-lg overflow-hidden mb-3">
-        {product.imageUrl ? (
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-10 h-10 text-white/15" />
-          </div>
-        )}
-      </div>
-      <div className="space-y-2">
-        <ProductBadges product={product} />
-        <h3
-          className="font-semibold text-white text-sm leading-tight line-clamp-1"
-          data-testid={`text-product-name-${product.id}`}
-        >
-          {product.name}
-        </h3>
-        {product.description && (
-          <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">
-            {product.description}
+    <Link href={`/store/product/${product.id}`}>
+      <div
+        className="group cursor-pointer"
+        data-testid={`card-product-${product.id}`}
+      >
+        <div className="aspect-[4/3] bg-[#1a1a1a] rounded-lg overflow-hidden mb-3">
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-10 h-10 text-white/15" />
+            </div>
+          )}
+        </div>
+        <div className="space-y-2">
+          <ProductBadges product={product} />
+          <h3
+            className="font-semibold text-white text-sm leading-tight line-clamp-1"
+            data-testid={`text-product-name-${product.id}`}
+          >
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">
+              {product.description}
+            </p>
+          )}
+          {product.submitter && (
+            <p className="text-[11px] text-white/30">
+              by {product.submitter.username}
+            </p>
+          )}
+          <p
+            className="text-white font-semibold text-base"
+            data-testid={`text-price-${product.id}`}
+          >
+            ${(product.price / 100).toFixed(2)}
           </p>
-        )}
-        {product.submitter && (
-          <p className="text-[11px] text-white/30">
-            by {product.submitter.username}
-          </p>
-        )}
-        <p
-          className="text-white font-semibold text-base"
-          data-testid={`text-price-${product.id}`}
-        >
-          ${(product.price / 100).toFixed(2)}
-        </p>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
 function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
   return (
-    <div
-      className="relative group cursor-pointer overflow-hidden rounded-lg"
-      data-testid={`card-featured-${product.id}`}
-    >
-      <div className="aspect-[16/10] bg-[#1a1a1a]">
-        {product.imageUrl ? (
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-16 h-16 text-white/10" />
-          </div>
-        )}
+    <Link href={`/store/product/${product.id}`}>
+      <div
+        className="relative group cursor-pointer overflow-hidden rounded-lg"
+        data-testid={`card-featured-${product.id}`}
+      >
+        <div className="aspect-[16/10] bg-[#1a1a1a]">
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-16 h-16 text-white/10" />
+            </div>
+          )}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <h3 className="text-white font-semibold text-lg leading-tight mb-1">
+            {product.name}
+          </h3>
+          <p className="text-white/60 text-sm">Shop now</p>
+        </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-6">
-        <h3 className="text-white font-semibold text-lg leading-tight mb-1">
-          {product.name}
-        </h3>
-        <p className="text-white/60 text-sm">Shop now</p>
-      </div>
-    </div>
+    </Link>
   );
 }
 

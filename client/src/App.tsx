@@ -45,6 +45,7 @@ import AdminCP from "@/pages/admincp";
 
 import Blog from "@/pages/blog";
 import Store from "@/pages/store";
+import ProductDetail from "@/pages/product";
 import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
 import Checkout from "@/pages/checkout";
@@ -242,6 +243,7 @@ function Router() {
           <Route path="/blog" component={Blog} />
           <Route path="/blog/:id" component={News} />
           <Route path="/store" component={Store} />
+          <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/subscriptions" component={Subscriptions} />
           <Route path="/checkout/:tierId" component={Checkout} />
           <Route path="/policies" component={Policies} />

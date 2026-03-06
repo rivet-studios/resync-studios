@@ -21,6 +21,12 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 
+function getBaseUrl(req: Request): string {
+  if (process.env.APP_URL) return process.env.APP_URL;
+  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  return `${req.protocol}://${req.get('host')}`;
+}
+
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (
     !((req as any).isAuthenticated && (req as any).isAuthenticated()) ||
@@ -1104,13 +1110,64 @@ export async function registerRoutes(
         payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'subscription',
-        success_url: `${req.protocol}://${req.get('host')}/settings?tab=payments&success=true`,
-        cancel_url: `${req.protocol}://${req.get('host')}/settings?tab=payments&cancelled=true`,
+        success_url: `${getBaseUrl(req)}/settings?tab=payments&success=true`,
+        cancel_url: `${getBaseUrl(req)}/settings?tab=payments&cancelled=true`,
       });
 
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Checkout error:", error.message);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  app.post("/api/stripe/product-checkout", requireAuth, async (req, res) => {
+    try {
+      const stripe = await getUncachableStripeClient();
+      const user = await storage.getUser((req.user as any).id);
+      if (!user) return res.status(401).json({ message: "User not found" });
+
+      const { productId } = req.body;
+      if (!productId) return res.status(400).json({ message: "productId is required" });
+
+      const product = await storage.getProduct(productId);
+      if (!product) return res.status(404).json({ message: "Product not found" });
+      if (product.status !== "approved") return res.status(400).json({ message: "Product is not available for purchase" });
+
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email || undefined,
+          metadata: { userId: user.id },
+        });
+        await storage.updateUser(user.id, { stripeCustomerId: customer.id } as any);
+        customerId = customer.id;
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: product.name,
+              description: product.description || undefined,
+              images: product.imageUrl ? [product.imageUrl] : undefined,
+            },
+            unit_amount: product.price,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        metadata: { productId: product.id, userId: user.id },
+        success_url: `${getBaseUrl(req)}/store/product/${product.id}?success=true`,
+        cancel_url: `${getBaseUrl(req)}/store/product/${product.id}?cancelled=true`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Product checkout error:", error.message);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
@@ -1125,7 +1182,7 @@ export async function registerRoutes(
 
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: user.stripeCustomerId,
-        return_url: `${req.protocol}://${req.get('host')}/settings?tab=payments`,
+        return_url: `${getBaseUrl(req)}/settings?tab=payments`,
       });
 
       res.json({ url: portalSession.url });

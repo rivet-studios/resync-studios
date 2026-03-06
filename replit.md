@@ -11,7 +11,8 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Forums with categories and threading
 - ✅ User profiles with redesigned layout and badges
 - ✅ VIP subscription system with 4 tiers
-- ✅ Store page with product catalog, categories, and badges
+- ✅ Store page with product catalog, categories, badges, and clickable product cards
+- ✅ Product detail page with Buy Now (Stripe) and Add to Cart functionality
 - ✅ Marketplace page for community product submissions
 - ✅ Product badges: Community Provided (grey), Featured (blue), LIMITED EDITION (golden), VERIFIED (green)
 - ✅ Operations Manager product review and badge assignment
@@ -129,7 +130,7 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Appeals**: GET /api/appeals, GET /api/appeals/my, POST /api/appeals, PATCH /api/appeals/:id
 - **Reports**: GET /api/reports, GET /api/reports/my, POST /api/reports, PATCH /api/reports/:id
 - **Payments**: GET /api/payments/my
-- **Stripe**: GET /api/stripe/publishable-key, GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/portal, GET /api/stripe/subscription
+- **Stripe**: GET /api/stripe/publishable-key, GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/product-checkout, POST /api/stripe/portal, GET /api/stripe/subscription
 - **Search**: GET /api/search?q=:query&type=:type
 - **Roblox**: POST /api/roblox/start-verification, POST /api/roblox/verify, POST /api/roblox/unlink
 
