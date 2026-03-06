@@ -55,8 +55,6 @@ import {
   Sun,
   Moon,
   Monitor,
-  PanelLeft,
-  PanelTop,
   RefreshCw,
   ExternalLink,
   Tag,
@@ -474,8 +472,11 @@ export default function Settings() {
   const { toast } = useToast();
   const [location, navigate] = useLocation();
   const { theme, setTheme } = useTheme();
-  const [navLayout, setNavLayout] = useState(
-    () => localStorage.getItem("resync-nav-layout") || "header",
+  const [fontSize, setFontSize] = useState(
+    () => localStorage.getItem("resync-font-size") || "normal",
+  );
+  const [reduceMotion, setReduceMotion] = useState(
+    () => localStorage.getItem("resync-reduce-motion") === "true",
   );
 
   const params = new URLSearchParams(window.location.search);
@@ -898,26 +899,31 @@ export default function Settings() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Layout</CardTitle>
-                  <CardDescription>Choose between sidebar or header navigation layout</CardDescription>
+                  <CardTitle>Font Size</CardTitle>
+                  <CardDescription>Adjust the text size across the platform</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     {[
-                      { value: "sidebar", label: "Sidebar", icon: PanelLeft },
-                      { value: "header", label: "Header", icon: PanelTop },
+                      { value: "small", label: "Small" },
+                      { value: "normal", label: "Normal" },
+                      { value: "large", label: "Large" },
                     ].map((option) => {
-                      const Icon = option.icon;
-                      const isSelected = navLayout === option.value;
+                      const isSelected = fontSize === option.value;
                       return (
                         <button
                           key={option.value}
                           onClick={() => {
-                            setNavLayout(option.value);
-                            localStorage.setItem("resync-nav-layout", option.value);
+                            setFontSize(option.value);
+                            localStorage.setItem("resync-font-size", option.value);
+                            const root = document.documentElement;
+                            root.classList.remove("text-sm", "text-base", "text-lg");
+                            if (option.value === "small") root.style.fontSize = "14px";
+                            else if (option.value === "large") root.style.fontSize = "18px";
+                            else root.style.fontSize = "16px";
                             toast({
-                              title: "Layout updated",
-                              description: `Navigation set to ${option.label.toLowerCase()}. Refresh to see changes.`,
+                              title: "Font size updated",
+                              description: `Text size set to ${option.label.toLowerCase()}.`,
                             });
                           }}
                           className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${
@@ -925,15 +931,58 @@ export default function Settings() {
                               ? "border-primary bg-primary/5"
                               : "border-border hover:border-muted-foreground"
                           }`}
-                          data-testid={`button-layout-${option.value}`}
+                          data-testid={`button-font-${option.value}`}
                         >
-                          <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                          <span className={`font-medium ${option.value === "small" ? "text-xs" : option.value === "large" ? "text-lg" : "text-sm"} ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                            Aa
+                          </span>
                           <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
                             {option.label}
                           </span>
                         </button>
                       );
                     })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Accessibility</CardTitle>
+                  <CardDescription>Motion and animation preferences</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Reduce motion</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Disable animations and transitions</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const newVal = !reduceMotion;
+                        setReduceMotion(newVal);
+                        localStorage.setItem("resync-reduce-motion", String(newVal));
+                        if (newVal) {
+                          document.documentElement.classList.add("reduce-motion");
+                        } else {
+                          document.documentElement.classList.remove("reduce-motion");
+                        }
+                        toast({
+                          title: newVal ? "Reduced motion enabled" : "Reduced motion disabled",
+                          description: newVal ? "Animations have been minimized." : "Animations have been restored.",
+                        });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        reduceMotion ? "bg-primary" : "bg-muted"
+                      }`}
+                      data-testid="toggle-reduce-motion"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          reduceMotion ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </CardContent>
               </Card>

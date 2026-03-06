@@ -234,6 +234,7 @@ export const forumCategories = pgTable("forum_categories", {
   description: text("description"),
   icon: varchar("icon"),
   color: varchar("color"),
+  group: varchar("group"),
   order: integer("order").default(0),
   threadCount: integer("thread_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),

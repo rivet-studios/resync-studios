@@ -325,12 +325,24 @@ function Router() {
   );
 }
 
+function AppInit() {
+  const savedFontSize = localStorage.getItem("resync-font-size");
+  if (savedFontSize === "small") document.documentElement.style.fontSize = "14px";
+  else if (savedFontSize === "large") document.documentElement.style.fontSize = "18px";
+  else document.documentElement.style.fontSize = "16px";
+  if (localStorage.getItem("resync-reduce-motion") === "true") {
+    document.documentElement.classList.add("reduce-motion");
+  }
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider defaultTheme="dark" storageKey="rivet-studios-theme">
           <TooltipProvider>
+            <AppInit />
             <ScrollToTop />
             <Router />
             <Toaster />
