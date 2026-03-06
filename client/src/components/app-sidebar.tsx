@@ -52,7 +52,7 @@ import {
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "About RIVET Studios", url: "/about", icon: Info },
-  { title: "Project Catalina", url: "/catalina", icon: MapPin },
+  { title: "The ", url: "/catalina", icon: MapPin },
   { title: "Announcements", url: "/news", icon: Megaphone },
   { title: "nil", url: "/not-found", icon: Target },
   { title: "Unauthorized", url: "/unauthorized", icon: Target },
