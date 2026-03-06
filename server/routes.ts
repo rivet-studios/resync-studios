@@ -17,6 +17,9 @@ import {
   type User,
 } from "@shared/schema";
 import { z } from "zod";
+import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (
@@ -890,6 +893,126 @@ export async function registerRoutes(
       res.json(userBans);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch bans" });
+    }
+  });
+
+  // ---- Stripe Payment Routes ----
+
+  app.get("/api/stripe/publishable-key", async (_req, res) => {
+    try {
+      const key = await getStripePublishableKey();
+      res.json({ publishableKey: key });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get Stripe key" });
+    }
+  });
+
+  app.get("/api/stripe/products", async (_req, res) => {
+    try {
+      const result = await db.execute(
+        sql`SELECT p.id, p.name, p.description, p.metadata, p.active,
+            pr.id as price_id, pr.unit_amount, pr.currency, pr.recurring, pr.active as price_active
+            FROM stripe.products p
+            LEFT JOIN stripe.prices pr ON pr.product = p.id AND pr.active = true
+            WHERE p.active = true
+            ORDER BY p.name, pr.unit_amount`
+      );
+      const productsMap = new Map();
+      for (const row of result.rows as any[]) {
+        if (!productsMap.has(row.id)) {
+          productsMap.set(row.id, {
+            id: row.id,
+            name: row.name,
+            description: row.description,
+            metadata: row.metadata,
+            active: row.active,
+            prices: [],
+          });
+        }
+        if (row.price_id) {
+          productsMap.get(row.id).prices.push({
+            id: row.price_id,
+            unit_amount: row.unit_amount,
+            currency: row.currency,
+            recurring: row.recurring,
+            active: row.price_active,
+          });
+        }
+      }
+      res.json(Array.from(productsMap.values()));
+    } catch (error: any) {
+      console.error("Stripe products query error:", error.message);
+      res.json([]);
+    }
+  });
+
+  app.post("/api/stripe/checkout", requireAuth, async (req, res) => {
+    try {
+      const stripe = await getUncachableStripeClient();
+      const user = await storage.getUser((req.user as any).id);
+      if (!user) return res.status(401).json({ message: "User not found" });
+
+      const { priceId } = req.body;
+      if (!priceId) return res.status(400).json({ message: "priceId is required" });
+
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email || undefined,
+          metadata: { userId: user.id },
+        });
+        await storage.updateUser(user.id, { stripeCustomerId: customer.id } as any);
+        customerId = customer.id;
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: 'subscription',
+        success_url: `${req.protocol}://${req.get('host')}/settings?tab=payments&success=true`,
+        cancel_url: `${req.protocol}://${req.get('host')}/settings?tab=payments&cancelled=true`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Checkout error:", error.message);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  app.post("/api/stripe/portal", requireAuth, async (req, res) => {
+    try {
+      const stripe = await getUncachableStripeClient();
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.stripeCustomerId) {
+        return res.status(400).json({ message: "No Stripe customer found" });
+      }
+
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: user.stripeCustomerId,
+        return_url: `${req.protocol}://${req.get('host')}/settings?tab=payments`,
+      });
+
+      res.json({ url: portalSession.url });
+    } catch (error: any) {
+      console.error("Portal error:", error.message);
+      res.status(500).json({ message: "Failed to create portal session" });
+    }
+  });
+
+  app.get("/api/stripe/subscription", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user?.stripeSubscriptionId) {
+        return res.json({ subscription: null });
+      }
+      const result = await db.execute(
+        sql`SELECT * FROM stripe.subscriptions WHERE id = ${user.stripeSubscriptionId}`
+      );
+      res.json({ subscription: result.rows[0] || null });
+    } catch (error) {
+      res.json({ subscription: null });
     }
   });
 

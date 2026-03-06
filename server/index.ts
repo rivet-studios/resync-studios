@@ -6,6 +6,7 @@ import pgSession from "connect-pg-simple";
 import passport from "./auth";
 import { initializeDatabase, pool } from "./db";
 import { initializeDiscordBot } from "./discord-bot";
+import { WebhookHandlers } from "./webhookHandlers";
 import fs from "fs";
 import path from "path";
 
@@ -45,6 +46,30 @@ const sessionStore = new PgSession({
 });
 
 console.log("✅ Session store initialized with PostgreSQL");
+
+// ---- Stripe webhook route (MUST be before express.json()) ----
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    if (!signature) {
+      return res.status(400).json({ error: 'Missing stripe-signature' });
+    }
+    try {
+      const sig = Array.isArray(signature) ? signature[0] : signature;
+      if (!Buffer.isBuffer(req.body)) {
+        console.error('STRIPE WEBHOOK ERROR: req.body is not a Buffer');
+        return res.status(500).json({ error: 'Webhook processing error' });
+      }
+      await WebhookHandlers.processWebhook(req.body as Buffer, sig);
+      res.status(200).json({ received: true });
+    } catch (error: any) {
+      console.error('Webhook error:', error.message);
+      res.status(400).json({ error: 'Webhook processing error' });
+    }
+  }
+);
 
 // ---- Middleware ----
 app.use(
@@ -141,6 +166,43 @@ httpServer.listen(port, host, () => {
     console.log("STEP: init db");
     await initializeDatabase();
     console.log("STEP: init db done");
+
+    // Initialize Stripe (non-blocking)
+    console.log("STEP: init stripe (non-blocking)");
+    (async () => {
+      try {
+        const { runMigrations } = await import('stripe-replit-sync');
+        const { getStripeSync } = await import('./stripeClient');
+        const databaseUrl = process.env.DATABASE_URL;
+        if (!databaseUrl) {
+          console.warn('⚠️ DATABASE_URL not set, skipping Stripe init');
+          return;
+        }
+        await runMigrations({ databaseUrl });
+        console.log('✅ Stripe schema ready');
+
+        const stripeSync = await getStripeSync();
+
+        const domains = process.env.REPLIT_DOMAINS?.split(',')[0] || process.env.REPLIT_DEV_DOMAIN;
+        if (domains) {
+          const webhookBaseUrl = `https://${domains}`;
+          try {
+            const result = await stripeSync.findOrCreateManagedWebhook(
+              `${webhookBaseUrl}/api/stripe/webhook`
+            );
+            console.log(`✅ Stripe webhook configured: ${result?.webhook?.url || 'ready'}`);
+          } catch (webhookErr: any) {
+            console.warn('⚠️ Stripe webhook setup skipped:', webhookErr.message);
+          }
+        }
+
+        stripeSync.syncBackfill()
+          .then(() => console.log('✅ Stripe data synced'))
+          .catch((err: any) => console.error('⚠️ Stripe backfill error:', err.message));
+      } catch (error: any) {
+        console.error('⚠️ Stripe init failed (non-critical):', error.message);
+      }
+    })();
 
     // Discord bot can hang; don't block the web server coming up.
     console.log("STEP: init discord bot (non-blocking)");
