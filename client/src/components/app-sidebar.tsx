@@ -27,7 +27,6 @@ import {
   Home,
   Target,
   Users,
-
   MessageSquare,
   Crown,
   Settings,
@@ -52,10 +51,9 @@ import {
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "About RIVET Studios", url: "/about", icon: Info },
-  { title: "The ", url: "/catalina", icon: MapPin },
+  { title: "The Golden Era,  1995", url: "/rosewood", icon: MapPin },
   { title: "Announcements", url: "/news", icon: Megaphone },
   { title: "nil", url: "/not-found", icon: Target },
-  { title: "Unauthorized", url: "/unauthorized", icon: Target },
   { title: "Forums", url: "/forums", icon: MessageSquare },
   { title: "Our Team", url: "/team", icon: UsersRound },
 ];
@@ -74,8 +72,8 @@ const accountNavItems = [
   { title: "DMCA Policy", url: "/dmca", icon: Shield },
   { title: "LEO & Emergency Guidelines", url: "/leo-guidelines", icon: Radio },
   {
-    title: "Project Catalina Rules",
-    url: "/project-catalina-rules",
+    title: "TGE (The Golden Era) Rules",
+    url: "/project-rosewood-rules",
     icon: BookOpen,
   },
   {
