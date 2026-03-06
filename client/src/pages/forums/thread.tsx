@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VipBadge } from "@/components/vip-badge";
+import { rankConfig } from "@/components/user-rank-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Form,
@@ -174,7 +175,23 @@ export default function ForumThread() {
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="font-semibold">{thread.author?.username || 'Anonymous'}</span>
+                {(() => {
+                  const rc = rankConfig[(thread.author as any)?.userRank || ""];
+                  const isLifetime = (thread.author as any)?.userRank === "Lifetime" && rc?.isGradient;
+                  return (
+                    <span
+                      className="font-semibold"
+                      style={isLifetime ? {
+                        color: "transparent",
+                        backgroundImage: rc.gradient,
+                        WebkitBackgroundClip: "text",
+                        backgroundClip: "text",
+                      } : undefined}
+                    >
+                      {thread.author?.username || 'Anonymous'}
+                    </span>
+                  );
+                })()}
                 {thread.author?.vipTier && thread.author.vipTier !== 'none' && (
                   <VipBadge tier={thread.author.vipTier as any} size="sm" showLabel={false} />
                 )}
@@ -260,7 +277,23 @@ export default function ForumThread() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="font-semibold">{reply.author?.username || 'Anonymous'}</span>
+                        {(() => {
+                          const rc = rankConfig[(reply.author as any)?.userRank || ""];
+                          const isLifetime = (reply.author as any)?.userRank === "Lifetime" && rc?.isGradient;
+                          return (
+                            <span
+                              className="font-semibold"
+                              style={isLifetime ? {
+                                color: "transparent",
+                                backgroundImage: rc.gradient,
+                                WebkitBackgroundClip: "text",
+                                backgroundClip: "text",
+                              } : undefined}
+                            >
+                              {reply.author?.username || 'Anonymous'}
+                            </span>
+                          );
+                        })()}
                         {reply.author?.vipTier && reply.author.vipTier !== 'none' && (
                           <VipBadge tier={reply.author.vipTier as any} size="sm" showLabel={false} />
                         )}

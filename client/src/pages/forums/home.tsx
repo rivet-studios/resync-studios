@@ -6,6 +6,7 @@ import { MessageSquare, Plus, User as UserIcon } from "lucide-react";
 import type { ForumCategory, ForumThread, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+import { rankConfig } from "@/components/user-rank-badge";
 
 interface CategoryWithGroup extends ForumCategory {
   group?: string | null;
@@ -129,7 +130,23 @@ export default function ForumHome() {
                         </h3>
                         <p className="text-xs text-white/30 mt-0.5">
                           Started by{" "}
-                          <span className="text-white/50">{thread.author?.username || "Unknown"}</span>
+                          {(() => {
+                            const rc = rankConfig[(thread.author as any)?.userRank || ""];
+                            const isLifetime = (thread.author as any)?.userRank === "Lifetime" && rc?.isGradient;
+                            return (
+                              <span
+                                className={isLifetime ? "font-semibold" : "text-white/50"}
+                                style={isLifetime ? {
+                                  color: "transparent",
+                                  backgroundImage: rc.gradient,
+                                  WebkitBackgroundClip: "text",
+                                  backgroundClip: "text",
+                                } : undefined}
+                              >
+                                {thread.author?.username || "Unknown"}
+                              </span>
+                            );
+                          })()}
                           {" · "}
                           {thread.createdAt
                             ? formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })

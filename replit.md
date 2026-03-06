@@ -35,6 +35,12 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 
 ## Recent Additions
 
+### VIP Badge & Lifetime Gradient:
+- **VIP Badge**: Replaced text/icon gradient badges with CDN image badge (`VipBadge` component renders the holographic VIP image)
+- **Lifetime Username Gradient**: Users with `Lifetime` rank get gold-to-blue gradient (`#FFBF00` to `#00BFFF`) applied to their username display in: profile page, forum threads, forum home thread list, and header dropdown
+- **rankConfig**: Centralized rank configuration in `user-rank-badge.tsx` with `isGradient` and `gradient` properties for Lifetime and VIP ranks
+
+
 ### AdminCP Expansion:
 - **Live Stats Dashboard**: Total members, forum posts, active bans, pending reports — all from real database counts via `GET /api/admin/stats` (auto-refreshes every 30s)
 - **Real Activity Feed**: Combined feed of latest bans, reports, and appeals via `GET /api/admin/activity`

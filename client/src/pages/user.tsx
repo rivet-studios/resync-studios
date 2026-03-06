@@ -9,6 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
+import { VipBadge } from "@/components/vip-badge";
+import { rankConfig } from "@/components/user-rank-badge";
 
 export default function UserProfile() {
   const { id } = useParams<{ id: string }>();
@@ -95,13 +97,26 @@ export default function UserProfile() {
 
             <div className="flex-1 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground" data-testid="text-username">
-                  {profile.username}
-                </h1>
+                {(() => {
+                  const rc = rankConfig[profile.userRank || ""];
+                  const isLifetime = profile.userRank === "Lifetime" && rc?.isGradient;
+                  return (
+                    <h1
+                      className="text-2xl sm:text-3xl font-bold"
+                      style={isLifetime ? {
+                        color: "transparent",
+                        backgroundImage: rc.gradient,
+                        WebkitBackgroundClip: "text",
+                        backgroundClip: "text",
+                      } : { color: "var(--foreground)" }}
+                      data-testid="text-username"
+                    >
+                      {profile.username}
+                    </h1>
+                  );
+                })()}
                 {profile.vipTier && profile.vipTier !== "none" && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-gradient-to-r from-indigo-500 to-purple-500 text-[10px] font-bold text-white uppercase tracking-wider shadow-sm" data-testid="badge-vip">
-                    VIP
-                  </span>
+                  <VipBadge tier={profile.vipTier as any} size="md" />
                 )}
               </div>
 

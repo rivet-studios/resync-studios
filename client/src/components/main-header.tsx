@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { rankConfig } from "@/components/user-rank-badge";
 import {
   Search,
   ShoppingCart,
@@ -153,9 +154,23 @@ export function MainHeader() {
                       <UserIcon className="w-5 h-5 text-white/40" />
                     </div>
                     <div className="flex flex-col overflow-hidden">
-                      <span className="text-sm font-semibold text-white truncate">
-                        {user.username}
-                      </span>
+                      {(() => {
+                        const rc = rankConfig[user.userRank || ""];
+                        const isLifetime = user.userRank === "Lifetime" && rc?.isGradient;
+                        return (
+                          <span
+                            className="text-sm font-semibold truncate"
+                            style={isLifetime ? {
+                              color: "transparent",
+                              backgroundImage: rc.gradient,
+                              WebkitBackgroundClip: "text",
+                              backgroundClip: "text",
+                            } : { color: "white" }}
+                          >
+                            {user.username}
+                          </span>
+                        );
+                      })()}
                       <span className="text-[10px] font-medium text-white/30 uppercase tracking-widest truncate">
                         {user.userRank}
                       </span>
