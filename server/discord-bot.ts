@@ -1,6 +1,7 @@
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || "";
+
 const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 const RANK_TO_ROLE: Record<string, string> = {
