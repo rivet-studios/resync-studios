@@ -152,19 +152,19 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
           placeholder="4242 4242 4242 4242"
           value={formData.cardNumber}
           onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value.replace(/\D/g, "") })}
-          maxLength="16"
+          maxLength={16}
           required
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-sm font-medium">Expir (MM/YY)</label>
+          <label className="text-sm font-medium">Expiry (MM/YY)</label>
           <Input
             placeholder="12/25"
             value={formData.cardExpiry}
             onChange={(e) => setFormData({ ...formData, cardExpiry: e.target.value })}
-            maxLength="5"
+            maxLength={5}
             required
           />
         </div>
@@ -174,7 +174,7 @@ export function PaymentForm({ tier, onSuccess }: PaymentFormProps) {
             placeholder="123"
             value={formData.cardCvc}
             onChange={(e) => setFormData({ ...formData, cardCvc: e.target.value.replace(/\D/g, "") })}
-            maxLength="4"
+            maxLength={4}
             required
           />
         </div>
