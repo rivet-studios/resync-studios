@@ -35,6 +35,13 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 
 ## Recent Additions
 
+### Policy Management:
+- **Policies Table**: New `policies` table with slug, title, content (HTML), updatedBy, updatedAt
+- **API Routes**: `GET /api/policies`, `GET /api/policies/:slug`, `PUT /api/policies/:slug` (Operations Manager+ only)
+- **AdminCP Policies Tab**: List of all 8 policies with edit/customize buttons, HTML content editor, save to DB
+- **PolicyWrapper Component**: Wraps each policy page; loads DB content if available, falls back to hardcoded content
+- **Access Control**: Operations Manager, Company Director, admins, and @resyncstudios.com emails can edit policies
+
 ### VIP Badge & Lifetime Gradient:
 - **VIP Badge**: Replaced text/icon gradient badges with CDN image badge (`VipBadge` component renders the holographic VIP image)
 - **Lifetime Username Gradient**: Users with `Lifetime` rank get gold-to-blue gradient (`#FFBF00` to `#00BFFF`) applied to their username display in: profile page, forum threads, forum home thread list, and header dropdown

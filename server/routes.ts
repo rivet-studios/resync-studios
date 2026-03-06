@@ -947,6 +947,53 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/policies", async (_req, res) => {
+    try {
+      const allPolicies = await storage.getPolicies();
+      res.json(allPolicies);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch policies" });
+    }
+  });
+
+  app.get("/api/policies/:slug", async (req, res) => {
+    try {
+      const policy = await storage.getPolicy(req.params.slug);
+      if (!policy) return res.status(404).json({ message: "Policy not found" });
+      res.json(policy);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch policy" });
+    }
+  });
+
+  app.put("/api/policies/:slug", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      const opsRanks = ["Operations Manager", "Company Director"];
+      const hasAccess =
+        user?.isAdmin ||
+        opsRanks.includes(user?.userRank || "") ||
+        (user?.additionalRanks || []).some((r: string) => opsRanks.includes(r)) ||
+        user?.email?.toLowerCase().endsWith("@resyncstudios.com");
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Only Operations Managers can update policies" });
+      }
+      const { title, content } = req.body;
+      if (!title || !content) {
+        return res.status(400).json({ message: "Title and content are required" });
+      }
+      const policy = await storage.upsertPolicy(
+        req.params.slug,
+        title,
+        content,
+        user!.id
+      );
+      res.json(policy);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update policy" });
+    }
+  });
+
   app.patch("/api/admin/users/:id/rank", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);

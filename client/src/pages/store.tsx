@@ -139,22 +139,22 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
 
 const CATEGORIES = [
   {
-    name: "Game Assets",
-    description: "In-game assets and resources",
+    name: "Rosewood Vehicle Addons",
+    description: "Vehicle Inserts",
     gradient: "from-slate-700 to-slate-900",
   },
   {
-    name: "Accessories",
-    description: "Accessories and customizations",
+    name: "Rosewood LEO Vehicles",
+    description: "Custom vehicle inserts for Law Enforcement",
     gradient: "from-zinc-600 to-zinc-800",
   },
   {
-    name: "Services",
-    description: "Professional services",
+    name: "Rosewood Civilian Vehicles",
+    description: "Custom vehicle inserts for civilian",
     gradient: "from-neutral-600 to-neutral-800",
   },
   {
-    name: "Other",
+    name: "Addons",
     description: "Miscellaneous products",
     gradient: "from-stone-600 to-stone-800",
   },
@@ -171,23 +171,33 @@ export default function Store() {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-14 animate-in fade-in duration-500">
-
         <section className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-white" data-testid="heading-shop-category">
+              <h2
+                className="text-xl font-semibold tracking-tight text-white"
+                data-testid="heading-shop-category"
+              >
                 Shop by category
               </h2>
-              <p className="text-sm text-white/40 mt-1">Browse our most popular products</p>
+              <p className="text-sm text-white/40 mt-1">
+                Browse our most popular products
+              </p>
             </div>
-            <Link href="/marketplace" className="text-sm text-white/50 hover:text-white transition-colors flex items-center gap-1" data-testid="link-browse-categories">
+            <Link
+              href="/marketplace"
+              className="text-sm text-white/50 hover:text-white transition-colors flex items-center gap-1"
+              data-testid="link-browse-categories"
+            >
               Browse all categories <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {CATEGORIES.map((cat) => {
-              const count = products.filter((p) => p.category === cat.name).length;
+              const count = products.filter(
+                (p) => p.category === cat.name,
+              ).length;
               return (
                 <div
                   key={cat.name}
@@ -196,9 +206,13 @@ export default function Store() {
                 >
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="font-semibold text-white text-sm">{cat.name}</h3>
+                    <h3 className="font-semibold text-white text-sm">
+                      {cat.name}
+                    </h3>
                     {count > 0 && (
-                      <p className="text-white/50 text-xs mt-0.5">{count} {count === 1 ? "product" : "products"}</p>
+                      <p className="text-white/50 text-xs mt-0.5">
+                        {count} {count === 1 ? "product" : "products"}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -210,15 +224,23 @@ export default function Store() {
         {featuredProducts.length > 0 && (
           <section className="space-y-5">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-white" data-testid="heading-featured">
+              <h2
+                className="text-xl font-semibold tracking-tight text-white"
+                data-testid="heading-featured"
+              >
                 Featured products
               </h2>
-              <p className="text-sm text-white/40 mt-1">Our most popular products</p>
+              <p className="text-sm text-white/40 mt-1">
+                Our most popular products
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {featuredProducts.slice(0, 4).map((product, i) => (
-                <div key={product.id} className={i === 0 ? "md:row-span-2" : ""}>
+                <div
+                  key={product.id}
+                  className={i === 0 ? "md:row-span-2" : ""}
+                >
                   <FeaturedCard product={product} />
                 </div>
               ))}
@@ -228,11 +250,15 @@ export default function Store() {
 
         <section className="space-y-5">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-white" data-testid="heading-all-products">
+            <h2
+              className="text-xl font-semibold tracking-tight text-white"
+              data-testid="heading-all-products"
+            >
               All Products
             </h2>
             <p className="text-sm text-white/40 mt-1">
-              {allProducts.length} {allProducts.length === 1 ? "product" : "products"} available
+              {allProducts.length}{" "}
+              {allProducts.length === 1 ? "product" : "products"} available
             </p>
           </div>
 
@@ -255,7 +281,10 @@ export default function Store() {
                 Be the first to submit a product to the marketplace
               </p>
               <Link href="/marketplace">
-                <span className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white border border-white/10 hover:border-white/20 px-5 py-2.5 rounded-lg transition-colors" data-testid="button-submit-first-product">
+                <span
+                  className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white border border-white/10 hover:border-white/20 px-5 py-2.5 rounded-lg transition-colors"
+                  data-testid="button-submit-first-product"
+                >
                   Submit a Product <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
@@ -271,11 +300,17 @@ export default function Store() {
 
         <section>
           <Link href="/store/subscriptions">
-            <div className="flex items-center justify-between border border-white/10 hover:border-white/20 rounded-lg p-6 transition-colors cursor-pointer group" data-testid="link-vip-plans">
+            <div
+              className="flex items-center justify-between border border-white/10 hover:border-white/20 rounded-lg p-6 transition-colors cursor-pointer group"
+              data-testid="link-vip-plans"
+            >
               <div>
-                <h3 className="text-white font-semibold text-base">VIP Subscriptions</h3>
+                <h3 className="text-white font-semibold text-base">
+                  VIP Subscriptions
+                </h3>
                 <p className="text-white/40 text-sm mt-1">
-                  Unlock exclusive perks — Bronze VIP, Diamond VIP, and Founder's Edition
+                  Unlock exclusive perks — Bronze VIP, Diamond VIP, and
+                  Founder's Edition
                 </p>
               </div>
               <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-colors flex-shrink-0" />

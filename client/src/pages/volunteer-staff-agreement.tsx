@@ -7,9 +7,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Handshake, Shield, AlertTriangle } from "lucide-react";
+import { PolicyWrapper } from "@/components/policy-wrapper";
 
 export default function VolunteerStaffAgreement() {
   return (
+    <PolicyWrapper slug="volunteer-staff-agreement">
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
@@ -382,5 +384,6 @@ export default function VolunteerStaffAgreement() {
         </CardContent>
       </Card>
     </div>
+    </PolicyWrapper>
   );
 }

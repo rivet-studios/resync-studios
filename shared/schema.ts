@@ -486,6 +486,19 @@ export type SiteSettings = typeof siteSettings.$inferSelect;
 export type InsertSiteSettings = z.infer<
   ReturnType<typeof createInsertSchema<typeof siteSettings>>
 >;
+export const policies = pgTable("policies", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  slug: varchar("slug").notNull().unique(),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  updatedBy: varchar("updated_by"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Policy = typeof policies.$inferSelect;
+
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Product = typeof products.$inferSelect;

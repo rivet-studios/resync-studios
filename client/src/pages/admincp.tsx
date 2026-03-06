@@ -78,6 +78,9 @@ export default function AdminCP() {
   const [announcementImageUrl, setAnnouncementImageUrl] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedRank, setSelectedRank] = useState("");
+  const [editingPolicy, setEditingPolicy] = useState<string | null>(null);
+  const [policyTitle, setPolicyTitle] = useState("");
+  const [policyContent, setPolicyContent] = useState("");
 
   const adminRanks = [
     "Community Developer",
@@ -137,6 +140,39 @@ export default function AdminCP() {
   const { data: reports = [] } = useQuery<any[]>({
     queryKey: ["/api/reports"],
     enabled: !!isAdmin && (activeTab === "reports" || activeTab === "dashboard"),
+  });
+
+  const { data: policiesData = [] } = useQuery<any[]>({
+    queryKey: ["/api/policies"],
+    enabled: !!isAdmin && activeTab === "policies",
+  });
+
+  const policySlugMap: Record<string, string> = {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "community-rules": "Community Rules",
+    "guidelines": "Guidelines",
+    "dmca": "DMCA Policy",
+    "leo-guidelines": "LEO Guidelines",
+    "volunteer-staff-agreement": "Volunteer Staff Agreement",
+    "project-rosewood-rules": "Project Rosewood Rules",
+  };
+
+  const savePolicyMutation = useMutation({
+    mutationFn: async ({ slug, title, content }: { slug: string; title: string; content: string }) => {
+      const res = await apiRequest("PUT", `/api/policies/${slug}`, { title, content });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Policy updated successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/policies"] });
+      setEditingPolicy(null);
+      setPolicyTitle("");
+      setPolicyContent("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to update policy", description: e.message, variant: "destructive" });
+    },
   });
 
   const updateSiteSettingsMutation = useMutation({
@@ -247,6 +283,7 @@ export default function AdminCP() {
     { id: "users", label: "User Management", icon: Users },
     { id: "settings", label: "Platform Settings", icon: Settings },
     { id: "announcements", label: "Announcements", icon: Megaphone },
+    { id: "policies", label: "Policies", icon: Scale },
     { id: "reports", label: "System Reports", icon: AlertTriangle },
   ];
 
@@ -744,6 +781,102 @@ export default function AdminCP() {
                 )}
               </div>
             </Card>
+          </>
+        )}
+
+        {activeTab === "policies" && (
+          <>
+            <h1 className="text-4xl font-semibold tracking-tight uppercase" data-testid="text-policies-title">Policies Management</h1>
+            <p className="text-white/40 text-sm">Edit and manage site policies. Changes are saved to the database and reflected on the public policy pages.</p>
+
+            {editingPolicy ? (
+              <Card className="bg-[#121212] border-white/5 rounded-xl" data-testid="card-policy-editor">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">
+                    Editing: {policySlugMap[editingPolicy] || editingPolicy}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-1.5 block">Title</label>
+                    <Input
+                      value={policyTitle}
+                      onChange={(e) => setPolicyTitle(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white"
+                      placeholder="Policy title"
+                      data-testid="input-policy-title"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-1.5 block">Content (HTML)</label>
+                    <Textarea
+                      value={policyContent}
+                      onChange={(e) => setPolicyContent(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white min-h-[400px] font-mono text-sm"
+                      placeholder="Policy content in HTML format..."
+                      data-testid="input-policy-content"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => savePolicyMutation.mutate({ slug: editingPolicy, title: policyTitle, content: policyContent })}
+                      disabled={savePolicyMutation.isPending || !policyTitle || !policyContent}
+                      className="bg-white text-black font-semibold"
+                      data-testid="button-save-policy"
+                    >
+                      {savePolicyMutation.isPending ? "Saving..." : "Save Policy"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => { setEditingPolicy(null); setPolicyTitle(""); setPolicyContent(""); }}
+                      className="border-white/10 text-white/70"
+                      data-testid="button-cancel-policy"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {Object.entries(policySlugMap).map(([slug, label]) => {
+                  const existing = policiesData.find((p: any) => p.slug === slug);
+                  return (
+                    <Card key={slug} className="bg-[#121212] border-white/5 rounded-xl p-5" data-testid={`card-policy-${slug}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-sm">{label}</h3>
+                          <p className="text-xs text-white/30 mt-0.5">
+                            {existing
+                              ? `Last updated: ${new Date(existing.updatedAt).toLocaleDateString()}`
+                              : "Using default content (not yet customized)"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {existing && (
+                            <Badge className="bg-green-500/20 text-green-400 text-[10px]">Customized</Badge>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-white/10 text-white/70 text-xs"
+                            onClick={() => {
+                              setEditingPolicy(slug);
+                              setPolicyTitle(existing?.title || label);
+                              setPolicyContent(existing?.content || "");
+                            }}
+                            data-testid={`button-edit-policy-${slug}`}
+                          >
+                            <FileText className="w-3 h-3 mr-1.5" />
+                            {existing ? "Edit" : "Customize"}
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
 

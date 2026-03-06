@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PolicyWrapper } from "@/components/policy-wrapper";
 import {
   AlertCircle,
   BookOpen,
@@ -17,6 +18,7 @@ import {
 
 export default function ProjectRosewoodrules() {
   return (
+    <PolicyWrapper slug="project-rosewood-rules">
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
@@ -542,5 +544,6 @@ export default function ProjectRosewoodrules() {
         </CardContent>
       </Card>
     </div>
+    </PolicyWrapper>
   );
 }

@@ -29,6 +29,8 @@ import {
   reports,
   type Report,
   type InsertReport,
+  type Policy,
+  policies,
   users,
   groups,
   builds,
@@ -133,6 +135,9 @@ export interface IStorage {
   getUserAppeals(userId: string): Promise<Appeal[]>;
   createAppeal(appeal: InsertAppeal): Promise<Appeal>;
   updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined>;
+  getPolicies(): Promise<Policy[]>;
+  getPolicy(slug: string): Promise<Policy | undefined>;
+  upsertPolicy(slug: string, title: string, content: string, updatedBy: string): Promise<Policy>;
   getAdminStats(): Promise<{
     totalUsers: number;
     totalThreads: number;
@@ -716,6 +721,32 @@ export class DatabaseStorage implements IStorage {
       .slice(0, limit);
 
     return combined;
+  }
+
+  async getPolicies(): Promise<Policy[]> {
+    return db.select().from(policies).orderBy(policies.slug);
+  }
+
+  async getPolicy(slug: string): Promise<Policy | undefined> {
+    const [policy] = await db.select().from(policies).where(eq(policies.slug, slug));
+    return policy;
+  }
+
+  async upsertPolicy(slug: string, title: string, content: string, updatedBy: string): Promise<Policy> {
+    const existing = await this.getPolicy(slug);
+    if (existing) {
+      const [updated] = await db
+        .update(policies)
+        .set({ title, content, updatedBy, updatedAt: new Date() })
+        .where(eq(policies.slug, slug))
+        .returning();
+      return updated;
+    }
+    const [created] = await db
+      .insert(policies)
+      .values({ slug, title, content, updatedBy })
+      .returning();
+    return created;
   }
 }
 

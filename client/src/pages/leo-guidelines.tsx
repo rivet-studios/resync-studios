@@ -7,9 +7,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Shield, Radio, Target } from "lucide-react";
+import { PolicyWrapper } from "@/components/policy-wrapper";
 
 export default function LEOGuidelines() {
   return (
+    <PolicyWrapper slug="leo-guidelines">
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
@@ -598,5 +600,6 @@ export default function LEOGuidelines() {
         </CardContent>
       </Card>
     </div>
+    </PolicyWrapper>
   );
 }
