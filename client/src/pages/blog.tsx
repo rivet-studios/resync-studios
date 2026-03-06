@@ -14,7 +14,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Calendar, User, Loader2, MessageSquare, Eye, Clock } from "lucide-react";
+import {
+  Plus,
+  Calendar,
+  User,
+  Loader2,
+  MessageSquare,
+  Eye,
+  Clock,
+} from "lucide-react";
 import type { Announcement } from "@shared/schema";
 import { Link } from "wouter";
 
@@ -68,8 +76,12 @@ export default function Blog() {
       <div className="max-w-7xl mx-auto px-6 space-y-16 pb-32">
         {/* Header */}
         <div className="space-y-4">
-          <h1 className="text-5xl font-semibold tracking-tight uppercase text-white">Blog</h1>
-          <p className="text-white/40 text-lg font-medium">Browse our latest blog posts and articles</p>
+          <h1 className="text-5xl font-semibold tracking-tight uppercase text-white">
+            Blog
+          </h1>
+          <p className="text-white/40 text-lg font-medium">
+            Browse our latest blog posts and articles
+          </p>
         </div>
 
         {/* Featured Post */}
@@ -81,7 +93,10 @@ export default function Blog() {
                   <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
                     <img
-                      src={posts[0].imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
+                      src={
+                        posts[0].imageUrl ||
+                        "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+                      }
                       alt={posts[0].title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -91,18 +106,27 @@ export default function Blog() {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <CardContent className="p-0 space-y-8">
                     <div className="space-y-6">
                       <div className="flex flex-wrap items-center gap-6 text-[12px] font-bold uppercase tracking-[0.2em] text-white/30">
                         <span className="flex items-center gap-2">
-                          {new Date(posts[0].createdAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {new Date(posts[0].createdAt!).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )}
                         </span>
-                        <span className="flex items-center gap-2"><Eye className="w-4 h-4" /> 2.4K views</span>
-                        <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> 12 comments</span>
-                        <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> 3 min read</span>
+                        <span className="flex items-center gap-2">
+                          <Eye className="w-4 h-4" /> 2.4K views
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <MessageSquare className="w-4 h-4" /> 0 comments
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" /> 10 min read
+                        </span>
                       </div>
-                      
+
                       <h2 className="text-4xl md:text-5xl font-semibold text-white leading-tight tracking-tight">
                         {posts[0].title}
                       </h2>
@@ -110,12 +134,18 @@ export default function Blog() {
                         {posts[0].content}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center border border-white/5 shadow-xl">
-                        <img src="/attached_assets/logo.svg" alt="RS" className="w-5 h-5 invert opacity-60" />
+                        <img
+                          src="https://images-ext-1.discordapp.net/external/nd6LHslwl1oVQutYNM-oWucJBp4dFKt7YZI7-vfb45U/%3Fw%3D151%26h%3D166%26c%3D7%26r%3D0%26o%3D7%26dpr%3D1.5%26pid%3D1.7%26rm%3D3/https/th.bing.com/th/id/OIP.UJ00jUpbH2AA_kPF0paEeQAAAA?format=webp&width=321&height=353"
+                          alt="RS"
+                          className="w-5 h-5 invert opacity-60"
+                        />
                       </div>
-                      <span className="text-sm font-semibold uppercase tracking-widest text-white/80">David</span>
+                      <span className="text-sm font-semibold uppercase tracking-widest text-white/80">
+                        cxiqlne
+                      </span>
                     </div>
                   </CardContent>
                 </div>
@@ -132,14 +162,19 @@ export default function Blog() {
                 <div className="aspect-[16/10] rounded-xl overflow-hidden shadow-xl relative">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
                   <img
-                    src={post.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"}
+                    src={
+                      post.imageUrl ||
+                      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+                    }
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
                 <CardContent className="p-0 space-y-4">
                   <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest text-white/20">
-                    <span>{new Date(post.createdAt!).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(post.createdAt!).toLocaleDateString()}
+                    </span>
                     <span>•</span>
                     <span>5 min read</span>
                   </div>
@@ -165,11 +200,15 @@ export default function Blog() {
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-[#121212] border-white/5 text-white">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-semibold uppercase tracking-tight">Create Blog Post</DialogTitle>
+                  <DialogTitle className="text-2xl font-semibold uppercase tracking-tight">
+                    Create Blog Post
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Title</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                      Title
+                    </label>
                     <Input
                       placeholder="Post title..."
                       value={title}
@@ -178,7 +217,9 @@ export default function Blog() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Content</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                      Content
+                    </label>
                     <Textarea
                       placeholder="Write your article here..."
                       value={content}
@@ -191,7 +232,9 @@ export default function Blog() {
                     disabled={createPostMutation.isPending}
                     className="w-full h-14 bg-white text-black font-semibold uppercase tracking-widest hover:bg-white/90"
                   >
-                    {createPostMutation.isPending ? "Publishing..." : "Publish Article"}
+                    {createPostMutation.isPending
+                      ? "Publishing..."
+                      : "Publish Article"}
                   </Button>
                 </div>
               </DialogContent>
