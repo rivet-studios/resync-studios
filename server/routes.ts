@@ -1094,6 +1094,15 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/site-status", async (_req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json({ isOffline: settings.isOffline ?? false, offlineMessage: settings.offlineMessage });
+    } catch (error) {
+      res.json({ isOffline: false, offlineMessage: null });
+    }
+  });
+
   app.get("/api/policies", async (_req, res) => {
     try {
       const allPolicies = await storage.getPolicies();

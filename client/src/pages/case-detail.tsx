@@ -24,13 +24,20 @@ import {
 
 function getStatusColor(status: string): string {
   switch (status?.toLowerCase()) {
-    case "Pending": return "bg-yellow-500/20 text-yellow-400";
-    case "Approved": return "bg-green-500/20 text-green-400";
-    case "Denied": return "bg-red-500/20 text-red-400";
-    case "In Review": return "bg-blue-500/20 text-blue-400";
-    case "action taken": return "bg-green-500/20 text-green-400";
-    case "Dismissed": return "bg-white/10 text-white/50";
-    default: return "bg-white/10 text-white/50";
+    case "Pending":
+      return "bg-yellow-500/20 text-yellow-400";
+    case "Approved":
+      return "bg-green-500/20 text-green-400";
+    case "Denied":
+      return "bg-red-500/20 text-red-400";
+    case "In Review":
+      return "bg-blue-500/20 text-blue-400";
+    case "action taken":
+      return "bg-green-500/20 text-green-400";
+    case "Dismissed":
+      return "bg-white/10 text-white/50";
+    default:
+      return "bg-white/10 text-white/50";
   }
 }
 
@@ -44,17 +51,29 @@ export default function CaseDetail() {
   const isAppeal = type === "Appeal";
   const isBan = type === "Ban";
 
-  const { data: reports = [], isLoading: reportsLoading, isError: reportsError } = useQuery<any[]>({
+  const {
+    data: reports = [],
+    isLoading: reportsLoading,
+    isError: reportsError,
+  } = useQuery<any[]>({
     queryKey: ["/api/reports"],
     enabled: isReport,
   });
 
-  const { data: appeals = [], isLoading: appealsLoading, isError: appealsError } = useQuery<any[]>({
+  const {
+    data: appeals = [],
+    isLoading: appealsLoading,
+    isError: appealsError,
+  } = useQuery<any[]>({
     queryKey: ["/api/appeals"],
     enabled: isAppeal,
   });
 
-  const { data: bans = [], isLoading: bansLoading, isError: bansError } = useQuery<any[]>({
+  const {
+    data: bans = [],
+    isLoading: bansLoading,
+    isError: bansError,
+  } = useQuery<any[]>({
     queryKey: ["/api/bans"],
     enabled: isBan,
   });
@@ -65,12 +84,27 @@ export default function CaseDetail() {
       ? appeals.find((a: any) => a.id === id)
       : bans.find((b: any) => b.id === id);
 
-  const queryLoading = (isReport && reportsLoading) || (isAppeal && appealsLoading) || (isBan && bansLoading);
-  const queryError = (isReport && reportsError) || (isAppeal && appealsError) || (isBan && bansError);
+  const queryLoading =
+    (isReport && reportsLoading) ||
+    (isAppeal && appealsLoading) ||
+    (isBan && bansLoading);
+  const queryError =
+    (isReport && reportsError) ||
+    (isAppeal && appealsError) ||
+    (isBan && bansError);
 
   const updateReportMutation = useMutation({
-    mutationFn: async ({ status, moderatorNotes }: { status: string; moderatorNotes: string }) => {
-      const res = await apiRequest("PATCH", `/api/reports/${id}`, { status, moderatorNotes });
+    mutationFn: async ({
+      status,
+      moderatorNotes,
+    }: {
+      status: string;
+      moderatorNotes: string;
+    }) => {
+      const res = await apiRequest("PATCH", `/api/reports/${id}`, {
+        status,
+        moderatorNotes,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -79,13 +113,26 @@ export default function CaseDetail() {
       setNotes("");
     },
     onError: (e: Error) => {
-      toast({ title: "Failed to update report", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update report",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const updateAppealMutation = useMutation({
-    mutationFn: async ({ status, reviewNotes }: { status: string; reviewNotes: string }) => {
-      const res = await apiRequest("PATCH", `/api/appeals/${id}`, { status, reviewNotes });
+    mutationFn: async ({
+      status,
+      reviewNotes,
+    }: {
+      status: string;
+      reviewNotes: string;
+    }) => {
+      const res = await apiRequest("PATCH", `/api/appeals/${id}`, {
+        status,
+        reviewNotes,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -95,7 +142,11 @@ export default function CaseDetail() {
       setNotes("");
     },
     onError: (e: Error) => {
-      toast({ title: "Failed to update appeal", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update appeal",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -109,7 +160,11 @@ export default function CaseDetail() {
       queryClient.invalidateQueries({ queryKey: ["/api/bans"] });
     },
     onError: (e: Error) => {
-      toast({ title: "Failed to lift ban", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to lift ban",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -126,9 +181,15 @@ export default function CaseDetail() {
       <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-4 text-white">
         <Shield className="w-16 h-16 text-red-400/30" />
         <h2 className="text-xl font-semibold">Unable to load case</h2>
-        <p className="text-white/40 text-sm">You may not have permission to view this case.</p>
+        <p className="text-white/40 text-sm">
+          You may not have permission to view this case.
+        </p>
         <Link href="/modcp">
-          <Button variant="outline" className="border-white/10" data-testid="button-back-to-modcp">
+          <Button
+            variant="outline"
+            className="border-white/10"
+            data-testid="button-back-to-modcp"
+          >
             <ChevronLeft className="w-4 h-4 mr-1" /> Back to ModCP
           </Button>
         </Link>
@@ -154,7 +215,11 @@ export default function CaseDetail() {
         <FileText className="w-16 h-16 text-white/15" />
         <h2 className="text-xl font-semibold">Case not found</h2>
         <Link href="/modcp">
-          <Button variant="outline" className="border-white/10" data-testid="button-back-to-modcp">
+          <Button
+            variant="outline"
+            className="border-white/10"
+            data-testid="button-back-to-modcp"
+          >
             <ChevronLeft className="w-4 h-4 mr-1" /> Back to ModCP
           </Button>
         </Link>
@@ -162,62 +227,107 @@ export default function CaseDetail() {
     );
   }
 
-  const isPending = isReport ? caseData.status === "Pending" : isAppeal ? caseData.status === "Pending" : caseData.isActive;
+  const isPending = isReport
+    ? caseData.status === "Pending"
+    : isAppeal
+      ? caseData.status === "Pending"
+      : caseData.isActive;
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-8 animate-in fade-in duration-500">
         <Link href="/modcp">
-          <span className="inline-flex items-center gap-1 text-sm text-white/50 hover:text-white transition-colors cursor-pointer" data-testid="link-back-modcp">
+          <span
+            className="inline-flex items-center gap-1 text-sm text-white/50 hover:text-white transition-colors cursor-pointer"
+            data-testid="link-back-modcp"
+          >
             <ChevronLeft className="w-4 h-4" /> Back to ModCP
           </span>
         </Link>
 
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-            {isReport ? <AlertTriangle className="w-6 h-6 text-yellow-400" /> :
-             isAppeal ? <Scale className="w-6 h-6 text-blue-400" /> :
-             <Shield className="w-6 h-6 text-red-400" />}
+            {isReport ? (
+              <AlertTriangle className="w-6 h-6 text-yellow-400" />
+            ) : isAppeal ? (
+              <Scale className="w-6 h-6 text-blue-400" />
+            ) : (
+              <Shield className="w-6 h-6 text-red-400" />
+            )}
           </div>
           <div>
-            <h1 className="text-2xl font-semibold" data-testid="text-case-title">
+            <h1
+              className="text-2xl font-semibold"
+              data-testid="text-case-title"
+            >
               {isReport ? "Report" : isAppeal ? "Appeal" : "Ban"} Case
             </h1>
             <p className="text-sm text-white/30">ID: {id}</p>
           </div>
-          <Badge className={getStatusColor(isReport || isAppeal ? caseData.status : (caseData.isActive ? "Pending" : "Resolved"))} data-testid="badge-case-status">
-            {isReport || isAppeal ? caseData.status : (caseData.isActive ? "Active" : "Lifted")}
+          <Badge
+            className={getStatusColor(
+              isReport || isAppeal
+                ? caseData.status
+                : caseData.isActive
+                  ? "Pending"
+                  : "Resolved",
+            )}
+            data-testid="badge-case-status"
+          >
+            {isReport || isAppeal
+              ? caseData.status
+              : caseData.isActive
+                ? "Active"
+                : "Lifted"}
           </Badge>
         </div>
 
         <Card className="bg-[#121212] border-white/5 rounded-xl">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Case Details</h3>
+            <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+              Case Details
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {isReport && (
                 <>
                   <div>
                     <span className="text-xs text-white/30">Reason</span>
-                    <p className="text-sm text-white font-medium" data-testid="text-case-reason">{caseData.reason}</p>
+                    <p
+                      className="text-sm text-white font-medium"
+                      data-testid="text-case-reason"
+                    >
+                      {caseData.reason}
+                    </p>
                   </div>
                   {caseData.details && (
                     <div>
                       <span className="text-xs text-white/30">Details</span>
-                      <p className="text-sm text-white/70" data-testid="text-case-details">{caseData.details}</p>
+                      <p
+                        className="text-sm text-white/70"
+                        data-testid="text-case-details"
+                      >
+                        {caseData.details}
+                      </p>
                     </div>
                   )}
                   <div>
                     <span className="text-xs text-white/30">Target Type</span>
-                    <p className="text-sm text-white/70">{caseData.targetType}</p>
+                    <p className="text-sm text-white/70">
+                      {caseData.targetType}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Target ID</span>
-                    <p className="text-sm text-white/70 font-mono text-xs">{caseData.targetId}</p>
+                    <p className="text-sm text-white/70 font-mono text-xs">
+                      {caseData.targetId}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Reporter</span>
-                    <p className="text-sm text-white/70 font-mono text-xs">{caseData.reporterId}</p>
+                    <p className="text-sm text-white/70 font-mono text-xs">
+                      {caseData.reporterId}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Submitted</span>
@@ -233,17 +343,26 @@ export default function CaseDetail() {
                 <>
                   <div className="md:col-span-2">
                     <span className="text-xs text-white/30">Appeal Reason</span>
-                    <p className="text-sm text-white font-medium" data-testid="text-case-reason">{caseData.reason}</p>
+                    <p
+                      className="text-sm text-white font-medium"
+                      data-testid="text-case-reason"
+                    >
+                      {caseData.reason}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">User</span>
-                    <p className="text-sm text-white/70">{caseData.user?.username || caseData.userId}</p>
+                    <p className="text-sm text-white/70">
+                      {caseData.user?.username || caseData.userId}
+                    </p>
                   </div>
                   {caseData.banId && (
                     <div>
                       <span className="text-xs text-white/30">Related Ban</span>
                       <Link href={`/modcp/case/ban/${caseData.banId}`}>
-                        <span className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer">{caseData.banId}</span>
+                        <span className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer">
+                          {caseData.banId}
+                        </span>
                       </Link>
                     </div>
                   )}
@@ -261,7 +380,12 @@ export default function CaseDetail() {
                 <>
                   <div className="md:col-span-2">
                     <span className="text-xs text-white/30">Ban Reason</span>
-                    <p className="text-sm text-white font-medium" data-testid="text-case-reason">{caseData.reason}</p>
+                    <p
+                      className="text-sm text-white font-medium"
+                      data-testid="text-case-reason"
+                    >
+                      {caseData.reason}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Banned User</span>
@@ -269,17 +393,25 @@ export default function CaseDetail() {
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Issued By</span>
-                    <p className="text-sm text-white/70">{caseData.issuedBy || "System"}</p>
+                    <p className="text-sm text-white/70">
+                      {caseData.issuedBy || "System"}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Duration</span>
                     <p className="text-sm text-white/70">
-                      {caseData.isPermanent ? "Permanent" : caseData.expiresAt ? `Expires ${new Date(caseData.expiresAt).toLocaleDateString()}` : "Temporary"}
+                      {caseData.isPermanent
+                        ? "Permanent"
+                        : caseData.expiresAt
+                          ? `Expires ${new Date(caseData.expiresAt).toLocaleDateString()}`
+                          : "Temporary"}
                     </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Prior Rank</span>
-                    <p className="text-sm text-white/70">{caseData.priorRank || "Unknown"}</p>
+                    <p className="text-sm text-white/70">
+                      {caseData.priorRank || "Unknown"}
+                    </p>
                   </div>
                   <div>
                     <span className="text-xs text-white/30">Issued</span>
@@ -297,8 +429,12 @@ export default function CaseDetail() {
         {caseData.moderatorNotes && (
           <Card className="bg-[#121212] border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-3">
-              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Moderator Notes</h3>
-              <p className="text-sm text-white/70" data-testid="text-mod-notes">{caseData.moderatorNotes}</p>
+              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+                Moderator Notes
+              </h3>
+              <p className="text-sm text-white/70" data-testid="text-mod-notes">
+                {caseData.moderatorNotes}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -306,8 +442,15 @@ export default function CaseDetail() {
         {caseData.reviewNotes && (
           <Card className="bg-[#121212] border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-3">
-              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Review Notes</h3>
-              <p className="text-sm text-white/70" data-testid="text-review-notes">{caseData.reviewNotes}</p>
+              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+                Review Notes
+              </h3>
+              <p
+                className="text-sm text-white/70"
+                data-testid="text-review-notes"
+              >
+                {caseData.reviewNotes}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -315,7 +458,9 @@ export default function CaseDetail() {
         {isPending && (
           <Card className="bg-[#121212] border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-4">
-              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Actions</h3>
+              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+                Actions
+              </h3>
 
               <Textarea
                 placeholder="Add notes about this case..."
@@ -330,17 +475,31 @@ export default function CaseDetail() {
                   <>
                     <Button
                       size="sm"
-                      onClick={() => updateReportMutation.mutate({ status: "In Review", moderatorNotes: notes })}
+                      onClick={() =>
+                        updateReportMutation.mutate({
+                          status: "In Review",
+                          moderatorNotes: notes,
+                        })
+                      }
                       disabled={updateReportMutation.isPending}
                       className="bg-blue-600 hover:bg-blue-700"
                       data-testid="button-mark-reviewed"
                     >
-                      {updateReportMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <CheckCircle className="w-3 h-3 mr-1" />}
-                      Mark Reviewed
+                      {updateReportMutation.isPending ? (
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                      )}
+                      Mark In Review
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => updateReportMutation.mutate({ status: "Action Taken", moderatorNotes: notes })}
+                      onClick={() =>
+                        updateReportMutation.mutate({
+                          status: "Action Taken",
+                          moderatorNotes: notes,
+                        })
+                      }
                       disabled={updateReportMutation.isPending}
                       className="bg-green-600 hover:bg-green-700"
                       data-testid="button-action-taken"
@@ -350,7 +509,12 @@ export default function CaseDetail() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => updateReportMutation.mutate({ status: "Dismissed", moderatorNotes: notes })}
+                      onClick={() =>
+                        updateReportMutation.mutate({
+                          status: "Dismissed",
+                          moderatorNotes: notes,
+                        })
+                      }
                       disabled={updateReportMutation.isPending}
                       className="border-white/10"
                       data-testid="button-dismiss"
@@ -364,17 +528,31 @@ export default function CaseDetail() {
                   <>
                     <Button
                       size="sm"
-                      onClick={() => updateAppealMutation.mutate({ status: "approved", reviewNotes: notes })}
+                      onClick={() =>
+                        updateAppealMutation.mutate({
+                          status: "Approved",
+                          reviewNotes: notes,
+                        })
+                      }
                       disabled={updateAppealMutation.isPending}
                       className="bg-green-600 hover:bg-green-700"
                       data-testid="button-approve"
                     >
-                      {updateAppealMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <CheckCircle className="w-3 h-3 mr-1" />}
+                      {updateAppealMutation.isPending ? (
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                      )}
                       Approve Appeal
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => updateAppealMutation.mutate({ status: "denied", reviewNotes: notes })}
+                      onClick={() =>
+                        updateAppealMutation.mutate({
+                          status: "Denied",
+                          reviewNotes: notes,
+                        })
+                      }
                       disabled={updateAppealMutation.isPending}
                       className="bg-red-600 hover:bg-red-700"
                       data-testid="button-deny"
@@ -393,7 +571,9 @@ export default function CaseDetail() {
                     variant="outline"
                     data-testid="button-lift-ban"
                   >
-                    {liftBanMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
+                    {liftBanMutation.isPending ? (
+                      <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                    ) : null}
                     Lift Ban
                   </Button>
                 )}

@@ -56,6 +56,7 @@ import MyCases from "@/pages/my-cases";
 
 import Onboarding from "@/pages/onboarding";
 import { BanWall } from "@/components/ban-wall";
+import { OfflineGate } from "@/components/offline-gate";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -236,6 +237,7 @@ function Router() {
 
   return (
     <PublicLayout>
+      <OfflineGate>
       <BanWall>
       <Switch>
           <Route path="/" component={Landing} />
@@ -341,6 +343,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </BanWall>
+      </OfflineGate>
     </PublicLayout>
   );
 }
