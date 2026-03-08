@@ -38,11 +38,10 @@ export default function LEOGuidelines() {
               <p className="text-muted-foreground text-sm">
                 These rules will guide you to the proper use of your position.
                 Department guidelines can vary as each team is vastly different
-                with both of our games, LA, Sandy Shores, and Project Foxtrot.
+                with The Golden Era.
                 Departments are allowed to modify these rules in an exceptional
                 manner. However, these rules should stay within the guidelines
-                in other department server guidelines. Victoria Roleplay has
-                different LEO guidelines which will be released at a later date.
+                in other department server guidelines.
               </p>
             </div>
           </div>
