@@ -52,7 +52,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
         callbackURL: CALLBACK_URL,
         scope: ["identify", "email", "guilds"],
       },
-      async (Ac_accessToken, _refreshToken, profile, done) => {
+      async (_accessToken, _refreshToken, profile, done) => {
         try {
           const discordId = profile.id;
           const email = profile.email || `${profile.username}@discord.local`;
@@ -95,7 +95,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                 discordUsername: profile.username,
                 discordAvatar: profile.avatar,
                 discordLinkedAt: new Date(),
-                userRank: "Member",
+                userRank: "Active Members",
                 vipTier: "none",
               });
 

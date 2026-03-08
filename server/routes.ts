@@ -66,7 +66,7 @@ export async function registerRoutes(
       const hashedPassword = hashPassword(password);
 
       const isStaffEmail = email.toLowerCase().endsWith("@resyncstudios.com");
-      const defaultRank = isStaffEmail ? "Team Member" : "Member";
+      const defaultRank = isStaffEmail ? "Team Member" : "Active Members";
       const isAdmin = isStaffEmail;
       const isModerator = isStaffEmail;
 
@@ -83,7 +83,7 @@ export async function registerRoutes(
           : [],
       } as any);
 
-      req.login(user, (err) => {
+      req.login(user as Express.User, (err) => {
         if (err) {
           return res.status(500).json({
             message:
@@ -109,8 +109,8 @@ export async function registerRoutes(
 
       // Auto-assign Team Member rank if email matches domain
       if (
-        user.email.toLowerCase().endsWith("@resyncstudios.com") &&
-        user.userRank === "Member"
+        user.email?.toLowerCase().endsWith("@resyncstudios.com") &&
+        user.userRank === "Active Members"
       ) {
         await storage.updateUserRank(user.id, "Team Member");
         user.userRank = "Team Member";
