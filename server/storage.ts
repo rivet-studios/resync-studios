@@ -55,6 +55,8 @@ export interface IStorage {
   getForumCategories(): Promise<ForumCategory[]>;
   getForumCategory(id: string): Promise<ForumCategory | undefined>;
   createForumCategory(category: InsertForumCategory): Promise<ForumCategory>;
+  updateForumCategory(id: string, updates: Partial<ForumCategory>): Promise<ForumCategory | undefined>;
+  deleteForumCategory(id: string): Promise<void>;
   getForumThreads(categoryId?: string): Promise<ForumThread[]>;
   getForumThread(id: string): Promise<ForumThread | undefined>;
   createForumThread(thread: InsertForumThread): Promise<ForumThread>;
@@ -62,8 +64,12 @@ export interface IStorage {
     id: string,
     updates: Partial<ForumThread>,
   ): Promise<ForumThread | undefined>;
+  deleteForumThread(id: string): Promise<void>;
   getForumReplies(threadId: string): Promise<ForumReply[]>;
+  getForumReply(id: string): Promise<ForumReply | undefined>;
   createForumReply(reply: InsertForumReply): Promise<ForumReply>;
+  updateForumReply(id: string, updates: Partial<ForumReply>): Promise<ForumReply | undefined>;
+  deleteForumReply(id: string): Promise<void>;
   getAnnouncements(): Promise<Announcement[]>;
   getAnnouncement(id: string): Promise<Announcement | undefined>;
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
@@ -307,6 +313,48 @@ export class DatabaseStorage implements IStorage {
       .where(eq(forumThreads.id, id))
       .returning();
     return thread;
+  }
+  async updateForumCategory(id: string, updates: Partial<ForumCategory>): Promise<ForumCategory | undefined> {
+    const [cat] = await db
+      .update(forumCategories)
+      .set(updates)
+      .where(eq(forumCategories.id, id))
+      .returning();
+    return cat;
+  }
+  async deleteForumCategory(id: string): Promise<void> {
+    const threads = await db.select({ id: forumThreads.id }).from(forumThreads).where(eq(forumThreads.categoryId, id));
+    for (const thread of threads) {
+      await db.delete(forumReplies).where(eq(forumReplies.threadId, thread.id));
+    }
+    await db.delete(forumThreads).where(eq(forumThreads.categoryId, id));
+    await db.delete(forumCategories).where(eq(forumCategories.id, id));
+  }
+  async deleteForumThread(id: string): Promise<void> {
+    await db.delete(forumReplies).where(eq(forumReplies.threadId, id));
+    await db.delete(forumThreads).where(eq(forumThreads.id, id));
+  }
+  async getForumReply(id: string): Promise<ForumReply | undefined> {
+    const [reply] = await db.select().from(forumReplies).where(eq(forumReplies.id, id));
+    return reply;
+  }
+  async updateForumReply(id: string, updates: Partial<ForumReply>): Promise<ForumReply | undefined> {
+    const [reply] = await db
+      .update(forumReplies)
+      .set(updates)
+      .where(eq(forumReplies.id, id))
+      .returning();
+    return reply;
+  }
+  async deleteForumReply(id: string): Promise<void> {
+    const reply = await this.getForumReply(id);
+    await db.delete(forumReplies).where(eq(forumReplies.id, id));
+    if (reply) {
+      await db
+        .update(forumThreads)
+        .set({ replyCount: sql`GREATEST(${forumThreads.replyCount} - 1, 0)` })
+        .where(eq(forumThreads.id, reply.threadId));
+    }
   }
   async getForumReplies(threadId: string): Promise<ForumReply[]> {
     return db

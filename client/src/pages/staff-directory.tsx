@@ -76,9 +76,9 @@ const departments: Department[] = [
     color: "text-green-500",
     members: [
       {
-        name: "bobby283543",
-        role: "Customer Relations Director",
-        joinDate: "2025-Present",
+        name: "nil",
+        role: "nil",
+        joinDate: "Unknown",
       },
       {
         name: "silentdirective.",
@@ -86,9 +86,9 @@ const departments: Department[] = [
         joinDate: "2024-Present",
       },
       {
-        name: "ArielOperations",
+        name: "cxiqlne",
         role: "DMCA Relations",
-        joinDate: "2026-Present",
+        joinDate: "2018-Present",
       },
     ],
   },
@@ -224,12 +224,12 @@ export default function StaffDirectory() {
             grow our community.
             <CardDescription className="text-xs"></CardDescription> To become a
             team member at RS, please contact us at or apply for a volunteer
-            staff position at https://resyncstudios.com/volunteer.
+            staff position
             <a
-              href="mailto:support@resyncstudios.com"
+              href="https://rivetstudios.fillout.com/apply"
               className="text-primary hover:underline"
             >
-              support@resyncstudios.com
+              here
             </a>
           </p>
         </CardContent>

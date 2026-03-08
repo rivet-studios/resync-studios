@@ -51,9 +51,16 @@ import {
   TrendingUp,
   Eye,
   MessageSquare,
+  MessageSquareText,
   Calendar,
   User,
   ArrowRight,
+  Pin,
+  Lock,
+  Unlock,
+  Trash2,
+  FolderOpen,
+  PinOff,
 } from "lucide-react";
 
 export default function ModCP() {
@@ -70,6 +77,10 @@ export default function ModCP() {
   const [appealNotes, setAppealNotes] = useState<Record<string, string>>({});
   const [reportFilter, setReportFilter] = useState("All");
   const [appealFilter, setAppealFilter] = useState("All");
+  const [forumSearchQuery, setForumSearchQuery] = useState("");
+  const [forumFilter, setForumFilter] = useState<"all" | "pinned" | "locked">("all");
+  const [moveThreadId, setMoveThreadId] = useState<string | null>(null);
+  const [moveCategoryId, setMoveCategoryId] = useState("");
 
   const staffRanks = [
     "Appeals Moderator",
@@ -116,6 +127,16 @@ export default function ModCP() {
       return res.json();
     },
     enabled: isMod && activeTab === "bans" && userSearchQuery.length >= 2,
+  });
+
+  const { data: forumThreads = [], isLoading: threadsLoading } = useQuery<any[]>({
+    queryKey: ["/api/forums/threads"],
+    enabled: isMod && (activeTab === "forums" || activeTab === "dashboard"),
+  });
+
+  const { data: forumCategories = [] } = useQuery<any[]>({
+    queryKey: ["/api/forums/categories"],
+    enabled: isMod && activeTab === "forums",
   });
 
   const activityFeed = useMemo(() => {
@@ -213,6 +234,84 @@ export default function ModCP() {
       toast({ title: "Failed to update appeal", description: e.message, variant: "destructive" });
     },
   });
+
+  const togglePinMutation = useMutation({
+    mutationFn: async ({ id, isPinned }: { id: string; isPinned: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { isPinned });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Thread pin status updated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to update thread", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const toggleLockMutation = useMutation({
+    mutationFn: async ({ id, isLocked }: { id: string; isLocked: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { isLocked });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Thread lock status updated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to update thread", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const deleteThreadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("DELETE", `/api/forums/threads/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Thread deleted" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to delete thread", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const moveThreadMutation = useMutation({
+    mutationFn: async ({ id, categoryId }: { id: string; categoryId: string }) => {
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { categoryId });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Thread moved successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
+      setMoveThreadId(null);
+      setMoveCategoryId("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to move thread", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const filteredForumThreads = useMemo(() => {
+    let threads = forumThreads;
+    if (forumFilter === "pinned") threads = threads.filter((t: any) => t.isPinned);
+    if (forumFilter === "locked") threads = threads.filter((t: any) => t.isLocked);
+    if (forumSearchQuery.trim()) {
+      const q = forumSearchQuery.toLowerCase();
+      threads = threads.filter((t: any) =>
+        t.title?.toLowerCase().includes(q) ||
+        t.author?.username?.toLowerCase().includes(q)
+      );
+    }
+    return threads;
+  }, [forumThreads, forumFilter, forumSearchQuery]);
+
+  const forumReports = useMemo(() => {
+    return reports.filter((r: any) =>
+      r.targetType === "thread" || r.targetType === "reply"
+    );
+  }, [reports]);
 
   function calculateExpiresAt(duration: string): string | null {
     if (duration === "permanent") return null;
@@ -322,6 +421,7 @@ export default function ModCP() {
     { id: "bans", label: "Ban Management", icon: Ban, count: activeBanCount || undefined },
     { id: "reports", label: "Reports", icon: FileText, count: openReportsCount || undefined },
     { id: "appeals", label: "Appeals", icon: Scale, count: pendingAppealsCount || undefined },
+    { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "Pending").length || undefined },
   ];
 
   function getActivityIcon(type: string) {
@@ -1051,6 +1151,275 @@ export default function ModCP() {
                 ))
               )}
             </div>
+          </>
+        )}
+        {activeTab === "forums" && (
+          <>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-forums-title">Forum Moderation</h1>
+              <p className="text-sm text-muted-foreground mt-1">Manage forum threads, review reported content, and moderate discussions.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Threads</CardTitle>
+                  <MessageSquareText className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" data-testid="text-total-threads">{forumThreads.length}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pinned Threads</CardTitle>
+                  <Pin className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" data-testid="text-pinned-threads">{forumThreads.filter((t: any) => t.isPinned).length}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Locked Threads</CardTitle>
+                  <Lock className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" data-testid="text-locked-threads">{forumThreads.filter((t: any) => t.isLocked).length}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {forumReports.filter((r: any) => r.status === "Pending").length > 0 && (
+              <Card className="border-yellow-500/20">
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                    Reported Forum Content
+                  </CardTitle>
+                  <Badge variant="secondary">{forumReports.filter((r: any) => r.status === "Pending").length} pending</Badge>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {forumReports.filter((r: any) => r.status === "Pending").map((report: any) => (
+                    <div
+                      key={report.id}
+                      className="flex items-center gap-3 p-3 rounded-md bg-muted/50"
+                      data-testid={`row-forum-report-${report.id}`}
+                    >
+                      <div className="w-8 h-8 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{report.reason}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {report.targetType === "thread" ? "Thread" : "Reply"} &middot; {report.createdAt ? getRelativeTime(report.createdAt) : ""}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "Action Taken", moderatorNotes: "" })}
+                          data-testid={`button-action-report-${report.id}`}
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" /> Action Taken
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "Dismissed", moderatorNotes: "" })}
+                          data-testid={`button-dismiss-report-${report.id}`}
+                        >
+                          <XCircle className="w-3 h-3 mr-1" /> Dismiss
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <MessageSquareText className="w-4 h-4 text-muted-foreground" />
+                  Thread Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={forumSearchQuery}
+                      onChange={(e) => setForumSearchQuery(e.target.value)}
+                      placeholder="Search threads by title or author..."
+                      className="pl-10"
+                      data-testid="input-forum-search"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant={forumFilter === "all" ? "default" : "outline"}
+                      onClick={() => setForumFilter("all")}
+                      data-testid="button-filter-all"
+                    >
+                      All
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={forumFilter === "pinned" ? "default" : "outline"}
+                      onClick={() => setForumFilter("pinned")}
+                      data-testid="button-filter-pinned"
+                    >
+                      <Pin className="w-3 h-3 mr-1" /> Pinned
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={forumFilter === "locked" ? "default" : "outline"}
+                      onClick={() => setForumFilter("locked")}
+                      data-testid="button-filter-locked"
+                    >
+                      <Lock className="w-3 h-3 mr-1" /> Locked
+                    </Button>
+                  </div>
+                </div>
+
+                {threadsLoading ? (
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full rounded-md" />
+                    ))}
+                  </div>
+                ) : filteredForumThreads.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <MessageSquareText className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      {forumSearchQuery || forumFilter !== "all" ? "No threads match your filters" : "No forum threads found"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {filteredForumThreads.map((thread: any) => (
+                      <div
+                        key={thread.id}
+                        className="flex items-center gap-3 rounded-md p-3 hover-elevate"
+                        data-testid={`row-forum-thread-${thread.id}`}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Link href={`/forums/thread/${thread.id}`}>
+                              <span className="text-sm font-medium hover:underline cursor-pointer" data-testid={`link-thread-${thread.id}`}>
+                                {thread.title}
+                              </span>
+                            </Link>
+                            {thread.isPinned && (
+                              <Badge variant="secondary" className="text-[10px]">
+                                <Pin className="w-2.5 h-2.5 mr-0.5" /> Pinned
+                              </Badge>
+                            )}
+                            {thread.isLocked && (
+                              <Badge variant="secondary" className="text-[10px]">
+                                <Lock className="w-2.5 h-2.5 mr-0.5" /> Locked
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            by {thread.author?.username || "Unknown"} &middot; {thread.category?.name || "Uncategorized"} &middot; {thread.replyCount || 0} replies &middot; {thread.createdAt ? getRelativeTime(thread.createdAt) : ""}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => togglePinMutation.mutate({ id: thread.id, isPinned: !thread.isPinned })}
+                            title={thread.isPinned ? "Unpin" : "Pin"}
+                            data-testid={`button-pin-thread-${thread.id}`}
+                          >
+                            {thread.isPinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => toggleLockMutation.mutate({ id: thread.id, isLocked: !thread.isLocked })}
+                            title={thread.isLocked ? "Unlock" : "Lock"}
+                            data-testid={`button-lock-thread-${thread.id}`}
+                          >
+                            {thread.isLocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              setMoveThreadId(moveThreadId === thread.id ? null : thread.id);
+                              setMoveCategoryId("");
+                            }}
+                            title="Move to category"
+                            data-testid={`button-move-thread-${thread.id}`}
+                          >
+                            <FolderOpen className="w-4 h-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                title="Delete thread"
+                                data-testid={`button-delete-thread-${thread.id}`}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Thread</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete &ldquo;{thread.title}&rdquo;? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteThreadMutation.mutate(thread.id)}
+                                  data-testid={`button-confirm-delete-thread-${thread.id}`}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                        {moveThreadId === thread.id && (
+                          <div className="flex items-center gap-2 ml-2">
+                            <Select value={moveCategoryId} onValueChange={setMoveCategoryId}>
+                              <SelectTrigger className="w-[180px]" data-testid={`select-move-category-${thread.id}`}>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {forumCategories
+                                  .filter((c: any) => c.id !== thread.categoryId)
+                                  .map((c: any) => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              size="sm"
+                              disabled={!moveCategoryId || moveThreadMutation.isPending}
+                              onClick={() => moveThreadMutation.mutate({ id: thread.id, categoryId: moveCategoryId })}
+                              data-testid={`button-confirm-move-${thread.id}`}
+                            >
+                              Move
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
       </div>

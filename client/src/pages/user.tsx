@@ -41,17 +41,25 @@ export default function UserProfile() {
     enabled: !!userId,
   });
 
-  const { data: allThreads } = useQuery<(ForumThread & { author?: User; category?: { name: string } })[]>({
+  const { data: allThreads } = useQuery<
+    (ForumThread & { author?: User; category?: { name: string } })[]
+  >({
     queryKey: ["/api/forums/threads"],
     enabled: !!userId,
   });
 
-  const userThreads = allThreads
-    ?.filter((t) => t.authorId === userId)
-    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-    .slice(0, 5) || [];
+  const userThreads =
+    allThreads
+      ?.filter((t) => t.authorId === userId)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
+      )
+      .slice(0, 5) || [];
 
-  const totalPosts = allThreads?.filter((t) => t.authorId === userId).length || 0;
+  const totalPosts =
+    allThreads?.filter((t) => t.authorId === userId).length || 0;
 
   if (isLoading) {
     return (
@@ -73,34 +81,58 @@ export default function UserProfile() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
         <UserIcon className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-        <p className="text-muted-foreground text-lg" data-testid="text-user-not-found">User not found</p>
+        <p
+          className="text-muted-foreground text-lg"
+          data-testid="text-user-not-found"
+        >
+          User not found
+        </p>
       </div>
     );
   }
 
   const vipBadgeStyles: Record<string, string> = {
-    "Lifetime": "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
-    "Founders Edition VIP": "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
-    "Diamond VIP": "border-cyan-500 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 dark:border-cyan-500/30",
-    "Sapphire VIP": "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
-    "Bronze VIP": "border-amber-600 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
+    Lifetime:
+      "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
+    "Founders Edition VIP":
+      "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
+    "Diamond VIP":
+      "border-cyan-500 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 dark:border-cyan-500/30",
+    "Sapphire VIP":
+      "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
+    "Bronze VIP":
+      "border-amber-600 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
   };
 
   const rankBadgeStyles: Record<string, string> = {
-    "Company Director": "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
-    "Operations Manager": "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
-    "Moderator": "border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
-    "Administrator": "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
-    "Senior Administrator": "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
-    "Developer": "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
-    "Trial Moderator": "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/30",
-    "Team Member": "border-gray-400 bg-gray-50 text-gray-600 dark:bg-white/5 dark:text-white/60 dark:border-white/10",
-    "Active Member": "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10",
-    "Trusted Member": "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/30",
-    "Customer Relations": "border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30",
-    "Appeals Moderator": "border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/30",
-    "Staff Internal Affairs": "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30",
-    "Staff Department Director": "border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
+    "Company Director":
+      "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
+    "Operations Manager":
+      "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
+    Moderator:
+      "border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
+    Administrator:
+      "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
+    "Senior Administrator":
+      "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
+    Developer:
+      "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
+    "Trial Moderator":
+      "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/30",
+    "Team Member":
+      "border-gray-400 bg-gray-50 text-gray-600 dark:bg-white/5 dark:text-white/60 dark:border-white/10",
+    "Active Member":
+      "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10",
+    "Trusted Member":
+      "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/30",
+    "Customer Relations":
+      "border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30",
+    "Appeals Moderator":
+      "border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/30",
+    "Staff Internal Affairs":
+      "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30",
+    "Staff Department Director":
+      "border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
   };
 
   const getVipLabel = (tier: string) => {
@@ -113,7 +145,8 @@ export default function UserProfile() {
   };
 
   const vipLabel = getVipLabel(profile.vipTier || "");
-  const defaultStyle = "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10";
+  const defaultStyle =
+    "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10";
 
   const rc = rankConfig[profile.userRank || ""];
   const isLifetimeGradient = profile.userRank === "Lifetime" && rc?.isGradient;
@@ -130,18 +163,32 @@ export default function UserProfile() {
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-dashboard">
+          <Link
+            href="/dashboard"
+            className="hover:text-foreground transition-colors"
+            data-testid="link-breadcrumb-dashboard"
+          >
             Dashboard
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-foreground font-medium" data-testid="text-breadcrumb-username">{profile.username}</span>
+          <span
+            className="text-foreground font-medium"
+            data-testid="text-breadcrumb-username"
+          >
+            {profile.username}
+          </span>
         </div>
         {currentUser && currentUser.id !== profile.id && (
           <ReportDialog
             targetId={profile.id}
             targetType="user"
             trigger={
-              <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-user">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-muted-foreground"
+                data-testid="button-report-user"
+              >
                 <Flag className="w-3.5 h-3.5" />
                 Report
               </Button>
@@ -154,14 +201,20 @@ export default function UserProfile() {
         <CardContent className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
             <div className="relative shrink-0">
-              <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-border" data-testid="img-avatar">
+              <Avatar
+                className="w-28 h-28 md:w-32 md:h-32 border-2 border-border"
+                data-testid="img-avatar"
+              >
                 <AvatarImage src={profile.profileImageUrl || undefined} />
                 <AvatarFallback className="bg-muted text-muted-foreground">
                   <UserIcon className="w-12 h-12" />
                 </AvatarFallback>
               </Avatar>
               {isStaff && (
-                <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-1.5" data-testid="indicator-staff">
+                <div
+                  className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-1.5"
+                  data-testid="indicator-staff"
+                >
                   <Shield className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -171,12 +224,16 @@ export default function UserProfile() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                 <h1
                   className="text-3xl sm:text-4xl font-bold tracking-tight"
-                  style={isLifetimeGradient ? {
-                    color: "transparent",
-                    backgroundImage: rc.gradient,
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                  } : { color: "var(--foreground)" }}
+                  style={
+                    isLifetimeGradient
+                      ? {
+                          color: "transparent",
+                          backgroundImage: rc.gradient,
+                          WebkitBackgroundClip: "text",
+                          backgroundClip: "text",
+                        }
+                      : { color: "var(--foreground)" }
+                  }
                   data-testid="text-username"
                 >
                   {profile.username}
@@ -187,12 +244,18 @@ export default function UserProfile() {
               </div>
 
               {profile.bio && (
-                <p className="text-sm text-muted-foreground max-w-lg" data-testid="text-bio">
+                <p
+                  className="text-sm text-muted-foreground max-w-lg"
+                  data-testid="text-bio"
+                >
                   {profile.bio}
                 </p>
               )}
 
-              <div className="flex flex-wrap gap-2 justify-center md:justify-start" data-testid="container-badges">
+              <div
+                className="flex flex-wrap gap-2 justify-center md:justify-start"
+                data-testid="container-badges"
+              >
                 {vipLabel && (
                   <Badge
                     variant="outline"
@@ -231,11 +294,17 @@ export default function UserProfile() {
               </div>
 
               <div className="flex flex-wrap items-center gap-4 pt-1 text-sm text-muted-foreground justify-center md:justify-start">
-                <div className="flex items-center gap-1.5" data-testid="text-member-since">
+                <div
+                  className="flex items-center gap-1.5"
+                  data-testid="text-member-since"
+                >
                   <Clock className="w-3.5 h-3.5" />
                   <span>Member for {memberDuration}</span>
                 </div>
-                <div className="flex items-center gap-1.5" data-testid="text-joined-date">
+                <div
+                  className="flex items-center gap-1.5"
+                  data-testid="text-joined-date"
+                >
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Joined {joinDateFormatted}</span>
                 </div>
@@ -250,14 +319,23 @@ export default function UserProfile() {
           <CardContent className="p-4 text-center">
             <FileText className="w-5 h-5 mx-auto text-muted-foreground mb-2" />
             <p className="text-2xl font-bold text-foreground">{totalPosts}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Forum Threads</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Forum Threads
+            </p>
           </CardContent>
         </Card>
         <Card data-testid="stat-member-duration">
           <CardContent className="p-4 text-center">
             <Clock className="w-5 h-5 mx-auto text-muted-foreground mb-2" />
             <p className="text-2xl font-bold text-foreground">
-              {joinDate ? Math.max(1, Math.floor((Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24))) : 0}
+              {joinDate
+                ? Math.max(
+                    1,
+                    Math.floor(
+                      (Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24),
+                    ),
+                  )
+                : 0}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">Days Active</p>
           </CardContent>
@@ -265,7 +343,9 @@ export default function UserProfile() {
         <Card data-testid="stat-rank">
           <CardContent className="p-4 text-center">
             <Shield className="w-5 h-5 mx-auto text-muted-foreground mb-2" />
-            <p className="text-sm font-bold text-foreground truncate">{profile.userRank || "Active Members"}</p>
+            <p className="text-sm font-bold text-foreground truncate">
+              {profile.userRank || "Active Members"}
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5">Rank</p>
           </CardContent>
         </Card>
@@ -283,22 +363,32 @@ export default function UserProfile() {
       {profile.discordUsername || profile.robloxUsername ? (
         <Card data-testid="card-linked-accounts">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Linked Accounts</CardTitle>
+            <CardTitle className="text-base font-semibold">
+              Linked Accounts
+            </CardTitle>
           </CardHeader>
           <CardContent className="pb-6 space-y-3">
             {profile.discordUsername && (
-              <div className="flex items-center gap-3" data-testid="linked-discord">
+              <div
+                className="flex items-center gap-3"
+                data-testid="linked-discord"
+              >
                 <div className="w-8 h-8 rounded-full bg-[#5865F2]/10 flex items-center justify-center shrink-0">
                   <span className="text-xs font-bold text-[#5865F2]">D</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{profile.discordUsername}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {profile.discordUsername}
+                  </p>
                   <p className="text-xs text-muted-foreground">Discord</p>
                 </div>
               </div>
             )}
             {profile.robloxUsername && (
-              <div className="flex items-center gap-3" data-testid="linked-roblox">
+              <div
+                className="flex items-center gap-3"
+                data-testid="linked-roblox"
+              >
                 <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
                   <span className="text-xs font-bold text-red-500">R</span>
                 </div>
@@ -324,10 +414,15 @@ export default function UserProfile() {
         <CardContent className="pb-6">
           <div className="text-sm text-muted-foreground leading-relaxed">
             {profile.signature ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: profile.signature }} />
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: profile.signature }}
+              />
             ) : (
               <div className="space-y-0.5">
-                <p className="font-medium text-foreground">{profile.username}</p>
+                <p className="font-medium text-foreground">
+                  {profile.username}
+                </p>
                 <p>RIVET Studios</p>
               </div>
             )}
@@ -358,9 +453,7 @@ export default function UserProfile() {
                         {thread.title}
                       </p>
                       <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
-                        {thread.category && (
-                          <span>{thread.category.name}</span>
-                        )}
+                        {thread.category && <span>{thread.category.name}</span>}
                         <span className="flex items-center gap-1">
                           <Eye className="w-3 h-3" />
                           {thread.viewCount || 0}
@@ -371,7 +464,9 @@ export default function UserProfile() {
                         </span>
                         <span>
                           {thread.createdAt
-                            ? formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })
+                            ? formatDistanceToNow(new Date(thread.createdAt), {
+                                addSuffix: true,
+                              })
                             : "recently"}
                         </span>
                       </div>
@@ -384,7 +479,9 @@ export default function UserProfile() {
           ) : (
             <div className="py-8 text-center">
               <MessageSquare className="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
-              <p className="text-sm text-muted-foreground">No forum activity yet</p>
+              <p className="text-sm text-muted-foreground">
+                No forum activity yet
+              </p>
             </div>
           )}
         </CardContent>

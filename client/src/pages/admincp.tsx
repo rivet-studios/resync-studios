@@ -33,6 +33,7 @@ import {
   Search,
   Settings,
   FileText,
+  Folder,
   Ban,
   Scale,
   TrendingUp,
@@ -88,6 +89,15 @@ export default function AdminCP() {
   const [editingPolicy, setEditingPolicy] = useState<string | null>(null);
   const [policyTitle, setPolicyTitle] = useState("");
   const [policyContent, setPolicyContent] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [newCategoryGroup, setNewCategoryGroup] = useState("");
+  const [newCategoryOrder, setNewCategoryOrder] = useState("0");
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
+  const [editCategoryDescription, setEditCategoryDescription] = useState("");
+  const [editCategoryGroup, setEditCategoryGroup] = useState("");
+  const [editCategoryOrder, setEditCategoryOrder] = useState("0");
   const [inlineEditUserId, setInlineEditUserId] = useState<string | null>(null);
   const [inlineEditRank, setInlineEditRank] = useState("");
 
@@ -157,6 +167,16 @@ export default function AdminCP() {
   const { data: policiesData = [] } = useQuery<any[]>({
     queryKey: ["/api/policies"],
     enabled: !!isAdmin && activeTab === "policies",
+  });
+
+  const { data: forumCategories = [], isLoading: categoriesLoading } = useQuery<any[]>({
+    queryKey: ["/api/forums/categories"],
+    enabled: !!isAdmin && activeTab === "forums",
+  });
+
+  const { data: forumStats } = useQuery<{ totalThreads: number; totalReplies: number; totalCategories: number }>({
+    queryKey: ["/api/admin/forum-stats"],
+    enabled: !!isAdmin && activeTab === "forums",
   });
 
   const rankBreakdown = useMemo(() => {
@@ -269,6 +289,55 @@ export default function AdminCP() {
     },
   });
 
+  const createCategoryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/admin/forum-categories", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Category created" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/forum-stats"] });
+      setNewCategoryName("");
+      setNewCategoryDescription("");
+      setNewCategoryGroup("");
+      setNewCategoryOrder("0");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to create category", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const res = await apiRequest("PATCH", `/api/admin/forum-categories/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Category updated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/categories"] });
+      setEditingCategoryId(null);
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to update category", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("DELETE", `/api/admin/forum-categories/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Category deleted" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/forum-stats"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to delete category", description: e.message, variant: "destructive" });
+    },
+  });
+
   const updateRankMutation = useMutation({
     mutationFn: async ({
       userId,
@@ -357,6 +426,7 @@ export default function AdminCP() {
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
     { id: "settings", label: "Settings", icon: Settings },
+    { id: "forums", label: "Forums", icon: MessageSquare },
     { id: "announcements", label: "Announcements", icon: Megaphone },
     { id: "policies", label: "Policies", icon: Scale },
     { id: "reports", label: "Reports", icon: AlertTriangle },
@@ -1097,6 +1167,286 @@ export default function AdminCP() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {activeTab === "forums" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h1
+                  className="text-2xl font-semibold tracking-tight text-foreground"
+                  data-testid="text-admincp-forums-title"
+                >
+                  Forum Management
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage forum categories and view statistics
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  queryClient.invalidateQueries({ queryKey: ["/api/forums/categories"] });
+                  queryClient.invalidateQueries({ queryKey: ["/api/admin/forum-stats"] });
+                }}
+                data-testid="button-refresh-forum-stats"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { label: "Total Threads", value: forumStats?.totalThreads || 0, icon: MessageSquare, color: "text-blue-400", bg: "bg-blue-500/10" },
+                { label: "Total Replies", value: forumStats?.totalReplies || 0, icon: MessageSquare, color: "text-green-400", bg: "bg-green-500/10" },
+                { label: "Categories", value: forumStats?.totalCategories || 0, icon: Folder, color: "text-purple-400", bg: "bg-purple-500/10" },
+              ].map((stat) => (
+                <Card key={stat.label} data-testid={`card-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        {stat.label}
+                      </span>
+                      <div className={`w-8 h-8 rounded-md ${stat.bg} flex items-center justify-center`}>
+                        <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-semibold text-foreground" data-testid={`text-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                      {stat.value.toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Card data-testid="card-create-category">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Create Category
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                      Name
+                    </label>
+                    <Input
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="Category name..."
+                      data-testid="input-category-name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                      Group
+                    </label>
+                    <Input
+                      value={newCategoryGroup}
+                      onChange={(e) => setNewCategoryGroup(e.target.value)}
+                      placeholder="e.g. Community, Staff..."
+                      data-testid="input-category-group"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                    Description
+                  </label>
+                  <Textarea
+                    value={newCategoryDescription}
+                    onChange={(e) => setNewCategoryDescription(e.target.value)}
+                    placeholder="Category description..."
+                    data-testid="input-category-description"
+                  />
+                </div>
+                <div className="w-32">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                    Order
+                  </label>
+                  <Input
+                    type="number"
+                    value={newCategoryOrder}
+                    onChange={(e) => setNewCategoryOrder(e.target.value)}
+                    data-testid="input-category-order"
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    if (!newCategoryName) return;
+                    createCategoryMutation.mutate({
+                      name: newCategoryName,
+                      description: newCategoryDescription || undefined,
+                      group: newCategoryGroup || undefined,
+                      order: parseInt(newCategoryOrder) || 0,
+                    });
+                  }}
+                  disabled={!newCategoryName || createCategoryMutation.isPending}
+                  data-testid="button-create-category"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {createCategoryMutation.isPending ? "Creating..." : "Create Category"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card data-testid="card-categories-list">
+              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Forum Categories
+                </CardTitle>
+                <Badge variant="outline" className="text-[10px]">
+                  {forumCategories.length}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                {categoriesLoading ? (
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : forumCategories.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Folder className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      No forum categories yet
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {forumCategories.map((cat: any) => (
+                      <div
+                        key={cat.id}
+                        className="p-4 rounded-md bg-secondary/30"
+                        data-testid={`row-category-${cat.id}`}
+                      >
+                        {editingCategoryId === cat.id ? (
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Name</label>
+                                <Input
+                                  value={editCategoryName}
+                                  onChange={(e) => setEditCategoryName(e.target.value)}
+                                  data-testid={`input-edit-category-name-${cat.id}`}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Group</label>
+                                <Input
+                                  value={editCategoryGroup}
+                                  onChange={(e) => setEditCategoryGroup(e.target.value)}
+                                  data-testid={`input-edit-category-group-${cat.id}`}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label>
+                              <Textarea
+                                value={editCategoryDescription}
+                                onChange={(e) => setEditCategoryDescription(e.target.value)}
+                                data-testid={`input-edit-category-description-${cat.id}`}
+                              />
+                            </div>
+                            <div className="w-32">
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Order</label>
+                              <Input
+                                type="number"
+                                value={editCategoryOrder}
+                                onChange={(e) => setEditCategoryOrder(e.target.value)}
+                                data-testid={`input-edit-category-order-${cat.id}`}
+                              />
+                            </div>
+                            <div className="flex gap-2 flex-wrap">
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  updateCategoryMutation.mutate({
+                                    id: cat.id,
+                                    name: editCategoryName,
+                                    description: editCategoryDescription || undefined,
+                                    group: editCategoryGroup || undefined,
+                                    order: parseInt(editCategoryOrder) || 0,
+                                  });
+                                }}
+                                disabled={!editCategoryName || updateCategoryMutation.isPending}
+                                data-testid={`button-save-category-${cat.id}`}
+                              >
+                                <Check className="w-3 h-3 mr-1.5" />
+                                {updateCategoryMutation.isPending ? "Saving..." : "Save"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingCategoryId(null)}
+                                data-testid={`button-cancel-edit-category-${cat.id}`}
+                              >
+                                <X className="w-3 h-3 mr-1.5" />
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <span className="font-medium text-sm text-foreground">
+                                  {cat.name}
+                                </span>
+                                {cat.group && (
+                                  <Badge variant="outline" className="text-[10px]">
+                                    {cat.group}
+                                  </Badge>
+                                )}
+                                <Badge variant="secondary" className="text-[10px]">
+                                  Order: {cat.order ?? 0}
+                                </Badge>
+                              </div>
+                              {cat.description && (
+                                <p className="text-xs text-muted-foreground">
+                                  {cat.description}
+                                </p>
+                              )}
+                              <p className="text-[10px] text-muted-foreground mt-1">
+                                {cat.threadCount || 0} threads
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => {
+                                  setEditingCategoryId(cat.id);
+                                  setEditCategoryName(cat.name);
+                                  setEditCategoryDescription(cat.description || "");
+                                  setEditCategoryGroup(cat.group || "");
+                                  setEditCategoryOrder(String(cat.order ?? 0));
+                                }}
+                                data-testid={`button-edit-category-${cat.id}`}
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => deleteCategoryMutation.mutate(cat.id)}
+                                data-testid={`button-delete-category-${cat.id}`}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>

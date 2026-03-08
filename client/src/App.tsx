@@ -20,6 +20,7 @@ import ForumHome from "@/pages/forums/home";
 import ForumCategory from "@/pages/forums/category";
 import ForumThread from "@/pages/forums/thread";
 import CreateThread from "@/pages/forums/create-thread";
+import EditThread from "@/pages/forums/edit-thread";
 import Subscriptions from "@/pages/subscriptions";
 import UserProfile from "@/pages/user";
 import Settings from "@/pages/settings";
@@ -250,6 +251,7 @@ function Router() {
             <Route path="/policies" component={Policies} />
             <Route path="/forums" component={ForumHome} />
             <Route path="/forums/category/:id" component={ForumCategory} />
+            <Route path="/forums/thread/:id/edit" component={EditThread} />
             <Route path="/forums/thread/:id" component={ForumThread} />
             <Route path="/forums/new">
               {user ? <CreateThread /> : <Login />}

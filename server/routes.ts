@@ -380,6 +380,172 @@ export async function registerRoutes(
     }
   });
 
+  const threadUpdateSchema = z.object({
+    isPinned: z.boolean().optional(),
+    isLocked: z.boolean().optional(),
+    categoryId: z.string().optional(),
+    title: z.string().min(3).optional(),
+    content: z.string().min(10).optional(),
+  });
+
+  const replyUpdateSchema = z.object({
+    content: z.string().min(1),
+  });
+
+  const categoryCreateSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    icon: z.string().optional(),
+    color: z.string().optional(),
+    group: z.string().optional(),
+    order: z.number().int().optional(),
+  });
+
+  const forumStaffRanks = [
+    "Trial Moderator", "Moderator", "Administrator", "Senior Administrator",
+    "Developer", "Staff Internal Affairs", "Team Member", "Staff Department Director",
+    "Operations Manager", "Company Director",
+  ];
+
+  function isForumStaff(user: any): boolean {
+    return user.isAdmin || user.isModerator ||
+      forumStaffRanks.includes(user.userRank) ||
+      (user.additionalRanks || []).some((r: string) => forumStaffRanks.includes(r));
+  }
+
+  // Forum staff routes - thread moderation
+  app.patch("/api/forums/threads/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const thread = await storage.getForumThread(req.params.id);
+      if (!thread) return res.status(404).json({ message: "Thread not found" });
+
+      const isStaff = isForumStaff(user);
+      const isAuthor = thread.authorId === user.id;
+
+      if (!isStaff && !isAuthor) return res.status(403).json({ message: "Forbidden" });
+
+      const parsed = threadUpdateSchema.parse(req.body);
+      const allowedFields: any = {};
+      if (isStaff) {
+        if (parsed.isPinned !== undefined) allowedFields.isPinned = parsed.isPinned;
+        if (parsed.isLocked !== undefined) allowedFields.isLocked = parsed.isLocked;
+        if (parsed.categoryId !== undefined) allowedFields.categoryId = parsed.categoryId;
+      }
+      if (parsed.title !== undefined) allowedFields.title = parsed.title;
+      if (parsed.content !== undefined) allowedFields.content = parsed.content;
+
+      const updated = await storage.updateForumThread(req.params.id, allowedFields);
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      res.status(500).json({ message: "Failed to update thread" });
+    }
+  });
+
+  app.delete("/api/forums/threads/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      await storage.deleteForumThread(req.params.id);
+      res.json({ message: "Thread deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete thread" });
+    }
+  });
+
+  app.patch("/api/forums/replies/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const reply = await storage.getForumReply(req.params.id);
+      if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+      const isStaff = isForumStaff(user);
+      const isAuthor = reply.authorId === user.id;
+      if (!isStaff && !isAuthor) return res.status(403).json({ message: "Forbidden" });
+
+      const parsed = replyUpdateSchema.parse(req.body);
+      const updated = await storage.updateForumReply(req.params.id, { content: parsed.content });
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      res.status(500).json({ message: "Failed to update reply" });
+    }
+  });
+
+  app.delete("/api/forums/replies/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      await storage.deleteForumReply(req.params.id);
+      res.json({ message: "Reply deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete reply" });
+    }
+  });
+
+  // Admin forum category management
+  app.post("/api/admin/forum-categories", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const category = await storage.createForumCategory(req.body);
+      res.status(201).json(category);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  app.patch("/api/admin/forum-categories/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const updated = await storage.updateForumCategory(req.params.id, req.body);
+      if (!updated) return res.status(404).json({ message: "Category not found" });
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
+  app.delete("/api/admin/forum-categories/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      await storage.deleteForumCategory(req.params.id);
+      res.json({ message: "Category deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
+  // Admin forum stats
+  app.get("/api/admin/forum-stats", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const [threadCount] = await db.select({ count: sql<number>`count(*)` }).from(forumThreads);
+      const { forumReplies: forumRepliesTable, forumCategories: forumCatsTable } = await import("@shared/schema");
+      const [replyCount] = await db.select({ count: sql<number>`count(*)` }).from(forumRepliesTable);
+      const [categoryCount] = await db.select({ count: sql<number>`count(*)` }).from(forumCatsTable);
+      res.json({
+        totalThreads: Number(threadCount.count),
+        totalReplies: Number(replyCount.count),
+        totalCategories: Number(categoryCount.count),
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get forum stats" });
+    }
+  });
+
   app.post("/api/admin/set-user-password", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;

@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,39 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -32,10 +65,33 @@ import {
   Flag,
   ArrowLeft,
   Send,
+  MoreVertical,
+  Trash2,
+  Pencil,
+  Unlock,
+  PinOff,
+  FolderInput,
+  Shield,
 } from "lucide-react";
 import { ReportDialog } from "@/components/report-dialog";
 import { formatDistanceToNow } from "date-fns";
 import type { ForumThread, ForumReply, User, ForumCategory } from "@shared/schema";
+
+const STAFF_RANKS = [
+  "Trial Moderator", "Moderator", "Administrator", "Senior Administrator",
+  "Developer", "Staff Internal Affairs", "Team Member", "Staff Department Director",
+  "Operations Manager", "Company Director",
+];
+
+function isStaffUser(user: User | null | undefined): boolean {
+  if (!user) return false;
+  if (user.isAdmin || user.isModerator) return true;
+  if (user.userRank && STAFF_RANKS.includes(user.userRank)) return true;
+  if (user.additionalRanks) {
+    return user.additionalRanks.some((r) => r && STAFF_RANKS.includes(r));
+  }
+  return false;
+}
 
 const replySchema = z.object({
   content: z.string().min(5, "Reply must be at least 5 characters"),
@@ -73,6 +129,16 @@ export default function ForumThread() {
   const threadId = params?.id || "";
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+
+  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
+  const [editReplyContent, setEditReplyContent] = useState("");
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [deleteThreadDialogOpen, setDeleteThreadDialogOpen] = useState(false);
+  const [deleteReplyId, setDeleteReplyId] = useState<string | null>(null);
+
+  const isStaff = isStaffUser(user);
 
   const form = useForm<ReplyForm>({
     resolver: zodResolver(replySchema),
@@ -83,6 +149,11 @@ export default function ForumThread() {
 
   const { data: thread, isLoading: threadLoading } = useQuery<ThreadDetail>({
     queryKey: ["/api/forums/threads", threadId],
+  });
+
+  const { data: categories = [] } = useQuery<ForumCategory[]>({
+    queryKey: ["/api/forums/categories"],
+    enabled: isStaff,
   });
 
   const replyMutation = useMutation({
@@ -97,6 +168,93 @@ export default function ForumThread() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to post reply.", variant: "destructive" });
+    },
+  });
+
+  const togglePinMutation = useMutation({
+    mutationFn: async (isPinned: boolean) => {
+      const response = await apiRequest("PATCH", `/api/forums/threads/${threadId}`, { isPinned });
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      toast({ title: data.isPinned ? "Thread pinned" : "Thread unpinned" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads", threadId] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update thread.", variant: "destructive" });
+    },
+  });
+
+  const toggleLockMutation = useMutation({
+    mutationFn: async (isLocked: boolean) => {
+      const response = await apiRequest("PATCH", `/api/forums/threads/${threadId}`, { isLocked });
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      toast({ title: data.isLocked ? "Thread locked" : "Thread unlocked" });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads", threadId] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update thread.", variant: "destructive" });
+    },
+  });
+
+  const deleteThreadMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/forums/threads/${threadId}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Thread deleted", description: "The thread has been removed." });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
+      navigate("/forums");
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete thread.", variant: "destructive" });
+    },
+  });
+
+  const moveThreadMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      const response = await apiRequest("PATCH", `/api/forums/threads/${threadId}`, { categoryId });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Thread moved", description: "The thread has been moved to the new category." });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads", threadId] });
+      setMoveDialogOpen(false);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to move thread.", variant: "destructive" });
+    },
+  });
+
+  const deleteReplyMutation = useMutation({
+    mutationFn: async (replyId: string) => {
+      await apiRequest("DELETE", `/api/forums/replies/${replyId}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Reply deleted", description: "The reply has been removed." });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads", threadId] });
+      setDeleteReplyId(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete reply.", variant: "destructive" });
+    },
+  });
+
+  const editReplyMutation = useMutation({
+    mutationFn: async ({ replyId, content }: { replyId: string; content: string }) => {
+      const response = await apiRequest("PATCH", `/api/forums/replies/${replyId}`, { content });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Reply updated", description: "Your changes have been saved." });
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/threads", threadId] });
+      setEditingReplyId(null);
+      setEditReplyContent("");
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update reply.", variant: "destructive" });
     },
   });
 
@@ -136,16 +294,80 @@ export default function ForumThread() {
   }
 
   const replyCount = thread.replies?.length ?? thread.replyCount ?? 0;
+  const isThreadAuthor = user && thread.authorId === user.id;
+  const canEditThread = isStaff || isThreadAuthor;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-in fade-in duration-500">
-        <Link href="/forums">
-          <Button variant="ghost" size="sm" data-testid="button-back-forums">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Forums
-          </Button>
-        </Link>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <Link href="/forums">
+            <Button variant="ghost" size="sm" data-testid="button-back-forums">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Forums
+            </Button>
+          </Link>
+
+          {isStaff && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="gap-1 text-muted-foreground">
+                <Shield className="w-3 h-3" />
+                Staff
+              </Badge>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" data-testid="button-staff-actions">
+                    <MoreVertical className="w-4 h-4 mr-1.5" />
+                    Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Thread Moderation</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => togglePinMutation.mutate(!thread.isPinned)}
+                    disabled={togglePinMutation.isPending}
+                    data-testid="button-toggle-pin"
+                  >
+                    {thread.isPinned ? (
+                      <><PinOff className="w-4 h-4 mr-2" /> Unpin Thread</>
+                    ) : (
+                      <><Pin className="w-4 h-4 mr-2" /> Pin Thread</>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => toggleLockMutation.mutate(!thread.isLocked)}
+                    disabled={toggleLockMutation.isPending}
+                    data-testid="button-toggle-lock"
+                  >
+                    {thread.isLocked ? (
+                      <><Unlock className="w-4 h-4 mr-2" /> Unlock Thread</>
+                    ) : (
+                      <><Lock className="w-4 h-4 mr-2" /> Lock Thread</>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setSelectedCategoryId(thread.categoryId || "");
+                      setMoveDialogOpen(true);
+                    }}
+                    data-testid="button-move-thread"
+                  >
+                    <FolderInput className="w-4 h-4 mr-2" /> Move Thread
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onClick={() => setDeleteThreadDialogOpen(true)}
+                    data-testid="button-delete-thread"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Delete Thread
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -215,8 +437,22 @@ export default function ForumThread() {
               </p>
             </div>
 
-            {user && thread.author?.id !== user.id && (
-              <div className="flex justify-end mt-4 pt-3 border-t">
+            <div className="flex items-center justify-end mt-4 pt-3 border-t gap-2 flex-wrap">
+              {canEditThread && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-muted-foreground"
+                  asChild
+                  data-testid="button-edit-thread"
+                >
+                  <Link href={`/forums/thread/${threadId}/edit`}>
+                    <Pencil className="w-3.5 h-3.5" />
+                    Edit
+                  </Link>
+                </Button>
+              )}
+              {user && thread.author?.id !== user.id && (
                 <ReportDialog
                   targetId={thread.id}
                   targetType="thread"
@@ -227,8 +463,8 @@ export default function ForumThread() {
                     </Button>
                   }
                 />
-              </div>
-            )}
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -241,55 +477,123 @@ export default function ForumThread() {
 
           {thread.replies && thread.replies.length > 0 ? (
             <div className="space-y-3">
-              {thread.replies.map((reply, index) => (
-                <Card key={reply.id} data-testid={`card-reply-${reply.id}`}>
-                  <CardContent className="p-4 sm:p-5">
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <Avatar className="w-9 h-9 flex-shrink-0">
-                        <AvatarImage src={reply.author?.profileImageUrl || undefined} />
-                        <AvatarFallback>
-                          {reply.author?.username?.[0]?.toUpperCase() || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-0.5 flex-wrap">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <RankUsername user={reply.author} />
-                            {reply.author?.vipTier && reply.author.vipTier !== 'none' && (
-                              <VipBadge tier={reply.author.vipTier as any} size="sm" showLabel={false} />
-                            )}
+              {thread.replies.map((reply) => {
+                const isReplyAuthor = user && reply.authorId === user.id;
+                const canEditReply = isStaff || isReplyAuthor;
+                const canDeleteReply = isStaff;
+                const isEditing = editingReplyId === reply.id;
+
+                return (
+                  <Card key={reply.id} data-testid={`card-reply-${reply.id}`}>
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <Avatar className="w-9 h-9 flex-shrink-0">
+                          <AvatarImage src={reply.author?.profileImageUrl || undefined} />
+                          <AvatarFallback>
+                            {reply.author?.username?.[0]?.toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-0.5 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <RankUsername user={reply.author} />
+                              {reply.author?.vipTier && reply.author.vipTier !== 'none' && (
+                                <VipBadge tier={reply.author.vipTier as any} size="sm" showLabel={false} />
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {reply.createdAt
+                                ? formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })
+                                : "recently"}
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {reply.createdAt
-                              ? formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })
-                              : "recently"}
-                          </span>
-                        </div>
 
-                        <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words mt-2" data-testid={`text-reply-content-${reply.id}`}>
-                          {reply.content}
-                        </p>
-
-                        {user && reply.author?.id !== user.id && (
-                          <div className="flex justify-end mt-3 pt-2 border-t">
-                            <ReportDialog
-                              targetId={reply.id}
-                              targetType="reply"
-                              trigger={
-                                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid={`button-report-reply-${reply.id}`}>
-                                  <Flag className="w-3.5 h-3.5" />
-                                  Report
+                          {isEditing ? (
+                            <div className="mt-2 space-y-2">
+                              <Textarea
+                                value={editReplyContent}
+                                onChange={(e) => setEditReplyContent(e.target.value)}
+                                className="min-h-[80px] resize-none"
+                                data-testid={`input-edit-reply-${reply.id}`}
+                              />
+                              <div className="flex items-center justify-end gap-2 flex-wrap">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingReplyId(null);
+                                    setEditReplyContent("");
+                                  }}
+                                  data-testid={`button-cancel-edit-reply-${reply.id}`}
+                                >
+                                  Cancel
                                 </Button>
-                              }
-                            />
-                          </div>
-                        )}
+                                <Button
+                                  size="sm"
+                                  disabled={editReplyMutation.isPending || editReplyContent.trim().length < 5}
+                                  onClick={() => editReplyMutation.mutate({ replyId: reply.id, content: editReplyContent })}
+                                  data-testid={`button-save-edit-reply-${reply.id}`}
+                                >
+                                  {editReplyMutation.isPending ? "Saving..." : "Save"}
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words mt-2" data-testid={`text-reply-content-${reply.id}`}>
+                              {reply.content}
+                            </p>
+                          )}
+
+                          {!isEditing && (canEditReply || canDeleteReply || (user && reply.author?.id !== user.id)) && (
+                            <div className="flex items-center justify-end mt-3 pt-2 border-t gap-2 flex-wrap">
+                              {canEditReply && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="gap-1.5 text-muted-foreground"
+                                  onClick={() => {
+                                    setEditingReplyId(reply.id);
+                                    setEditReplyContent(reply.content);
+                                  }}
+                                  data-testid={`button-edit-reply-${reply.id}`}
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                  Edit
+                                </Button>
+                              )}
+                              {canDeleteReply && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="gap-1.5 text-destructive"
+                                  onClick={() => setDeleteReplyId(reply.id)}
+                                  data-testid={`button-delete-reply-${reply.id}`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Delete
+                                </Button>
+                              )}
+                              {user && reply.author?.id !== user.id && (
+                                <ReportDialog
+                                  targetId={reply.id}
+                                  targetType="reply"
+                                  trigger={
+                                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid={`button-report-reply-${reply.id}`}>
+                                      <Flag className="w-3.5 h-3.5" />
+                                      Report
+                                    </Button>
+                                  }
+                                />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <Card className="border-dashed">
@@ -358,6 +662,83 @@ export default function ForumThread() {
           )}
         </div>
       </div>
+
+      <AlertDialog open={deleteThreadDialogOpen} onOpenChange={setDeleteThreadDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Thread</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this thread? This action cannot be undone and will also remove all replies.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete-thread">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteThreadMutation.mutate()}
+              className="bg-destructive text-destructive-foreground"
+              data-testid="button-confirm-delete-thread"
+            >
+              {deleteThreadMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!deleteReplyId} onOpenChange={(open) => { if (!open) setDeleteReplyId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Reply</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this reply? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete-reply">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (deleteReplyId) deleteReplyMutation.mutate(deleteReplyId); }}
+              className="bg-destructive text-destructive-foreground"
+              data-testid="button-confirm-delete-reply"
+            >
+              {deleteReplyMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={moveDialogOpen} onOpenChange={setMoveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Move Thread</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">Select the category to move this thread to:</p>
+            <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+              <SelectTrigger data-testid="select-move-category">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id} data-testid={`option-category-${cat.id}`}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMoveDialogOpen(false)} data-testid="button-cancel-move">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => { if (selectedCategoryId) moveThreadMutation.mutate(selectedCategoryId); }}
+              disabled={!selectedCategoryId || selectedCategoryId === thread.categoryId || moveThreadMutation.isPending}
+              data-testid="button-confirm-move"
+            >
+              {moveThreadMutation.isPending ? "Moving..." : "Move Thread"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
