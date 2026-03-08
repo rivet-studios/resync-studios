@@ -79,7 +79,7 @@ export async function registerRoutes(
         isAdmin,
         isModerator,
         additionalRanks: isStaffEmail
-          ? ["Team Member", "Staff Internal Affairs", "Community Developer"]
+          ? ["Team Member", "Staff Internal Affairs", "Developer"]
           : [],
       } as any);
 
@@ -118,12 +118,12 @@ export async function registerRoutes(
         const currentAdditional = user.additionalRanks || [];
         if (!currentAdditional.includes("Staff Internal Affairs"))
           currentAdditional.push("Staff Internal Affairs");
-        if (!currentAdditional.includes("Community Developer"))
-          currentAdditional.push("Community Developer");
+        if (!currentAdditional.includes("Developer"))
+          currentAdditional.push("Developer");
         await storage.updateUserAdditionalRanks(user.id, currentAdditional);
       }
 
-      req.login(user, (err) => {
+      req.login(user as Express.User, (err) => {
         if (err)
           return res
             .status(500)
@@ -200,12 +200,10 @@ export async function registerRoutes(
         "Team Member",
         "Operations Manager",
         "Company Director",
-        "MI Trust & Safety Director",
-        "Community Moderator",
-        "Community Senior Moderator",
-        "Community Administrator",
-        "Community Senior Administrator",
-        "RS Trust & Safety Team",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
       ];
       const isStaff =
         user.isAdmin ||
@@ -229,13 +227,11 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const adminRanks = [
-        "Company Representative",
         "Staff Internal Affairs",
         "Staff Department Director",
         "Team Member",
         "Operations Manager",
         "Company Director",
-        "MI Trust & Safety Director",
       ];
       const hasAccess =
         user.email?.endsWith("@resyncstudios.com") ||
@@ -584,7 +580,7 @@ export async function registerRoutes(
   app.get("/api/products", async (req, res) => {
     try {
       const status = req.query.status as string | undefined;
-      const prods = await storage.getProducts(status || "approved");
+      const prods = await storage.getProducts(status || "Approved");
       const prodsWithSubmitters = await Promise.all(
         prods.map(async (p) => {
           const submitter = await storage.getUser(p.submitterId);
@@ -650,7 +646,7 @@ export async function registerRoutes(
         return res.status(403).json({ message: "Only Operations Managers can review products" });
       }
       const { status, reviewNotes } = req.body;
-      if (!["approved", "denied"].includes(status)) {
+      if (!["Approved", "Denied"].includes(status)) {
         return res.status(400).json({ message: "Status must be approved or denied" });
       }
       const updates: any = {
@@ -658,7 +654,7 @@ export async function registerRoutes(
         reviewedBy: user.id,
         reviewNotes: reviewNotes || null,
       };
-      if (status === "approved") {
+      if (status === "Approved") {
         updates.isCommunityProvided = true;
       }
       const product = await storage.updateProduct(req.params.id, updates);
@@ -695,9 +691,8 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Moderator", "Community Senior Moderator", "Community Administrator",
-        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
-        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
         "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
@@ -726,9 +721,8 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Moderator", "Community Senior Moderator", "Community Administrator",
-        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
-        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
         "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
@@ -749,9 +743,8 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Moderator", "Community Senior Moderator", "Community Administrator",
-        "Community Senior Administrator", "Community Developer", "Staff Internal Affairs",
-        "Company Representative", "Team Member", "MI Trust & Safety Director",
+        "Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
         "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
@@ -770,12 +763,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeal Analyst", "Appeals Moderator", "Community Moderator",
-        "Community Senior Moderator", "Community Administrator",
-        "Community Senior Administrator", "Community Developer",
-        "Staff Internal Affairs", "Company Representative", "Team Member",
-        "MI Trust & Safety Director", "Staff Department Director",
-        "Operations Manager", "Company Director",
+        "Appeals Moderator", "Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
+        "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
         return res.status(403).json({ message: "Forbidden" });
@@ -825,18 +815,15 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeal Analyst", "Appeals Moderator", "Community Moderator",
-        "Community Senior Moderator", "Community Administrator",
-        "Community Senior Administrator", "Community Developer",
-        "Staff Internal Affairs", "Company Representative", "Team Member",
-        "MI Trust & Safety Director", "Staff Department Director",
-        "Operations Manager", "Company Director",
+       "Appeals Moderator", "Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
+        "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { status, reviewNotes } = req.body;
-      if (!["approved", "denied"].includes(status)) {
+      if (!["Approved", "Denied"].includes(status)) {
         return res.status(400).json({ message: "Status must be approved or denied" });
       }
       const appeal = await storage.getAppeal(req.params.id);
@@ -848,7 +835,7 @@ export async function registerRoutes(
         reviewNotes,
       });
 
-      if (status === "approved" && appeal.banId) {
+      if (status === "Approved" && appeal.banId) {
         await storage.deactivateBan(appeal.banId);
       }
 
@@ -863,11 +850,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Report Analyst", "Community Moderator", "Community Senior Moderator",
-        "Community Administrator", "Community Senior Administrator",
-        "Community Developer", "Staff Internal Affairs", "Company Representative",
-        "Team Member", "MI Trust & Safety Director", "Staff Department Director",
-        "Operations Manager", "Company Director",
+"Trial Moderator", "Moderator", "Administrator",
+        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
+        "Staff Department Director", "Operations Manager", "Company Director",
       ];
       if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
         return res.status(403).json({ message: "Forbidden" });
@@ -1136,7 +1121,7 @@ export async function registerRoutes(
 
       const product = await storage.getProduct(productId);
       if (!product) return res.status(404).json({ message: "Product not found" });
-      if (product.status !== "approved") return res.status(400).json({ message: "Product is not available for purchase" });
+      if (product.status !== "Approved") return res.status(400).json({ message: "Product is not available for purchase" });
       if (!product.price || product.price <= 0) {
         return res.status(400).json({ message: "Product price must be greater than zero" });
       }
@@ -1265,7 +1250,7 @@ export async function registerRoutes(
           .map((u) => ({
             id: u.id,
             title: u.username,
-            description: u.userRank || "Civilian",
+            description: u.userRank || "Active Members",
             url: `/profile/${u.id}`,
             image: u.profileImageUrl,
           }));
@@ -1285,7 +1270,7 @@ export async function registerRoutes(
       }
 
       if (!type || type === "products") {
-        const prods = await storage.getProducts("approved");
+        const prods = await storage.getProducts("Approved");
         results.products = prods
           .filter((p) => p.name.toLowerCase().includes(q) || (p.description || "").toLowerCase().includes(q))
           .slice(0, 10)
