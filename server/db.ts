@@ -42,49 +42,27 @@ export async function initializeDatabase() {
     await db.execute(sql`
       DO $$ BEGIN
         CREATE TYPE user_rank AS ENUM (
-          'Moderator',
-          'Administrator',
-          'Senior Administrator',
           'Banned',
-          'Member',
-          'Active Member',
+          'Active Members',
           'Trusted Member',
           'Community Partner',
           'Bronze VIP',
           'Diamond VIP',
           'Founders Edition VIP',
           'Lifetime',
-          'RS Volunteer Staff',
-          'RS Trust & Safety Team',
           'Customer Relations',
           'Appeals Moderator',
-          'Community Moderator',
-          'Community Senior Moderator',
-          'Community Administrator',
-          'Community Senior Administrator',
-          'Community Developer',
+          'Trial Moderator',
+          'Senior Moderator',
+          'Administrator',
+          'Senior Administrator',
+          'Developer',
           'Staff Internal Affairs',
-          'Company Representative',
           'Team Member',
-          'MI Trust & Safety Director',
           'Staff Department Director',
           'Operations Manager',
           'Company Director'
         );
-      EXCEPTION WHEN duplicate_object THEN null;
-      END $$;
-    `);
-
-    await db.execute(sql`
-      DO $$ BEGIN
-        CREATE TYPE skill_level AS ENUM ('beginner', 'intermediate', 'advanced', 'expert', 'pro');
-      EXCEPTION WHEN duplicate_object THEN null;
-      END $$;
-    `);
-
-    await db.execute(sql`
-      DO $$ BEGIN
-        CREATE TYPE game_role AS ENUM ('tank', 'dps', 'support', 'healer', 'flex', 'any');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$;
     `);
@@ -112,13 +90,7 @@ export async function initializeDatabase() {
         "roblox_username" varchar,
         "roblox_display_name" varchar,
         "roblox_linked_at" timestamp,
-        "games_played" integer DEFAULT 0,
-        "total_posts" integer DEFAULT 0,
-        "reputation" integer DEFAULT 1,
-        "group_id" varchar,
-        "group_role" varchar,
-        "user_rank" user_rank DEFAULT 'member',
-        "secondary_user_rank" text DEFAULT 'None',
+        "user_rank" user_rank DEFAULT 'Active Members',
         "created_at" timestamp DEFAULT now(),
         "updated_at" timestamp DEFAULT now()
       );
@@ -132,59 +104,6 @@ export async function initializeDatabase() {
         "token" varchar UNIQUE NOT NULL,
         "expires_at" timestamp NOT NULL,
         "used_at" timestamp,
-        "created_at" timestamp DEFAULT now()
-      );
-    `);
-
-    // Groups table (formerly clans)
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "groups" (
-        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
-        "name" varchar NOT NULL UNIQUE,
-        "tag" varchar NOT NULL UNIQUE,
-        "description" text,
-        "logo_url" varchar,
-        "banner_url" varchar,
-        "owner_id" varchar NOT NULL,
-        "is_recruiting" boolean DEFAULT true,
-        "member_count" integer DEFAULT 1,
-        "max_members" integer DEFAULT 50,
-        "discord_invite" varchar,
-        "primary_game" varchar,
-        "requirements" text,
-        "created_at" timestamp DEFAULT now(),
-        "updated_at" timestamp DEFAULT now()
-      );
-    `);
-
-    // Builds table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "builds" (
-        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
-        "author_id" varchar NOT NULL,
-        "title" varchar NOT NULL,
-        "description" text,
-        "game" varchar NOT NULL,
-        "character" varchar,
-        "category" varchar,
-        "content" text NOT NULL,
-        "image_url" varchar,
-        "upvotes" integer DEFAULT 0,
-        "downvotes" integer DEFAULT 0,
-        "view_count" integer DEFAULT 0,
-        "is_featured" boolean DEFAULT false,
-        "created_at" timestamp DEFAULT now(),
-        "updated_at" timestamp DEFAULT now()
-      );
-    `);
-
-    // Build Votes table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "build_votes" (
-        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
-        "build_id" varchar NOT NULL,
-        "user_id" varchar NOT NULL,
-        "is_upvote" boolean NOT NULL,
         "created_at" timestamp DEFAULT now()
       );
     `);
@@ -236,19 +155,9 @@ export async function initializeDatabase() {
       );
     `);
 
-    // Chat Messages table
+    // Announcements table
     await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS "chat_messages" (
-      "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
-      "sender_id" varchar NOT NULL,
-      "recipient_id" varchar,
-      "clan_id" varchar,
-      "content" text NOT NULL,
-      "is_read" boolean DEFAULT false,
-      "created_at" timestamp DEFAULT now()
-    );
-
-    CREATE TABLE IF NOT EXISTS "announcements" (
+     CREATE TABLE IF NOT EXISTS "announcements" (
       "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
       "title" varchar NOT NULL,
       "content" text NOT NULL,

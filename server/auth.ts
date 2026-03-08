@@ -52,7 +52,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
         callbackURL: CALLBACK_URL,
         scope: ["identify", "email", "guilds"],
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (Ac_accessToken, _refreshToken, profile, done) => {
         try {
           const discordId = profile.id;
           const email = profile.email || `${profile.username}@discord.local`;

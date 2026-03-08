@@ -4,20 +4,20 @@ const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || "";
 const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 const RANK_TO_ROLE: Record<string, string> = {
-  "Member": process.env.DISCORD_ROLE_CIVILIAN || "",
+  "Active Members": process.env.DISCORD_ROLE_CIVILIAN || "",
   "Team Member": process.env.DISCORD_ROLE_TEAM_MEMBER || "",
   "Operations Manager": process.env.DISCORD_ROLE_OPS_MANAGER || "",
   "Company Director": process.env.DISCORD_ROLE_COMPANY_DIRECTOR || "",
-  "Community Moderator": process.env.DISCORD_ROLE_COMMUNITY_MOD || "",
-  "Community Senior Moderator": process.env.DISCORD_ROLE_COMMUNITY_SR_MOD || "",
-  "Community Administrator": process.env.DISCORD_ROLE_COMMUNITY_ADMIN || "",
-  "Community Senior Administrator": process.env.DISCORD_ROLE_COMMUNITY_SR_ADMIN || "",
+  "Trial Moderator": process.env.DISCORD_ROLE_COMMUNITY_MOD || "",
+  Moderator: process.env.DISCORD_ROLE_COMMUNITY_SR_MOD || "",
+  Administrator: process.env.DISCORD_ROLE_COMMUNITY_ADMIN || "",
+  "Senior Administrator": process.env.DISCORD_ROLE_COMMUNITY_SR_ADMIN || "",
   "RS Trust & Safety Team": process.env.DISCORD_ROLE_TRUST_SAFETY || "",
   "Staff Department Director": process.env.DISCORD_ROLE_MI_DIRECTOR || "",
   "Bronze VIP": process.env.DISCORD_ROLE_VIP || "",
   "Diamond VIP": process.env.DISCORD_ROLE_VIP_PLUS || "",
   "Founder's Edition VIP": process.env.DISCORD_ROLE_VIP_PLUS_PLUS || "",
-  "Lifetime": process.env.DISCORD_ROLE_LIFETIME || "",
+  Lifetime: process.env.DISCORD_ROLE_LIFETIME || "",
 };
 
 let rest: REST | null = null;
@@ -25,15 +25,23 @@ let botUserId: string | null = null;
 
 export async function initializeDiscordBot() {
   if (!BOT_TOKEN) {
-    console.warn("⚠️ DISCORD_BOT_TOKEN not configured. Discord sync will be disabled.");
+    console.warn(
+      "⚠️ DISCORD_BOT_TOKEN not configured. Discord sync will be disabled.",
+    );
     return null;
   }
 
   try {
     rest = new REST({ version: "10" }).setToken(BOT_TOKEN);
-    const botUser = await rest.get(Routes.user()) as { id: string; username: string; discriminator: string };
+    const botUser = (await rest.get(Routes.user())) as {
+      id: string;
+      username: string;
+      discriminator: string;
+    };
     botUserId = botUser.id;
-    console.log(`✅ Discord bot connected as ${botUser.username}#${botUser.discriminator}`);
+    console.log(
+      `✅ Discord bot connected as ${botUser.username}#${botUser.discriminator}`,
+    );
     return rest;
   } catch (error) {
     console.error("❌ Failed to initialize Discord bot:", error);
@@ -55,10 +63,15 @@ export async function updateDiscordNickname(
     await rest.patch(Routes.guildMember(GUILD_ID, discordId), {
       body: { nick: newNickname },
     });
-    console.log(`✅ Updated Discord nickname for ${discordId} to "${newNickname}"`);
+    console.log(
+      `✅ Updated Discord nickname for ${discordId} to "${newNickname}"`,
+    );
     return true;
   } catch (error) {
-    console.error(`❌ Failed to update Discord nickname for ${discordId}:`, error);
+    console.error(
+      `❌ Failed to update Discord nickname for ${discordId}:`,
+      error,
+    );
     return false;
   }
 }
@@ -74,20 +87,28 @@ export async function updateDiscordRoles(
   }
 
   try {
-    const member = await rest.get(Routes.guildMember(GUILD_ID, discordId)) as { roles: string[] };
+    const member = (await rest.get(
+      Routes.guildMember(GUILD_ID, discordId),
+    )) as { roles: string[] };
     const currentRoles = new Set(member.roles);
 
     if (oldRank && RANK_TO_ROLE[oldRank]) {
       const oldRoleId = RANK_TO_ROLE[oldRank];
       if (oldRoleId && currentRoles.has(oldRoleId)) {
-        await rest.delete(Routes.guildMemberRole(GUILD_ID, discordId, oldRoleId));
-        console.log(`🔄 Removed Discord role for "${oldRank}" from ${discordId}`);
+        await rest.delete(
+          Routes.guildMemberRole(GUILD_ID, discordId, oldRoleId),
+        );
+        console.log(
+          `🔄 Removed Discord role for "${oldRank}" from ${discordId}`,
+        );
       }
     } else {
       const allManagedRoleIds = Object.values(RANK_TO_ROLE).filter(Boolean);
       for (const roleId of allManagedRoleIds) {
         if (currentRoles.has(roleId)) {
-          await rest.delete(Routes.guildMemberRole(GUILD_ID, discordId, roleId));
+          await rest.delete(
+            Routes.guildMemberRole(GUILD_ID, discordId, roleId),
+          );
         }
       }
     }
