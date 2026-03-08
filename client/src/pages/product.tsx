@@ -46,7 +46,7 @@ export default function ProductDetail() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const { data: products = [], isLoading } = useQuery<ProductWithSubmitter[]>({
+  const { data: products = [], isLoading, isError } = useQuery<ProductWithSubmitter[]>({
     queryKey: ["/api/products"],
   });
 
@@ -97,6 +97,23 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center gap-4">
+        <Package className="w-16 h-16 text-white/15" />
+        <h2 className="text-xl font-semibold" data-testid="text-product-error">
+          Failed to load product
+        </h2>
+        <p className="text-sm text-white/40">Something went wrong. Please try again later.</p>
+        <Link href="/store">
+          <Button variant="outline" className="border-white/10" data-testid="button-back-to-store">
+            <ChevronLeft className="w-4 h-4 mr-1" /> Back to Store
+          </Button>
+        </Link>
       </div>
     );
   }
