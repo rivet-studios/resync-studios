@@ -14,6 +14,8 @@ import {
   insertBanSchema,
   insertAppealSchema,
   insertAnnouncementSchema,
+  users,
+  forumThreads,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -547,8 +549,17 @@ export async function registerRoutes(
   // Blog routes
   app.get("/api/blog", async (req, res) => {
     try {
-      const announcements = await storage.getAnnouncements();
-      res.json(announcements);
+      const posts = await storage.getAnnouncements();
+      const postsWithAuthors = await Promise.all(
+        posts.map(async (post) => {
+          const author = await storage.getUser(post.authorId);
+          return {
+            ...post,
+            author: author ? { id: author.id, username: author.username, userRank: author.userRank, profileImageUrl: author.profileImageUrl } : null,
+          };
+        })
+      );
+      res.json(postsWithAuthors);
     } catch (error) {
       console.error("Blog fetch error:", error);
       res.status(500).json({ message: "Failed to fetch blog posts" });
@@ -559,7 +570,11 @@ export async function registerRoutes(
     try {
       const announcement = await storage.getAnnouncement(req.params.id);
       if (!announcement) return res.status(404).json({ message: "Post not found" });
-      res.json(announcement);
+      const author = await storage.getUser(announcement.authorId);
+      res.json({
+        ...announcement,
+        author: author ? { id: author.id, username: author.username, userRank: author.userRank, profileImageUrl: author.profileImageUrl } : null,
+      });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch blog post" });
     }
@@ -1093,7 +1108,9 @@ export async function registerRoutes(
       if (!user) return res.status(401).json({ message: "User not found" });
 
       const { priceId } = req.body;
-      if (!priceId) return res.status(400).json({ message: "priceId is required" });
+      if (!priceId || typeof priceId !== "string") {
+        return res.status(400).json({ message: "A valid priceId is required" });
+      }
 
       let customerId = user.stripeCustomerId;
       if (!customerId) {
@@ -1116,8 +1133,20 @@ export async function registerRoutes(
 
       res.json({ url: session.url });
     } catch (error: any) {
-      console.error("Checkout error:", error.message);
-      res.status(500).json({ message: "Failed to create checkout session" });
+      console.error("Checkout error:", {
+        message: error.message,
+        type: error.type,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      });
+      const statusCode = error.statusCode || 500;
+      const userMessage = error.type === "StripeCardError"
+        ? error.message
+        : error.type === "StripeInvalidRequestError"
+          ? `Invalid request: ${error.message}`
+          : "Failed to create checkout session. Please try again or contact support.";
+      res.status(statusCode).json({ message: userMessage });
     }
   });
 
@@ -1133,6 +1162,9 @@ export async function registerRoutes(
       const product = await storage.getProduct(productId);
       if (!product) return res.status(404).json({ message: "Product not found" });
       if (product.status !== "approved") return res.status(400).json({ message: "Product is not available for purchase" });
+      if (!product.price || product.price <= 0) {
+        return res.status(400).json({ message: "Product price must be greater than zero" });
+      }
 
       let customerId = user.stripeCustomerId;
       if (!customerId) {
@@ -1167,8 +1199,20 @@ export async function registerRoutes(
 
       res.json({ url: session.url });
     } catch (error: any) {
-      console.error("Product checkout error:", error.message);
-      res.status(500).json({ message: "Failed to create checkout session" });
+      console.error("Product checkout error:", {
+        message: error.message,
+        type: error.type,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      });
+      const statusCode = error.statusCode || 500;
+      const userMessage = error.type === "StripeCardError"
+        ? error.message
+        : error.type === "StripeInvalidRequestError"
+          ? `Invalid request: ${error.message}`
+          : "Failed to create checkout session. Please try again or contact support.";
+      res.status(statusCode).json({ message: userMessage });
     }
   });
 
@@ -1187,8 +1231,18 @@ export async function registerRoutes(
 
       res.json({ url: portalSession.url });
     } catch (error: any) {
-      console.error("Portal error:", error.message);
-      res.status(500).json({ message: "Failed to create portal session" });
+      console.error("Portal error:", {
+        message: error.message,
+        type: error.type,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      });
+      const statusCode = error.statusCode || 500;
+      const userMessage = error.type === "StripeInvalidRequestError"
+        ? `Portal error: ${error.message}`
+        : "Failed to create portal session. Please try again or contact support.";
+      res.status(statusCode).json({ message: userMessage });
     }
   });
 
@@ -1204,6 +1258,19 @@ export async function registerRoutes(
       res.json({ subscription: result.rows[0] || null });
     } catch (error) {
       res.json({ subscription: null });
+    }
+  });
+
+  app.get("/api/public/stats", async (_req, res) => {
+    try {
+      const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
+      const [threadCount] = await db.select({ count: sql`count(*)` }).from(forumThreads);
+      res.json({
+        totalMembers: Number(userCount.count),
+        totalDiscussions: Number(threadCount.count),
+      });
+    } catch (error) {
+      res.json({ totalMembers: 0, totalDiscussions: 0 });
     }
   });
 

@@ -423,7 +423,7 @@ export default function AdminCP() {
                     {statsLoading ? (
                       <Skeleton className="h-10 w-20" />
                     ) : (
-                      stats?.totalUsers?.toLocaleString() || "25"
+                      stats?.totalUsers?.toLocaleString() ?? "—"
                     )}
                   </div>
                   <div className="text-xs font-bold text-white/20 uppercase tracking-tight">

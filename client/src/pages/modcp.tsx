@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -593,6 +594,9 @@ export default function ModCP() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
+                          <Link href={`/modcp/case/report/${report.id}`}>
+                            <span className="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer font-semibold uppercase tracking-wider" data-testid={`link-view-report-${report.id}`}>View Case</span>
+                          </Link>
                           <Badge
                             variant={report.status === "Pending" ? "default" : "secondary"}
                             className={
@@ -693,6 +697,9 @@ export default function ModCP() {
                   <Card key={appeal.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-appeal-${appeal.id}`}>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 flex-wrap">
+                        <Link href={`/modcp/case/appeal/${appeal.id}`}>
+                          <span className="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer font-semibold uppercase tracking-wider" data-testid={`link-view-appeal-${appeal.id}`}>View Case</span>
+                        </Link>
                         <Badge
                           className={
                             appeal.status === "pending"

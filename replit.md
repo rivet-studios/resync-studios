@@ -34,6 +34,19 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Legal and policy pages centered and optimized for readability
 - ✅ Public access to forums, blogs, store, subscriptions (no login required to view)
 
+### Staff Case Detail Page (March 2026):
+- **Route**: `/modcp/case/:type/:id` — dedicated page for viewing report/appeal/ban details
+- **Component**: `client/src/pages/case-detail.tsx` — shows full case info, status badge, moderator notes, action buttons
+- **Auth**: Same staff rank gate as `/modcp` applied in `App.tsx`
+- **ModCP Links**: "View Case" links on report and appeal cards in ModCP navigate to case detail page
+- **Actions**: Mark reviewed/dismissed/action taken for reports; approve/deny for appeals; lift ban for active bans
+- **Notes**: Staff can add moderator/review notes when taking action
+
+### Ban Wall (March 2026):
+- **Component**: `client/src/components/ban-wall.tsx` — blocks banned users from all pages except `/appeals`
+- **Integration**: Wraps Router in `App.tsx`; queries `/api/bans/my` when user is logged in
+- **Display**: Shows ban reason, date, duration, and link to appeal
+
 ## Recent Additions
 
 ### Global Search (March 2026):

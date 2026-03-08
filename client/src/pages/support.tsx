@@ -37,7 +37,7 @@ const FAQ_ITEMS = [
     category: "Account",
     question: "How do I link my Roblox account?",
     answer:
-      "Go to Settings > Integrations and click 'Link Roblox'. Enter your Roblox username to verify ownership. Contact our support team if you cannot complete the roblox integration process.",
+      "Go to Settings > Integrations and click 'Link Roblox'. Enter your Roblox username and follow the steps. Contact our support team if you cannot complete the roblox integration process.",
   },
   {
     category: "Billing & Subscriptions",
@@ -59,21 +59,15 @@ const FAQ_ITEMS = [
   },
   {
     category: "Projects",
-    question: "Why is the Highville Project discontinued?",
+    question: "What is Project Rosewood?",
     answer:
-      "The Highville Project has been discontinued because there was not enough player interest and we have decided to start a new project to replace Highville.",
-  },
-  {
-    category: "Projects",
-    question: "What is Project Foxtrot?",
-    answer:
-      "Project Foxtrot is one of our flagship ROBLOX projects featuring immersive roleplay experiences and community gameplay. The game is currently under active development.",
+      "Project Rosewood is one of our flagship ROBLOX projects featuring immersive roleplay experiences and community gameplay. The game is currently under active development.",
   },
   {
     category: "Reports",
     question: "How do I report a player or content?",
     answer:
-      "In order to report a player or content, you must submit a report via the player & content reports forum using the provided format.",
+      "In order to report a player or content, navigate to the users' profile a click the flag icon",
   },
   {
     category: "Appeals",
@@ -85,19 +79,19 @@ const FAQ_ITEMS = [
     category: "Appeals",
     question: "How do I appeal a ban on my account?",
     answer:
-      "Account bans cannot be appealed via our forums. Please contact support to submit an appeal.",
+      "Account bans cannot be appealed via our forums. Visit the My Appeals center at resyncstudios.com/appeals to submit one.",
   },
   {
     category: "DMCA",
     question: "Rivet Studios filed a DMCA takedown on my asset! What do I do?",
     answer:
-      "If you believe a DMCA takedown notice has been issued falsely by our team, please email us at dmca@resyncstudios.com with the DMCA takedown notice information and proof of ownership of the asset.",
+      "If you believe a DMCA takedown notice has been issued falsely by our team, please email silentdirective@resyncstudios.com with the DMCA takedown notice information and proof of ownership of the asset.",
   },
   {
     category: "Partnership",
     question: "How do I apply for a partnership?",
     answer:
-      "Please email us at partnership@resyncstudios.com with your information.",
+      "Please email the CEO at cxiqlne@resyncstudios.com with your information.",
   },
 ];
 
@@ -225,18 +219,10 @@ export default function Support() {
               </p>
               <div className="text-xs text-blue-700 space-y-2 leading-relaxed">
                 <p>
-                  Our standard response time is 24 hours. During high-volume
-                  periods or holidays, response times may be longer. If you
-                  haven't heard back within 72 hours, please update your ticket
-                  with an escalation request.
-                </p>
-                <p>
                   <strong>Security Note:</strong> RS Support will{" "}
                   <strong>NEVER</strong> ask for sensitive information like
                   passwords or credit card numbers. If you receive such a
-                  request, report it immediately through our Trust & Safety
-                  portal on Freshdesk.
-                </p>
+                  request, report it immediately to the Staff Director at vision@                </p>
                 <p>
                   We have moved our support portal to
                   https://support.resyncstudios.com. Click the button above to

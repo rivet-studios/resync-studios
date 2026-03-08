@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/animated-counter";
+import { useQuery } from "@tanstack/react-query";
 import {
   Users,
   MessageSquare,
@@ -14,15 +15,6 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-
-const stats = [
-  { value: 23, label: "Connected Members", suffix: "+" },
-  { value: 28, label: "Discord Members", suffix: "+" },
-  { value: 25, label: "Roblox Members", suffix: "+" },
-  { value: 12.6, label: "Active Discussions", suffix: "+" },
-  { value: 99.9, label: "Uptime", suffix: "%" },
-  { value: 24, label: "Support", suffix: "/7" },
-];
 
 const features = [
   {
@@ -65,6 +57,18 @@ const features = [
 
 export default function Landing() {
   const { user } = useAuth();
+
+  const { data: publicStats } = useQuery<{ totalMembers: number; totalDiscussions: number }>({
+    queryKey: ["/api/public/stats"],
+    staleTime: 60000,
+  });
+
+  const stats = [
+    { value: publicStats?.totalMembers || 0, label: "Connected Members", suffix: "+" },
+    { value: publicStats?.totalDiscussions || 0, label: "Active Discussions", suffix: "+" },
+    { value: 99.9, label: "Uptime", suffix: "%" },
+    { value: 24, label: "Support", suffix: "/7" },
+  ];
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
@@ -126,9 +130,9 @@ export default function Landing() {
 
       <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center space-y-3">
+              <div key={stat.label} className="text-center space-y-3" data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}>
                 <div className="text-4xl font-semibold text-[#0071b2] tracking-tight">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>

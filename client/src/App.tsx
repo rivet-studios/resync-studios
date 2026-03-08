@@ -46,6 +46,7 @@ import AdminCP from "@/pages/admincp";
 import Blog from "@/pages/blog";
 import Store from "@/pages/store";
 import ProductDetail from "@/pages/product";
+import CaseDetail from "@/pages/case-detail";
 import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
 import Checkout from "@/pages/checkout";
@@ -54,6 +55,7 @@ import Appeals from "@/pages/appeals";
 import MyCases from "@/pages/my-cases";
 
 import Onboarding from "@/pages/onboarding";
+import { BanWall } from "@/components/ban-wall";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -203,8 +205,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground font-normal">
               © 2026 RIVET Studios™. All rights reserved. Metro Interactive,
-              Metro Interactive: A New Era Begins™, Catalina, Sundown, RESYNC
-              Studios, Reimagined™, The City Never Sleeps ― and Neither Do
+              Metro Interactive: A New Era Begins™, Rosewood, Sundown, Reimagined™, The City Never Sleeps ― and Neither Do
               We™, "Creative Development. Visible Execution. RIVET Studios.",
               and all other logos and brands are trademarks of RIVET Studios™.
             </p>
@@ -235,6 +236,7 @@ function Router() {
 
   return (
     <PublicLayout>
+      <BanWall>
       <Switch>
           <Route path="/" component={Landing} />
           <Route path="/dashboard" component={Dashboard} />
@@ -268,6 +270,25 @@ function Router() {
           <Route path="/appeals" component={Appeals} />
           <Route path="/my-cases" component={MyCases} />
           <Route path="/admin" component={Admin} />
+          <Route path="/modcp/case/:type/:id">
+            {user?.isModerator ||
+            user?.userRank === "Community Moderator" ||
+            user?.userRank === "Community Senior Moderator" ||
+            user?.userRank === "Community Administrator" ||
+            user?.userRank === "Community Senior Administrator" ||
+            user?.userRank === "Community Developer" ||
+            user?.userRank === "Staff Internal Affairs" ||
+            user?.userRank === "Company Representative" ||
+            user?.userRank === "Team Member" ||
+            user?.userRank === "MI Trust & Safety Director" ||
+            user?.userRank === "Staff Department Director" ||
+            user?.userRank === "Operations Manager" ||
+            user?.userRank === "Company Director" ? (
+              <CaseDetail />
+            ) : (
+              <NotFound />
+            )}
+          </Route>
           <Route path="/modcp">
             {user?.isModerator ||
             user?.userRank === "Community Moderator" ||
@@ -323,6 +344,7 @@ function Router() {
           <Route path="/onboarding" component={Onboarding} />
           <Route component={NotFound} />
         </Switch>
+      </BanWall>
     </PublicLayout>
   );
 }

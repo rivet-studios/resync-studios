@@ -74,105 +74,112 @@ export default function CreateThread() {
   });
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-md">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-slate-900">Start a New Discussion</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      value={field.value}
-                      disabled={isLoadingCategories}
-                    >
+    <div className="min-h-screen bg-[#050505] text-white">
+      <div className="max-w-3xl mx-auto p-6">
+        <Card className="border border-white/5 shadow-xl bg-[#0a0a0a]">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-white">Start a New Discussion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/70">Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        disabled={isLoadingCategories}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-12 border-white/10 bg-white/5 text-white" data-testid="select-category">
+                            <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select a category"} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="z-[100] bg-[#121212] border-white/10 text-white">
+                          {categories?.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                          {!isLoadingCategories && (!categories || categories.length === 0) && (
+                            <div className="p-2 text-sm text-white/40 text-center">
+                              No categories found
+                            </div>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/70">Title</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="h-12 border-slate-200 bg-white">
-                          <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select a category"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="z-[100] bg-white">
-                        {categories?.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                        {!isLoadingCategories && (!categories || categories.length === 0) && (
-                          <div className="p-2 text-sm text-slate-500 text-center">
-                            No categories found
-                          </div>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="What's on your mind?" 
-                        {...field} 
-                        className="h-12 border-slate-200 text-lg"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Share your thoughts..." 
-                        className="min-h-[200px] border-slate-200 resize-none text-base"
-                        {...field} 
+                        <Input 
+                          placeholder="What's on your mind?" 
+                          {...field} 
+                          className="h-12 border-white/10 bg-white/5 text-white text-lg placeholder:text-white/30"
+                          data-testid="input-title"
                         />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  onClick={() => setLocation("/forums")}
-                  disabled={mutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-slate-900 text-white hover:bg-slate-800 px-8 h-12"
-                  disabled={mutation.isPending}
-                >
-                  {mutation.isPending ? "Posting..." : "Post Discussion"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/70">Content</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Share your thoughts..." 
+                          className="min-h-[200px] border-white/10 bg-white/5 text-white resize-none text-base placeholder:text-white/30"
+                          {...field} 
+                          data-testid="textarea-content"
+                          />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={() => setLocation("/forums")}
+                    disabled={mutation.isPending}
+                    className="text-white/50 hover:text-white"
+                    data-testid="button-cancel"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-white text-black hover:bg-white/90 px-8"
+                    disabled={mutation.isPending}
+                    data-testid="button-submit"
+                  >
+                    {mutation.isPending ? "Posting..." : "Post Discussion"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
