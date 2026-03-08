@@ -484,16 +484,22 @@ export async function registerRoutes(
     }
   });
 
+  function isAdminUser(user: any): boolean {
+    return user.isAdmin ||
+      user.email?.toLowerCase().endsWith("@resyncstudios.com") ||
+      ["Operations Manager", "Company Director"].includes(user.userRank);
+  }
+
   // Admin forum category management
   app.post("/api/admin/forum-categories", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      const category = await storage.createForumCategory(req.body);
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+      const parsed = categoryCreateSchema.parse(req.body);
+      const category = await storage.createForumCategory(parsed as any);
       res.status(201).json(category);
     } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
       res.status(500).json({ message: "Failed to create category" });
     }
   });
@@ -501,13 +507,13 @@ export async function registerRoutes(
   app.patch("/api/admin/forum-categories/:id", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      const updated = await storage.updateForumCategory(req.params.id, req.body);
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+      const parsed = categoryCreateSchema.partial().parse(req.body);
+      const updated = await storage.updateForumCategory(req.params.id, parsed as any);
       if (!updated) return res.status(404).json({ message: "Category not found" });
       res.json(updated);
     } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
       res.status(500).json({ message: "Failed to update category" });
     }
   });
@@ -515,9 +521,7 @@ export async function registerRoutes(
   app.delete("/api/admin/forum-categories/:id", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
       await storage.deleteForumCategory(req.params.id);
       res.json({ message: "Category deleted" });
     } catch (error) {
@@ -529,9 +533,7 @@ export async function registerRoutes(
   app.get("/api/admin/forum-stats", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin && !user.email?.toLowerCase().endsWith("@resyncstudios.com")) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
       const [threadCount] = await db.select({ count: sql<number>`count(*)` }).from(forumThreads);
       const { forumReplies: forumRepliesTable, forumCategories: forumCatsTable } = await import("@shared/schema");
       const [replyCount] = await db.select({ count: sql<number>`count(*)` }).from(forumRepliesTable);

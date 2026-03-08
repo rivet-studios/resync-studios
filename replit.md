@@ -8,7 +8,7 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Comprehensive user rank system (40+ ranks)
 - ✅ Landing page with hero, stats counter, and features grid
 - ✅ Blog functionality (admin-only posting)
-- ✅ Forums with categories and threading
+- ✅ Forums with categories, threading, staff moderation tools (pin/lock/delete/move/edit)
 - ✅ User profiles with redesigned layout and badges
 - ✅ VIP subscription system with 4 tiers
 - ✅ Store page with product catalog, categories, badges, and clickable product cards
@@ -33,6 +33,17 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - ✅ Scroll position fixed on navigation (ScrollToTop component)
 - ✅ Legal and policy pages centered and optimized for readability
 - ✅ Public access to forums, blogs, store, subscriptions (no login required to view)
+
+### Forum Staff Tools (March 2026):
+- **Thread Moderation API**: `PATCH /api/forums/threads/:id` (pin/lock/move/edit), `DELETE /api/forums/threads/:id`
+- **Reply Moderation API**: `PATCH /api/forums/replies/:id` (edit), `DELETE /api/forums/replies/:id`
+- **Category Admin API**: `POST/PATCH/DELETE /api/admin/forum-categories/:id`, `GET /api/admin/forum-stats`
+- **Thread Page Controls**: Staff toolbar with pin/lock/move/delete actions; inline reply editing; edit thread button links to `/forums/thread/:id/edit`
+- **Edit Thread Page**: `client/src/pages/forums/edit-thread.tsx` at `/forums/thread/:id/edit` — author or staff can edit title/content/category
+- **ModCP Forum Tab**: Thread search, filter by pinned/locked, quick actions (pin/lock/move/delete), reported forum content section
+- **AdminCP Forums Tab**: Forum stats, category CRUD management (create/edit/delete with name, description, group, order)
+- **Auth**: Staff ranks (Trial Moderator through Company Director), isAdmin, isModerator; authors can edit own threads/replies
+- **Validation**: Zod schemas for thread updates, reply updates, and category creation
 
 ### Staff Case Detail Page (March 2026):
 - **Route**: `/modcp/case/:type/:id` — dedicated page for viewing report/appeal/ban details
