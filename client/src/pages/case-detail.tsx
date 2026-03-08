@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 function getStatusColor(status: string): string {
-  switch (status?.toLowerCase()) {
+  switch (status) {
     case "Pending":
       return "bg-yellow-500/20 text-yellow-400";
     case "Approved":
@@ -32,10 +32,12 @@ function getStatusColor(status: string): string {
       return "bg-red-500/20 text-red-400";
     case "In Review":
       return "bg-blue-500/20 text-blue-400";
-    case "action taken":
+    case "Action Taken":
       return "bg-green-500/20 text-green-400";
     case "Dismissed":
       return "bg-white/10 text-white/50";
+    case "Reviewed":
+      return "bg-blue-500/20 text-blue-400";
     default:
       return "bg-white/10 text-white/50";
   }
@@ -47,9 +49,10 @@ export default function CaseDetail() {
   const { toast } = useToast();
   const [notes, setNotes] = useState("");
 
-  const isReport = type === "Report";
-  const isAppeal = type === "Appeal";
-  const isBan = type === "Ban";
+  const normalizedType = type?.toLowerCase();
+  const isReport = normalizedType === "report";
+  const isAppeal = normalizedType === "appeal";
+  const isBan = normalizedType === "ban";
 
   const {
     data: reports = [],
@@ -168,7 +171,7 @@ export default function CaseDetail() {
     },
   });
 
-  if (!type || !["Report", "Appeal", "Ban"].includes(type)) {
+  if (!normalizedType || !["report", "appeal", "ban"].includes(normalizedType)) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/40">
         Invalid case type

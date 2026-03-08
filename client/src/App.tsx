@@ -205,10 +205,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
           <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground font-normal">
-              © 2026 RIVET Studios™. All rights reserved. Metro Interactive,
-              Metro Interactive: A New Era Begins™, Rosewood, Sundown, Reimagined™, The City Never Sleeps ― and Neither Do
-              We™, "Creative Development. Visible Execution. RIVET Studios.",
-              and all other logos and brands are trademarks of RIVET Studios™.
+              © 2026 RIVET Studios™, All rights reserved.
             </p>
             <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
               Formerly RESYNC Studios™
@@ -238,111 +235,111 @@ function Router() {
   return (
     <PublicLayout>
       <OfflineGate>
-      <BanWall>
-      <Switch>
-          <Route path="/" component={Landing} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={Signup} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/blog/:id" component={News} />
-          <Route path="/store" component={Store} />
-          <Route path="/store/product/:id" component={ProductDetail} />
-          <Route path="/store/subscriptions" component={Subscriptions} />
-          <Route path="/checkout/:tierId" component={Checkout} />
-          <Route path="/policies" component={Policies} />
-          <Route path="/forums" component={ForumHome} />
-          <Route path="/forums/category/:id" component={ForumCategory} />
-          <Route path="/forums/thread/:id" component={ForumThread} />
-          <Route path="/forums/new">
-            {user ? <CreateThread /> : <Login />}
-          </Route>
-          <Route path="/subscriptions">
-            <Redirect to="/store/subscriptions" />
-          </Route>
-          <Route path="/vip">
-            <Redirect to="/store/subscriptions" />
-          </Route>
-          <Route path="/user" component={UserProfile} />
-          <Route path="/profile/:id" component={UserProfile} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/team" component={StaffDirectory} />
-          <Route path="/search" component={UserSearch} />
-          <Route path="/marketplace" component={Marketplace} />
-          <Route path="/appeals" component={Appeals} />
-          <Route path="/my-cases" component={MyCases} />
-          <Route path="/admin" component={Admin} />
-          <Route path="/modcp/case/:type/:id">
-            {user?.isModerator ||
-            user?.userRank === "Appeals Moderator" ||
-            user?.userRank === "Trial Moderator" ||
-            user?.userRank === "Moderator" ||
-            user?.userRank === "Administrator" ||
-            user?.userRank === "Senior Administrator" ||
-            user?.userRank === "Developer" ||
-            user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Team Member" ||
-            user?.userRank === "Staff Department Director" ||
-            user?.userRank === "Operations Manager" ||
-            user?.userRank === "Company Director" ? (
-              <CaseDetail />
-            ) : (
-              <NotFound />
-            )}
-          </Route>
-          <Route path="/modcp">
-            {user?.isModerator ||
-            user?.userRank === "Appeals Moderator" ||
-            user?.userRank === "Trial Moderator" ||
-            user?.userRank === "Moderator" ||
-            user?.userRank === "Administrator" ||
-            user?.userRank === "Senior Administrator" ||
-            user?.userRank === "Developer" ||
-            user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Team Member" ||
-            user?.userRank === "Staff Department Director" ||
-            user?.userRank === "Operations Manager" ||
-            user?.userRank === "Company Director" ? (
-              <ModCP />
-            ) : (
-              <NotFound />
-            )}
-          </Route>
-          <Route path="/admincp">
-            {user?.isAdmin ||
-            user?.userRank === "Team Member" ||
-            user?.userRank === "Company Director" ||
-            user?.userRank === "Developer" ||
-            user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Staff Department Director" ||
-            user?.userRank === "Operations Manager" ||
-            user?.email?.toLowerCase().endsWith("@resyncstudios.com") ? (
-              <AdminCP />
-            ) : (
-              <NotFound />
-            )}
-          </Route>
-          <Route path="/guidelines" component={Guidelines} />
-          <Route path="/privacy" component={Privacy} />
-          <Route path="/terms" component={Terms} />
-          <Route path="/news" component={News} />
-          <Route path="/projects" component={Projects} />
-          <Route path="/support" component={Support} />
-          <Route path="/volunteer" component={VolunteerModeration} />
-          <Route path="/dmca" component={DMCA} />
-          <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
-          <Route
-            path="/volunteer-agreement"
-            component={VolunteerStaffAgreement}
-          />
-          <Route path="/leo-guidelines" component={LEOGuidelines} />
-          <Route path="/community-rules" component={CommunityRules} />
-          <Route path="/about" component={AboutRS} />
-          <Route path="/rosewood" component={Rosewood} />
-          <Route path="/onboarding" component={Onboarding} />
-          <Route component={NotFound} />
-        </Switch>
-      </BanWall>
+        <BanWall>
+          <Switch>
+            <Route path="/" component={Landing} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={Signup} />
+            <Route path="/blog" component={Blog} />
+            <Route path="/blog/:id" component={News} />
+            <Route path="/store" component={Store} />
+            <Route path="/store/product/:id" component={ProductDetail} />
+            <Route path="/store/subscriptions" component={Subscriptions} />
+            <Route path="/checkout/:tierId" component={Checkout} />
+            <Route path="/policies" component={Policies} />
+            <Route path="/forums" component={ForumHome} />
+            <Route path="/forums/category/:id" component={ForumCategory} />
+            <Route path="/forums/thread/:id" component={ForumThread} />
+            <Route path="/forums/new">
+              {user ? <CreateThread /> : <Login />}
+            </Route>
+            <Route path="/subscriptions">
+              <Redirect to="/store/subscriptions" />
+            </Route>
+            <Route path="/vip">
+              <Redirect to="/store/subscriptions" />
+            </Route>
+            <Route path="/user" component={UserProfile} />
+            <Route path="/profile/:id" component={UserProfile} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/team" component={StaffDirectory} />
+            <Route path="/search" component={UserSearch} />
+            <Route path="/marketplace" component={Marketplace} />
+            <Route path="/appeals" component={Appeals} />
+            <Route path="/my-cases" component={MyCases} />
+            <Route path="/admin" component={Admin} />
+            <Route path="/modcp/case/:type/:id">
+              {user?.isModerator ||
+              user?.userRank === "Appeals Moderator" ||
+              user?.userRank === "Trial Moderator" ||
+              user?.userRank === "Moderator" ||
+              user?.userRank === "Administrator" ||
+              user?.userRank === "Senior Administrator" ||
+              user?.userRank === "Developer" ||
+              user?.userRank === "Staff Internal Affairs" ||
+              user?.userRank === "Team Member" ||
+              user?.userRank === "Staff Department Director" ||
+              user?.userRank === "Operations Manager" ||
+              user?.userRank === "Company Director" ? (
+                <CaseDetail />
+              ) : (
+                <NotFound />
+              )}
+            </Route>
+            <Route path="/modcp">
+              {user?.isModerator ||
+              user?.userRank === "Appeals Moderator" ||
+              user?.userRank === "Trial Moderator" ||
+              user?.userRank === "Moderator" ||
+              user?.userRank === "Administrator" ||
+              user?.userRank === "Senior Administrator" ||
+              user?.userRank === "Developer" ||
+              user?.userRank === "Staff Internal Affairs" ||
+              user?.userRank === "Team Member" ||
+              user?.userRank === "Staff Department Director" ||
+              user?.userRank === "Operations Manager" ||
+              user?.userRank === "Company Director" ? (
+                <ModCP />
+              ) : (
+                <NotFound />
+              )}
+            </Route>
+            <Route path="/admincp">
+              {user?.isAdmin ||
+              user?.userRank === "Team Member" ||
+              user?.userRank === "Company Director" ||
+              user?.userRank === "Developer" ||
+              user?.userRank === "Staff Internal Affairs" ||
+              user?.userRank === "Staff Department Director" ||
+              user?.userRank === "Operations Manager" ||
+              user?.email?.toLowerCase().endsWith("@resyncstudios.com") ? (
+                <AdminCP />
+              ) : (
+                <NotFound />
+              )}
+            </Route>
+            <Route path="/guidelines" component={Guidelines} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/news" component={News} />
+            <Route path="/projects" component={Projects} />
+            <Route path="/support" component={Support} />
+            <Route path="/volunteer" component={VolunteerModeration} />
+            <Route path="/dmca" component={DMCA} />
+            <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
+            <Route
+              path="/volunteer-agreement"
+              component={VolunteerStaffAgreement}
+            />
+            <Route path="/leo-guidelines" component={LEOGuidelines} />
+            <Route path="/community-rules" component={CommunityRules} />
+            <Route path="/about" component={AboutRS} />
+            <Route path="/rosewood" component={Rosewood} />
+            <Route path="/onboarding" component={Onboarding} />
+            <Route component={NotFound} />
+          </Switch>
+        </BanWall>
       </OfflineGate>
     </PublicLayout>
   );
@@ -350,8 +347,10 @@ function Router() {
 
 function AppInit() {
   const savedFontSize = localStorage.getItem("resync-font-size");
-  if (savedFontSize === "small") document.documentElement.style.fontSize = "14px";
-  else if (savedFontSize === "large") document.documentElement.style.fontSize = "18px";
+  if (savedFontSize === "small")
+    document.documentElement.style.fontSize = "14px";
+  else if (savedFontSize === "large")
+    document.documentElement.style.fontSize = "18px";
   else document.documentElement.style.fontSize = "16px";
   if (localStorage.getItem("resync-reduce-motion") === "true") {
     document.documentElement.classList.add("reduce-motion");

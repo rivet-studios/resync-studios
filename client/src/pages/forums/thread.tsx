@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useRoute, Link } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,10 +28,13 @@ import {
   ThumbsUp,
   Clock,
   Lock,
+  Pin,
   Flag,
   ArrowLeft,
+  Send,
 } from "lucide-react";
 import { ReportDialog } from "@/components/report-dialog";
+import { formatDistanceToNow } from "date-fns";
 import type { ForumThread, ForumReply, User, ForumCategory } from "@shared/schema";
 
 const replySchema = z.object({
@@ -44,6 +47,25 @@ interface ThreadDetail extends ForumThread {
   author?: User;
   category?: ForumCategory;
   replies?: (ForumReply & { author?: User })[];
+}
+
+function RankUsername({ user, className = "" }: { user?: User | null; className?: string }) {
+  if (!user) return <span className={`text-muted-foreground ${className}`}>Anonymous</span>;
+  const rc = rankConfig[(user as any)?.userRank || ""];
+  const isGradient = rc?.isGradient;
+  return (
+    <span
+      className={`font-semibold ${className}`}
+      style={isGradient ? {
+        color: "transparent",
+        backgroundImage: rc.gradient,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+      } : rc?.color ? { color: rc.color } : undefined}
+    >
+      {user.username}
+    </span>
+  );
 }
 
 export default function ForumThread() {
@@ -82,33 +104,22 @@ export default function ForumThread() {
     replyMutation.mutate(data);
   };
 
-  const formatTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - new Date(date).getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
-
   if (threadLoading) {
     return (
-      <div className="max-w-5xl mx-auto space-y-4 py-8 px-4">
-        <Skeleton className="h-32" />
-        <Skeleton className="h-64" />
-        <Skeleton className="h-32" />
+      <div className="max-w-4xl mx-auto space-y-4 py-8 px-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-40" />
+        <Skeleton className="h-24" />
+        <Skeleton className="h-24" />
       </div>
     );
   }
 
   if (!thread) {
     return (
-      <div className="max-w-5xl mx-auto space-y-4 py-8 px-4">
+      <div className="max-w-4xl mx-auto space-y-4 py-8 px-4">
         <Link href="/forums">
-          <Button variant="ghost">
+          <Button variant="ghost" size="sm">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Forums
           </Button>
@@ -124,234 +135,228 @@ export default function ForumThread() {
     );
   }
 
+  const replyCount = thread.replies?.length ?? thread.replyCount ?? 0;
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6 py-8 px-4">
-      {/* Header */}
-      <div className="space-y-4">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-in fade-in duration-500">
         <Link href="/forums">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" data-testid="button-back-forums">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Forums
           </Button>
         </Link>
 
-        {/* Thread Title */}
-        <div>
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            {thread.category && <Badge variant="outline">{thread.category.name}</Badge>}
-            {thread.isPinned && <Badge variant="secondary">Pinned</Badge>}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            {thread.category && (
+              <Badge variant="outline" data-testid="badge-category">{thread.category.name}</Badge>
+            )}
+            {thread.isPinned && (
+              <Badge variant="secondary" className="gap-1">
+                <Pin className="w-3 h-3" />
+                Pinned
+              </Badge>
+            )}
             {thread.isLocked && (
-              <Badge variant="outline" className="gap-1">
+              <Badge variant="outline" className="gap-1 text-muted-foreground">
                 <Lock className="w-3 h-3" />
                 Locked
               </Badge>
             )}
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold">{thread.title}</h1>
-        </div>
 
-        {/* Thread Stats */}
-        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-          <span className="flex items-center gap-1">
-            <Eye className="w-4 h-4" />
-            {thread.viewCount} views
-          </span>
-          <span className="flex items-center gap-1">
-            <MessageSquare className="w-4 h-4" />
-            {thread.replyCount} replies
-          </span>
-          <span className="flex items-center gap-1">
-            <ThumbsUp className="w-4 h-4" />
-            {thread.upvotes} upvotes
-          </span>
-        </div>
-      </div>
+          <h1 className="text-xl sm:text-2xl font-bold leading-tight" data-testid="heading-thread-title">
+            {thread.title}
+          </h1>
 
-      {/* Original Post */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start gap-4">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={thread.author?.profileImageUrl || undefined} />
-              <AvatarFallback>{thread.author?.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                {(() => {
-                  const rc = rankConfig[(thread.author as any)?.userRank || ""];
-                  const isLifetime = (thread.author as any)?.userRank === "Lifetime" && rc?.isGradient;
-                  return (
-                    <span
-                      className="font-semibold"
-                      style={isLifetime ? {
-                        color: "transparent",
-                        backgroundImage: rc.gradient,
-                        WebkitBackgroundClip: "text",
-                        backgroundClip: "text",
-                      } : undefined}
-                    >
-                      {thread.author?.username || 'Anonymous'}
-                    </span>
-                  );
-                })()}
-                {thread.author?.vipTier && thread.author.vipTier !== 'none' && (
-                  <VipBadge tier={thread.author.vipTier as any} size="sm" showLabel={false} />
-                )}
-              </div>
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {formatTimeAgo(thread.createdAt!)}
-              </span>
-            </div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+            <span className="flex items-center gap-1.5" data-testid="stat-views">
+              <Eye className="w-4 h-4" />
+              {thread.viewCount || 0} views
+            </span>
+            <span className="flex items-center gap-1.5" data-testid="stat-replies">
+              <MessageSquare className="w-4 h-4" />
+              {replyCount} replies
+            </span>
+            <span className="flex items-center gap-1.5" data-testid="stat-upvotes">
+              <ThumbsUp className="w-4 h-4" />
+              {thread.upvotes || 0} upvotes
+            </span>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
-            {thread.content}
-          </p>
-          {user && thread.author?.id !== user.id && (
-            <div className="flex justify-end mt-4 pt-3 border-t border-white/5">
-              <ReportDialog
-                targetId={thread.id}
-                targetType="thread"
-                trigger={
-                  <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-thread">
-                    <Flag className="w-3.5 h-3.5" />
-                    Report
-                  </Button>
-                }
-              />
+        </div>
+
+        <Card data-testid="card-original-post">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <Avatar className="w-10 h-10 flex-shrink-0">
+                <AvatarImage src={thread.author?.profileImageUrl || undefined} />
+                <AvatarFallback>{thread.author?.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                  <RankUsername user={thread.author} />
+                  {thread.author?.vipTier && thread.author.vipTier !== 'none' && (
+                    <VipBadge tier={thread.author.vipTier as any} size="sm" showLabel={false} />
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {thread.createdAt
+                    ? formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })
+                    : "recently"}
+                </span>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Replies Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Replies ({thread.replyCount})</h2>
+            <div className="mt-4 pl-0 sm:pl-14">
+              <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words" data-testid="text-thread-content">
+                {thread.content}
+              </p>
+            </div>
 
-        {/* Reply Form */}
-        {user && !thread.isLocked && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Add Your Reply</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Write your reply..."
-                            className="min-h-[120px]"
-                            {...field}
-                            data-testid="input-reply-content"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    disabled={replyMutation.isPending}
-                    data-testid="button-submit-reply"
-                  >
-                    {replyMutation.isPending ? "Posting..." : "Post Reply"}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        )}
+            {user && thread.author?.id !== user.id && (
+              <div className="flex justify-end mt-4 pt-3 border-t">
+                <ReportDialog
+                  targetId={thread.id}
+                  targetType="thread"
+                  trigger={
+                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-thread">
+                      <Flag className="w-3.5 h-3.5" />
+                      Report
+                    </Button>
+                  }
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-        {thread.isLocked && (
-          <Card className="border-dashed">
-            <CardContent className="p-6 text-center text-muted-foreground">
-              <Lock className="w-6 h-6 mx-auto mb-2" />
-              This thread is locked and no new replies can be added.
-            </CardContent>
-          </Card>
-        )}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold" data-testid="heading-replies">
+              Replies ({replyCount})
+            </h2>
+          </div>
 
-        {/* Replies List */}
-        {thread.replies && thread.replies.length > 0 ? (
-          <div className="space-y-3">
-            {thread.replies.map((reply) => (
-              <Card key={reply.id} data-testid={`card-reply-${reply.id}`}>
-                <CardHeader>
-                  <div className="flex items-start gap-4">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={reply.author?.profileImageUrl || undefined} />
-                      <AvatarFallback>
-                        {reply.author?.username?.[0]?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        {(() => {
-                          const rc = rankConfig[(reply.author as any)?.userRank || ""];
-                          const isLifetime = (reply.author as any)?.userRank === "Lifetime" && rc?.isGradient;
-                          return (
-                            <span
-                              className="font-semibold"
-                              style={isLifetime ? {
-                                color: "transparent",
-                                backgroundImage: rc.gradient,
-                                WebkitBackgroundClip: "text",
-                                backgroundClip: "text",
-                              } : undefined}
-                            >
-                              {reply.author?.username || 'Anonymous'}
-                            </span>
-                          );
-                        })()}
-                        {reply.author?.vipTier && reply.author.vipTier !== 'none' && (
-                          <VipBadge tier={reply.author.vipTier as any} size="sm" showLabel={false} />
+          {thread.replies && thread.replies.length > 0 ? (
+            <div className="space-y-3">
+              {thread.replies.map((reply, index) => (
+                <Card key={reply.id} data-testid={`card-reply-${reply.id}`}>
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <Avatar className="w-9 h-9 flex-shrink-0">
+                        <AvatarImage src={reply.author?.profileImageUrl || undefined} />
+                        <AvatarFallback>
+                          {reply.author?.username?.[0]?.toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-0.5 flex-wrap">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <RankUsername user={reply.author} />
+                            {reply.author?.vipTier && reply.author.vipTier !== 'none' && (
+                              <VipBadge tier={reply.author.vipTier as any} size="sm" showLabel={false} />
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {reply.createdAt
+                              ? formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })
+                              : "recently"}
+                          </span>
+                        </div>
+
+                        <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words mt-2" data-testid={`text-reply-content-${reply.id}`}>
+                          {reply.content}
+                        </p>
+
+                        {user && reply.author?.id !== user.id && (
+                          <div className="flex justify-end mt-3 pt-2 border-t">
+                            <ReportDialog
+                              targetId={reply.id}
+                              targetType="reply"
+                              trigger={
+                                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid={`button-report-reply-${reply.id}`}>
+                                  <Flag className="w-3.5 h-3.5" />
+                                  Report
+                                </Button>
+                              }
+                            />
+                          </div>
                         )}
                       </div>
-                      <span className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatTimeAgo(reply.createdAt!)}
-                      </span>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
-                    {reply.content}
-                  </p>
-                  {user && reply.author?.id !== user.id && (
-                    <div className="flex justify-end mt-4 pt-3 border-t border-white/5">
-                      <ReportDialog
-                        targetId={reply.id}
-                        targetType="reply"
-                        trigger={
-                          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid={`button-report-reply-${reply.id}`}>
-                            <Flag className="w-3.5 h-3.5" />
-                            Report
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="border-dashed">
+              <CardContent className="p-10 text-center">
+                <MessageSquare className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
+                <h3 className="font-semibold mb-1 text-sm">No Replies Yet</h3>
+                <p className="text-xs text-muted-foreground">Be the first to reply to this thread!</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {thread.isLocked && (
+            <Card className="border-dashed">
+              <CardContent className="p-6 text-center text-muted-foreground">
+                <Lock className="w-5 h-5 mx-auto mb-2" />
+                <p className="text-sm">This thread is locked. No new replies can be added.</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {user && !thread.isLocked && (
+            <Card data-testid="card-reply-form">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <Avatar className="w-9 h-9 flex-shrink-0 mt-1">
+                    <AvatarImage src={user.profileImageUrl || undefined} />
+                    <AvatarFallback>{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+                        <FormField
+                          control={form.control}
+                          name="content"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Write your reply..."
+                                  className="min-h-[100px] resize-none"
+                                  {...field}
+                                  data-testid="input-reply-content"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex justify-end">
+                          <Button
+                            type="submit"
+                            size="sm"
+                            disabled={replyMutation.isPending}
+                            data-testid="button-submit-reply"
+                          >
+                            <Send className="w-3.5 h-3.5 mr-1.5" />
+                            {replyMutation.isPending ? "Posting..." : "Post Reply"}
                           </Button>
-                        }
-                      />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="border-dashed">
-            <CardContent className="p-12 text-center">
-              <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="font-semibold mb-2">No Replies Yet</h3>
-              <p className="text-muted-foreground">Be the first to reply to this thread!</p>
-            </CardContent>
-          </Card>
-        )}
+                        </div>
+                      </form>
+                    </Form>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Search,
   Users,
   Shield,
@@ -37,6 +48,12 @@ import {
   CheckCircle,
   XCircle,
   Filter,
+  TrendingUp,
+  Eye,
+  MessageSquare,
+  Calendar,
+  User,
+  ArrowRight,
 } from "lucide-react";
 
 export default function ModCP() {
@@ -105,27 +122,15 @@ export default function ModCP() {
     const items: Array<{ type: string; date: string; data: any }> = [];
 
     activeBans.forEach((ban: any) => {
-      items.push({
-        type: "ban",
-        date: ban.createdAt,
-        data: ban,
-      });
+      items.push({ type: "ban", date: ban.createdAt, data: ban });
     });
 
     reports.forEach((report: any) => {
-      items.push({
-        type: "report",
-        date: report.createdAt,
-        data: report,
-      });
+      items.push({ type: "report", date: report.createdAt, data: report });
     });
 
     pendingAppeals.forEach((appeal: any) => {
-      items.push({
-        type: "appeal",
-        date: appeal.createdAt,
-        data: appeal,
-      });
+      items.push({ type: "appeal", date: appeal.createdAt, data: appeal });
     });
 
     items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -141,6 +146,11 @@ export default function ModCP() {
     if (appealFilter === "All") return pendingAppeals;
     return pendingAppeals.filter((a: any) => a.status === appealFilter);
   }, [pendingAppeals, appealFilter]);
+
+  const activeBanCount = activeBans.filter((b: any) => b.isActive).length;
+  const openReportsCount = reports.filter((r: any) => r.status === "Pending").length;
+  const pendingAppealsCount = pendingAppeals.filter((a: any) => a.status === "Pending").length;
+  const resolvedReportsCount = reports.filter((r: any) => r.status !== "Pending").length;
 
   const createBanMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -211,35 +221,92 @@ export default function ModCP() {
       case "1day":
         now.setDate(now.getDate() + 1);
         return now.toISOString();
+      case "3days":
+        now.setDate(now.getDate() + 3);
+        return now.toISOString();
       case "7days":
         now.setDate(now.getDate() + 7);
         return now.toISOString();
+      case "14days":
+        now.setDate(now.getDate() + 14);
+        return now.toISOString();
       case "30days":
         now.setDate(now.getDate() + 30);
+        return now.toISOString();
+      case "90days":
+        now.setDate(now.getDate() + 90);
         return now.toISOString();
       default:
         return null;
     }
   }
 
+  function getDurationLabel(duration: string): string {
+    switch (duration) {
+      case "1day": return "1 Day";
+      case "3days": return "3 Days";
+      case "7days": return "7 Days";
+      case "14days": return "14 Days";
+      case "30days": return "30 Days";
+      case "90days": return "90 Days";
+      case "permanent": return "Permanent";
+      default: return duration;
+    }
+  }
+
+  function getRelativeTime(dateStr: string): string {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  }
+
+  function getStatusBadgeClasses(status: string): string {
+    switch (status) {
+      case "Pending":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "Approved":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "Denied":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "In Review":
+      case "Reviewed":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      case "Action Taken":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "Dismissed":
+        return "bg-white/10 text-white/50 border-white/10";
+      default:
+        return "bg-white/10 text-white/50 border-white/10";
+    }
+  }
+
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-xl" />
+      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-md" />
       </div>
     );
   }
 
   if (!isMod) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Card className="w-full max-w-md bg-[#121212] border-white/5">
+      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+        <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
-              <AlertTriangle className="w-12 h-12 text-red-500" />
+              <AlertTriangle className="w-12 h-12 text-destructive" />
               <div>
-                <h2 className="font-semibold text-xl text-white uppercase tracking-tight">Access Denied</h2>
-                <p className="text-white/40 text-sm mt-2">
+                <h2 className="font-semibold text-xl uppercase tracking-tight" data-testid="text-access-denied">Access Denied</h2>
+                <p className="text-muted-foreground text-sm mt-2">
                   You do not have permission to access the Moderator Control Panel.
                 </p>
               </div>
@@ -251,10 +318,10 @@ export default function ModCP() {
   }
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "bans", label: "Ban Management", icon: Ban },
-    { id: "reports", label: "Reports", icon: FileText },
-    { id: "appeals", label: "Appeals", icon: Scale },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: undefined },
+    { id: "bans", label: "Ban Management", icon: Ban, count: activeBanCount || undefined },
+    { id: "reports", label: "Reports", icon: FileText, count: openReportsCount || undefined },
+    { id: "appeals", label: "Appeals", icon: Scale, count: pendingAppealsCount || undefined },
   ];
 
   function getActivityIcon(type: string) {
@@ -262,154 +329,214 @@ export default function ModCP() {
       case "ban": return <Ban className="w-4 h-4 text-red-400" />;
       case "report": return <FileText className="w-4 h-4 text-yellow-400" />;
       case "appeal": return <Scale className="w-4 h-4 text-blue-400" />;
-      default: return <History className="w-4 h-4 text-white/40" />;
+      default: return <History className="w-4 h-4 text-muted-foreground" />;
     }
   }
 
   function getActivityLabel(item: { type: string; data: any }) {
     switch (item.type) {
       case "ban":
-        return `Ban issued on ${item.data.user?.username || item.data.userId} — ${item.data.reason}`;
+        return `Ban issued on ${item.data.user?.username || item.data.userId}`;
       case "report":
-        return `Report (${item.data.status}) — ${item.data.reason}`;
+        return `Report: ${item.data.reason}`;
       case "appeal":
-        return `Appeal (${item.data.status}) from ${item.data.user?.username || item.data.userId}`;
+        return `Appeal from ${item.data.user?.username || item.data.userId}`;
       default:
         return "Unknown activity";
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-[#050505] text-white">
-      <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
-        <div className="flex items-center gap-3 px-4 py-6 mb-4">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-black font-semibold text-sm italic">RS</span>
+    <div className="flex min-h-screen bg-background text-foreground">
+      <div className="w-64 border-r border-border flex flex-col p-4 space-y-1">
+        <div className="flex items-center gap-3 px-4 py-6 mb-2">
+          <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
+            <Shield className="w-4 h-4 text-background" />
           </div>
-          <span className="font-semibold text-sm tracking-tight uppercase">ModCP</span>
+          <div>
+            <span className="font-semibold text-sm tracking-tight uppercase block">ModCP</span>
+            <span className="text-[10px] text-muted-foreground">{user?.username}</span>
+          </div>
         </div>
+
         {sidebarItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-md font-medium text-sm transition-colors w-full text-left ${
               activeTab === item.id
-                ? "bg-white/5 text-white"
-                : "text-white/40 hover:text-white hover:bg-white/5"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover-elevate"
             }`}
             data-testid={`button-modcp-tab-${item.id}`}
           >
             <item.icon className="w-4 h-4" />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {item.count !== undefined && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                {item.count}
+              </Badge>
+            )}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 p-8 space-y-8 overflow-y-auto">
+      <div className="flex-1 p-8 space-y-6 overflow-y-auto">
         {activeTab === "dashboard" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">Moderator Dashboard</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40">
-                    <Ban className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Active Bans</CardTitle>
-                  </div>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-modcp-title">Moderator Dashboard</h1>
+              <p className="text-sm text-muted-foreground mt-1">Overview of moderation activity and pending items.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("bans")}>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Bans</CardTitle>
+                  <Ban className="w-4 h-4 text-red-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold mb-1" data-testid="text-active-bans-count">{activeBans.filter((b: any) => b.isActive).length || "—"}</div>
+                  <div className="text-3xl font-bold" data-testid="text-active-bans-count">{activeBanCount || "0"}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-xs text-muted-foreground">{activeBans.length} total bans</span>
+                  </div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40">
-                    <FileText className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Open Reports</CardTitle>
-                  </div>
+
+              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("reports")}>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Reports</CardTitle>
+                  <FileText className="w-4 h-4 text-yellow-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold mb-1" data-testid="text-open-reports-count">{reports.filter((r: any) => r.status === "Pending").length || "—"}</div>
+                  <div className="text-3xl font-bold" data-testid="text-open-reports-count">{openReportsCount || "0"}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">{resolvedReportsCount} resolved</span>
+                  </div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40">
-                    <Scale className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Pending Appeals</CardTitle>
-                  </div>
+
+              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("appeals")}>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Appeals</CardTitle>
+                  <Scale className="w-4 h-4 text-blue-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold mb-1" data-testid="text-pending-appeals-count">{pendingAppeals.filter((a: any) => a.status === "pending").length || "—"}</div>
+                  <div className="text-3xl font-bold" data-testid="text-pending-appeals-count">{pendingAppealsCount || "0"}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-xs text-muted-foreground">{pendingAppeals.length} total appeals</span>
+                  </div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40">
-                    <Clock className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">Mod Since</CardTitle>
-                  </div>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mod Since</CardTitle>
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-lg font-semibold mb-1">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
+                  <div className="text-lg font-semibold">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <User className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">{user?.userRank}</span>
+                  </div>
                 </CardContent>
               </Card>
             </div>
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-white/40" />
-                <h4 className="font-semibold uppercase tracking-tight">Recent Activity</h4>
-              </div>
-              {activityFeed.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <History className="w-12 h-12 text-white/10 mx-auto mb-2" />
-                  <p className="text-xs font-bold text-white/10 uppercase tracking-widest">No recent activity</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {activityFeed.map((item, index) => (
-                    <div
-                      key={`${item.type}-${item.data.id}-${index}`}
-                      className="flex items-start gap-3 bg-white/5 rounded-xl p-3"
-                      data-testid={`row-activity-${index}`}
-                    >
-                      <div className="mt-0.5">{getActivityIcon(item.type)}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-white/80 truncate">{getActivityLabel(item)}</p>
-                        <p className="text-[10px] text-white/30 mt-0.5">
-                          {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString()}
-                        </p>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className={
-                          item.type === "ban" ? "border-red-500/30 text-red-400" :
-                          item.type === "report" ? "border-yellow-500/30 text-yellow-400" :
-                          "border-blue-500/30 text-blue-400"
-                        }
-                      >
-                        {item.type}
-                      </Badge>
+
+            {(openReportsCount > 0 || pendingAppealsCount > 0) && (
+              <Card className="border-yellow-500/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Items requiring attention</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {openReportsCount > 0 && `${openReportsCount} pending report${openReportsCount !== 1 ? "s" : ""}`}
+                        {openReportsCount > 0 && pendingAppealsCount > 0 && " and "}
+                        {pendingAppealsCount > 0 && `${pendingAppealsCount} pending appeal${pendingAppealsCount !== 1 ? "s" : ""}`}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <div className="flex gap-2">
+                      {openReportsCount > 0 && (
+                        <Button size="sm" variant="outline" onClick={() => setActiveTab("reports")} data-testid="button-go-reports">
+                          Reports <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      )}
+                      {pendingAppealsCount > 0 && (
+                        <Button size="sm" variant="outline" onClick={() => setActiveTab("appeals")} data-testid="button-go-appeals">
+                          Appeals <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <History className="w-4 h-4 text-muted-foreground" />
+                  Recent Activity
+                </CardTitle>
+                <Badge variant="secondary">{activityFeed.length}</Badge>
+              </CardHeader>
+              <CardContent>
+                {activityFeed.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <History className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">No recent activity</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {activityFeed.map((item, index) => (
+                      <div
+                        key={`${item.type}-${item.data.id}-${index}`}
+                        className="flex items-center gap-3 rounded-md p-2.5 hover-elevate"
+                        data-testid={`row-activity-${index}`}
+                      >
+                        <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                          {getActivityIcon(item.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm truncate">{getActivityLabel(item)}</p>
+                          <p className="text-[11px] text-muted-foreground">{getRelativeTime(item.date)}</p>
+                        </div>
+                        <Badge variant="outline" className={getStatusBadgeClasses(
+                          item.type === "ban" ? (item.data.isActive ? "Pending" : "Dismissed") :
+                          item.data.status || "Pending"
+                        )}>
+                          {item.type === "ban" ? (item.data.isActive ? "Active" : "Lifted") : item.data.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </>
         )}
 
         {activeTab === "bans" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">Ban Management</h1>
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
-              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4 flex items-center gap-2">
-                <Gavel className="w-5 h-5" /> Issue New Ban
-              </h3>
-              <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-bans-title">Ban Management</h1>
+              <p className="text-sm text-muted-foreground mt-1">Issue and manage user bans.</p>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <Gavel className="w-4 h-4" /> Issue New Ban
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="relative">
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">Search User</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Search User</label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       value={userSearchQuery}
                       onChange={(e) => {
@@ -422,140 +549,226 @@ export default function ModCP() {
                       }}
                       onFocus={() => setShowUserDropdown(true)}
                       placeholder="Search by username or email..."
-                      className="bg-white/5 border-white/5 rounded-xl pl-10"
+                      className="pl-10"
                       data-testid="input-ban-user-search"
                     />
                   </div>
                   {banUserId && banUsername && (
                     <div className="mt-2 flex items-center gap-2">
-                      <Badge variant="outline" className="border-white/10 text-white/70">
-                        <Users className="w-3 h-3 mr-1" />
+                      <Badge variant="secondary">
+                        <User className="w-3 h-3 mr-1" />
                         {banUsername}
                       </Badge>
-                      <button
+                      <Button
+                        size="icon"
+                        variant="ghost"
                         onClick={() => {
                           setBanUserId("");
                           setBanUsername("");
                           setUserSearchQuery("");
                         }}
-                        className="text-white/30 text-xs"
                         data-testid="button-clear-user-selection"
                       >
                         <XCircle className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
                   )}
                   {showUserDropdown && userSearchQuery.length >= 2 && searchResults.length > 0 && !banUserId && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl max-h-48 overflow-y-auto">
-                      {searchResults.map((u: any) => (
-                        <button
-                          key={u.id}
-                          onClick={() => {
-                            setBanUserId(u.id);
-                            setBanUsername(u.username || u.email);
-                            setUserSearchQuery(u.username || u.email);
-                            setShowUserDropdown(false);
-                          }}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-white/5 flex items-center gap-2"
-                          data-testid={`option-user-${u.id}`}
-                        >
-                          <Users className="w-3 h-3 text-white/30" />
-                          <span className="text-white/80">{u.username || "—"}</span>
-                          <span className="text-white/30 text-xs">{u.email}</span>
-                        </button>
-                      ))}
-                    </div>
+                    <Card className="absolute z-10 w-full mt-1 max-h-48 overflow-y-auto">
+                      <CardContent className="p-1">
+                        {searchResults.map((u: any) => (
+                          <button
+                            key={u.id}
+                            onClick={() => {
+                              setBanUserId(u.id);
+                              setBanUsername(u.username || u.email);
+                              setUserSearchQuery(u.username || u.email);
+                              setShowUserDropdown(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm rounded-md hover-elevate flex items-center gap-3"
+                            data-testid={`option-user-${u.id}`}
+                          >
+                            <div className="w-6 h-6 rounded-md bg-muted flex items-center justify-center">
+                              <User className="w-3 h-3 text-muted-foreground" />
+                            </div>
+                            <span className="font-medium">{u.username || "—"}</span>
+                            <span className="text-muted-foreground text-xs">{u.email}</span>
+                          </button>
+                        ))}
+                      </CardContent>
+                    </Card>
                   )}
                   {showUserDropdown && userSearchQuery.length >= 2 && searchResults.length === 0 && !banUserId && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl p-3">
-                      <p className="text-xs text-white/30 text-center">No users found</p>
-                    </div>
+                    <Card className="absolute z-10 w-full mt-1">
+                      <CardContent className="p-4">
+                        <p className="text-xs text-muted-foreground text-center">No users found</p>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
+
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">Reason</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Reason</label>
                   <Textarea
                     value={banReason}
                     onChange={(e) => setBanReason(e.target.value)}
                     placeholder="Reason for ban..."
-                    className="bg-white/5 border-white/5 rounded-xl"
+                    className="resize-none"
                     data-testid="input-ban-reason"
                   />
                 </div>
+
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">Duration</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Duration</label>
                   <Select value={banDuration} onValueChange={setBanDuration}>
-                    <SelectTrigger className="bg-white/5 border-white/5 rounded-xl" data-testid="select-ban-duration">
+                    <SelectTrigger data-testid="select-ban-duration">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1day">1 Day</SelectItem>
+                      <SelectItem value="3days">3 Days</SelectItem>
                       <SelectItem value="7days">7 Days</SelectItem>
+                      <SelectItem value="14days">14 Days</SelectItem>
                       <SelectItem value="30days">30 Days</SelectItem>
+                      <SelectItem value="90days">90 Days</SelectItem>
                       <SelectItem value="permanent">Permanent</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Selected: {getDurationLabel(banDuration)}
+                    {banDuration !== "permanent" && ` — Expires ${new Date(Date.now() + (
+                      banDuration === "1day" ? 86400000 :
+                      banDuration === "3days" ? 259200000 :
+                      banDuration === "7days" ? 604800000 :
+                      banDuration === "14days" ? 1209600000 :
+                      banDuration === "30days" ? 2592000000 :
+                      banDuration === "90days" ? 7776000000 : 0
+                    )).toLocaleDateString()}`}
+                  </p>
                 </div>
-                <Button
-                  onClick={() => {
-                    if (!banUserId || !banReason) return;
-                    const isPermanent = banDuration === "permanent";
-                    const expiresAt = calculateExpiresAt(banDuration);
-                    createBanMutation.mutate({
-                      userId: banUserId,
-                      reason: banReason,
-                      isPermanent,
-                      ...(expiresAt ? { expiresAt } : {}),
-                    });
-                  }}
-                  disabled={!banUserId || !banReason || createBanMutation.isPending}
-                  className="bg-red-600 hover:bg-red-700"
-                  data-testid="button-issue-ban"
-                >
-                  {createBanMutation.isPending ? "Issuing..." : "Issue Ban"}
-                </Button>
-              </div>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      disabled={!banUserId || !banReason || createBanMutation.isPending}
+                      variant="destructive"
+                      data-testid="button-issue-ban"
+                    >
+                      <Ban className="w-4 h-4 mr-2" />
+                      {createBanMutation.isPending ? "Issuing..." : "Issue Ban"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Ban</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You are about to ban <strong>{banUsername}</strong> for <strong>{getDurationLabel(banDuration)}</strong>.
+                        <br />Reason: {banReason}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          const isPermanent = banDuration === "permanent";
+                          const expiresAt = calculateExpiresAt(banDuration);
+                          createBanMutation.mutate({
+                            userId: banUserId,
+                            reason: banReason,
+                            isPermanent,
+                            ...(expiresAt ? { expiresAt } : {}),
+                          });
+                        }}
+                        data-testid="button-confirm-ban"
+                      >
+                        Issue Ban
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </CardContent>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
-              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">Active Bans</h3>
-              <div className="space-y-3">
-                {activeBans.length === 0 ? (
-                  <p className="text-white/40 text-sm text-center py-8">No active bans</p>
-                ) : (
-                  activeBans.filter((b: any) => b.isActive).map((ban: any) => (
-                    <div key={ban.id} className="bg-white/5 rounded-xl p-4 flex items-start justify-between gap-4" data-testid={`row-ban-${ban.id}`}>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-sm">{ban.user?.username || ban.userId}</span>
-                          <Badge variant="outline" className={ban.isPermanent ? "border-red-500/50 text-red-400" : "border-yellow-500/50 text-yellow-400"}>
-                            {ban.isPermanent ? "Permanent" : "Temporary"}
-                          </Badge>
-                          {ban.expiresAt && !ban.isPermanent && (
-                            <span className="text-[10px] text-white/30">
-                              Expires: {new Date(ban.expiresAt).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-white/50">{ban.reason}</p>
-                        <p className="text-[10px] text-white/30">
-                          Banned by: {ban.bannedByUser?.username || ban.bannedBy} | {new Date(ban.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => liftBanMutation.mutate(ban.id)}
-                        disabled={liftBanMutation.isPending}
-                        className="border-green-500/50 text-green-400 hover:bg-green-500/10"
-                        data-testid={`button-lift-ban-${ban.id}`}
-                      >
-                        Lift Ban
-                      </Button>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight">Active Bans</CardTitle>
+                <Badge variant="secondary">{activeBanCount}</Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {activeBans.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <Shield className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                      <p className="text-sm text-muted-foreground">No active bans</p>
                     </div>
-                  ))
-                )}
-              </div>
+                  ) : (
+                    activeBans.filter((b: any) => b.isActive).map((ban: any) => (
+                      <div key={ban.id} className="flex items-start justify-between gap-4 rounded-md border border-border p-4" data-testid={`row-ban-${ban.id}`}>
+                        <div className="flex gap-3 flex-1 min-w-0">
+                          <div className="w-8 h-8 rounded-md bg-red-500/10 flex items-center justify-center shrink-0">
+                            <Ban className="w-4 h-4 text-red-400" />
+                          </div>
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-sm">{ban.user?.username || ban.userId}</span>
+                              <Badge variant="outline" className={ban.isPermanent ? "border-red-500/30 text-red-400" : "border-yellow-500/30 text-yellow-400"}>
+                                {ban.isPermanent ? "Permanent" : "Temporary"}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{ban.reason}</p>
+                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
+                              <span className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                {ban.bannedByUser?.username || ban.bannedBy}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {getRelativeTime(ban.createdAt)}
+                              </span>
+                              {ban.expiresAt && !ban.isPermanent && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  Expires: {new Date(ban.expiresAt).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={liftBanMutation.isPending}
+                              data-testid={`button-lift-ban-${ban.id}`}
+                            >
+                              Lift Ban
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Lift Ban</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to lift the ban on <strong>{ban.user?.username || ban.userId}</strong>?
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => liftBanMutation.mutate(ban.id)}
+                                data-testid={`button-confirm-lift-ban-${ban.id}`}
+                              >
+                                Lift Ban
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
             </Card>
           </>
         )}
@@ -563,101 +776,120 @@ export default function ModCP() {
         {activeTab === "reports" && (
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
-              <h1 className="text-4xl font-semibold tracking-tight uppercase">Reports</h1>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-reports-title">Reports</h1>
+                <p className="text-sm text-muted-foreground mt-1">{filteredReports.length} report{filteredReports.length !== 1 ? "s" : ""} {reportFilter !== "All" ? `with status "${reportFilter}"` : "total"}</p>
+              </div>
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-white/40" />
+                <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={reportFilter} onValueChange={setReportFilter}>
-                  <SelectTrigger className="bg-white/5 border-white/5 rounded-xl w-[160px]" data-testid="select-report-filter">
+                  <SelectTrigger className="w-[160px]" data-testid="select-report-filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All</SelectItem>
                     <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="In Review">In Review</SelectItem>
                     <SelectItem value="Reviewed">Reviewed</SelectItem>
-                    <SelectItem value="Dismissed">Dismissed</SelectItem>
                     <SelectItem value="Action Taken">Action Taken</SelectItem>
+                    <SelectItem value="Dismissed">Dismissed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
             <div className="space-y-3">
               {filteredReports.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
-                  <p className="text-white/40">No reports to review{reportFilter !== "All" ? ` with status "${reportFilter}"` : ""}</p>
+                <Card>
+                  <CardContent className="py-12">
+                    <div className="flex flex-col items-center justify-center">
+                      <FileText className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        No reports{reportFilter !== "All" ? ` with status "${reportFilter}"` : " to review"}
+                      </p>
+                    </div>
+                  </CardContent>
                 </Card>
               ) : (
                 filteredReports.map((report: any) => (
-                  <Card key={report.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-report-${report.id}`}>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/modcp/case/report/${report.id}`}>
-                            <span className="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer font-semibold uppercase tracking-wider" data-testid={`link-view-report-${report.id}`}>View Case</span>
-                          </Link>
-                          <Badge
-                            variant={report.status === "Pending" ? "default" : "secondary"}
-                            className={
-                              report.status === "Pending"
-                                ? "bg-yellow-500/20 text-yellow-400"
-                                : report.status === "Action Taken"
-                                ? "bg-green-500/20 text-green-400"
-                                : "bg-white/10 text-white/50"
-                            }
-                          >
-                            {report.status}
-                          </Badge>
-                          <span className="text-xs text-white/30">{report.targetType}</span>
+                  <Card key={report.id} data-testid={`card-report-${report.id}`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <FileText className="w-4 h-4 text-yellow-400" />
                         </div>
-                        <p className="font-bold text-sm">{report.reason}</p>
-                        {report.details && <p className="text-xs text-white/50">{report.details}</p>}
-                        <p className="text-[10px] text-white/30">
-                          Target: {report.targetId} | Reporter: {report.reporterId} | {new Date(report.createdAt).toLocaleDateString()}
-                        </p>
-                        {report.moderatorNotes && (
-                          <div className="bg-white/5 rounded-lg p-3 mt-2">
-                            <p className="text-xs text-white/50">
-                              <span className="font-bold">Mod Notes:</span> {report.moderatorNotes}
-                            </p>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className={getStatusBadgeClasses(report.status)}>
+                                {report.status}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">{report.targetType}</span>
+                              <span className="text-[11px] text-muted-foreground">{getRelativeTime(report.createdAt)}</span>
+                            </div>
+                            <Link href={`/modcp/case/report/${report.id}`}>
+                              <Button size="sm" variant="ghost" data-testid={`link-view-report-${report.id}`}>
+                                <Eye className="w-3 h-3 mr-1" /> View Case
+                              </Button>
+                            </Link>
                           </div>
-                        )}
-                        {report.status === "Pending" && (
-                          <div className="flex items-center gap-2 mt-3 flex-wrap">
-                            <Input
-                              placeholder="Moderator notes..."
-                              value={reportNotes[report.id] || ""}
-                              onChange={(e) => setReportNotes((prev) => ({ ...prev, [report.id]: e.target.value }))}
-                              className="bg-white/5 border-white/5 rounded-lg text-xs flex-1"
-                              data-testid={`input-report-notes-${report.id}`}
-                            />
-                            <Button
-                              size="sm"
-                              onClick={() => updateReportMutation.mutate({ id: report.id, status: "Reviewed", moderatorNotes: reportNotes[report.id] })}
-                              className="bg-blue-600 hover:bg-blue-700"
-                              data-testid={`button-review-report-${report.id}`}
-                            >
-                              <CheckCircle className="w-3 h-3 mr-1" /> Reviewed
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => updateReportMutation.mutate({ id: report.id, status: "Action Taken", moderatorNotes: reportNotes[report.id] })}
-                              className="bg-green-600 hover:bg-green-700"
-                              data-testid={`button-action-report-${report.id}`}
-                            >
-                              Action Taken
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateReportMutation.mutate({ id: report.id, status: "Dismissed", moderatorNotes: reportNotes[report.id] })}
-                              className="border-white/10"
-                              data-testid={`button-dismiss-report-${report.id}`}
-                            >
-                              <XCircle className="w-3 h-3 mr-1" /> Dismiss
-                            </Button>
+
+                          <p className="font-medium text-sm">{report.reason}</p>
+                          {report.details && <p className="text-xs text-muted-foreground">{report.details}</p>}
+
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
+                            <span>Target: <span className="font-mono">{report.targetId}</span></span>
+                            <span>Reporter: <span className="font-mono">{report.reporterId}</span></span>
                           </div>
-                        )}
+
+                          {report.moderatorNotes && (
+                            <div className="bg-muted rounded-md p-3">
+                              <p className="text-xs text-muted-foreground">
+                                <span className="font-semibold">Mod Notes:</span> {report.moderatorNotes}
+                              </p>
+                            </div>
+                          )}
+
+                          {report.status === "Pending" && (
+                            <div className="flex items-center gap-2 pt-2 flex-wrap">
+                              <Input
+                                placeholder="Moderator notes..."
+                                value={reportNotes[report.id] || ""}
+                                onChange={(e) => setReportNotes((prev) => ({ ...prev, [report.id]: e.target.value }))}
+                                className="text-xs flex-1"
+                                data-testid={`input-report-notes-${report.id}`}
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "In Review", moderatorNotes: reportNotes[report.id] })}
+                                disabled={updateReportMutation.isPending}
+                                data-testid={`button-review-report-${report.id}`}
+                              >
+                                <CheckCircle className="w-3 h-3 mr-1" /> In Review
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "Action Taken", moderatorNotes: reportNotes[report.id] })}
+                                disabled={updateReportMutation.isPending}
+                                data-testid={`button-action-report-${report.id}`}
+                              >
+                                Action Taken
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "Dismissed", moderatorNotes: reportNotes[report.id] })}
+                                disabled={updateReportMutation.isPending}
+                                data-testid={`button-dismiss-report-${report.id}`}
+                              >
+                                <XCircle className="w-3 h-3 mr-1" /> Dismiss
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    </CardContent>
                   </Card>
                 ))
               )}
@@ -668,91 +900,153 @@ export default function ModCP() {
         {activeTab === "appeals" && (
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
-              <h1 className="text-4xl font-semibold tracking-tight uppercase">Appeals Queue</h1>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-appeals-title">Appeals Queue</h1>
+                <p className="text-sm text-muted-foreground mt-1">{filteredAppeals.length} appeal{filteredAppeals.length !== 1 ? "s" : ""} {appealFilter !== "All" ? `with status "${appealFilter}"` : "total"}</p>
+              </div>
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-white/40" />
+                <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={appealFilter} onValueChange={setAppealFilter}>
-                  <SelectTrigger className="bg-white/5 border-white/5 rounded-xl w-[160px]" data-testid="select-appeal-filter">
+                  <SelectTrigger className="w-[160px]" data-testid="select-appeal-filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="denied">Denied</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Approved">Approved</SelectItem>
+                    <SelectItem value="Denied">Denied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
             <div className="space-y-3">
               {filteredAppeals.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
-                  <p className="text-white/40">No appeals to review{appealFilter !== "All" ? ` with status "${appealFilter}"` : ""}</p>
+                <Card>
+                  <CardContent className="py-12">
+                    <div className="flex flex-col items-center justify-center">
+                      <Scale className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        No appeals{appealFilter !== "All" ? ` with status "${appealFilter}"` : " to review"}
+                      </p>
+                    </div>
+                  </CardContent>
                 </Card>
               ) : (
                 filteredAppeals.map((appeal: any) => (
-                  <Card key={appeal.id} className="bg-[#121212] border-white/5 rounded-xl p-6" data-testid={`card-appeal-${appeal.id}`}>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Link href={`/modcp/case/appeal/${appeal.id}`}>
-                          <span className="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer font-semibold uppercase tracking-wider" data-testid={`link-view-appeal-${appeal.id}`}>View Case</span>
-                        </Link>
-                        <Badge
-                          className={
-                            appeal.status === "pending"
-                              ? "bg-yellow-500/20 text-yellow-400"
-                              : appeal.status === "approved"
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-red-500/20 text-red-400"
-                          }
-                        >
-                          {appeal.status}
-                        </Badge>
-                        <span className="font-bold text-sm">{appeal.user?.username || appeal.userId}</span>
-                        {appeal.user?.email && (
-                          <span className="text-xs text-white/30">{appeal.user.email}</span>
-                        )}
+                  <Card key={appeal.id} data-testid={`card-appeal-${appeal.id}`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-md bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <Scale className="w-4 h-4 text-blue-400" />
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className={getStatusBadgeClasses(appeal.status)}>
+                                {appeal.status}
+                              </Badge>
+                              <span className="font-semibold text-sm">{appeal.user?.username || appeal.userId}</span>
+                              {appeal.user?.email && (
+                                <span className="text-xs text-muted-foreground">{appeal.user.email}</span>
+                              )}
+                            </div>
+                            <Link href={`/modcp/case/appeal/${appeal.id}`}>
+                              <Button size="sm" variant="ghost" data-testid={`link-view-appeal-${appeal.id}`}>
+                                <Eye className="w-3 h-3 mr-1" /> View Case
+                              </Button>
+                            </Link>
+                          </div>
+
+                          <p className="text-sm text-muted-foreground">{appeal.reason}</p>
+
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {getRelativeTime(appeal.createdAt)}
+                            </span>
+                            {appeal.banId && (
+                              <span>Ban ID: <span className="font-mono">{appeal.banId}</span></span>
+                            )}
+                          </div>
+
+                          {appeal.reviewNotes && (
+                            <div className="bg-muted rounded-md p-3">
+                              <p className="text-xs text-muted-foreground">
+                                <span className="font-semibold">Review Notes:</span> {appeal.reviewNotes}
+                              </p>
+                            </div>
+                          )}
+
+                          {appeal.status === "Pending" && (
+                            <div className="flex items-center gap-2 pt-2 flex-wrap">
+                              <Input
+                                placeholder="Review notes..."
+                                value={appealNotes[appeal.id] || ""}
+                                onChange={(e) => setAppealNotes((prev) => ({ ...prev, [appeal.id]: e.target.value }))}
+                                className="text-xs flex-1"
+                                data-testid={`input-appeal-notes-${appeal.id}`}
+                              />
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    data-testid={`button-approve-appeal-${appeal.id}`}
+                                  >
+                                    <CheckCircle className="w-3 h-3 mr-1" /> Approve
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Approve Appeal</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Approving this appeal will lift the associated ban for <strong>{appeal.user?.username || appeal.userId}</strong>. Are you sure?
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "Approved", reviewNotes: appealNotes[appeal.id] })}
+                                      data-testid={`button-confirm-approve-${appeal.id}`}
+                                    >
+                                      Approve
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    data-testid={`button-deny-appeal-${appeal.id}`}
+                                  >
+                                    <XCircle className="w-3 h-3 mr-1" /> Deny
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Deny Appeal</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will deny the appeal from <strong>{appeal.user?.username || appeal.userId}</strong>. Their ban will remain active.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "Denied", reviewNotes: appealNotes[appeal.id] })}
+                                      data-testid={`button-confirm-deny-${appeal.id}`}
+                                    >
+                                      Deny
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm text-white/70">{appeal.reason}</p>
-                      <p className="text-[10px] text-white/30">
-                        Submitted: {new Date(appeal.createdAt).toLocaleDateString()}
-                        {appeal.banId && ` | Ban ID: ${appeal.banId}`}
-                      </p>
-                      {appeal.status === "pending" && (
-                        <div className="flex items-center gap-2 mt-3 flex-wrap">
-                          <Input
-                            placeholder="Review notes..."
-                            value={appealNotes[appeal.id] || ""}
-                            onChange={(e) => setAppealNotes((prev) => ({ ...prev, [appeal.id]: e.target.value }))}
-                            className="bg-white/5 border-white/5 rounded-lg text-xs flex-1"
-                            data-testid={`input-appeal-notes-${appeal.id}`}
-                          />
-                          <Button
-                            size="sm"
-                            onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "approved", reviewNotes: appealNotes[appeal.id] })}
-                            className="bg-green-600 hover:bg-green-700"
-                            data-testid={`button-approve-appeal-${appeal.id}`}
-                          >
-                            <CheckCircle className="w-3 h-3 mr-1" /> Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-red-600 hover:bg-red-700"
-                            onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "denied", reviewNotes: appealNotes[appeal.id] })}
-                            data-testid={`button-deny-appeal-${appeal.id}`}
-                          >
-                            <XCircle className="w-3 h-3 mr-1" /> Deny
-                          </Button>
-                        </div>
-                      )}
-                      {appeal.reviewNotes && (
-                        <div className="bg-white/5 rounded-lg p-3 mt-2">
-                          <p className="text-xs text-white/50">
-                            <span className="font-bold">Review Notes:</span> {appeal.reviewNotes}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    </CardContent>
                   </Card>
                 ))
               )}

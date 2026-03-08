@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -6,7 +6,6 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -32,7 +31,6 @@ import {
   Users,
   MessageSquare,
   Search,
-  Clock,
   Settings,
   FileText,
   Ban,
@@ -40,10 +38,21 @@ import {
   TrendingUp,
   Activity,
   ChevronRight,
-  Eye,
-  EyeOff,
   Megaphone,
   RefreshCw,
+  Server,
+  Database,
+  Wifi,
+  WifiOff,
+  Check,
+  X,
+  Edit3,
+  BarChart3,
+  ShoppingBag,
+  CreditCard,
+  Clock,
+  UserCheck,
+  Crown,
 } from "lucide-react";
 
 interface AdminStats {
@@ -76,11 +85,11 @@ export default function AdminCP() {
   const [announcementContent, setAnnouncementContent] = useState("");
   const [announcementCategory, setAnnouncementCategory] = useState("General");
   const [announcementImageUrl, setAnnouncementImageUrl] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedRank, setSelectedRank] = useState("");
   const [editingPolicy, setEditingPolicy] = useState<string | null>(null);
   const [policyTitle, setPolicyTitle] = useState("");
   const [policyContent, setPolicyContent] = useState("");
+  const [inlineEditUserId, setInlineEditUserId] = useState<string | null>(null);
+  const [inlineEditRank, setInlineEditRank] = useState("");
 
   const adminRanks = [
     "Developer",
@@ -92,6 +101,7 @@ export default function AdminCP() {
   ];
 
   const isAdmin =
+    user?.isAdmin ||
     adminRanks.includes(user?.userRank || "") ||
     (user?.additionalRanks || []).some((r) => adminRanks.includes(r)) ||
     user?.email?.toLowerCase().endsWith("@resyncstudios.com");
@@ -109,7 +119,7 @@ export default function AdminCP() {
 
   const { data: allUsers = [], isLoading: usersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/users"],
-    enabled: !!isAdmin && activeTab === "users",
+    enabled: !!isAdmin && (activeTab === "users" || activeTab === "dashboard"),
   });
 
   const { data: searchResults = [] } = useQuery<any[]>({
@@ -148,6 +158,18 @@ export default function AdminCP() {
     queryKey: ["/api/policies"],
     enabled: !!isAdmin && activeTab === "policies",
   });
+
+  const rankBreakdown = useMemo(() => {
+    if (!allUsers.length) return [];
+    const counts: Record<string, number> = {};
+    allUsers.forEach((u: any) => {
+      const rank = u.userRank || "Member";
+      counts[rank] = (counts[rank] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([rank, count]) => ({ rank, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [allUsers]);
 
   const policySlugMap: Record<string, string> = {
     privacy: "Privacy Policy",
@@ -263,8 +285,8 @@ export default function AdminCP() {
     onSuccess: () => {
       toast({ title: "User rank updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      setSelectedUserId("");
-      setSelectedRank("");
+      setInlineEditUserId(null);
+      setInlineEditRank("");
     },
     onError: (e: any) => {
       toast({
@@ -277,24 +299,24 @@ export default function AdminCP() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-xl" />
+      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+        <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-md" />
       </div>
     );
   }
 
   if (!user || !isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-[#050505]">
-        <Card className="w-full max-w-md bg-[#121212] border-white/5">
+      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+        <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
-              <AlertTriangle className="w-12 h-12 text-red-500" />
+              <AlertTriangle className="w-12 h-12 text-destructive" />
               <div>
-                <h2 className="font-semibold text-xl text-white uppercase tracking-tight">
+                <h2 className="font-semibold text-xl text-foreground uppercase tracking-tight">
                   Access Denied
                 </h2>
-                <p className="text-white/40 text-sm mt-2">
+                <p className="text-muted-foreground text-sm mt-2">
                   You do not have permission to access the Administrator Control
                   Panel.
                 </p>
@@ -332,35 +354,70 @@ export default function AdminCP() {
   ];
 
   const sidebarItems = [
-    { id: "dashboard", label: "Admin Dashboard", icon: LayoutDashboard },
-    { id: "users", label: "User Management", icon: Users },
-    { id: "settings", label: "Platform Settings", icon: Settings },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "users", label: "Users", icon: Users },
+    { id: "settings", label: "Settings", icon: Settings },
     { id: "announcements", label: "Announcements", icon: Megaphone },
     { id: "policies", label: "Policies", icon: Scale },
-    { id: "reports", label: "System Reports", icon: AlertTriangle },
+    { id: "reports", label: "Reports", icon: AlertTriangle },
   ];
 
   const displayUsers = userSearch.length >= 2 ? searchResults : allUsers;
 
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "ban":
+        return <Ban className="w-4 h-4 text-destructive" />;
+      case "report":
+        return <FileText className="w-4 h-4 text-yellow-400" />;
+      case "appeal":
+        return <Scale className="w-4 h-4 text-blue-400" />;
+      case "user":
+        return <UserCheck className="w-4 h-4 text-green-400" />;
+      default:
+        return <Activity className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
+
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case "ban":
+        return "bg-destructive/20";
+      case "report":
+        return "bg-yellow-500/20";
+      case "appeal":
+        return "bg-blue-500/20";
+      case "user":
+        return "bg-green-500/20";
+      default:
+        return "bg-muted";
+    }
+  };
+
   return (
-    <div className="flex min-h-screen bg-[#050505] text-white">
-      <div className="w-64 border-r border-white/5 flex flex-col p-4 space-y-2">
-        <div className="flex items-center gap-3 px-4 py-6 mb-4">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-black font-semibold text-sm italic">RS</span>
+    <div className="flex min-h-screen bg-background text-foreground">
+      <div className="w-56 border-r border-border flex flex-col p-3 gap-1">
+        <div className="flex items-center gap-3 px-3 py-4 mb-2">
+          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+            <Shield className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-sm tracking-tight uppercase">
-            RIVET Studios™
-          </span>
+          <div>
+            <span className="font-semibold text-xs tracking-tight uppercase text-foreground block">
+              Admin Panel
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {user?.username}
+            </span>
+          </div>
         </div>
         {sidebarItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all text-left ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-md font-medium text-sm transition-colors text-left ${
               activeTab === item.id
-                ? "bg-white/5 text-white"
-                : "text-white/40 hover:text-white hover:bg-white/5"
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover-elevate"
             }`}
             data-testid={`button-admincp-tab-${item.id}`}
           >
@@ -370,16 +427,21 @@ export default function AdminCP() {
         ))}
       </div>
 
-      <div className="flex-1 p-8 space-y-8 overflow-y-auto">
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {activeTab === "dashboard" && (
           <>
-            <div className="flex items-center justify-between">
-              <h1
-                className="text-4xl font-semibold tracking-tight uppercase"
-                data-testid="text-admincp-title"
-              >
-                Administrator Dashboard
-              </h1>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h1
+                  className="text-2xl font-semibold tracking-tight text-foreground"
+                  data-testid="text-admincp-title"
+                >
+                  Administrator Dashboard
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Platform overview and quick actions
+                </p>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
@@ -388,204 +450,294 @@ export default function AdminCP() {
                     queryKey: ["/api/admin/stats"],
                   })
                 }
-                className="border-white/10"
                 data-testid="button-refresh-stats"
               >
                 <RefreshCw className="w-4 h-4 mr-2" /> Refresh
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
-                    <Users className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">
-                      Total Members
-                    </CardTitle>
-                  </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                {
+                  label: "Total Members",
+                  value: stats?.totalUsers,
+                  icon: Users,
+                  sub: "Registered accounts",
+                  color: "text-blue-400",
+                  bg: "bg-blue-500/10",
+                },
+                {
+                  label: "Forum Activity",
+                  value:
+                    (stats?.totalThreads || 0) + (stats?.totalReplies || 0),
+                  icon: MessageSquare,
+                  sub: `${stats?.totalThreads || 0} threads, ${stats?.totalReplies || 0} replies`,
+                  color: "text-green-400",
+                  bg: "bg-green-500/10",
+                },
+                {
+                  label: "Active Bans",
+                  value: stats?.activeBans,
+                  icon: Ban,
+                  sub: "Currently enforced",
+                  color: "text-red-400",
+                  bg: "bg-red-500/10",
+                },
+                {
+                  label: "Pending Items",
+                  value:
+                    (stats?.pendingReports || 0) +
+                    (stats?.pendingAppeals || 0),
+                  icon: AlertTriangle,
+                  sub: `${stats?.pendingReports || 0} reports, ${stats?.pendingAppeals || 0} appeals`,
+                  color: "text-yellow-400",
+                  bg: "bg-yellow-500/10",
+                },
+              ].map((stat) => (
+                <Card key={stat.label} data-testid={`card-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        {stat.label}
+                      </span>
+                      <div
+                        className={`w-8 h-8 rounded-md ${stat.bg} flex items-center justify-center`}
+                      >
+                        <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                      </div>
+                    </div>
+                    <div
+                      className="text-3xl font-semibold text-foreground mb-1"
+                      data-testid={`text-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}
+                    >
+                      {statsLoading ? (
+                        <Skeleton className="h-9 w-16" />
+                      ) : (
+                        (stat.value ?? 0).toLocaleString()
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{stat.sub}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <Card className="lg:col-span-2" data-testid="card-system-health">
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    System Health
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">
+                    Live
+                  </Badge>
                 </CardHeader>
-                <CardContent>
-                  <div
-                    className="text-4xl font-semibold mb-1"
-                    data-testid="text-total-members"
-                  >
-                    {statsLoading ? (
-                      <Skeleton className="h-10 w-20" />
-                    ) : (
-                      stats?.totalUsers?.toLocaleString() ?? "—"
-                    )}
-                  </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-tight">
-                    Registered accounts
-                  </div>
+                <CardContent className="space-y-3">
+                  {[
+                    {
+                      label: "Application Server",
+                      icon: Server,
+                      status: "Operational",
+                      ok: true,
+                    },
+                    {
+                      label: "Database",
+                      icon: Database,
+                      status: "Connected",
+                      ok: true,
+                    },
+                    {
+                      label: "Site Status",
+                      icon: siteSettings?.isOffline ? WifiOff : Wifi,
+                      status: siteSettings?.isOffline ? "Offline Mode" : "Online",
+                      ok: !siteSettings?.isOffline,
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-foreground">
+                          {item.label}
+                        </span>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={
+                          item.ok
+                            ? "border-green-500/30 text-green-400 text-[10px]"
+                            : "border-yellow-500/30 text-yellow-400 text-[10px]"
+                        }
+                      >
+                        {item.ok ? (
+                          <Check className="w-3 h-3 mr-1" />
+                        ) : (
+                          <AlertTriangle className="w-3 h-3 mr-1" />
+                        )}
+                        {item.status}
+                      </Badge>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
+              <Card className="lg:col-span-2" data-testid="card-platform-stats">
                 <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
-                    <MessageSquare className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">
-                      Forum Posts
-                    </CardTitle>
-                  </div>
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    Platform Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div
-                    className="text-4xl font-semibold mb-1"
-                    data-testid="text-forum-posts"
-                  >
-                    {statsLoading ? (
-                      <Skeleton className="h-10 w-20" />
-                    ) : (
-                      (
-                        (stats?.totalThreads || 0) + (stats?.totalReplies || 0)
-                      ).toLocaleString()
-                    )}
-                  </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-tight">
-                    {stats?.totalThreads || 0} threads,{" "}
-                    {stats?.totalReplies || 0} replies
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
-                    <Ban className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">
-                      Active Bans
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div
-                    className="text-4xl font-semibold mb-1"
-                    data-testid="text-active-bans"
-                  >
-                    {statsLoading ? (
-                      <Skeleton className="h-10 w-20" />
-                    ) : (
-                      stats?.activeBans || 0
-                    )}
-                  </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-tight">
-                    Currently enforced
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-[#121212] border-white/5 rounded-xl overflow-hidden group">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
-                    <AlertTriangle className="w-4 h-4" />
-                    <CardTitle className="text-[10px] font-semibold uppercase tracking-widest">
-                      Pending Reports
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div
-                    className="text-4xl font-semibold mb-1"
-                    data-testid="text-pending-reports"
-                  >
-                    {statsLoading ? (
-                      <Skeleton className="h-10 w-20" />
-                    ) : (
-                      stats?.pendingReports || 0
-                    )}
-                  </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-tight">
-                    {stats?.pendingAppeals || 0} pending appeals
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      {
+                        label: "Products",
+                        value: stats?.totalProducts || 0,
+                        icon: ShoppingBag,
+                      },
+                      {
+                        label: "Announcements",
+                        value: stats?.totalAnnouncements || 0,
+                        icon: Megaphone,
+                      },
+                      {
+                        label: "Payments",
+                        value: stats?.totalPayments || 0,
+                        icon: CreditCard,
+                      },
+                      {
+                        label: "Threads",
+                        value: stats?.totalThreads || 0,
+                        icon: MessageSquare,
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="p-3 rounded-md bg-secondary/50 flex items-center gap-3"
+                      >
+                        <item.icon className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs text-muted-foreground">
+                            {item.label}
+                          </p>
+                          <p className="text-lg font-semibold text-foreground">
+                            {item.value.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 bg-[#121212] border-white/5 rounded-xl p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-semibold uppercase tracking-tight">
+            {rankBreakdown.length > 0 && (
+              <Card data-testid="card-rank-breakdown">
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    User Rank Breakdown
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">
+                    {allUsers.length} total
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {rankBreakdown.slice(0, 12).map(({ rank, count }) => (
+                      <div
+                        key={rank}
+                        className="flex items-center justify-between p-2.5 rounded-md bg-secondary/50"
+                        data-testid={`rank-breakdown-${rank}`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Crown className="w-3 h-3 text-muted-foreground shrink-0" />
+                          <span className="text-xs text-foreground truncate">
+                            {rank}
+                          </span>
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground ml-2 shrink-0">
+                          {count}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <Card className="lg:col-span-2">
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
                     Recent Activity
-                  </h3>
-                  <Badge
-                    variant="outline"
-                    className="border-white/10 text-white/40"
-                  >
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">
                     {activity.length} events
                   </Badge>
-                </div>
-                <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                  {activity.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Activity className="w-12 h-12 text-white/10 mx-auto mb-4" />
-                      <p className="text-xs font-semibold text-white/20 uppercase tracking-widest">
-                        No recent activity
-                      </p>
-                    </div>
-                  ) : (
-                    activity.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
-                        data-testid={`activity-${item.id}`}
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            item.type === "ban"
-                              ? "bg-red-500/20"
-                              : item.type === "report"
-                                ? "bg-yellow-500/20"
-                                : "bg-blue-500/20"
-                          }`}
-                        >
-                          {item.type === "ban" ? (
-                            <Ban className="w-4 h-4 text-red-400" />
-                          ) : item.type === "report" ? (
-                            <FileText className="w-4 h-4 text-yellow-400" />
-                          ) : (
-                            <Scale className="w-4 h-4 text-blue-400" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant="outline"
-                              className={`text-[10px] ${
-                                item.type === "ban"
-                                  ? "border-red-500/30 text-red-400"
-                                  : item.type === "report"
-                                    ? "border-yellow-500/30 text-yellow-400"
-                                    : "border-blue-500/30 text-blue-400"
-                              }`}
-                            >
-                              {item.type}
-                            </Badge>
-                            <span className="text-[10px] text-white/30">
-                              {new Date(item.createdAt).toLocaleString()}
-                            </span>
-                          </div>
-                          <p className="text-sm text-white/70 mt-1 truncate">
-                            {item.description}
-                          </p>
-                        </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {activity.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Activity className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                        <p className="text-xs text-muted-foreground">
+                          No recent activity
+                        </p>
                       </div>
-                    ))
-                  )}
-                </div>
+                    ) : (
+                      activity.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 hover-elevate"
+                          data-testid={`activity-${item.id}`}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${getActivityColor(item.type)}`}
+                          >
+                            {getActivityIcon(item.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px]"
+                              >
+                                {item.type}
+                              </Badge>
+                              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {new Date(item.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-foreground/70 mt-1 truncate">
+                              {item.description}
+                            </p>
+                            {item.actorId && (
+                              <p className="text-[10px] text-muted-foreground mt-0.5">
+                                Actor: {item.actorId.substring(0, 8)}...
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
               </Card>
 
-              <div className="space-y-6">
-                <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-                  <h3 className="text-xl font-semibold uppercase tracking-tight mb-4">
-                    Quick Actions
-                  </h3>
-                  <div className="space-y-3">
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                      Quick Actions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
                     <Button
                       variant="outline"
-                      className="w-full justify-start border-white/5 rounded-xl font-bold"
+                      className="w-full justify-start"
                       onClick={() => setActiveTab("announcements")}
                       data-testid="button-quick-announcement"
                     >
@@ -593,7 +745,7 @@ export default function AdminCP() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start border-white/5 rounded-xl font-bold"
+                      className="w-full justify-start"
                       onClick={() => setActiveTab("users")}
                       data-testid="button-quick-users"
                     >
@@ -601,62 +753,50 @@ export default function AdminCP() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start border-white/5 rounded-xl font-bold"
+                      className="w-full justify-start"
                       onClick={() => setActiveTab("reports")}
                       data-testid="button-quick-reports"
                     >
                       <FileText className="w-4 h-4 mr-3" /> View Reports
                     </Button>
-                  </div>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => setActiveTab("settings")}
+                      data-testid="button-quick-settings"
+                    >
+                      <Settings className="w-4 h-4 mr-3" /> Platform Settings
+                    </Button>
+                  </CardContent>
                 </Card>
 
-                <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-                  <h3 className="text-xl font-semibold uppercase tracking-tight mb-2">
-                    Platform Stats
-                  </h3>
-                  <div className="space-y-3 mt-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Products</span>
-                      <span className="font-bold">
-                        {stats?.totalProducts || 0}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Announcements</span>
-                      <span className="font-bold">
-                        {stats?.totalAnnouncements || 0}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Payments</span>
-                      <span className="font-bold">
-                        {stats?.totalPayments || 0}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="bg-red-500/10 border-red-500/20 rounded-xl p-8">
-                  <h3 className="text-xl font-semibold uppercase tracking-tight text-red-500 mb-2">
-                    Emergency
-                  </h3>
-                  <p className="text-xs font-bold text-red-500/60 uppercase mb-4">
-                    Maintenance Mode
-                  </p>
-                  <Button
-                    className="w-full bg-red-600 hover:bg-red-700 rounded-xl font-semibold uppercase tracking-tight active:scale-95 transition-all"
-                    onClick={() => {
-                      updateSiteSettingsMutation.mutate({
-                        isOffline: true,
-                        offlineMessage:
-                          "Site is temporarily under maintenance.",
-                      });
-                    }}
-                    disabled={updateSiteSettingsMutation.isPending}
-                    data-testid="button-emergency-offline"
-                  >
-                    Enable Offline Mode
-                  </Button>
+                <Card className="border-destructive/30 bg-destructive/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-semibold uppercase tracking-wider text-destructive">
+                      Emergency
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Enable maintenance mode to take the site offline.
+                    </p>
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={() => {
+                        updateSiteSettingsMutation.mutate({
+                          isOffline: true,
+                          offlineMessage:
+                            "Site is temporarily under maintenance.",
+                        });
+                      }}
+                      disabled={updateSiteSettingsMutation.isPending}
+                      data-testid="button-emergency-offline"
+                    >
+                      <WifiOff className="w-4 h-4 mr-2" />
+                      Enable Offline Mode
+                    </Button>
+                  </CardContent>
                 </Card>
               </div>
             </div>
@@ -665,162 +805,198 @@ export default function AdminCP() {
 
         {activeTab === "users" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">
-              User Management
-            </h1>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                User Management
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Search, view, and manage user roles
+              </p>
+            </div>
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search users by name or email..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                className="pl-10 bg-white/5 border-white/5 rounded-xl w-full max-w-md"
+                className="pl-10"
                 data-testid="input-user-search"
               />
             </div>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
-              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">
-                Change User Rank
-              </h3>
-              <div className="flex items-end gap-4">
-                <div className="flex-1">
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
-                    User ID
-                  </label>
-                  <Input
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                    placeholder="Paste user ID or select from list below"
-                    className="bg-white/5 border-white/5 rounded-xl"
-                    data-testid="input-rank-user-id"
-                  />
-                </div>
-                <div className="w-64">
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
-                    New Rank
-                  </label>
-                  <Select value={selectedRank} onValueChange={setSelectedRank}>
-                    <SelectTrigger
-                      className="bg-white/5 border-white/5 rounded-xl"
-                      data-testid="select-rank"
-                    >
-                      <SelectValue placeholder="Select rank" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {allRankOptions.map((rank) => (
-                        <SelectItem key={rank} value={rank}>
-                          {rank}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  onClick={() => {
-                    if (selectedUserId && selectedRank) {
-                      updateRankMutation.mutate({
-                        userId: selectedUserId,
-                        userRank: selectedRank,
-                      });
-                    }
-                  }}
-                  disabled={
-                    !selectedUserId ||
-                    !selectedRank ||
-                    updateRankMutation.isPending
-                  }
-                  data-testid="button-update-rank"
-                >
-                  {updateRankMutation.isPending ? "Updating..." : "Update Rank"}
-                </Button>
-              </div>
-            </Card>
-
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-6">
-              <h3 className="font-semibold uppercase tracking-tight text-lg mb-4">
-                {userSearch
-                  ? `Search Results (${displayUsers.length})`
-                  : `All Users (${displayUsers.length})`}
-              </h3>
-              {usersLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-16 w-full rounded-xl" />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                  {displayUsers.length === 0 ? (
-                    <p className="text-white/40 text-sm text-center py-8">
-                      No users found
-                    </p>
-                  ) : (
-                    displayUsers.map((u: any) => (
-                      <div
-                        key={u.id}
-                        className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-colors cursor-pointer"
-                        onClick={() => setSelectedUserId(u.id)}
-                        data-testid={`row-user-${u.id}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 font-bold text-sm uppercase">
-                            {(u.username || u.email || "?")[0]}
-                          </div>
-                          <div>
-                            <div className="font-bold text-sm">
-                              {u.username || "No username"}
-                            </div>
-                            <div className="text-xs text-white/30">
-                              {u.email}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant="outline"
-                            className="border-white/10 text-white/50 text-xs"
-                          >
-                            {u.userRank || "Member"}
-                          </Badge>
-                          {u.isAdmin && (
-                            <Badge className="bg-red-500/20 text-red-400 text-[10px]">
-                              Admin
-                            </Badge>
-                          )}
-                          {u.isModerator && (
-                            <Badge className="bg-blue-500/20 text-blue-400 text-[10px]">
-                              Mod
-                            </Badge>
-                          )}
-                          <ChevronRight className="w-4 h-4 text-white/20" />
-                        </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  {userSearch
+                    ? `Search Results (${displayUsers.length})`
+                    : `All Users (${displayUsers.length})`}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {usersLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-14 w-full rounded-md" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-1 max-h-[600px] overflow-y-auto">
+                    {displayUsers.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                        <p className="text-sm text-muted-foreground">
+                          No users found
+                        </p>
                       </div>
-                    ))
-                  )}
-                </div>
-              )}
+                    ) : (
+                      displayUsers.map((u: any) => (
+                        <div
+                          key={u.id}
+                          className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30 hover-elevate"
+                          data-testid={`row-user-${u.id}`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-semibold text-sm uppercase shrink-0">
+                              {(u.username || u.email || "?")[0]}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm text-foreground truncate">
+                                {u.username || "No username"}
+                              </div>
+                              <div className="text-xs text-muted-foreground truncate">
+                                {u.email}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                            {inlineEditUserId === u.id ? (
+                              <div className="flex items-center gap-2">
+                                <Select
+                                  value={inlineEditRank}
+                                  onValueChange={setInlineEditRank}
+                                >
+                                  <SelectTrigger
+                                    className="w-40"
+                                    data-testid={`select-inline-rank-${u.id}`}
+                                  >
+                                    <SelectValue placeholder="Select rank" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {allRankOptions.map((rank) => (
+                                      <SelectItem key={rank} value={rank}>
+                                        {rank}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    if (inlineEditRank) {
+                                      updateRankMutation.mutate({
+                                        userId: u.id,
+                                        userRank: inlineEditRank,
+                                      });
+                                    }
+                                  }}
+                                  disabled={
+                                    !inlineEditRank ||
+                                    updateRankMutation.isPending
+                                  }
+                                  data-testid={`button-save-rank-${u.id}`}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setInlineEditUserId(null);
+                                    setInlineEditRank("");
+                                  }}
+                                  data-testid={`button-cancel-rank-${u.id}`}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {u.userRank || "Member"}
+                                </Badge>
+                                {u.isAdmin && (
+                                  <Badge variant="secondary" className="text-[10px]">
+                                    Admin
+                                  </Badge>
+                                )}
+                                {u.isModerator && (
+                                  <Badge variant="secondary" className="text-[10px]">
+                                    Mod
+                                  </Badge>
+                                )}
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setInlineEditUserId(u.id);
+                                    setInlineEditRank(u.userRank || "Member");
+                                  }}
+                                  data-testid={`button-edit-rank-${u.id}`}
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </>
         )}
 
         {activeTab === "settings" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">
-              Platform Settings
-            </h1>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Platform Settings
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure site behavior and maintenance mode
+              </p>
+            </div>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-              <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">
-                Site Status
-              </h3>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm">Offline Mode</p>
-                    <p className="text-xs text-white/40 mt-1">
-                      Take the site offline for maintenance
-                    </p>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Site Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between gap-4 p-4 rounded-md bg-secondary/50">
+                  <div className="flex items-center gap-3">
+                    {siteSettings?.isOffline ? (
+                      <WifiOff className="w-5 h-5 text-yellow-400" />
+                    ) : (
+                      <Wifi className="w-5 h-5 text-green-400" />
+                    )}
+                    <div>
+                      <p className="font-medium text-sm text-foreground">
+                        Offline Mode
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {siteSettings?.isOffline
+                          ? "Site is currently offline"
+                          : "Site is live and accessible"}
+                      </p>
+                    </div>
                   </div>
                   <Switch
                     checked={siteSettings?.isOffline || false}
@@ -831,7 +1007,7 @@ export default function AdminCP() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
                     Offline Message
                   </label>
                   <Textarea
@@ -845,7 +1021,6 @@ export default function AdminCP() {
                       setOfflineMessageDirty(true);
                     }}
                     placeholder="Message shown when site is offline..."
-                    className="bg-white/5 border-white/5 rounded-xl"
                     data-testid="textarea-offline-message"
                   />
                   {offlineMessageDirty && (
@@ -863,110 +1038,121 @@ export default function AdminCP() {
                     </Button>
                   )}
                 </div>
-              </div>
+              </CardContent>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-              <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">
-                Platform Overview
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[
-                  {
-                    label: "Users",
-                    value: stats?.totalUsers || 0,
-                    icon: Users,
-                  },
-                  {
-                    label: "Threads",
-                    value: stats?.totalThreads || 0,
-                    icon: MessageSquare,
-                  },
-                  {
-                    label: "Products",
-                    value: stats?.totalProducts || 0,
-                    icon: TrendingUp,
-                  },
-                  { label: "Bans", value: stats?.activeBans || 0, icon: Ban },
-                  {
-                    label: "Reports",
-                    value: stats?.pendingReports || 0,
-                    icon: FileText,
-                  },
-                  {
-                    label: "Appeals",
-                    value: stats?.pendingAppeals || 0,
-                    icon: Scale,
-                  },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="p-4 rounded-xl bg-white/[0.02] border border-white/5"
-                  >
-                    <div className="flex items-center gap-2 text-white/40 mb-2">
-                      <stat.icon className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-semibold uppercase tracking-widest">
-                        {stat.label}
-                      </span>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Platform Statistics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {[
+                    {
+                      label: "Users",
+                      value: stats?.totalUsers || 0,
+                      icon: Users,
+                    },
+                    {
+                      label: "Threads",
+                      value: stats?.totalThreads || 0,
+                      icon: MessageSquare,
+                    },
+                    {
+                      label: "Products",
+                      value: stats?.totalProducts || 0,
+                      icon: ShoppingBag,
+                    },
+                    {
+                      label: "Bans",
+                      value: stats?.activeBans || 0,
+                      icon: Ban,
+                    },
+                    {
+                      label: "Reports",
+                      value: stats?.pendingReports || 0,
+                      icon: FileText,
+                    },
+                    {
+                      label: "Appeals",
+                      value: stats?.pendingAppeals || 0,
+                      icon: Scale,
+                    },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="p-3 rounded-md bg-secondary/50 flex items-center gap-3"
+                    >
+                      <stat.icon className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          {stat.label}
+                        </p>
+                        <p className="text-xl font-semibold text-foreground">
+                          {stat.value.toLocaleString()}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-2xl font-semibold">
-                      {stat.value.toLocaleString()}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
           </>
         )}
 
         {activeTab === "announcements" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">
-              Announcements
-            </h1>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Announcements
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create and manage site-wide announcements
+              </p>
+            </div>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-              <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">
-                Create Announcement
-              </h3>
-              <div className="space-y-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Create Announcement
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                     Title
                   </label>
                   <Input
                     value={announcementTitle}
                     onChange={(e) => setAnnouncementTitle(e.target.value)}
                     placeholder="Announcement title..."
-                    className="bg-white/5 border-white/5 rounded-xl"
                     data-testid="input-announcement-title"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                     Content
                   </label>
                   <Textarea
                     value={announcementContent}
                     onChange={(e) => setAnnouncementContent(e.target.value)}
                     placeholder="Write your announcement..."
-                    className="bg-white/5 border-white/5 rounded-xl min-h-[150px]"
+                    className="min-h-[150px]"
                     data-testid="input-announcement-content"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                       Category
                     </label>
                     <Select
                       value={announcementCategory}
                       onValueChange={setAnnouncementCategory}
                     >
-                      <SelectTrigger
-                        className="bg-white/5 border-white/5 rounded-xl"
-                        data-testid="select-announcement-category"
-                      >
+                      <SelectTrigger data-testid="select-announcement-category">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -979,14 +1165,13 @@ export default function AdminCP() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                       Image URL (optional)
                     </label>
                     <Input
                       value={announcementImageUrl}
                       onChange={(e) => setAnnouncementImageUrl(e.target.value)}
                       placeholder="https://..."
-                      className="bg-white/5 border-white/5 rounded-xl"
                       data-testid="input-announcement-image"
                     />
                   </div>
@@ -1013,112 +1198,115 @@ export default function AdminCP() {
                     ? "Publishing..."
                     : "Publish Announcement"}
                 </Button>
-              </div>
+              </CardContent>
             </Card>
 
-            <Card className="bg-[#121212] border-white/5 rounded-xl p-8">
-              <h3 className="text-xl font-semibold uppercase tracking-tight mb-6">
-                Existing Announcements ({announcements.length})
-              </h3>
-              <div className="space-y-3">
-                {announcements.length === 0 ? (
-                  <p className="text-white/40 text-sm text-center py-8">
-                    No announcements yet
-                  </p>
-                ) : (
-                  announcements.map((ann: any) => (
-                    <div
-                      key={ann.id}
-                      className="flex items-start justify-between p-4 rounded-xl bg-white/[0.02]"
-                      data-testid={`row-announcement-${ann.id}`}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-sm">{ann.title}</span>
-                          {ann.category && (
-                            <Badge
-                              variant="outline"
-                              className="border-white/10 text-white/40 text-[10px]"
-                            >
-                              {ann.category}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-white/50 truncate">
-                          {ann.content}
-                        </p>
-                        <p className="text-[10px] text-white/30 mt-1">
-                          {new Date(ann.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          deleteAnnouncementMutation.mutate(ann.id)
-                        }
-                        className="border-red-500/30 text-red-400 hover:bg-red-500/10 shrink-0 ml-4"
-                        data-testid={`button-delete-announcement-${ann.id}`}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                  Existing Announcements
+                </CardTitle>
+                <Badge variant="outline" className="text-[10px]">
+                  {announcements.length}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {announcements.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Megaphone className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        No announcements yet
+                      </p>
                     </div>
-                  ))
-                )}
-              </div>
+                  ) : (
+                    announcements.map((ann: any) => (
+                      <div
+                        key={ann.id}
+                        className="flex items-start justify-between gap-4 p-4 rounded-md bg-secondary/30"
+                        data-testid={`row-announcement-${ann.id}`}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className="font-medium text-sm text-foreground">
+                              {ann.title}
+                            </span>
+                            {ann.category && (
+                              <Badge variant="outline" className="text-[10px]">
+                                {ann.category}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {ann.content}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground mt-1">
+                            {new Date(ann.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            deleteAnnouncementMutation.mutate(ann.id)
+                          }
+                          data-testid={`button-delete-announcement-${ann.id}`}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
             </Card>
           </>
         )}
 
         {activeTab === "policies" && (
           <>
-            <h1
-              className="text-4xl font-semibold tracking-tight uppercase"
-              data-testid="text-policies-title"
-            >
-              Policies Management
-            </h1>
-            <p className="text-white/40 text-sm">
-              Edit and manage site policies. Changes are saved to the database
-              and reflected on the public policy pages.
-            </p>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Policies Management
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Edit and manage site policies. Changes are saved to the database
+                and reflected on the public policy pages.
+              </p>
+            </div>
 
             {editingPolicy ? (
-              <Card
-                className="bg-[#121212] border-white/5 rounded-xl"
-                data-testid="card-policy-editor"
-              >
+              <Card data-testid="card-policy-editor">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold">
+                  <CardTitle className="text-sm font-semibold">
                     Editing: {policySlugMap[editingPolicy] || editingPolicy}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-1.5 block">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                       Title
                     </label>
                     <Input
                       value={policyTitle}
                       onChange={(e) => setPolicyTitle(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white"
                       placeholder="Policy title"
                       data-testid="input-policy-title"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-1.5 block">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
                       Content (HTML)
                     </label>
                     <Textarea
                       value={policyContent}
                       onChange={(e) => setPolicyContent(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white min-h-[400px] font-mono text-sm"
+                      className="min-h-[400px] font-mono text-sm"
                       placeholder="Policy content in HTML format..."
                       data-testid="input-policy-content"
                     />
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap">
                     <Button
                       onClick={() =>
                         savePolicyMutation.mutate({
@@ -1132,7 +1320,6 @@ export default function AdminCP() {
                         !policyTitle ||
                         !policyContent
                       }
-                      className="bg-white text-black font-semibold"
                       data-testid="button-save-policy"
                     >
                       {savePolicyMutation.isPending
@@ -1146,7 +1333,6 @@ export default function AdminCP() {
                         setPolicyTitle("");
                         setPolicyContent("");
                       }}
-                      className="border-white/10 text-white/70"
                       data-testid="button-cancel-policy"
                     >
                       Cancel
@@ -1155,7 +1341,7 @@ export default function AdminCP() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {Object.entries(policySlugMap).map(([slug, label]) => {
                   const existing = policiesData.find(
                     (p: any) => p.slug === slug,
@@ -1163,40 +1349,49 @@ export default function AdminCP() {
                   return (
                     <Card
                       key={slug}
-                      className="bg-[#121212] border-white/5 rounded-xl p-5"
                       data-testid={`card-policy-${slug}`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-sm">{label}</h3>
-                          <p className="text-xs text-white/30 mt-0.5">
-                            {existing
-                              ? `Last updated: ${new Date(existing.updatedAt).toLocaleDateString()}`
-                              : "Using default content (not yet customized)"}
-                          </p>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <div className="min-w-0">
+                              <h3 className="font-medium text-sm text-foreground">
+                                {label}
+                              </h3>
+                              <p className="text-xs text-muted-foreground">
+                                {existing
+                                  ? `Last updated: ${new Date(existing.updatedAt).toLocaleDateString()}`
+                                  : "Using default content"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {existing && (
+                              <Badge
+                                variant="outline"
+                                className="border-green-500/30 text-green-400 text-[10px]"
+                              >
+                                <Check className="w-3 h-3 mr-1" />
+                                Customized
+                              </Badge>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEditingPolicy(slug);
+                                setPolicyTitle(existing?.title || label);
+                                setPolicyContent(existing?.content || "");
+                              }}
+                              data-testid={`button-edit-policy-${slug}`}
+                            >
+                              <Edit3 className="w-3 h-3 mr-1.5" />
+                              {existing ? "Edit" : "Customize"}
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {existing && (
-                            <Badge className="bg-green-500/20 text-green-400 text-[10px]">
-                              Customized
-                            </Badge>
-                          )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-white/10 text-white/70 text-xs"
-                            onClick={() => {
-                              setEditingPolicy(slug);
-                              setPolicyTitle(existing?.title || label);
-                              setPolicyContent(existing?.content || "");
-                            }}
-                            data-testid={`button-edit-policy-${slug}`}
-                          >
-                            <FileText className="w-3 h-3 mr-1.5" />
-                            {existing ? "Edit" : "Customize"}
-                          </Button>
-                        </div>
-                      </div>
+                      </CardContent>
                     </Card>
                   );
                 })}
@@ -1207,67 +1402,85 @@ export default function AdminCP() {
 
         {activeTab === "reports" && (
           <>
-            <h1 className="text-4xl font-semibold tracking-tight uppercase">
-              System Reports
-            </h1>
-            <div className="space-y-3">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                System Reports
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Review submitted reports and take action
+              </p>
+            </div>
+            <div className="space-y-2">
               {reports.length === 0 ? (
-                <Card className="bg-[#121212] border-white/5 rounded-xl p-8 text-center">
-                  <p className="text-white/40">No reports to review</p>
+                <Card>
+                  <CardContent className="p-8">
+                    <div className="text-center">
+                      <AlertTriangle className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        No reports to review
+                      </p>
+                    </div>
+                  </CardContent>
                 </Card>
               ) : (
                 reports.map((report: any) => (
                   <Card
                     key={report.id}
-                    className="bg-[#121212] border-white/5 rounded-xl p-6"
                     data-testid={`card-report-${report.id}`}
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant={
-                              report.status === "Pending"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className={
-                              report.status === "Pending"
-                                ? "bg-yellow-500/20 text-yellow-400"
-                                : report.status === "Action Taken"
-                                  ? "bg-green-500/20 text-green-400"
-                                  : report.status === "Reviewed"
-                                    ? "bg-blue-500/20 text-blue-400"
-                                    : "bg-white/10 text-white/50"
-                            }
-                          >
-                            {report.status}
-                          </Badge>
-                          <span className="text-xs text-white/30">
-                            {report.targetType}
-                          </span>
-                        </div>
-                        <p className="font-bold text-sm">{report.reason}</p>
-                        {report.details && (
-                          <p className="text-xs text-white/50">
-                            {report.details}
-                          </p>
-                        )}
-                        <p className="text-[10px] text-white/30">
-                          Target: {report.targetId} | Reporter:{" "}
-                          {report.reporterId} |{" "}
-                          {new Date(report.createdAt).toLocaleDateString()}
-                        </p>
-                        {report.moderatorNotes && (
-                          <div className="bg-white/5 rounded-lg p-3 mt-2">
-                            <p className="text-xs text-white/50">
-                              <span className="font-bold">Mod Notes:</span>{" "}
-                              {report.moderatorNotes}
-                            </p>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge
+                              variant={
+                                report.status === "Pending"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className={
+                                report.status === "Pending"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : report.status === "Action Taken"
+                                    ? "bg-green-500/20 text-green-400"
+                                    : report.status === "Reviewed"
+                                      ? "bg-blue-500/20 text-blue-400"
+                                      : ""
+                              }
+                            >
+                              {report.status}
+                            </Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {report.targetType}
+                            </Badge>
                           </div>
-                        )}
+                          <p className="font-medium text-sm text-foreground">
+                            {report.reason}
+                          </p>
+                          {report.details && (
+                            <p className="text-xs text-muted-foreground">
+                              {report.details}
+                            </p>
+                          )}
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {new Date(report.createdAt).toLocaleDateString()} |
+                            Target: {report.targetId?.substring(0, 8)}... |
+                            Reporter: {report.reporterId?.substring(0, 8)}...
+                          </p>
+                          {report.moderatorNotes && (
+                            <div className="bg-secondary/50 rounded-md p-3 mt-2">
+                              <p className="text-xs text-muted-foreground">
+                                <span className="font-semibold text-foreground">
+                                  Mod Notes:
+                                </span>{" "}
+                                {report.moderatorNotes}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    </CardContent>
                   </Card>
                 ))
               )}

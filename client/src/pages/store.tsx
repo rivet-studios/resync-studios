@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ChevronRight,
@@ -9,6 +11,8 @@ import {
   Crown,
   Sparkles,
   ArrowRight,
+  ShoppingBag,
+  Tag,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 
@@ -19,18 +23,10 @@ interface ProductWithSubmitter extends Product {
 function ProductBadges({ product }: { product: ProductWithSubmitter }) {
   return (
     <div className="flex flex-wrap gap-1.5">
-      {product.isCommunityProvided && (
-        <Badge
-          variant="secondary"
-          className="bg-gray-600/80 text-gray-100 text-[10px] font-medium border-0"
-          data-testid={`badge-community-${product.id}`}
-        >
-          Community Provided
-        </Badge>
-      )}
       {product.isFeatured && (
         <Badge
-          className="bg-blue-600/90 text-white text-[10px] font-medium border-0 hover:bg-blue-600"
+          variant="default"
+          className="text-[10px] font-medium"
           data-testid={`badge-featured-${product.id}`}
         >
           <Star className="w-3 h-3 mr-0.5" />
@@ -39,20 +35,31 @@ function ProductBadges({ product }: { product: ProductWithSubmitter }) {
       )}
       {product.isLimitedEdition && (
         <Badge
-          className="bg-yellow-500/90 text-black text-[10px] font-semibold border-0 hover:bg-yellow-500"
+          variant="destructive"
+          className="text-[10px] font-semibold"
           data-testid={`badge-limited-${product.id}`}
         >
           <Crown className="w-3 h-3 mr-0.5" />
-          LIMITED EDITION
+          LIMITED
         </Badge>
       )}
       {product.isVerified && (
         <Badge
-          className="bg-green-600/90 text-white text-[10px] font-medium border-0 hover:bg-green-600"
+          variant="secondary"
+          className="text-[10px] font-medium"
           data-testid={`badge-verified-${product.id}`}
         >
           <Sparkles className="w-3 h-3 mr-0.5" />
-          VERIFIED
+          Verified
+        </Badge>
+      )}
+      {product.isCommunityProvided && (
+        <Badge
+          variant="outline"
+          className="text-[10px] font-medium"
+          data-testid={`badge-community-${product.id}`}
+        >
+          Community
         </Badge>
       )}
     </div>
@@ -62,49 +69,49 @@ function ProductBadges({ product }: { product: ProductWithSubmitter }) {
 function ProductCard({ product }: { product: ProductWithSubmitter }) {
   return (
     <Link href={`/store/product/${product.id}`}>
-      <div
-        className="group cursor-pointer"
+      <Card
+        className="group cursor-pointer hover-elevate overflow-visible"
         data-testid={`card-product-${product.id}`}
       >
-        <div className="aspect-[4/3] bg-[#1a1a1a] rounded-lg overflow-hidden mb-3">
+        <div className="aspect-[4/3] bg-muted rounded-t-xl overflow-hidden">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Package className="w-10 h-10 text-white/15" />
+              <Package className="w-10 h-10 text-muted-foreground/30" />
             </div>
           )}
         </div>
-        <div className="space-y-2">
+        <CardContent className="p-4 space-y-2">
           <ProductBadges product={product} />
           <h3
-            className="font-semibold text-white text-sm leading-tight line-clamp-1"
+            className="font-semibold text-foreground text-sm leading-tight line-clamp-1"
             data-testid={`text-product-name-${product.id}`}
           >
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
               {product.description}
             </p>
           )}
           {product.submitter && (
-            <p className="text-[11px] text-white/30">
+            <p className="text-[11px] text-muted-foreground/70">
               by {product.submitter.username}
             </p>
           )}
           <p
-            className="text-white font-semibold text-base"
+            className="text-foreground font-semibold text-base"
             data-testid={`text-price-${product.id}`}
           >
             ${(product.price / 100).toFixed(2)}
           </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
@@ -113,28 +120,47 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
   return (
     <Link href={`/store/product/${product.id}`}>
       <div
-        className="relative group cursor-pointer overflow-hidden rounded-lg"
+        className="relative group cursor-pointer overflow-hidden rounded-xl h-full"
         data-testid={`card-featured-${product.id}`}
       >
-        <div className="aspect-[16/10] bg-[#1a1a1a]">
+        <div className="aspect-[16/10] bg-muted h-full">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="w-16 h-16 text-white/10" />
+            <div className="w-full h-full flex items-center justify-center bg-muted">
+              <Package className="w-16 h-16 text-muted-foreground/20" />
             </div>
           )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            <Badge variant="default" className="text-[10px]">
+              <Star className="w-3 h-3 mr-0.5" />
+              Featured
+            </Badge>
+            {product.isLimitedEdition && (
+              <Badge variant="destructive" className="text-[10px]">
+                <Crown className="w-3 h-3 mr-0.5" />
+                LIMITED
+              </Badge>
+            )}
+          </div>
           <h3 className="text-white font-semibold text-lg leading-tight mb-1">
             {product.name}
           </h3>
-          <p className="text-white/60 text-sm">Shop now</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-white/70 text-sm font-medium">
+              ${(product.price / 100).toFixed(2)}
+            </p>
+            <span className="text-white/50 text-xs flex items-center gap-1">
+              Shop now <ArrowRight className="w-3 h-3" />
+            </span>
+          </div>
         </div>
       </div>
     </Link>
@@ -145,22 +171,22 @@ const CATEGORIES = [
   {
     name: "Rosewood Vehicle Addons",
     description: "Vehicle Inserts",
-    gradient: "from-slate-700 to-slate-900",
+    icon: Tag,
   },
   {
     name: "Rosewood LEO Vehicles",
     description: "Custom vehicle inserts for Law Enforcement",
-    gradient: "from-zinc-600 to-zinc-800",
+    icon: ShoppingBag,
   },
   {
     name: "Rosewood Civilian Vehicles",
     description: "Custom vehicle inserts for civilian",
-    gradient: "from-neutral-600 to-neutral-800",
+    icon: Package,
   },
   {
     name: "Addons",
     description: "Miscellaneous products",
-    gradient: "from-stone-600 to-stone-800",
+    icon: Sparkles,
   },
 ];
 
@@ -173,24 +199,24 @@ export default function Store() {
   const allProducts = products;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-14 animate-in fade-in duration-500">
         <section className="space-y-5">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <h2
-                className="text-xl font-semibold tracking-tight text-white"
+                className="text-xl font-semibold tracking-tight text-foreground"
                 data-testid="heading-shop-category"
               >
                 Shop by category
               </h2>
-              <p className="text-sm text-white/40 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Browse our most popular products
               </p>
             </div>
             <Link
               href="/marketplace"
-              className="text-sm text-white/50 hover:text-white transition-colors flex items-center gap-1"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
               data-testid="link-browse-categories"
             >
               Browse all categories <ArrowRight className="w-4 h-4" />
@@ -202,24 +228,29 @@ export default function Store() {
               const count = products.filter(
                 (p) => p.category === cat.name,
               ).length;
+              const IconComponent = cat.icon;
               return (
-                <div
+                <Card
                   key={cat.name}
-                  className={`relative rounded-lg overflow-hidden cursor-pointer group bg-gradient-to-br ${cat.gradient} aspect-[3/2]`}
+                  className="cursor-pointer hover-elevate overflow-visible"
                   data-testid={`card-category-${cat.name}`}
                 >
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="font-semibold text-white text-sm">
-                      {cat.name}
-                    </h3>
-                    {count > 0 && (
-                      <p className="text-white/50 text-xs mt-0.5">
-                        {count} {count === 1 ? "product" : "products"}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                  <CardContent className="p-4 flex flex-col justify-between aspect-[3/2]">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-md bg-muted">
+                      <IconComponent className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm leading-tight">
+                        {cat.name}
+                      </h3>
+                      {count > 0 && (
+                        <p className="text-muted-foreground text-xs mt-0.5">
+                          {count} {count === 1 ? "product" : "products"}
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
@@ -229,12 +260,12 @@ export default function Store() {
           <section className="space-y-5">
             <div>
               <h2
-                className="text-xl font-semibold tracking-tight text-white"
+                className="text-xl font-semibold tracking-tight text-foreground"
                 data-testid="heading-featured"
               >
                 Featured products
               </h2>
-              <p className="text-sm text-white/40 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Our most popular products
               </p>
             </div>
@@ -255,12 +286,12 @@ export default function Store() {
         <section className="space-y-5">
           <div>
             <h2
-              className="text-xl font-semibold tracking-tight text-white"
+              className="text-xl font-semibold tracking-tight text-foreground"
               data-testid="heading-all-products"
             >
               All Products
             </h2>
-            <p className="text-sm text-white/40 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {allProducts.length}{" "}
               {allProducts.length === 1 ? "product" : "products"} available
             </p>
@@ -269,30 +300,35 @@ export default function Store() {
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="space-y-3">
-                  <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                  <Skeleton className="h-5 w-1/4" />
-                </div>
+                <Card key={i}>
+                  <div className="space-y-3 p-0">
+                    <Skeleton className="aspect-[4/3] w-full rounded-t-xl rounded-b-none" />
+                    <div className="p-4 pt-0 space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                      <Skeleton className="h-5 w-1/4" />
+                    </div>
+                  </div>
+                </Card>
               ))}
             </div>
           ) : allProducts.length === 0 ? (
-            <div className="py-16 text-center">
-              <Package className="w-12 h-12 text-white/15 mx-auto mb-4" />
-              <h3 className="text-white font-semibold mb-2">No products yet</h3>
-              <p className="text-white/40 text-sm mb-6">
-                Be the first to submit a product to the marketplace
-              </p>
-              <Link href="/marketplace">
-                <span
-                  className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white border border-white/10 hover:border-white/20 px-5 py-2.5 rounded-lg transition-colors"
-                  data-testid="button-submit-first-product"
-                >
-                  Submit a Product <ArrowRight className="w-4 h-4" />
-                </span>
-              </Link>
-            </div>
+            <Card>
+              <CardContent className="py-16 text-center">
+                <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <h3 className="text-foreground font-semibold mb-2" data-testid="text-no-products">
+                  No products yet
+                </h3>
+                <p className="text-muted-foreground text-sm mb-6">
+                  Be the first to submit a product to the marketplace
+                </p>
+                <Link href="/marketplace">
+                  <Button variant="outline" data-testid="button-submit-first-product">
+                    Submit a Product <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {allProducts.map((product) => (
@@ -304,21 +340,28 @@ export default function Store() {
 
         <section>
           <Link href="/store/subscriptions">
-            <div
-              className="flex items-center justify-between border border-white/10 hover:border-white/20 rounded-lg p-6 transition-colors cursor-pointer group"
+            <Card
+              className="hover-elevate cursor-pointer overflow-visible"
               data-testid="link-vip-plans"
             >
-              <div>
-                <h3 className="text-white font-semibold text-base">
-                  VIP Subscriptions
-                </h3>
-                <p className="text-white/40 text-sm mt-1">
-                  Unlock exclusive perks — Bronze VIP, Diamond VIP, and
-                  Founder's Edition
-                </p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-colors flex-shrink-0" />
-            </div>
+              <CardContent className="flex items-center justify-between gap-4 p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-md bg-primary/10">
+                    <Crown className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-foreground font-semibold text-base">
+                      VIP Subscriptions
+                    </h3>
+                    <p className="text-muted-foreground text-sm mt-0.5">
+                      Unlock exclusive perks — Bronze VIP, Diamond VIP, and
+                      Founder's Edition
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              </CardContent>
+            </Card>
           </Link>
         </section>
       </div>

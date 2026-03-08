@@ -2,7 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Plus, User as UserIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  MessageSquare,
+  Plus,
+  Eye,
+  Clock,
+  Pin,
+  Lock,
+  ChevronRight,
+} from "lucide-react";
 import type { ForumCategory, ForumThread, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
@@ -13,11 +24,11 @@ interface CategoryWithGroup extends ForumCategory {
 }
 
 export default function ForumHome() {
-  const { data: categories = [] } = useQuery<CategoryWithGroup[]>({
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<CategoryWithGroup[]>({
     queryKey: ["/api/forums/categories"],
   });
 
-  const { data: threads = [] } = useQuery<(ForumThread & { author: User; category: ForumCategory })[]>({
+  const { data: threads = [], isLoading: threadsLoading } = useQuery<(ForumThread & { author: User; category: ForumCategory })[]>({
     queryKey: ["/api/forums/threads"],
   });
 
@@ -47,130 +58,187 @@ export default function ForumHome() {
     return user.username.charAt(0).toUpperCase();
   };
 
+  const renderUsername = (author: User | undefined) => {
+    if (!author) return <span className="text-muted-foreground">Unknown</span>;
+    const rc = rankConfig[(author as any)?.userRank || ""];
+    const isGradient = rc?.isGradient;
+    return (
+      <span
+        className={isGradient ? "font-semibold" : "text-foreground/70 font-medium"}
+        style={isGradient ? {
+          color: "transparent",
+          backgroundImage: rc.gradient,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+        } : rc?.color ? { color: rc.color } : undefined}
+      >
+        {author.username}
+      </span>
+    );
+  };
+
+  const isLoading = categoriesLoading || threadsLoading;
+
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
-      <div className="max-w-6xl mx-auto px-6 py-10 space-y-8 animate-in fade-in duration-500">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white" data-testid="heading-forums">Forums</h1>
-          <p className="text-sm text-white/40 mt-1">Connect with our community and get support</p>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-in fade-in duration-500">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight" data-testid="heading-forums">Forums</h1>
+            <p className="text-sm text-muted-foreground mt-1">Connect with our community and get support</p>
+          </div>
+          <Button asChild data-testid="link-new-thread">
+            <Link href="/forums/new">
+              <Plus className="w-4 h-4 mr-1.5" /> New Discussion
+            </Link>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <aside className="lg:col-span-3 space-y-1">
-            {Object.entries(grouped).map(([groupName, cats]) => {
-              if (cats.length === 0) return null;
-              const groupThreadCount = threads.filter((t) =>
-                cats.some((c) => c.id === t.categoryId)
-              ).length;
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-md" />
+                ))}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedCategory === null
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover-elevate"
+                  }`}
+                  data-testid="button-category-all"
+                >
+                  All Discussions
+                  <span className="ml-2 text-xs text-muted-foreground">({threads.length})</span>
+                </button>
 
-              return (
-                <div key={groupName} className="mb-4" data-testid={`group-${groupName}`}>
-                  <button
-                    onClick={() => setSelectedCategory(null)}
-                    className="w-full text-left px-3 py-2"
-                  >
-                    <h3 className="text-sm font-semibold text-white">{groupName}</h3>
-                    <p className="text-xs text-white/30">{groupThreadCount} posts</p>
-                  </button>
-                  <div className="mt-1 space-y-0.5">
-                    {cats.map((cat) => {
-                      const isSelected = selectedCategory === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => setSelectedCategory(isSelected ? null : cat.id)}
-                          className={`w-full text-left flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm transition-colors ${
-                            isSelected
-                              ? "bg-white/10 text-white font-medium"
-                              : "text-white/50 hover:text-white hover:bg-white/[0.03]"
-                          }`}
-                          data-testid={`button-category-${cat.id}`}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-current flex-shrink-0" />
-                          {cat.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+                {Object.entries(grouped).map(([groupName, cats]) => {
+                  if (cats.length === 0) return null;
 
-            <div className="pt-4">
-              <Button
-                asChild
-                className="w-full bg-white text-black hover:bg-white/90 rounded-lg font-medium text-sm h-10 transition-transform active:scale-95"
-              >
-                <Link href="/forums/new" data-testid="link-new-thread">
-                  <Plus className="w-4 h-4 mr-1.5" strokeWidth={2.5} /> Start Discussion
-                </Link>
-              </Button>
-            </div>
+                  return (
+                    <div key={groupName} className="mt-4" data-testid={`group-${groupName}`}>
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-3 mb-1.5">
+                        {groupName}
+                      </h3>
+                      <div className="space-y-0.5">
+                        {cats.map((cat) => {
+                          const isSelected = selectedCategory === cat.id;
+                          const catThreadCount = threads.filter((t) => t.categoryId === cat.id).length;
+                          return (
+                            <button
+                              key={cat.id}
+                              onClick={() => setSelectedCategory(isSelected ? null : cat.id)}
+                              className={`w-full text-left flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                                isSelected
+                                  ? "bg-accent text-accent-foreground font-medium"
+                                  : "text-muted-foreground hover-elevate"
+                              }`}
+                              data-testid={`button-category-${cat.id}`}
+                            >
+                              <span className="truncate">{cat.name}</span>
+                              <span className="text-xs flex-shrink-0 opacity-60">{catThreadCount}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </aside>
 
           <div className="lg:col-span-9">
-            <div className="border border-white/5 rounded-xl overflow-hidden bg-[#0a0a0a]">
-              <div className="divide-y divide-white/5">
-                {filteredThreads.map((thread) => (
-                  <Link key={thread.id} href={`/forums/thread/${thread.id}`}>
-                    <div
-                      className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors cursor-pointer group"
-                      data-testid={`thread-${thread.id}`}
-                    >
-                      <Avatar className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 border border-white/5">
-                        <AvatarImage src={thread.author?.profileImageUrl || undefined} />
-                        <AvatarFallback className="bg-white/5 text-white/50 text-sm font-semibold">
-                          {getInitial(thread.author)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-white/90 group-hover:text-white transition-colors truncate">
-                          {thread.title}
-                        </h3>
-                        <p className="text-xs text-white/30 mt-0.5">
-                          Started by{" "}
-                          {(() => {
-                            const rc = rankConfig[(thread.author as any)?.userRank || ""];
-                            const isLifetime = (thread.author as any)?.userRank === "Lifetime" && rc?.isGradient;
-                            return (
-                              <span
-                                className={isLifetime ? "font-semibold" : "text-white/50"}
-                                style={isLifetime ? {
-                                  color: "transparent",
-                                  backgroundImage: rc.gradient,
-                                  WebkitBackgroundClip: "text",
-                                  backgroundClip: "text",
-                                } : undefined}
-                              >
-                                {thread.author?.username || "Unknown"}
-                              </span>
-                            );
-                          })()}
-                          {" · "}
-                          {thread.createdAt
-                            ? formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })
-                            : "recently"}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 text-white/20 flex-shrink-0">
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium">{thread.replyCount || 0}</span>
-                      </div>
-                    </div>
-                  </Link>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-md" />
                 ))}
-
-                {filteredThreads.length === 0 && (
-                  <div className="py-20 text-center">
-                    <MessageSquare className="w-10 h-10 text-white/10 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-white/50">No discussions yet</p>
-                    <p className="text-xs text-white/30 mt-1">Be the first to start a conversation with the community!</p>
-                  </div>
-                )}
               </div>
-            </div>
+            ) : (
+              <Card>
+                <CardContent className="p-0 divide-y divide-border">
+                  {filteredThreads.map((thread) => (
+                    <Link key={thread.id} href={`/forums/thread/${thread.id}`}>
+                      <div
+                        className="flex items-start gap-3 sm:gap-4 px-4 py-3.5 hover-elevate transition-colors cursor-pointer group"
+                        data-testid={`thread-${thread.id}`}
+                      >
+                        <Avatar className="w-9 h-9 flex-shrink-0 mt-0.5">
+                          <AvatarImage src={thread.author?.profileImageUrl || undefined} />
+                          <AvatarFallback className="text-sm font-semibold">
+                            {getInitial(thread.author)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {thread.isPinned && (
+                              <Pin className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                            )}
+                            <h3 className="text-sm font-medium group-hover:text-foreground transition-colors truncate">
+                              {thread.title}
+                            </h3>
+                            {thread.isLocked && (
+                              <Lock className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+                            <span className="flex items-center gap-1">
+                              {renderUsername(thread.author)}
+                            </span>
+                            {thread.category && (
+                              <>
+                                <span>in</span>
+                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                                  {thread.category.name}
+                                </Badge>
+                              </>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {thread.createdAt
+                                ? formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })
+                                : "recently"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 flex-shrink-0 text-muted-foreground">
+                          <div className="flex items-center gap-1 text-xs" data-testid={`thread-replies-${thread.id}`}>
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            <span>{thread.replyCount || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-xs" data-testid={`thread-views-${thread.id}`}>
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{thread.viewCount || 0}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+
+                  {filteredThreads.length === 0 && (
+                    <div className="py-16 text-center">
+                      <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                      <p className="text-sm font-medium text-muted-foreground">No discussions yet</p>
+                      <p className="text-xs text-muted-foreground/60 mt-1 mb-4">Be the first to start a conversation!</p>
+                      <Button asChild variant="outline" size="sm" data-testid="link-start-discussion-empty">
+                        <Link href="/forums/new">
+                          <Plus className="w-3.5 h-3.5 mr-1.5" /> Start Discussion
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +17,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Plus,
   Loader2,
   Clock,
+  Calendar,
+  ArrowRight,
+  Pencil,
+  Tag,
+  FileText,
+  ImageIcon,
 } from "lucide-react";
 import type { Announcement } from "@shared/schema";
 import { Link } from "wouter";
@@ -32,11 +47,23 @@ function estimateReadTime(content: string): string {
   return `${minutes} min read`;
 }
 
+function formatDate(dateStr: string | Date): string {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default function Blog() {
   const { user } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [category, setCategory] = useState("General");
+  const [imageUrl, setImageUrl] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const { data: posts = [], isLoading } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog"],
@@ -52,6 +79,8 @@ export default function Blog() {
       setIsCreateOpen(false);
       setTitle("");
       setContent("");
+      setCategory("General");
+      setImageUrl("");
     },
     onError: (error: any) => {
       console.error("Blog post error:", error);
@@ -66,187 +95,336 @@ export default function Blog() {
 
   const handleCreatePost = () => {
     if (!title || !content) return;
-    createPostMutation.mutate({ title, content, category: "General" });
+    const postData: any = { title, content, category };
+    if (imageUrl.trim()) postData.imageUrl = imageUrl.trim();
+    createPostMutation.mutate(postData);
   };
+
+  const categories = ["all", ...new Set(posts.map(p => p.category || "General"))];
+
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = !searchQuery || 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || 
+      (post.category || "General") === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const featuredPost = filteredPosts[0];
+  const remainingPosts = filteredPosts.slice(1);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#050505]">
-        <Loader2 className="w-8 h-8 animate-spin text-white/20" />
+      <div className="min-h-screen bg-background pt-20">
+        <div className="max-w-7xl mx-auto px-6 space-y-12">
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-48 bg-muted" />
+            <Skeleton className="h-6 w-80 bg-muted" />
+          </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Skeleton className="h-80 rounded-xl bg-muted" />
+            <div className="space-y-6">
+              <Skeleton className="h-8 w-24 bg-muted" />
+              <Skeleton className="h-12 w-full bg-muted" />
+              <Skeleton className="h-24 w-full bg-muted" />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="h-48 rounded-xl bg-muted" />
+                <Skeleton className="h-6 w-full bg-muted" />
+                <Skeleton className="h-16 w-full bg-muted" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-20">
-      <div className="max-w-7xl mx-auto px-6 space-y-16 pb-32">
-        <div className="space-y-4">
-          <h1 className="text-5xl font-semibold tracking-tight uppercase text-white" data-testid="heading-blog">
-            Blog
-          </h1>
-          <p className="text-white/40 text-lg font-medium">
-            Browse our latest blog posts and articles
-          </p>
+    <div className="min-h-screen bg-background text-foreground pt-20">
+      <div className="max-w-7xl mx-auto px-6 space-y-12 pb-32">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground" data-testid="heading-blog">
+              Blog
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Latest news, updates, and articles from the team
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Input
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-64"
+              data-testid="input-blog-search"
+            />
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-40" data-testid="select-blog-category">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat === "all" ? "All Categories" : cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {posts.length > 0 && (
-          <div className="group relative">
-            <Link href={`/blog/${posts[0].id}`}>
-              <Card className="border-none bg-transparent overflow-hidden cursor-pointer">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                  <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                    <img
-                      src={
-                        posts[0].imageUrl ||
-                        "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
-                      }
-                      alt={posts[0].title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      data-testid="img-featured-post"
-                    />
-                    <div className="absolute top-8 left-8 z-20">
-                      <Badge className="bg-white/10 backdrop-blur-xl text-white font-semibold px-4 py-1.5 rounded-full border border-white/10 uppercase tracking-widest text-[10px]">
-                        Featured
+        {featuredPost && (
+          <Link href={`/blog/${featuredPost.id}`}>
+            <Card className="overflow-visible border-none bg-secondary/30 hover-elevate cursor-pointer" data-testid="card-featured-post">
+              <div className="grid lg:grid-cols-2 gap-0">
+                <div className="relative aspect-video lg:aspect-auto lg:min-h-[360px] rounded-t-xl lg:rounded-l-xl lg:rounded-tr-none overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+                  <img
+                    src={
+                      featuredPost.imageUrl ||
+                      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+                    }
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover"
+                    data-testid="img-featured-post"
+                  />
+                  <div className="absolute top-4 left-4 z-20">
+                    <Badge variant="secondary" className="backdrop-blur-sm uppercase tracking-widest text-[10px] font-semibold">
+                      Featured
+                    </Badge>
+                  </div>
+                </div>
+
+                <CardContent className="p-8 flex flex-col justify-center space-y-6">
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
+                    <span className="flex items-center gap-1.5" data-testid="text-featured-date">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {formatDate(featuredPost.createdAt!)}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      {estimateReadTime(featuredPost.content)}
+                    </span>
+                    {featuredPost.category && (
+                      <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
+                        {featuredPost.category}
                       </Badge>
-                    </div>
+                    )}
                   </div>
 
-                  <CardContent className="p-0 space-y-8">
-                    <div className="space-y-6">
-                      <div className="flex flex-wrap items-center gap-6 text-[12px] font-bold uppercase tracking-[0.2em] text-white/30">
-                        <span className="flex items-center gap-2" data-testid="text-featured-date">
-                          {new Date(posts[0].createdAt!).toLocaleDateString(
-                            "en-US",
-                            { month: "short", day: "numeric", year: "numeric" },
-                          )}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" /> {estimateReadTime(posts[0].content)}
-                        </span>
-                      </div>
+                  <h2 className="text-2xl md:text-3xl font-semibold text-foreground leading-tight tracking-tight" data-testid="text-featured-title">
+                    {featuredPost.title}
+                  </h2>
+                  <p className="text-muted-foreground text-base leading-relaxed line-clamp-3">
+                    {featuredPost.content}
+                  </p>
 
-                      <h2 className="text-4xl md:text-5xl font-semibold text-white leading-tight tracking-tight" data-testid="text-featured-title">
-                        {posts[0].title}
-                      </h2>
-                      <p className="text-white/40 text-xl font-medium leading-relaxed line-clamp-3">
-                        {posts[0].content}
-                      </p>
-                    </div>
-
-                    {posts[0].author && (
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5 shadow-xl overflow-hidden">
-                          {posts[0].author.profileImageUrl ? (
-                            <img src={posts[0].author.profileImageUrl} alt={posts[0].author.username} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-xs font-semibold text-white/40">
-                              {posts[0].author.username.charAt(0).toUpperCase()}
-                            </span>
-                          )}
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                    {featuredPost.author && (
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-9 h-9">
+                          <AvatarImage src={featuredPost.author.profileImageUrl || undefined} alt={featuredPost.author.username} />
+                          <AvatarFallback className="text-xs font-semibold bg-muted text-muted-foreground">
+                            {featuredPost.author.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-foreground" data-testid="text-featured-author">
+                            {featuredPost.author.username}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {featuredPost.author.userRank || "Member"}
+                          </span>
                         </div>
-                        <span className="text-sm font-semibold uppercase tracking-widest text-white/80" data-testid="text-featured-author">
-                          {posts[0].author.username}
-                        </span>
                       </div>
                     )}
-                  </CardContent>
-                </div>
-              </Card>
-            </Link>
+                    <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                      Read article <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
+          </Link>
+        )}
+
+        {remainingPosts.length > 0 && (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-foreground">
+              {selectedCategory !== "all" ? selectedCategory : "All Articles"}
+              <span className="text-muted-foreground font-normal ml-2 text-sm">
+                ({remainingPosts.length})
+              </span>
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {remainingPosts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.id}`}>
+                  <Card className="overflow-visible hover-elevate cursor-pointer h-full flex flex-col" data-testid={`card-blog-${post.id}`}>
+                    <div className="aspect-[16/10] rounded-t-xl overflow-hidden relative">
+                      <img
+                        src={
+                          post.imageUrl ||
+                          "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+                        }
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                      {post.category && (
+                        <div className="absolute top-3 right-3">
+                          <Badge variant="secondary" className="backdrop-blur-sm text-[10px] uppercase tracking-wider">
+                            {post.category}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-5 flex flex-col flex-1 space-y-3">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {formatDate(post.createdAt!)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {estimateReadTime(post.content)}
+                        </span>
+                      </div>
+                      <h4 className="text-lg font-semibold text-foreground leading-snug tracking-tight line-clamp-2">
+                        {post.title}
+                      </h4>
+                      <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed flex-1">
+                        {post.content}
+                      </p>
+                      {post.author && (
+                        <div className="flex items-center gap-2.5 pt-2 border-t border-border">
+                          <Avatar className="w-7 h-7">
+                            <AvatarImage src={post.author.profileImageUrl || undefined} alt={post.author.username} />
+                            <AvatarFallback className="text-[10px] font-semibold bg-muted text-muted-foreground">
+                              {post.author.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-medium text-muted-foreground" data-testid={`text-author-${post.id}`}>
+                            {post.author.username}
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 pt-12 border-t border-white/5">
-          {posts.slice(1).map((post) => (
-            <Link key={post.id} href={`/blog/${post.id}`}>
-              <Card className="border-none bg-transparent hover:translate-y-[-8px] transition-all duration-500 group cursor-pointer space-y-6" data-testid={`card-blog-${post.id}`}>
-                <div className="aspect-[16/10] rounded-xl overflow-hidden shadow-xl relative">
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
-                  <img
-                    src={
-                      post.imageUrl ||
-                      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
-                    }
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <CardContent className="p-0 space-y-4">
-                  <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest text-white/20">
-                    <span>
-                      {new Date(post.createdAt!).toLocaleDateString()}
-                    </span>
-                    <span>•</span>
-                    <span>{estimateReadTime(post.content)}</span>
-                    {post.author && (
-                      <>
-                        <span>•</span>
-                        <span data-testid={`text-author-${post.id}`}>{post.author.username}</span>
-                      </>
-                    )}
-                  </div>
-                  <h4 className="text-2xl font-semibold text-white leading-snug tracking-tight line-clamp-2 group-hover:text-white/80 transition-colors">
-                    {post.title}
-                  </h4>
-                  <p className="text-white/30 text-base font-medium line-clamp-2 leading-relaxed">
-                    {post.content}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        {filteredPosts.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+            <FileText className="w-12 h-12 text-muted-foreground/40" />
+            <h3 className="text-lg font-semibold text-foreground">No articles found</h3>
+            <p className="text-muted-foreground text-sm max-w-md text-center">
+              {searchQuery
+                ? `No articles match "${searchQuery}". Try a different search term.`
+                : "No blog posts have been published yet. Check back soon!"}
+            </p>
+          </div>
+        )}
 
         {isAdmin && (
-          <div className="fixed bottom-12 right-12 z-50">
+          <div className="fixed bottom-8 right-8 z-50">
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>
-                <Button className="h-16 w-16 rounded-full bg-white text-black hover:bg-white/90 shadow-2xl active:scale-90 transition-all" data-testid="button-create-post">
-                  <Plus className="w-8 h-8" strokeWidth={3} />
+                <Button size="icon" className="h-14 w-14 rounded-full shadow-2xl" data-testid="button-create-post">
+                  <Pencil className="w-5 h-5" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-[#121212] border-white/5 text-white">
+              <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-semibold uppercase tracking-tight">
+                  <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
                     Create Blog Post
                   </DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6 py-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                <div className="space-y-5 py-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">
                       Title
                     </label>
                     <Input
-                      placeholder="Post title..."
+                      placeholder="Enter article title..."
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="bg-white/5 border-white/10 h-14 text-white font-bold"
                       data-testid="input-post-title"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                        <Tag className="w-3 h-3" /> Category
+                      </label>
+                      <Select value={category} onValueChange={setCategory}>
+                        <SelectTrigger data-testid="select-post-category">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="General">General</SelectItem>
+                          <SelectItem value="Update">Update</SelectItem>
+                          <SelectItem value="Announcement">Announcement</SelectItem>
+                          <SelectItem value="Dev Blog">Dev Blog</SelectItem>
+                          <SelectItem value="Community">Community</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                        <ImageIcon className="w-3 h-3" /> Cover Image URL
+                      </label>
+                      <Input
+                        placeholder="https://..."
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        data-testid="input-post-image"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">
                       Content
                     </label>
                     <Textarea
-                      placeholder="Write your article here..."
+                      placeholder="Write your article content..."
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      className="bg-white/5 border-white/10 min-h-[300px] text-white font-medium resize-none"
+                      className="min-h-[250px] resize-none"
                       data-testid="input-post-content"
                     />
                   </div>
-                  <Button
-                    onClick={handleCreatePost}
-                    disabled={createPostMutation.isPending}
-                    className="w-full h-14 bg-white text-black font-semibold uppercase tracking-widest hover:bg-white/90"
-                    data-testid="button-publish"
-                  >
-                    {createPostMutation.isPending
-                      ? "Publishing..."
-                      : "Publish Article"}
-                  </Button>
+                  <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCreateOpen(false)}
+                      data-testid="button-cancel-post"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleCreatePost}
+                      disabled={createPostMutation.isPending || !title || !content}
+                      data-testid="button-publish"
+                    >
+                      {createPostMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Publishing...
+                        </>
+                      ) : (
+                        "Publish Article"
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>

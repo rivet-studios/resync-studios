@@ -3,7 +3,7 @@
 ## Project Overview
 Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, marketplace, user profiles, comprehensive rank system, moderation tools, ban/appeal system, and Stripe payment processing.
 
-## Current Status (March 06, 2026)
+## Current Status (March 08, 2026)
 - ✅ Core authentication (Discord, Email/Password, Roblox linking)
 - ✅ Comprehensive user rank system (40+ ranks)
 - ✅ Landing page with hero, stats counter, and features grid
@@ -46,6 +46,24 @@ Full-featured gaming community platform for RIVET Studios with Discord/email aut
 - **Component**: `client/src/components/ban-wall.tsx` — blocks banned users from all pages except `/appeals`
 - **Integration**: Wraps Router in `App.tsx`; queries `/api/bans/my` when user is logged in
 - **Display**: Shows ban reason, date, duration, and link to appeal
+
+### Site Offline Mode (March 2026):
+- **Public Endpoint**: `GET /api/site-status` — returns offline status without auth
+- **OfflineGate Component**: Wraps all routes in App.tsx, checks status every 30s
+- **Admin Bypass**: Company Director, Operations Manager, Team Member, Developer, Staff Internal Affairs, isAdmin, @resyncstudios.com emails can bypass offline mode
+- **Maintenance Page**: Shows custom offline message with professional design
+
+### UI Overhaul (March 2026):
+- **Landing Page**: Full dark theme redesign with radial gradients, semantic tokens, consistent Card/Badge components
+- **Forums**: Improved category sidebar with counts, thread cards with avatars/views/timestamps, skeleton loading
+- **Store**: Better category cards with icons, improved product grid, semantic theme tokens
+- **Blog**: Search and category filtering, improved featured post card, author cards, better post creation dialog
+- **Dashboard**: Welcome header with avatar, quick stats row, quick action buttons, improved card layouts
+- **AdminCP**: System health indicators, user rank breakdown, inline rank editing, better activity feed
+- **ModCP**: Clickable stat cards, attention banner, confirmation dialogs for bans/appeals, more duration options
+- **Profiles**: Larger avatar with staff indicator, profile stats grid, linked accounts section, recent activity feed
+- **Case Detail**: Fixed type matching bug (lowercase URLs now work), fixed getStatusColor switch cases
+- **Appeals**: Fixed filter values to use Title Case matching database enum
 
 ## Recent Additions
 
