@@ -15,7 +15,7 @@ import { z } from "zod";
 
 export const reportStatusEnum = pgEnum("report_status", [
   "Pending",
-  "Reviewed",
+  "In Review",
   "Dismissed",
   "Action Taken",
 ]);
@@ -52,28 +52,9 @@ export const vipTierEnum = pgEnum("vip_tier", [
   "Founders Edition VIP",
   "Lifetime",
 ]);
-export const skillLevelEnum = pgEnum("skill_level", [
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-  "Expert",
-  "Pro",
-]);
-export const gameRoleEnum = pgEnum("game_role", [
-  "Tank",
-  "DPS",
-  "Support",
-  "Healer",
-  "Flex",
-  "Any",
-]);
 export const userRankEnum = pgEnum("user_rank", [
-  "Moderator",
-  "Administrator",
-  "Senior Administrator",
   "Banned",
-  "Member",
-  "Active Member",
+  "Active Members",
   "Trusted Member",
   "Community Partner",
   "Bronze VIP",
@@ -81,24 +62,16 @@ export const userRankEnum = pgEnum("user_rank", [
   "Founders Edition VIP",
   "Lifetime",
   "Vehicle Tester",
-  "Report Analyst",
-  "Appeal Analyst",
-  "Quality Assurance Team",
-  "Quality Assurance Lead",
-  "Governor of the State of Rosewood",
-  "RS Volunteer Staff",
-  "RS Trust & Safety Team",
   "Customer Relations",
   "Appeals Moderator",
-  "Community Moderator",
-  "Community Senior Moderator",
-  "Community Administrator",
-  "Community Senior Administrator",
-  "Community Developer",
+  "Trial Moderator",
+  "Moderator",
+  "Administrator",
+  "Senior Administrator",
+  "Developer",
   "Staff Internal Affairs",
-  "Company Representative",
   "Team Member",
-  "MI Trust & Safety Director",
+  // "MI Trust & Safety Director"-disabled
   "Staff Department Director",
   "Operations Manager",
   "Company Director",
@@ -142,87 +115,21 @@ export const users = pgTable("users", {
   robloxUsername: varchar("roblox_username"),
   robloxDisplayName: varchar("roblox_display_name"),
   robloxLinkedAt: timestamp("roblox_linked_at"),
-  // Gaming stats
-  gamesPlayed: integer("games_played").default(0),
-  totalPosts: integer("total_posts").default(0),
-  reputation: integer("reputation").default(0),
-  // Group membership
-  groupId: varchar("group_id"),
-  groupRole: varchar("group_role"),
-  // User rank/role - Support for multiple ranks
-  userRank: userRankEnum("user_rank").default("Member"), // Primary rank
+  // User Ranks
+  userRank: userRankEnum("user_rank").default("Active Members"),
+
   additionalRanks: text("additional_ranks")
     .array()
     .default(sql`'{}'::text[]`),
-  secondaryUserRank: text("secondary_user_rank").default("Active Member"), // Legacy
-  tertiaryUserRank: userRankEnum("tertiary_user_rank").default("Lifetime"), // Legacy
   // Moderator Dashboard
   isModerator: boolean("is_moderator").default(false),
   // Admin Dashboard
   isAdmin: boolean("is_admin").default(false),
-  MI_Trust_Safety_Director: boolean("MI Trust & Safety Director").default(
-    false,
-  ),
-  Staff_Department_Director: boolean("Staff Department Director").default(
-    false,
-  ),
+  // Date of Birth
   dateOfBirth: varchar("date_of_birth"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Groups table (formally clans)
-export const groups = pgTable("groups", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull().unique(),
-  tag: varchar("tag", { length: 6 }).notNull().unique(),
-  description: text("description"),
-  logoUrl: varchar("logo_url"),
-  bannerUrl: varchar("banner_url"),
-  ownerId: varchar("owner_id").notNull(),
-  isRecruiting: boolean("is_recruiting").default(true),
-  memberCount: integer("member_count").default(1),
-  maxMembers: integer("max_members").default(50),
-  discordInvite: varchar("discord_invite"),
-  primaryGame: varchar("primary_game"),
-  requirements: text("requirements"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Build/Meta Guides
-export const builds = pgTable("builds", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  authorId: varchar("author_id").notNull(),
-  title: varchar("title").notNull(),
-  description: text("description"),
-  game: varchar("game").notNull(),
-  character: varchar("character"),
-  category: varchar("category"),
-  content: text("content").notNull(),
-  imageUrl: varchar("image_url"),
-  upvotes: integer("upvotes").default(0),
-  downvotes: integer("downvotes").default(0),
-  viewCount: integer("view_count").default(1),
-  isFeatured: boolean("is_featured").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Build Votes
-export const buildVotes = pgTable("build_votes", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  buildId: varchar("build_id").notNull(),
-  userId: varchar("user_id").notNull(),
-  isUpvote: boolean("is_upvote").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Forum Categories
@@ -252,7 +159,7 @@ export const forumThreads = pgTable("forum_threads", {
   isPinned: boolean("is_pinned").default(false),
   isLocked: boolean("is_locked").default(false),
   viewCount: integer("view_count").default(1),
-  replyCount: integer("reply_count").default(1),
+  replyCount: integer("reply_count").default(0),
   upvotes: integer("upvotes").default(0),
   lastReplyAt: timestamp("last_reply_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -268,18 +175,6 @@ export const forumReplies = pgTable("forum_replies", {
   authorId: varchar("author_id").notNull(),
   content: text("content").notNull(),
   upvotes: integer("upvotes").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Chat Messages
-export const chatMessages = pgTable("chat_messages", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  senderId: varchar("sender_id").notNull(),
-  recipientId: varchar("recipient_id"),
-  groupId: varchar("group_id"),
-  content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -339,26 +234,12 @@ export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
   updatedAt: true,
 });
-export const insertGroupSchema = createInsertSchema(groups).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-export const insertBuildSchema = createInsertSchema(builds).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
 export const insertForumThreadSchema = createInsertSchema(forumThreads).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 export const insertForumReplySchema = createInsertSchema(forumReplies).omit({
-  id: true,
-  createdAt: true,
-});
-export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   id: true,
   createdAt: true,
 });
@@ -373,9 +254,9 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 });
 
 export const productStatusEnum = pgEnum("product_status", [
-  "pending",
-  "approved",
-  "denied",
+  "Pending",
+  "Approved",
+  "Denied",
 ]);
 
 export const products = pgTable("products", {
@@ -388,7 +269,7 @@ export const products = pgTable("products", {
   imageUrl: varchar("image_url"),
   category: varchar("category"),
   submitterId: varchar("submitter_id").notNull(),
-  status: productStatusEnum("status").default("pending"),
+  status: productStatusEnum("status").default("Pending"),
   isCommunityProvided: boolean("is_community_provided").default(false),
   isFeatured: boolean("is_featured").default(false),
   isLimitedEdition: boolean("is_limited_edition").default(false),
@@ -422,7 +303,7 @@ export const bans = pgTable("bans", {
   isPermanent: boolean("is_permanent").default(true),
   expiresAt: timestamp("expires_at"),
   isActive: boolean("is_active").default(true),
-  priorRank: varchar("prior_rank").default("Member"),
+  priorRank: varchar("prior_rank").default("Active. Members"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -434,9 +315,10 @@ export const insertBanSchema = createInsertSchema(bans).omit({
 });
 
 export const appealStatusEnum = pgEnum("appeal_status", [
-  "pending",
-  "approved",
-  "denied",
+  "Pending",
+  "In Review",
+  "Approved",
+  "Denied",
 ]);
 
 export const appeals = pgTable("appeals", {
@@ -446,7 +328,7 @@ export const appeals = pgTable("appeals", {
   userId: varchar("user_id").notNull(),
   banId: varchar("ban_id"),
   reason: text("reason").notNull(),
-  status: appealStatusEnum("status").default("pending"),
+  status: appealStatusEnum("status").default("Pending"),
   reviewedBy: varchar("reviewed_by"),
   reviewNotes: text("review_notes"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -465,11 +347,6 @@ export const insertAppealSchema = createInsertSchema(appeals).omit({
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = Partial<User> & { id?: string };
-export type Groups = typeof groups.$inferSelect;
-export type InsertGroup = z.infer<typeof insertGroupSchema>;
-export type Build = typeof builds.$inferSelect;
-export type InsertBuild = z.infer<typeof insertBuildSchema>;
-export type BuildVote = typeof buildVotes.$inferSelect;
 export type ForumCategory = typeof forumCategories.$inferSelect;
 export type InsertForumCategory = z.infer<
   ReturnType<typeof createInsertSchema<typeof forumCategories>>
@@ -478,8 +355,6 @@ export type ForumThread = typeof forumThreads.$inferSelect;
 export type InsertForumThread = z.infer<typeof insertForumThreadSchema>;
 export type ForumReply = typeof forumReplies.$inferSelect;
 export type InsertForumReply = z.infer<typeof insertForumReplySchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 export type SiteSettings = typeof siteSettings.$inferSelect;

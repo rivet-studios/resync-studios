@@ -2,19 +2,12 @@ import { randomUUID } from "crypto";
 import {
   type User,
   type UpsertUser,
-  type Groups,
-  type InsertGroup,
-  type Build,
-  type InsertBuild,
-  type BuildVote,
   type ForumCategory,
   type InsertForumCategory,
   type ForumThread,
   type InsertForumThread,
   type ForumReply,
   type InsertForumReply,
-  type ChatMessage,
-  type InsertChatMessage,
   type Announcement,
   type InsertAnnouncement,
   type SiteSettings,
@@ -32,13 +25,9 @@ import {
   type Policy,
   policies,
   users,
-  groups,
-  builds,
-  buildVotes,
   forumCategories,
   forumThreads,
   forumReplies,
-  chatMessages,
   magicLinkTokens,
   announcements,
   siteSettings,
@@ -63,21 +52,6 @@ export interface IStorage {
   createMagicLinkToken(email: string): Promise<string>;
   verifyMagicLinkToken(token: string): Promise<string | undefined>;
   markMagicLinkTokenAsUsed(token: string): Promise<void>;
-  getGroups(): Promise<Groups[]>;
-  getGroup(id: string): Promise<Groups | undefined>;
-  createGroup(group: InsertGroup): Promise<Groups>;
-  updateGroup(
-    id: string,
-    updates: Partial<Groups>,
-  ): Promise<Groups | undefined>;
-  deleteGroup(id: string): Promise<void>;
-  getBuilds(): Promise<Build[]>;
-  getBuild(id: string): Promise<Build | undefined>;
-  createBuild(build: InsertBuild): Promise<Build>;
-  updateBuild(id: string, updates: Partial<Build>): Promise<Build | undefined>;
-  deleteBuild(id: string): Promise<void>;
-  voteBuild(buildId: string, userId: string, isUpvote: boolean): Promise<void>;
-  getBuildVote(buildId: string, userId: string): Promise<BuildVote | undefined>;
   getForumCategories(): Promise<ForumCategory[]>;
   getForumCategory(id: string): Promise<ForumCategory | undefined>;
   createForumCategory(category: InsertForumCategory): Promise<ForumCategory>;
@@ -90,11 +64,6 @@ export interface IStorage {
   ): Promise<ForumThread | undefined>;
   getForumReplies(threadId: string): Promise<ForumReply[]>;
   createForumReply(reply: InsertForumReply): Promise<ForumReply>;
-  getChatMessages(
-    recipientId?: string,
-    groupId?: string,
-  ): Promise<ChatMessage[]>;
-  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
   getAnnouncements(): Promise<Announcement[]>;
   getAnnouncement(id: string): Promise<Announcement | undefined>;
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
@@ -124,7 +93,10 @@ export interface IStorage {
   getProducts(status?: string): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
-  updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined>;
+  updateProduct(
+    id: string,
+    updates: Partial<Product>,
+  ): Promise<Product | undefined>;
   getBans(activeOnly?: boolean): Promise<Ban[]>;
   getBan(id: string): Promise<Ban | undefined>;
   getUserBans(userId: string): Promise<Ban[]>;
@@ -134,10 +106,18 @@ export interface IStorage {
   getAppeal(id: string): Promise<Appeal | undefined>;
   getUserAppeals(userId: string): Promise<Appeal[]>;
   createAppeal(appeal: InsertAppeal): Promise<Appeal>;
-  updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined>;
+  updateAppeal(
+    id: string,
+    updates: Partial<Appeal>,
+  ): Promise<Appeal | undefined>;
   getPolicies(): Promise<Policy[]>;
   getPolicy(slug: string): Promise<Policy | undefined>;
-  upsertPolicy(slug: string, title: string, content: string, updatedBy: string): Promise<Policy>;
+  upsertPolicy(
+    slug: string,
+    title: string,
+    content: string,
+    updatedBy: string,
+  ): Promise<Policy>;
   getAdminStats(): Promise<{
     totalUsers: number;
     totalThreads: number;
@@ -152,9 +132,6 @@ export interface IStorage {
   getRecentActivity(limit?: number): Promise<any[]>;
   getStats(): Promise<{
     totalMembers: number;
-    activeLfg: number;
-    totalGroups: number;
-    totalBuilds: number;
   }>;
 }
 
@@ -278,97 +255,6 @@ export class DatabaseStorage implements IStorage {
       .set({ usedAt: new Date() })
       .where(eq(magicLinkTokens.token, token));
   }
-  async getGroups(): Promise<Groups[]> {
-    return db.select().from(groups).orderBy(desc(groups.memberCount));
-  }
-  async getGroup(id: string): Promise<Groups | undefined> {
-    const [group] = await db.select().from(groups).where(eq(groups.id, id));
-    return group;
-  }
-  async createGroup(groupData: InsertGroup): Promise<Groups> {
-    const [group] = await db.insert(groups).values(groupData).returning();
-    return group;
-  }
-  async updateGroup(
-    id: string,
-    updates: Partial<Groups>,
-  ): Promise<Groups | undefined> {
-    const [group] = await db
-      .update(groups)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(groups.id, id))
-      .returning();
-    return group;
-  }
-  async deleteGroup(id: string): Promise<void> {
-    await db.delete(groups).where(eq(groups.id, id));
-  }
-  async getBuilds(): Promise<Build[]> {
-    return db.select().from(builds).orderBy(desc(builds.createdAt));
-  }
-  async getBuild(id: string): Promise<Build | undefined> {
-    const [build] = await db.select().from(builds).where(eq(builds.id, id));
-    return build;
-  }
-  async createBuild(buildData: InsertBuild): Promise<Build> {
-    const [build] = await db.insert(builds).values(buildData).returning();
-    return build;
-  }
-  async updateBuild(
-    id: string,
-    updates: Partial<Build>,
-  ): Promise<Build | undefined> {
-    const [build] = await db
-      .update(builds)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(builds.id, id))
-      .returning();
-    return build;
-  }
-  async deleteBuild(id: string): Promise<void> {
-    await db.delete(builds).where(eq(builds.id, id));
-  }
-  async voteBuild(
-    buildId: string,
-    userId: string,
-    isUpvote: boolean,
-  ): Promise<void> {
-    const existing = await this.getBuildVote(buildId, userId);
-    if (existing) {
-      await db
-        .delete(buildVotes)
-        .where(
-          and(eq(buildVotes.buildId, buildId), eq(buildVotes.userId, userId)),
-        );
-      await db
-        .update(builds)
-        .set({
-          [existing.isUpvote ? "upvotes" : "downvotes"]:
-            sql`${builds[existing.isUpvote ? "upvotes" : "downvotes"]} - 1`,
-        })
-        .where(eq(builds.id, buildId));
-    }
-    await db.insert(buildVotes).values({ buildId, userId, isUpvote });
-    await db
-      .update(builds)
-      .set({
-        [isUpvote ? "upvotes" : "downvotes"]:
-          sql`${builds[isUpvote ? "upvotes" : "downvotes"]} + 1`,
-      })
-      .where(eq(builds.id, buildId));
-  }
-  async getBuildVote(
-    buildId: string,
-    userId: string,
-  ): Promise<BuildVote | undefined> {
-    const [vote] = await db
-      .select()
-      .from(buildVotes)
-      .where(
-        and(eq(buildVotes.buildId, buildId), eq(buildVotes.userId, userId)),
-      );
-    return vote;
-  }
   async getForumCategories(): Promise<ForumCategory[]> {
     return db.select().from(forumCategories).orderBy(forumCategories.order);
   }
@@ -439,35 +325,6 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(forumThreads.id, replyData.threadId));
     return reply;
-  }
-  async getChatMessages(
-    recipientId?: string,
-    groupId?: string,
-  ): Promise<ChatMessage[]> {
-    if (groupId)
-      return db
-        .select()
-        .from(chatMessages)
-        .where(eq(chatMessages.groupId, groupId))
-        .orderBy(desc(chatMessages.createdAt))
-        .limit(100);
-    if (recipientId)
-      return db
-        .select()
-        .from(chatMessages)
-        .where(eq(chatMessages.recipientId, recipientId))
-        .orderBy(desc(chatMessages.createdAt))
-        .limit(100);
-    return [];
-  }
-  async createChatMessage(
-    messageData: InsertChatMessage,
-  ): Promise<ChatMessage> {
-    const [message] = await db
-      .insert(chatMessages)
-      .values(messageData)
-      .returning();
-    return message;
   }
   async getAnnouncements(): Promise<Announcement[]> {
     return db
@@ -567,7 +424,11 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(reports).orderBy(desc(reports.createdAt));
   }
   async getUserReports(userId: string): Promise<Report[]> {
-    return db.select().from(reports).where(eq(reports.reporterId, userId)).orderBy(desc(reports.createdAt));
+    return db
+      .select()
+      .from(reports)
+      .where(eq(reports.reporterId, userId))
+      .orderBy(desc(reports.createdAt));
   }
   async updateReportStatus(
     id: string,
@@ -583,25 +444,43 @@ export class DatabaseStorage implements IStorage {
   }
   async getProducts(status?: string): Promise<Product[]> {
     if (status) {
-      return db.select().from(products).where(eq(products.status, status as any)).orderBy(desc(products.createdAt));
+      return db
+        .select()
+        .from(products)
+        .where(eq(products.status, status as any))
+        .orderBy(desc(products.createdAt));
     }
     return db.select().from(products).orderBy(desc(products.createdAt));
   }
   async getProduct(id: string): Promise<Product | undefined> {
-    const [product] = await db.select().from(products).where(eq(products.id, id));
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(eq(products.id, id));
     return product;
   }
   async createProduct(productData: InsertProduct): Promise<Product> {
     const [product] = await db.insert(products).values(productData).returning();
     return product;
   }
-  async updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined> {
-    const [product] = await db.update(products).set({ ...updates, updatedAt: new Date() }).where(eq(products.id, id)).returning();
+  async updateProduct(
+    id: string,
+    updates: Partial<Product>,
+  ): Promise<Product | undefined> {
+    const [product] = await db
+      .update(products)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(products.id, id))
+      .returning();
     return product;
   }
   async getBans(activeOnly?: boolean): Promise<Ban[]> {
     if (activeOnly) {
-      return db.select().from(bans).where(eq(bans.isActive, true)).orderBy(desc(bans.createdAt));
+      return db
+        .select()
+        .from(bans)
+        .where(eq(bans.isActive, true))
+        .orderBy(desc(bans.createdAt));
     }
     return db.select().from(bans).orderBy(desc(bans.createdAt));
   }
@@ -610,26 +489,47 @@ export class DatabaseStorage implements IStorage {
     return ban;
   }
   async getUserBans(userId: string): Promise<Ban[]> {
-    return db.select().from(bans).where(and(eq(bans.userId, userId), eq(bans.isActive, true))).orderBy(desc(bans.createdAt));
+    return db
+      .select()
+      .from(bans)
+      .where(and(eq(bans.userId, userId), eq(bans.isActive, true)))
+      .orderBy(desc(bans.createdAt));
   }
   async createBan(banData: InsertBan): Promise<Ban> {
     const targetUser = await this.getUser(banData.userId);
     const priorRank = targetUser?.userRank || "Member";
-    const [ban] = await db.insert(bans).values({ ...banData, priorRank }).returning();
-    await db.update(users).set({ userRank: "Banned" as any, updatedAt: new Date() }).where(eq(users.id, banData.userId));
+    const [ban] = await db
+      .insert(bans)
+      .values({ ...banData, priorRank })
+      .returning();
+    await db
+      .update(users)
+      .set({ userRank: "Banned" as any, updatedAt: new Date() })
+      .where(eq(users.id, banData.userId));
     return ban;
   }
   async deactivateBan(id: string): Promise<Ban | undefined> {
-    const [ban] = await db.update(bans).set({ isActive: false }).where(eq(bans.id, id)).returning();
+    const [ban] = await db
+      .update(bans)
+      .set({ isActive: false })
+      .where(eq(bans.id, id))
+      .returning();
     if (ban) {
       const restoreRank = (ban.priorRank || "Member") as any;
-      await db.update(users).set({ userRank: restoreRank, updatedAt: new Date() }).where(eq(users.id, ban.userId));
+      await db
+        .update(users)
+        .set({ userRank: restoreRank, updatedAt: new Date() })
+        .where(eq(users.id, ban.userId));
     }
     return ban;
   }
   async getAppeals(status?: string): Promise<Appeal[]> {
     if (status) {
-      return db.select().from(appeals).where(eq(appeals.status, status as any)).orderBy(desc(appeals.createdAt));
+      return db
+        .select()
+        .from(appeals)
+        .where(eq(appeals.status, status as any))
+        .orderBy(desc(appeals.createdAt));
     }
     return db.select().from(appeals).orderBy(desc(appeals.createdAt));
   }
@@ -638,43 +538,65 @@ export class DatabaseStorage implements IStorage {
     return appeal;
   }
   async getUserAppeals(userId: string): Promise<Appeal[]> {
-    return db.select().from(appeals).where(eq(appeals.userId, userId)).orderBy(desc(appeals.createdAt));
+    return db
+      .select()
+      .from(appeals)
+      .where(eq(appeals.userId, userId))
+      .orderBy(desc(appeals.createdAt));
   }
   async createAppeal(appealData: InsertAppeal): Promise<Appeal> {
     const [appeal] = await db.insert(appeals).values(appealData).returning();
     return appeal;
   }
-  async updateAppeal(id: string, updates: Partial<Appeal>): Promise<Appeal | undefined> {
-    const [appeal] = await db.update(appeals).set({ ...updates, updatedAt: new Date() }).where(eq(appeals.id, id)).returning();
+  async updateAppeal(
+    id: string,
+    updates: Partial<Appeal>,
+  ): Promise<Appeal | undefined> {
+    const [appeal] = await db
+      .update(appeals)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(appeals.id, id))
+      .returning();
     return appeal;
   }
   async getStats(): Promise<{
     totalMembers: number;
-    activeLfg: number;
-    totalGroups: number;
-    totalBuilds: number;
   }> {
     const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
-    const [groupCount] = await db.select({ count: sql`count(*)` }).from(groups);
-    const [buildCount] = await db.select({ count: sql`count(*)` }).from(builds);
     return {
       totalMembers: Number(userCount.count),
-      activeLfg: 0,
-      totalGroups: Number(groupCount.count),
-      totalBuilds: Number(buildCount.count),
     };
   }
 
   async getAdminStats() {
     const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
-    const [threadCount] = await db.select({ count: sql`count(*)` }).from(forumThreads);
-    const [replyCount] = await db.select({ count: sql`count(*)` }).from(forumReplies);
-    const [productCount] = await db.select({ count: sql`count(*)` }).from(products);
-    const [banCount] = await db.select({ count: sql`count(*)` }).from(bans).where(eq(bans.isActive, true));
-    const [reportCount] = await db.select({ count: sql`count(*)` }).from(reports).where(sql`${reports.status} = 'Pending'`);
-    const [appealCount] = await db.select({ count: sql`count(*)` }).from(appeals).where(sql`${appeals.status} = 'pending'`);
-    const [paymentCount] = await db.select({ count: sql`count(*)` }).from(payments);
-    const [announcementCount] = await db.select({ count: sql`count(*)` }).from(announcements);
+    const [threadCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(forumThreads);
+    const [replyCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(forumReplies);
+    const [productCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(products);
+    const [banCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(bans)
+      .where(eq(bans.isActive, true));
+    const [reportCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(reports)
+      .where(sql`${reports.status} = 'Pending'`);
+    const [appealCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(appeals)
+      .where(sql`${appeals.status} = 'Pending'`);
+    const [paymentCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(payments);
+    const [announcementCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(announcements);
     return {
       totalUsers: Number(userCount.count),
       totalThreads: Number(threadCount.count),
@@ -689,35 +611,50 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRecentActivity(limit = 20): Promise<any[]> {
-    const recentBans = await db.select({
-      id: bans.id,
-      type: sql`'ban'`.as('type'),
-      description: bans.reason,
-      targetId: bans.userId,
-      actorId: bans.bannedBy,
-      createdAt: bans.createdAt,
-    }).from(bans).orderBy(desc(bans.createdAt)).limit(limit);
+    const recentBans = await db
+      .select({
+        id: bans.id,
+        type: sql`'ban'`.as("type"),
+        description: bans.reason,
+        targetId: bans.userId,
+        actorId: bans.bannedBy,
+        createdAt: bans.createdAt,
+      })
+      .from(bans)
+      .orderBy(desc(bans.createdAt))
+      .limit(limit);
 
-    const recentReports = await db.select({
-      id: reports.id,
-      type: sql`'report'`.as('type'),
-      description: reports.reason,
-      targetId: reports.targetId,
-      actorId: reports.reporterId,
-      createdAt: reports.createdAt,
-    }).from(reports).orderBy(desc(reports.createdAt)).limit(limit);
+    const recentReports = await db
+      .select({
+        id: reports.id,
+        type: sql`'report'`.as("type"),
+        description: reports.reason,
+        targetId: reports.targetId,
+        actorId: reports.reporterId,
+        createdAt: reports.createdAt,
+      })
+      .from(reports)
+      .orderBy(desc(reports.createdAt))
+      .limit(limit);
 
-    const recentAppeals = await db.select({
-      id: appeals.id,
-      type: sql`'appeal'`.as('type'),
-      description: appeals.reason,
-      targetId: appeals.userId,
-      actorId: appeals.userId,
-      createdAt: appeals.createdAt,
-    }).from(appeals).orderBy(desc(appeals.createdAt)).limit(limit);
+    const recentAppeals = await db
+      .select({
+        id: appeals.id,
+        type: sql`'appeal'`.as("type"),
+        description: appeals.reason,
+        targetId: appeals.userId,
+        actorId: appeals.userId,
+        createdAt: appeals.createdAt,
+      })
+      .from(appeals)
+      .orderBy(desc(appeals.createdAt))
+      .limit(limit);
 
     const combined = [...recentBans, ...recentReports, ...recentAppeals]
-      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime(),
+      )
       .slice(0, limit);
 
     return combined;
@@ -728,11 +665,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPolicy(slug: string): Promise<Policy | undefined> {
-    const [policy] = await db.select().from(policies).where(eq(policies.slug, slug));
+    const [policy] = await db
+      .select()
+      .from(policies)
+      .where(eq(policies.slug, slug));
     return policy;
   }
 
-  async upsertPolicy(slug: string, title: string, content: string, updatedBy: string): Promise<Policy> {
+  async upsertPolicy(
+    slug: string,
+    title: string,
+    content: string,
+    updatedBy: string,
+  ): Promise<Policy> {
     const existing = await this.getPolicy(slug);
     if (existing) {
       const [updated] = await db

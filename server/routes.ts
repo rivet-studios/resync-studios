@@ -5,8 +5,6 @@ import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
 import { updateDiscordNickname, updateDiscordRoles } from "./discord-bot";
 import {
-  insertGroupSchema,
-  insertBuildSchema,
   insertForumThreadSchema,
   insertForumReplySchema,
   insertReportSchema,
@@ -286,29 +284,6 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to assign rank" });
     }
   });
-
-  // Groups (formerly clans)
-  app.get("/api/groups", async (req, res) =>
-    res.json(await storage.getGroups()),
-  );
-  app.post("/api/groups", requireAuth, async (req, res) => {
-    try {
-      const data = insertGroupSchema.parse({
-        ...req.body,
-        ownerId: (req.user as any).id,
-      });
-      res.status(201).json(await storage.createGroup(data));
-    } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Invalid data. Contact support for help." });
-    }
-  });
-
-  // Builds
-  app.get("/api/builds", async (req, res) =>
-    res.json(await storage.getBuilds()),
-  );
 
   // Forum Categories
   app.get("/api/forums/categories", async (req, res) => {
