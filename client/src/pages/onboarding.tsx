@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, Redirect } from "wouter";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -51,89 +49,87 @@ export default function Onboarding() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (!user) {
-    return <Link href="/login" />;
+    return <Redirect to="/login" />;
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* Left side - Dark Brand Area */}
-      <div className="hidden lg:flex w-[35%] bg-[#0A0A0A] p-12 flex-col justify-between text-white">
+    <div className="flex min-h-screen bg-background">
+      <div className="hidden lg:flex w-[35%] bg-[#0a0a0a] border-r border-white/[0.04] p-12 flex-col justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white flex items-center justify-center rounded">
             <span className="text-black font-semibold text-xl italic">RS</span>
           </div>
-          <span className="font-bold text-xl tracking-tight">
+          <span className="font-semibold text-xl tracking-tight text-foreground">
             RIVET Studios™
           </span>
         </div>
-        <div className="space-y-4">
-          <p className="text-muted-foreground text-sm">
-            © 2026 RIVET Studios™
-          </p>
-        </div>
+        <p className="text-muted-foreground text-sm">
+          © 2026 RIVET Studios™
+        </p>
       </div>
 
-      {/* Right side - Onboarding Content */}
       <div className="flex-1 p-8 lg:p-24 flex flex-col items-center overflow-y-auto">
         <div className="w-full max-w-2xl space-y-12">
-          {/* Welcome Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-[#0A0A0A]">Welcome, {user.username}</h1>
+            <h1 className="text-3xl font-semibold text-foreground" data-testid="text-onboarding-welcome">
+              Welcome, {user.username}
+            </h1>
             <p className="text-muted-foreground">
               Let's get your account set up in just a few steps.
             </p>
           </div>
 
-          {/* Stepper */}
           <div className="flex justify-between items-start relative px-4">
-            {steps.map((s, i) => (
+            {steps.map((s) => (
               <div
                 key={s.id}
                 className="flex flex-col items-center gap-2 relative z-10"
               >
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                    step >= s.id
-                      ? "bg-white border-black text-black"
-                      : "bg-white border-gray-200 text-gray-400"
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors text-sm font-medium ${
+                    step > s.id
+                      ? "bg-white border-white text-black"
+                      : step === s.id
+                        ? "bg-transparent border-white text-white"
+                        : "bg-transparent border-white/10 text-white/30"
                   }`}
+                  data-testid={`step-indicator-${s.id}`}
                 >
                   {step > s.id ? <Check className="w-5 h-5" /> : s.id}
                 </div>
-                <div className="text-center">
-                  <p
-                    className={`text-xs font-bold ${step >= s.id ? "text-black" : "text-gray-400"}`}
-                  >
-                    {s.label}
-                  </p>
-                </div>
+                <p
+                  className={`text-xs font-medium ${step >= s.id ? "text-foreground" : "text-muted-foreground/50"}`}
+                >
+                  {s.label}
+                </p>
               </div>
             ))}
-            {/* Connector Lines */}
-            <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0" />
+            <div className="absolute top-5 left-0 w-full h-[2px] bg-white/[0.06] -z-0" />
           </div>
 
           <div className="space-y-8">
             {step === 1 && (
-              <div className="space-y-6 text-center">
+              <div className="space-y-6 text-center" data-testid="step-account">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                  <h2 className="text-2xl font-semibold text-foreground">
                     Account Verified
                   </h2>
                   <p className="text-muted-foreground">
-                    You're logged in as <span className="font-bold text-black">{user.username}</span>.
+                    You're logged in as <span className="font-semibold text-foreground">{user.username}</span>.
                   </p>
                 </div>
                 <Button
-                  className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                  size="lg"
+                  className="w-full bg-white text-black"
                   onClick={() => setStep(2)}
+                  data-testid="button-continue-step1"
                 >
                   Continue
                 </Button>
@@ -141,9 +137,9 @@ export default function Onboarding() {
             )}
 
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-6" data-testid="step-profile">
                 <div className="space-y-2 text-center">
-                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                  <h2 className="text-2xl font-semibold text-foreground">
                     Complete your profile
                   </h2>
                   <p className="text-muted-foreground">
@@ -152,19 +148,22 @@ export default function Onboarding() {
                 </div>
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
+                    <Label htmlFor="bio" className="text-foreground">Bio</Label>
                     <textarea
                       id="bio"
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Tell us about yourself..."
-                      className="w-full min-h-[120px] p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+                      className="w-full min-h-[120px] p-3 rounded-lg border border-white/[0.08] bg-card text-foreground placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-white/20 outline-none transition-all"
+                      data-testid="input-bio"
                     />
                   </div>
                   <Button
-                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    size="lg"
+                    className="w-full bg-white text-black"
                     onClick={handleCompleteProfile}
                     disabled={isUpdating}
+                    data-testid="button-save-profile"
                   >
                     {isUpdating ? <Loader2 className="animate-spin" /> : "Save & Continue"}
                   </Button>
@@ -173,9 +172,9 @@ export default function Onboarding() {
             )}
 
             {step === 3 && (
-              <div className="space-y-6">
+              <div className="space-y-6" data-testid="step-integrations">
                 <div className="space-y-2 text-center">
-                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                  <h2 className="text-2xl font-semibold text-foreground">
                     Link your accounts
                   </h2>
                   <p className="text-muted-foreground">
@@ -185,25 +184,31 @@ export default function Onboarding() {
                 <div className="space-y-4">
                   <Button
                     variant="outline"
-                    className="w-full h-14 justify-between px-6"
+                    size="lg"
+                    className="w-full justify-between px-6 border-white/[0.08] bg-card"
                     asChild
+                    data-testid="button-connect-discord"
                   >
                     <a href="/api/auth/discord">
-                      <span className="font-bold">Connect Discord</span>
+                      <span className="font-medium">Connect Discord</span>
                       {user.discordId ? <Check className="text-green-500" /> : <ChevronRight className="w-5 h-5" />}
                     </a>
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full h-14 justify-between px-6"
-                    onClick={() => toast({ title: "Coming soon!" })}
+                    size="lg"
+                    className="w-full justify-between px-6 border-white/[0.08] bg-card"
+                    onClick={() => toast({ title: "Link Roblox in Settings after onboarding." })}
+                    data-testid="button-connect-roblox"
                   >
-                    <span className="font-bold">Connect Roblox</span>
+                    <span className="font-medium">Connect Roblox</span>
                     {user.robloxId ? <Check className="text-green-500" /> : <ChevronRight className="w-5 h-5" />}
                   </Button>
                   <Button
-                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    size="lg"
+                    className="w-full bg-white text-black"
                     onClick={() => setStep(4)}
+                    data-testid="button-continue-step3"
                   >
                     Continue
                   </Button>
@@ -212,9 +217,9 @@ export default function Onboarding() {
             )}
 
             {step === 4 && (
-              <div className="space-y-6 text-center">
+              <div className="space-y-6 text-center" data-testid="step-complete">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-[#0A0A0A]">
+                  <h2 className="text-2xl font-semibold text-foreground">
                     You're all set!
                   </h2>
                   <p className="text-muted-foreground">
@@ -225,13 +230,17 @@ export default function Onboarding() {
                   <Button
                     asChild
                     variant="outline"
-                    className="w-full h-14 text-lg font-bold rounded-xl"
+                    size="lg"
+                    className="w-full border-white/[0.08]"
+                    data-testid="button-view-vip"
                   >
                     <Link href="/store/subscriptions">View VIP Tiers</Link>
                   </Button>
                   <Button
                     asChild
-                    className="w-full h-14 bg-[#0A0A0A] hover:bg-black text-white text-lg font-bold rounded-xl"
+                    size="lg"
+                    className="w-full bg-white text-black"
+                    data-testid="button-go-dashboard"
                   >
                     <Link href="/dashboard">Go to Dashboard</Link>
                   </Button>
