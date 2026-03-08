@@ -272,15 +272,14 @@ function Router() {
           <Route path="/admin" component={Admin} />
           <Route path="/modcp/case/:type/:id">
             {user?.isModerator ||
-            user?.userRank === "Community Moderator" ||
-            user?.userRank === "Community Senior Moderator" ||
-            user?.userRank === "Community Administrator" ||
-            user?.userRank === "Community Senior Administrator" ||
-            user?.userRank === "Community Developer" ||
+            user?.userRank === "Appeals Moderator" ||
+            user?.userRank === "Trial Moderator" ||
+            user?.userRank === "Moderator" ||
+            user?.userRank === "Administrator" ||
+            user?.userRank === "Senior Administrator" ||
+            user?.userRank === "Developer" ||
             user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Company Representative" ||
             user?.userRank === "Team Member" ||
-            user?.userRank === "MI Trust & Safety Director" ||
             user?.userRank === "Staff Department Director" ||
             user?.userRank === "Operations Manager" ||
             user?.userRank === "Company Director" ? (
@@ -291,15 +290,14 @@ function Router() {
           </Route>
           <Route path="/modcp">
             {user?.isModerator ||
-            user?.userRank === "Community Moderator" ||
-            user?.userRank === "Community Senior Moderator" ||
-            user?.userRank === "Community Administrator" ||
-            user?.userRank === "Community Senior Administrator" ||
-            user?.userRank === "Community Developer" ||
+            user?.userRank === "Appeals Moderator" ||
+            user?.userRank === "Trial Moderator" ||
+            user?.userRank === "Moderator" ||
+            user?.userRank === "Administrator" ||
+            user?.userRank === "Senior Administrator" ||
+            user?.userRank === "Developer" ||
             user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Company Representative" ||
             user?.userRank === "Team Member" ||
-            user?.userRank === "MI Trust & Safety Director" ||
             user?.userRank === "Staff Department Director" ||
             user?.userRank === "Operations Manager" ||
             user?.userRank === "Company Director" ? (
@@ -312,10 +310,8 @@ function Router() {
             {user?.isAdmin ||
             user?.userRank === "Team Member" ||
             user?.userRank === "Company Director" ||
-            user?.userRank === "Community Developer" ||
+            user?.userRank === "Developer" ||
             user?.userRank === "Staff Internal Affairs" ||
-            user?.userRank === "Company Representative" ||
-            user?.userRank === "MI Trust & Safety Director" ||
             user?.userRank === "Staff Department Director" ||
             user?.userRank === "Operations Manager" ||
             user?.email?.toLowerCase().endsWith("@resyncstudios.com") ? (

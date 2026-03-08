@@ -24,24 +24,17 @@ import {
 } from "lucide-react";
 
 const STAFF_RANKS = [
-  "Appeal Analyst",
   "Appeals Moderator",
-  "Community Moderator",
-  "Community Senior Moderator",
-  "Community Administrator",
-  "Community Senior Administrator",
-  "Community Developer",
-  "Staff Internal Affairs",
-  "Company Representative",
-  "Team Member",
-  "MI Trust & Safety Director",
-  "Staff Department Director",
-  "Operations Manager",
-  "Company Director",
-  "RS Trust & Safety Team",
+  "Trial Moderator",
   "Moderator",
   "Administrator",
   "Senior Administrator",
+  "Developer",
+  "Staff Internal Affairs",
+  "Team Member",
+  "Staff Department Director",
+  "Operations Manager",
+  "Company Director",
 ];
 
 function isStaffUser(user: User | null | undefined): boolean {
@@ -461,7 +454,7 @@ export default function AppealsPage() {
                           ? new Date(appeal.createdAt).toLocaleDateString()
                           : "Unknown"}
                       </p>
-                      {appeal.status === "pending" && (
+                      {appeal.status === "Pending" && (
                         <div className="space-y-3 pt-2 border-t border-white/10">
                           <Textarea
                             value={reviewNotes[appeal.id] || ""}

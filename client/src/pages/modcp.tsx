@@ -55,17 +55,14 @@ export default function ModCP() {
   const [appealFilter, setAppealFilter] = useState("All");
 
   const staffRanks = [
-    "RS Volunteer Staff",
-    "RS Trust & Safety Team",
-    "Community Moderator",
-    "Community Senior Moderator",
-    "Community Administrator",
-    "Community Senior Administrator",
-    "Community Developer",
+    "Appeals Moderator",
+    "Trial Moderator",
+    "Moderator",
+    "Administrator",
+    "Senior Administrator",
+    "Developer",
     "Staff Internal Affairs",
-    "Company Representative",
     "Team Member",
-    "MI Trust & Safety Director",
     "Staff Department Director",
     "Operations Manager",
     "Company Director",

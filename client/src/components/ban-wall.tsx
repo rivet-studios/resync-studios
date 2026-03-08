@@ -30,7 +30,10 @@ export function BanWall({ children }: BanWallProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6" data-testid="ban-wall">
+    <div
+      className="min-h-screen bg-[#050505] flex items-center justify-center p-6"
+      data-testid="ban-wall"
+    >
       <div className="max-w-lg w-full space-y-8 text-center">
         <div className="flex justify-center">
           <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center">
@@ -39,11 +42,14 @@ export function BanWall({ children }: BanWallProps) {
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-3xl font-semibold text-white" data-testid="text-ban-title">
+          <h1
+            className="text-3xl font-semibold text-white"
+            data-testid="text-ban-title"
+          >
             Account Suspended
           </h1>
           <p className="text-white/40 text-sm">
-            Your account has been suspended from accessing RIVET Studios.
+            Your account has been suspended from the Services.
           </p>
         </div>
 
@@ -56,26 +62,38 @@ export function BanWall({ children }: BanWallProps) {
             <div className="space-y-2">
               <div>
                 <span className="text-xs text-white/30">Reason</span>
-                <p className="text-sm text-white font-medium" data-testid="text-ban-reason">
+                <p
+                  className="text-sm text-white font-medium"
+                  data-testid="text-ban-reason"
+                >
                   {activeBan.reason}
                 </p>
               </div>
               <div className="flex gap-6">
                 <div>
                   <span className="text-xs text-white/30">Issued</span>
-                  <p className="text-sm text-white/60" data-testid="text-ban-date">
+                  <p
+                    className="text-sm text-white/60"
+                    data-testid="text-ban-date"
+                  >
                     {activeBan.createdAt
-                      ? new Date(activeBan.createdAt).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })
+                      ? new Date(activeBan.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )
                       : "Unknown"}
                   </p>
                 </div>
                 <div>
                   <span className="text-xs text-white/30">Duration</span>
-                  <p className="text-sm text-white/60" data-testid="text-ban-duration">
+                  <p
+                    className="text-sm text-white/60"
+                    data-testid="text-ban-duration"
+                  >
                     {activeBan.isPermanent
                       ? "Permanent"
                       : activeBan.expiresAt
@@ -99,7 +117,8 @@ export function BanWall({ children }: BanWallProps) {
             </Button>
           </Link>
           <p className="text-xs text-white/20">
-            If you believe this ban was issued in error, you may submit an appeal for review.
+            If you believe this ban was issued in error, you may submit an
+            appeal for review.
           </p>
         </div>
       </div>

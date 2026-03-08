@@ -53,9 +53,11 @@ export default function UserProfile() {
   const rankBadgeStyles: Record<string, string> = {
     "Company Director": "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
     "Operations Manager": "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
-    "Community Moderator": "border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
-    "Community Senior Moderator": "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
-    "Community Administrator": "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
+    "Moderator": "border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
+    "Administrator": "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
+    "Senior Administrator": "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
+    "Developer": "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",
+    "Trial Moderator": "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/30",
     "Team Member": "border-gray-400 bg-gray-50 text-gray-600 dark:bg-white/5 dark:text-white/60 dark:border-white/10",
     "Active Member": "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10",
     "Trusted Member": "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/30",
@@ -146,7 +148,7 @@ export default function UserProfile() {
                     {vipLabel}
                   </Badge>
                 )}
-                {profile.vipTier === "founders_edition" && (
+                {profile.vipTier === "Founders Edition VIP" && (
                   <Badge
                     variant="outline"
                     className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${vipBadgeStyles["Founders Edition VIP"]}`}
@@ -155,7 +157,7 @@ export default function UserProfile() {
                     Founders Edition VIP
                   </Badge>
                 )}
-                {profile.userRank && profile.userRank !== "Member" && (
+                {profile.userRank && profile.userRank !== "Active Members" && (
                   <Badge
                     variant="outline"
                     className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${rankBadgeStyles[profile.userRank] || defaultStyle}`}

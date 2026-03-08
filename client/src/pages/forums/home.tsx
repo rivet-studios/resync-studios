@@ -9,7 +9,7 @@ import { useState } from "react";
 import { rankConfig } from "@/components/user-rank-badge";
 
 interface CategoryWithGroup extends ForumCategory {
-  group?: string | null;
+  group: string | null;
 }
 
 export default function ForumHome() {

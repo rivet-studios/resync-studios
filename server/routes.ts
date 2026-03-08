@@ -17,14 +17,18 @@ import {
   type User,
 } from "@shared/schema";
 import { z } from "zod";
-import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import {
+  getUncachableStripeClient,
+  getStripePublishableKey,
+} from "./stripeClient";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 
 function getBaseUrl(req: Request): string {
   if (process.env.APP_URL) return process.env.APP_URL;
-  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
-  return `${req.protocol}://${req.get('host')}`;
+  if (process.env.REPLIT_DEV_DOMAIN)
+    return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  return `${req.protocol}://${req.get("host")}`;
 }
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -397,7 +401,8 @@ export async function registerRoutes(
 
       const { targetUsername, vipTier } = req.body;
       const targetUser = await storage.getUserByUsername(targetUsername);
-      if (!targetUser) return res.status(404).json({ message: "User not found" });
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
 
       await storage.updateUser(targetUser.id, { vipTier: vipTier as any });
       res.json({ message: "Subscription assigned successfully" });
@@ -458,18 +463,26 @@ export async function registerRoutes(
         bio: z.string().max(500).optional(),
         signature: z.string().max(500).optional(),
         profileImageUrl: z.string().url().or(z.literal("")).optional(),
-        dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format").or(z.literal("")).optional(),
+        dateOfBirth: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
+          .or(z.literal(""))
+          .optional(),
       });
       const parsed = profileUpdateSchema.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten() });
+        return res
+          .status(400)
+          .json({ message: "Invalid input", errors: parsed.error.flatten() });
       }
-      const { username, bio, signature, profileImageUrl, dateOfBirth } = parsed.data;
+      const { username, bio, signature, profileImageUrl, dateOfBirth } =
+        parsed.data;
       const updates: any = { updatedAt: new Date() };
       if (username !== undefined) updates.username = username;
       if (bio !== undefined) updates.bio = bio;
       if (signature !== undefined) updates.signature = signature;
-      if (profileImageUrl !== undefined) updates.profileImageUrl = profileImageUrl || null;
+      if (profileImageUrl !== undefined)
+        updates.profileImageUrl = profileImageUrl || null;
       if (dateOfBirth !== undefined) updates.dateOfBirth = dateOfBirth || null;
       await storage.updateUser(userId, updates);
       res.json({ message: "Profile updated" });
@@ -483,18 +496,28 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const passwordSchema = z.object({
         currentPassword: z.string().min(1),
-        newPassword: z.string().min(8, "Password must be at least 8 characters"),
+        newPassword: z
+          .string()
+          .min(8, "Password must be at least 8 characters"),
       });
       const parsed = passwordSchema.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten() });
+        return res
+          .status(400)
+          .json({ message: "Invalid input", errors: parsed.error.flatten() });
       }
       const user = await storage.getUser(userId);
       if (!user || !user.password) {
-        return res.status(400).json({ message: "Password change not available for this account type" });
+        return res
+          .status(400)
+          .json({
+            message: "Password change not available for this account type",
+          });
       }
       if (!verifyPassword(parsed.data.currentPassword, user.password)) {
-        return res.status(401).json({ message: "Current password is incorrect" });
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect" });
       }
       const hashedPassword = hashPassword(parsed.data.newPassword);
       await storage.updateUser(userId, { password: hashedPassword } as any);
@@ -509,7 +532,10 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       await storage.deleteUser(userId);
       req.logout((err) => {
-        if (err) return res.status(500).json({ message: "Account deleted but logout failed" });
+        if (err)
+          return res
+            .status(500)
+            .json({ message: "Account deleted but logout failed" });
         res.json({ message: "Account deleted" });
       });
     } catch (error) {
@@ -526,9 +552,16 @@ export async function registerRoutes(
           const author = await storage.getUser(post.authorId);
           return {
             ...post,
-            author: author ? { id: author.id, username: author.username, userRank: author.userRank, profileImageUrl: author.profileImageUrl } : null,
+            author: author
+              ? {
+                  id: author.id,
+                  username: author.username,
+                  userRank: author.userRank,
+                  profileImageUrl: author.profileImageUrl,
+                }
+              : null,
           };
-        })
+        }),
       );
       res.json(postsWithAuthors);
     } catch (error) {
@@ -540,11 +573,19 @@ export async function registerRoutes(
   app.get("/api/blog/:id", async (req, res) => {
     try {
       const announcement = await storage.getAnnouncement(req.params.id);
-      if (!announcement) return res.status(404).json({ message: "Post not found" });
+      if (!announcement)
+        return res.status(404).json({ message: "Post not found" });
       const author = await storage.getUser(announcement.authorId);
       res.json({
         ...announcement,
-        author: author ? { id: author.id, username: author.username, userRank: author.userRank, profileImageUrl: author.profileImageUrl } : null,
+        author: author
+          ? {
+              id: author.id,
+              username: author.username,
+              userRank: author.userRank,
+              profileImageUrl: author.profileImageUrl,
+            }
+          : null,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch blog post" });
@@ -559,8 +600,7 @@ export async function registerRoutes(
         "Operations Manager",
         "Company Director",
       ];
-      const hasAccess =
-        user.isAdmin || adminRanks.includes(user.userRank);
+      const hasAccess = user.isAdmin || adminRanks.includes(user.userRank);
 
       if (!hasAccess) return res.status(403).json({ message: "Forbidden" });
 
@@ -584,8 +624,17 @@ export async function registerRoutes(
       const prodsWithSubmitters = await Promise.all(
         prods.map(async (p) => {
           const submitter = await storage.getUser(p.submitterId);
-          return { ...p, submitter: submitter ? { id: submitter.id, username: submitter.username, userRank: submitter.userRank } : null };
-        })
+          return {
+            ...p,
+            submitter: submitter
+              ? {
+                  id: submitter.id,
+                  username: submitter.username,
+                  userRank: submitter.userRank,
+                }
+              : null,
+          };
+        }),
       );
       res.json(prodsWithSubmitters);
     } catch (error) {
@@ -604,8 +653,17 @@ export async function registerRoutes(
       const prodsWithSubmitters = await Promise.all(
         prods.map(async (p) => {
           const submitter = await storage.getUser(p.submitterId);
-          return { ...p, submitter: submitter ? { id: submitter.id, username: submitter.username, userRank: submitter.userRank } : null };
-        })
+          return {
+            ...p,
+            submitter: submitter
+              ? {
+                  id: submitter.id,
+                  username: submitter.username,
+                  userRank: submitter.userRank,
+                }
+              : null,
+          };
+        }),
       );
       res.json(prodsWithSubmitters);
     } catch (error) {
@@ -643,11 +701,15 @@ export async function registerRoutes(
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
       if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
-        return res.status(403).json({ message: "Only Operations Managers can review products" });
+        return res
+          .status(403)
+          .json({ message: "Only Operations Managers can review products" });
       }
       const { status, reviewNotes } = req.body;
       if (!["Approved", "Denied"].includes(status)) {
-        return res.status(400).json({ message: "Status must be approved or denied" });
+        return res
+          .status(400)
+          .json({ message: "Status must be approved or denied" });
       }
       const updates: any = {
         status,
@@ -658,7 +720,8 @@ export async function registerRoutes(
         updates.isCommunityProvided = true;
       }
       const product = await storage.updateProduct(req.params.id, updates);
-      if (!product) return res.status(404).json({ message: "Product not found" });
+      if (!product)
+        return res.status(404).json({ message: "Product not found" });
       res.json(product);
     } catch (error) {
       res.status(500).json({ message: "Review failed" });
@@ -670,16 +733,22 @@ export async function registerRoutes(
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
       if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
-        return res.status(403).json({ message: "Only Operations Managers can assign badges" });
+        return res
+          .status(403)
+          .json({ message: "Only Operations Managers can assign badges" });
       }
-      const { isFeatured, isLimitedEdition, isVerified, isCommunityProvided } = req.body;
+      const { isFeatured, isLimitedEdition, isVerified, isCommunityProvided } =
+        req.body;
       const updates: any = {};
       if (typeof isFeatured === "boolean") updates.isFeatured = isFeatured;
-      if (typeof isLimitedEdition === "boolean") updates.isLimitedEdition = isLimitedEdition;
+      if (typeof isLimitedEdition === "boolean")
+        updates.isLimitedEdition = isLimitedEdition;
       if (typeof isVerified === "boolean") updates.isVerified = isVerified;
-      if (typeof isCommunityProvided === "boolean") updates.isCommunityProvided = isCommunityProvided;
+      if (typeof isCommunityProvided === "boolean")
+        updates.isCommunityProvided = isCommunityProvided;
       const product = await storage.updateProduct(req.params.id, updates);
-      if (!product) return res.status(404).json({ message: "Product not found" });
+      if (!product)
+        return res.status(404).json({ message: "Product not found" });
       res.json(product);
     } catch (error) {
       res.status(500).json({ message: "Badge update failed" });
@@ -691,11 +760,22 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const activeOnly = req.query.active === "true";
@@ -706,10 +786,14 @@ export async function registerRoutes(
           const bannedByUser = await storage.getUser(b.bannedBy);
           return {
             ...b,
-            user: bannedUser ? { id: bannedUser.id, username: bannedUser.username } : null,
-            bannedByUser: bannedByUser ? { id: bannedByUser.id, username: bannedByUser.username } : null,
+            user: bannedUser
+              ? { id: bannedUser.id, username: bannedUser.username }
+              : null,
+            bannedByUser: bannedByUser
+              ? { id: bannedByUser.id, username: bannedByUser.username }
+              : null,
           };
-        })
+        }),
       );
       res.json(bansWithUsers);
     } catch (error) {
@@ -721,11 +805,22 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const data = insertBanSchema.parse({
@@ -743,11 +838,22 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const ban = await storage.deactivateBan(req.params.id);
@@ -763,11 +869,23 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeals Moderator", "Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Appeals Moderator",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const status = req.query.status as string | undefined;
@@ -777,9 +895,15 @@ export async function registerRoutes(
           const appellant = await storage.getUser(a.userId);
           return {
             ...a,
-            user: appellant ? { id: appellant.id, username: appellant.username, email: appellant.email } : null,
+            user: appellant
+              ? {
+                  id: appellant.id,
+                  username: appellant.username,
+                  email: appellant.email,
+                }
+              : null,
           };
-        })
+        }),
       );
       res.json(appealsWithUsers);
     } catch (error) {
@@ -815,16 +939,30 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-       "Appeals Moderator", "Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Appeals Moderator",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { status, reviewNotes } = req.body;
       if (!["Approved", "Denied"].includes(status)) {
-        return res.status(400).json({ message: "Status must be approved or denied" });
+        return res
+          .status(400)
+          .json({ message: "Status must be approved or denied" });
       }
       const appeal = await storage.getAppeal(req.params.id);
       if (!appeal) return res.status(404).json({ message: "Appeal not found" });
@@ -850,15 +988,30 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-"Trial Moderator", "Moderator", "Administrator",
-        "Senior Administrator", "Developer", "Staff Internal Affairs", "Team Member",
-        "Staff Department Director", "Operations Manager", "Company Director",
+        "Trial Moderator",
+        "Moderator",
+        "Administrator",
+        "Senior Administrator",
+        "Developer",
+        "Staff Internal Affairs",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
       ];
-      if (!user.isAdmin && !user.isModerator && !staffRanks.includes(user.userRank)) {
+      if (
+        !user.isAdmin &&
+        !user.isModerator &&
+        !staffRanks.includes(user.userRank)
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { status, moderatorNotes } = req.body;
-      const report = await storage.updateReportStatus(req.params.id, status, moderatorNotes);
+      const report = await storage.updateReportStatus(
+        req.params.id,
+        status,
+        moderatorNotes,
+      );
       if (!report) return res.status(404).json({ message: "Report not found" });
       res.json(report);
     } catch (error) {
@@ -882,7 +1035,10 @@ export async function registerRoutes(
   app.get("/api/admin/stats", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+      if (
+        !user?.isAdmin &&
+        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const stats = await storage.getAdminStats();
@@ -895,7 +1051,11 @@ export async function registerRoutes(
   app.get("/api/admin/activity", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (!user?.isAdmin && !user?.isModerator && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+      if (
+        !user?.isAdmin &&
+        !user?.isModerator &&
+        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const activity = await storage.getRecentActivity(20);
@@ -908,11 +1068,17 @@ export async function registerRoutes(
   app.patch("/api/admin/site-settings", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+      if (
+        !user?.isAdmin &&
+        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { isOffline, offlineMessage } = req.body;
-      const settings = await storage.updateSiteSettings({ isOffline, offlineMessage });
+      const settings = await storage.updateSiteSettings({
+        isOffline,
+        offlineMessage,
+      });
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Failed to update settings" });
@@ -954,20 +1120,26 @@ export async function registerRoutes(
       const hasAccess =
         user?.isAdmin ||
         opsRanks.includes(user?.userRank || "") ||
-        (user?.additionalRanks || []).some((r: string) => opsRanks.includes(r)) ||
+        (user?.additionalRanks || []).some((r: string) =>
+          opsRanks.includes(r),
+        ) ||
         user?.email?.toLowerCase().endsWith("@resyncstudios.com");
       if (!hasAccess) {
-        return res.status(403).json({ message: "Only Operations Managers can update policies" });
+        return res
+          .status(403)
+          .json({ message: "Only Operations Managers can update policies" });
       }
       const { title, content } = req.body;
       if (!title || !content) {
-        return res.status(400).json({ message: "Title and content are required" });
+        return res
+          .status(400)
+          .json({ message: "Title and content are required" });
       }
       const policy = await storage.upsertPolicy(
         req.params.slug,
         title,
         content,
-        user!.id
+        user!.id,
       );
       res.json(policy);
     } catch (error) {
@@ -978,7 +1150,10 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id/rank", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (!user?.isAdmin && !user?.email?.toLowerCase().endsWith("@resyncstudios.com")) {
+      if (
+        !user?.isAdmin &&
+        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
+      ) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { userRank } = req.body;
@@ -988,13 +1163,14 @@ export async function registerRoutes(
       const updatedUser = await storage.getUser(req.params.id);
 
       if (updatedUser?.discordId) {
-        updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch((err) =>
-          console.error("Discord role sync error:", err)
+        updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch(
+          (err) => console.error("Discord role sync error:", err),
         );
         if (updatedUser.username) {
-          updateDiscordNickname(updatedUser.discordId, updatedUser.username).catch((err) =>
-            console.error("Discord nickname sync error:", err)
-          );
+          updateDiscordNickname(
+            updatedUser.discordId,
+            updatedUser.username,
+          ).catch((err) => console.error("Discord nickname sync error:", err));
         }
       }
 
@@ -1030,7 +1206,7 @@ export async function registerRoutes(
             FROM stripe.products p
             LEFT JOIN stripe.prices pr ON pr.product = p.id AND pr.active = true
             WHERE p.active = true
-            ORDER BY p.name, pr.unit_amount`
+            ORDER BY p.name, pr.unit_amount`,
       );
       const productsMap = new Map();
       for (const row of result.rows as any[]) {
@@ -1078,15 +1254,17 @@ export async function registerRoutes(
           email: user.email || undefined,
           metadata: { userId: user.id },
         });
-        await storage.updateUser(user.id, { stripeCustomerId: customer.id } as any);
+        await storage.updateUser(user.id, {
+          stripeCustomerId: customer.id,
+        } as any);
         customerId = customer.id;
       }
 
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
-        payment_method_types: ['card'],
+        payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
-        mode: 'subscription',
+        mode: "subscription",
         success_url: `${getBaseUrl(req)}/settings?tab=payments&success=true`,
         cancel_url: `${getBaseUrl(req)}/settings?tab=payments&cancelled=true`,
       });
@@ -1101,11 +1279,12 @@ export async function registerRoutes(
         stack: error.stack,
       });
       const statusCode = error.statusCode || 500;
-      const userMessage = error.type === "StripeCardError"
-        ? error.message
-        : error.type === "StripeInvalidRequestError"
-          ? `Invalid request: ${error.message}`
-          : "Failed to create checkout session. Please try again or contact support.";
+      const userMessage =
+        error.type === "StripeCardError"
+          ? error.message
+          : error.type === "StripeInvalidRequestError"
+            ? `Invalid request: ${error.message}`
+            : "Failed to create checkout session. Please try again or contact support.";
       res.status(statusCode).json({ message: userMessage });
     }
   });
@@ -1117,13 +1296,20 @@ export async function registerRoutes(
       if (!user) return res.status(401).json({ message: "User not found" });
 
       const { productId } = req.body;
-      if (!productId) return res.status(400).json({ message: "productId is required" });
+      if (!productId)
+        return res.status(400).json({ message: "productId is required" });
 
       const product = await storage.getProduct(productId);
-      if (!product) return res.status(404).json({ message: "Product not found" });
-      if (product.status !== "Approved") return res.status(400).json({ message: "Product is not available for purchase" });
+      if (!product)
+        return res.status(404).json({ message: "Product not found" });
+      if (product.status !== "Approved")
+        return res
+          .status(400)
+          .json({ message: "Product is not available for purchase" });
       if (!product.price || product.price <= 0) {
-        return res.status(400).json({ message: "Product price must be greater than zero" });
+        return res
+          .status(400)
+          .json({ message: "Product price must be greater than zero" });
       }
 
       let customerId = user.stripeCustomerId;
@@ -1132,26 +1318,30 @@ export async function registerRoutes(
           email: user.email || undefined,
           metadata: { userId: user.id },
         });
-        await storage.updateUser(user.id, { stripeCustomerId: customer.id } as any);
+        await storage.updateUser(user.id, {
+          stripeCustomerId: customer.id,
+        } as any);
         customerId = customer.id;
       }
 
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: product.name,
-              description: product.description || undefined,
-              images: product.imageUrl ? [product.imageUrl] : undefined,
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: product.name,
+                description: product.description || undefined,
+                images: product.imageUrl ? [product.imageUrl] : undefined,
+              },
+              unit_amount: product.price,
             },
-            unit_amount: product.price,
+            quantity: 1,
           },
-          quantity: 1,
-        }],
-        mode: 'payment',
+        ],
+        mode: "payment",
         metadata: { productId: product.id, userId: user.id },
         success_url: `${getBaseUrl(req)}/store/product/${product.id}?success=true`,
         cancel_url: `${getBaseUrl(req)}/store/product/${product.id}?cancelled=true`,
@@ -1167,11 +1357,12 @@ export async function registerRoutes(
         stack: error.stack,
       });
       const statusCode = error.statusCode || 500;
-      const userMessage = error.type === "StripeCardError"
-        ? error.message
-        : error.type === "StripeInvalidRequestError"
-          ? `Invalid request: ${error.message}`
-          : "Failed to create checkout session. Please try again or contact support.";
+      const userMessage =
+        error.type === "StripeCardError"
+          ? error.message
+          : error.type === "StripeInvalidRequestError"
+            ? `Invalid request: ${error.message}`
+            : "Failed to create checkout session. Please try again or contact support.";
       res.status(statusCode).json({ message: userMessage });
     }
   });
@@ -1199,9 +1390,10 @@ export async function registerRoutes(
         stack: error.stack,
       });
       const statusCode = error.statusCode || 500;
-      const userMessage = error.type === "StripeInvalidRequestError"
-        ? `Portal error: ${error.message}`
-        : "Failed to create portal session. Please try again or contact support.";
+      const userMessage =
+        error.type === "StripeInvalidRequestError"
+          ? `Portal error: ${error.message}`
+          : "Failed to create portal session. Please try again or contact support.";
       res.status(statusCode).json({ message: userMessage });
     }
   });
@@ -1213,7 +1405,7 @@ export async function registerRoutes(
         return res.json({ subscription: null });
       }
       const result = await db.execute(
-        sql`SELECT * FROM stripe.subscriptions WHERE id = ${user.stripeSubscriptionId}`
+        sql`SELECT * FROM stripe.subscriptions WHERE id = ${user.stripeSubscriptionId}`,
       );
       res.json({ subscription: result.rows[0] || null });
     } catch (error) {
@@ -1224,7 +1416,9 @@ export async function registerRoutes(
   app.get("/api/public/stats", async (_req, res) => {
     try {
       const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
-      const [threadCount] = await db.select({ count: sql`count(*)` }).from(forumThreads);
+      const [threadCount] = await db
+        .select({ count: sql`count(*)` })
+        .from(forumThreads);
       res.json({
         totalMembers: Number(userCount.count),
         totalDiscussions: Number(threadCount.count),
@@ -1238,9 +1432,15 @@ export async function registerRoutes(
     try {
       const q = ((req.query.q as string) || "").trim().toLowerCase();
       const type = (req.query.type as string) || "";
-      if (!q || q.length < 2) return res.json({ members: [], topics: [], products: [], posts: [] });
+      if (!q || q.length < 2)
+        return res.json({ members: [], topics: [], products: [], posts: [] });
 
-      const results: Record<string, any[]> = { members: [], topics: [], products: [], posts: [] };
+      const results: Record<string, any[]> = {
+        members: [],
+        topics: [],
+        products: [],
+        posts: [],
+      };
 
       if (!type || type === "members") {
         const allUsers = await storage.getAllUsers();
@@ -1272,7 +1472,11 @@ export async function registerRoutes(
       if (!type || type === "products") {
         const prods = await storage.getProducts("Approved");
         results.products = prods
-          .filter((p) => p.name.toLowerCase().includes(q) || (p.description || "").toLowerCase().includes(q))
+          .filter(
+            (p) =>
+              p.name.toLowerCase().includes(q) ||
+              (p.description || "").toLowerCase().includes(q),
+          )
           .slice(0, 10)
           .map((p) => ({
             id: p.id,
@@ -1286,7 +1490,11 @@ export async function registerRoutes(
       if (!type || type === "posts") {
         const posts = await storage.getAnnouncements();
         results.posts = posts
-          .filter((a) => a.title.toLowerCase().includes(q) || (a.content || "").toLowerCase().includes(q))
+          .filter(
+            (a) =>
+              a.title.toLowerCase().includes(q) ||
+              (a.content || "").toLowerCase().includes(q),
+          )
           .slice(0, 10)
           .map((a) => ({
             id: a.id,
@@ -1303,7 +1511,10 @@ export async function registerRoutes(
     }
   });
 
-  const pendingRobloxVerifications = new Map<string, { robloxId: number; verificationCode: string; expiresAt: number }>();
+  const pendingRobloxVerifications = new Map<
+    string,
+    { robloxId: number; verificationCode: string; expiresAt: number }
+  >();
 
   app.post("/api/roblox/start-verification", requireAuth, async (req, res) => {
     try {
@@ -1312,21 +1523,37 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Roblox username is required" });
       }
 
-      const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=10`);
+      const searchRes = await fetch(
+        `https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=10`,
+      );
       if (!searchRes.ok) {
-        return res.status(400).json({ message: "Failed to look up Roblox user. Try again later." });
+        return res
+          .status(400)
+          .json({ message: "Failed to look up Roblox user. Try again later." });
       }
-      const searchData = await searchRes.json() as { data: Array<{ id: number; name: string; displayName: string }> };
+      const searchData = (await searchRes.json()) as {
+        data: Array<{ id: number; name: string; displayName: string }>;
+      };
       const robloxUser = searchData.data?.find(
-        (u: any) => u.name.toLowerCase() === robloxUsername.toLowerCase()
+        (u: any) => u.name.toLowerCase() === robloxUsername.toLowerCase(),
       );
       if (!robloxUser) {
-        return res.status(404).json({ message: "Roblox user not found. Check the username and try again." });
+        return res
+          .status(404)
+          .json({
+            message: "Roblox user not found. Check the username and try again.",
+          });
       }
 
-      const existingUser = await storage.getUserByRobloxId(String(robloxUser.id));
+      const existingUser = await storage.getUserByRobloxId(
+        String(robloxUser.id),
+      );
       if (existingUser && existingUser.id !== (req.user as any).id) {
-        return res.status(409).json({ message: "This Roblox account is already linked to another user." });
+        return res
+          .status(409)
+          .json({
+            message: "This Roblox account is already linked to another user.",
+          });
       }
 
       const code = `RIVET-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -1345,7 +1572,9 @@ export async function registerRoutes(
       });
     } catch (error) {
       console.error("Roblox start verification error:", error);
-      res.status(500).json({ message: "Verification failed. Try again later." });
+      res
+        .status(500)
+        .json({ message: "Verification failed. Try again later." });
     }
   });
 
@@ -1355,29 +1584,54 @@ export async function registerRoutes(
       const pending = pendingRobloxVerifications.get(userId);
 
       if (!pending) {
-        return res.status(400).json({ message: "No pending verification. Please start the linking process first." });
+        return res
+          .status(400)
+          .json({
+            message:
+              "No pending verification. Please start the linking process first.",
+          });
       }
 
       if (Date.now() > pending.expiresAt) {
         pendingRobloxVerifications.delete(userId);
-        return res.status(400).json({ message: "Verification expired. Please start over." });
+        return res
+          .status(400)
+          .json({ message: "Verification expired. Please start over." });
       }
 
-      const profileRes = await fetch(`https://users.roblox.com/v1/users/${pending.robloxId}`);
+      const profileRes = await fetch(
+        `https://users.roblox.com/v1/users/${pending.robloxId}`,
+      );
       if (!profileRes.ok) {
-        return res.status(400).json({ message: "Failed to fetch Roblox profile" });
+        return res
+          .status(400)
+          .json({ message: "Failed to fetch Roblox profile" });
       }
-      const profileData = await profileRes.json() as { description: string; name: string; displayName: string };
+      const profileData = (await profileRes.json()) as {
+        description: string;
+        name: string;
+        displayName: string;
+      };
 
-      if (!profileData.description || !profileData.description.includes(pending.verificationCode)) {
+      if (
+        !profileData.description ||
+        !profileData.description.includes(pending.verificationCode)
+      ) {
         return res.status(400).json({
-          message: "Verification code not found in your Roblox profile description. Please add the code and try again.",
+          message:
+            "Verification code not found in your Roblox profile description. Please add the code and try again.",
         });
       }
 
-      const existingUser = await storage.getUserByRobloxId(String(pending.robloxId));
+      const existingUser = await storage.getUserByRobloxId(
+        String(pending.robloxId),
+      );
       if (existingUser && existingUser.id !== userId) {
-        return res.status(409).json({ message: "This Roblox account is already linked to another user." });
+        return res
+          .status(409)
+          .json({
+            message: "This Roblox account is already linked to another user.",
+          });
       }
 
       await storage.updateUser(userId, {
@@ -1392,7 +1646,9 @@ export async function registerRoutes(
       res.json(updatedUser);
     } catch (error) {
       console.error("Roblox verify error:", error);
-      res.status(500).json({ message: "Verification failed. Try again later." });
+      res
+        .status(500)
+        .json({ message: "Verification failed. Try again later." });
     }
   });
 

@@ -24,12 +24,12 @@ import {
 
 function getStatusColor(status: string): string {
   switch (status?.toLowerCase()) {
-    case "pending": return "bg-yellow-500/20 text-yellow-400";
-    case "approved": return "bg-green-500/20 text-green-400";
-    case "denied": return "bg-red-500/20 text-red-400";
-    case "reviewed": return "bg-blue-500/20 text-blue-400";
+    case "Pending": return "bg-yellow-500/20 text-yellow-400";
+    case "Approved": return "bg-green-500/20 text-green-400";
+    case "Denied": return "bg-red-500/20 text-red-400";
+    case "In Review": return "bg-blue-500/20 text-blue-400";
     case "action taken": return "bg-green-500/20 text-green-400";
-    case "dismissed": return "bg-white/10 text-white/50";
+    case "Dismissed": return "bg-white/10 text-white/50";
     default: return "bg-white/10 text-white/50";
   }
 }
@@ -40,9 +40,9 @@ export default function CaseDetail() {
   const { toast } = useToast();
   const [notes, setNotes] = useState("");
 
-  const isReport = type === "report";
-  const isAppeal = type === "appeal";
-  const isBan = type === "ban";
+  const isReport = type === "Report";
+  const isAppeal = type === "Appeal";
+  const isBan = type === "Ban";
 
   const { data: reports = [], isLoading: reportsLoading, isError: reportsError } = useQuery<any[]>({
     queryKey: ["/api/reports"],
@@ -113,7 +113,7 @@ export default function CaseDetail() {
     },
   });
 
-  if (!type || !["report", "appeal", "ban"].includes(type)) {
+  if (!type || !["Report", "Appeal", "Ban"].includes(type)) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/40">
         Invalid case type
@@ -162,7 +162,7 @@ export default function CaseDetail() {
     );
   }
 
-  const isPending = isReport ? caseData.status === "Pending" : isAppeal ? caseData.status === "pending" : caseData.isActive;
+  const isPending = isReport ? caseData.status === "Pending" : isAppeal ? caseData.status === "Pending" : caseData.isActive;
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -330,7 +330,7 @@ export default function CaseDetail() {
                   <>
                     <Button
                       size="sm"
-                      onClick={() => updateReportMutation.mutate({ status: "Reviewed", moderatorNotes: notes })}
+                      onClick={() => updateReportMutation.mutate({ status: "In Review", moderatorNotes: notes })}
                       disabled={updateReportMutation.isPending}
                       className="bg-blue-600 hover:bg-blue-700"
                       data-testid="button-mark-reviewed"

@@ -9,49 +9,36 @@ export const rankConfig: Record<
     gradient?: string;
   }
 > = {
-  // Lifetime rank (automatic for Founders Edition Lifetime purchase)
-  // Graident username formatted - overrides every other rank coloring/gradient/formatting - graident/color format should always be applied to the username if this rank is present, does not apply to the rank label and the formatted username should be the only thing that is gradiented
+  // Lifetime rank
   Lifetime: {
     label: "Lifetime",
-    color: "#F59E0B", // Amber/Gold for premium
-    badgeUrl: null,
-    formatted: true, // Formatted username with gradient text
-    isGradient: true, // Enable gradient text for lifetime users (Founders Edition Lifetime) - gradient from gold to blue (like the Founders Edition VIP gradient) but with a gold base instead of yellow - #FFBF00 to #00BFFF
-    gradient: "linear-gradient(to right, #FFBF00, #00BFFF)",
-  },
-  // Leadership ranks (Verified badge - blue, formatted username)
-  Company_Director: {
-    label: "Company Director",
-    color: "#4B7DF7", // Capitalized blue
+    color: "#F59E0B",
     badgeUrl: null,
     formatted: true,
+    isGradient: true,
+    gradient: "linear-gradient(to right, #FFBF00, #00BFFF)",
   },
-  Company_Representative: {
-    label: "Company Representative",
+  // Leadership ranks
+  Company_Director: {
+    label: "Company Director",
     color: "#4B7DF7",
-    badgeUrl: "https://i.imgur.com/rTNSCQt.png",
+    badgeUrl: null,
     formatted: true,
   },
   Operations_Manager: {
     label: "Operations Manager",
-    color: "#EF4444", // Red for operations manager
+    color: "#EF4444",
     badgeUrl: null,
     formatted: true,
   },
-  MI_Trust_Safety_Director: {
-    label: "MI Trust & Safety Director",
-    color: "#A855F7", // Purple for MI T&S director
-    badgeUrl: null,
-    formatted: true,
-  },
-  // Team ranks (Team badge - blue, formatted username)
+  // Team ranks
   Team_Member: {
     label: "Team Member",
     color: "#4B7DF7",
-    badgeUrl: "https://i.imgur.com/rTNSCQt.png",
+    badgeUrl: null,
     formatted: true,
   },
-  // Staff ranks (no badge, formatted)
+  // Staff ranks
   Staff_Internal_Affairs: {
     label: "Staff Internal Affairs",
     color: "#6B7280",
@@ -60,70 +47,52 @@ export const rankConfig: Record<
   },
   Staff_Department_Director: {
     label: "Staff Department Director",
-    color: "#A855F7", // Purple for department director
+    color: "#A855F7",
     badgeUrl: null,
     formatted: true,
   },
   Appeals_Moderator: {
     label: "Appeals Moderator",
-    color: "#06B6D4", // Light cyan for appeals moderator
-    badgeUrl: null,
-    formatted: true,
-  },
-  Community_Senior_Administrator: {
-    label: "Community Senior Administrator",
-    color: "#EF4444", // Red for community admin
-    badgeUrl: null,
-    formatted: true,
-  },
-  Community_Administrator: {
-    label: "Community Administrator",
-    color: "#EF4444", // Red for community admin
-    badgeUrl: null,
-    formatted: true,
-  },
-  community_moderator: {
-    label: "Community Moderator",
-    color: "#0D9488", // Dark teal-green for moderators
-    badgeUrl: null,
-    formatted: true,
-  },
-  Community_Senior_Moderator: {
-    label: "Community Senior Moderator",
-    color: "#0D9488", // Dark teal-green for senior moderators
-    badgeUrl: null,
-    formatted: true,
-  },
-  Community_Developer: {
-    label: "Community Developer",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
-  // Legacy staff ranks (kept for backward compatibility)
-  Administrator: {
-    label: "Administrator",
-    color: "#6B7280",
+    color: "#06B6D4",
     badgeUrl: null,
     formatted: true,
   },
   Senior_Administrator: {
     label: "Senior Administrator",
-    color: "#6B7280",
+    color: "#EF4444",
+    badgeUrl: null,
+    formatted: true,
+  },
+  Administrator: {
+    label: "Administrator",
+    color: "#EF4444",
+    badgeUrl: null,
+    formatted: true,
+  },
+  trial_moderator: {
+    label: "Trial Moderator",
+    color: "#0D9488",
     badgeUrl: null,
     formatted: true,
   },
   Moderator: {
     label: "Moderator",
+    color: "#0D9488",
+    badgeUrl: null,
+    formatted: true,
+  },
+  Developer: {
+    label: "Developer",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
   },
-  // VIP ranks (tier-corresponding VIP badge)
+
+  // VIP ranks
   Bronze_VIP: {
     label: "Bronze VIP",
     color: "#CD7F32",
-    badgeUrl: "https://i.imgur.com/G7B9P5N.png",
+    badgeUrl: null,
     formatted: true,
     isGradient: true,
     gradient: "linear-gradient(to right, #CD7F32, #A0522D)",
@@ -131,7 +100,7 @@ export const rankConfig: Record<
   Diamond_VIP: {
     label: "Diamond VIP",
     color: "#B9F2FF",
-    badgeUrl: "https://i.imgur.com/vH3m3YV.png",
+    badgeUrl: null,
     formatted: true,
     isGradient: true,
     gradient: "linear-gradient(to right, #B9F2FF, #00BFFF)",
@@ -139,7 +108,7 @@ export const rankConfig: Record<
   Founders_Edition_VIP: {
     label: "Founders Edition VIP",
     color: "#FFBF00",
-    badgeUrl: "https://i.imgur.com/Y3v1X7X.png",
+    badgeUrl: null,
     formatted: true,
     isGradient: true,
     gradient: "linear-gradient(to right, #FFBF00, #FFD700, #00BFFF)",
@@ -147,46 +116,34 @@ export const rankConfig: Record<
   // Member types & statuses
   Trusted_Member: {
     label: "Trusted Member",
-    color: "#10B981", // Green for trusted
+    color: "#10B981",
     badgeUrl: null,
     formatted: true,
   },
-  Active_Member: {
-    label: "Active Member",
-    color: "#3B82F6", // Blue for active
+  Active_Members: {
+    label: "Active Members",
+    color: "#3B82F6",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   Community_Partner: {
     label: "Community Partner",
-    color: "#8B5CF6", // Purple for partner
+    color: "#8B5CF6",
     badgeUrl: null,
     formatted: true,
   },
   Banned: {
     label: "Banned",
-    color: "#EF4444", // Red for banned
+    color: "#EF4444",
     badgeUrl: null,
-    formatted: false,
+    formatted: true,
   },
   // Sub-groups
   Customer_Relations: {
     label: "Customer Relations",
     color: "#6B7280",
     badgeUrl: null,
-    formatted: false,
-  },
-  RS_Volunteer_Staff: {
-    label: "RS Volunteer Staff",
-    color: "#6B7280",
-    badgeUrl: null,
     formatted: true,
-  },
-  Member: {
-    label: "Member",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: false,
   },
 };
 
@@ -198,12 +155,12 @@ interface UserRankBadgeProps {
 }
 
 export function UserRankBadge({
-  rank = "Member",
+  rank = "Active Members",
   username,
   className = "",
   size = "md",
 }: UserRankBadgeProps) {
-  if (!rank || rank === "Member") return null;
+  if (!rank || rank === "Active Members") return null;
 
   const config = rankConfig[rank as keyof typeof rankConfig];
   if (!config) return null;
@@ -242,7 +199,7 @@ export function UserRankBadge({
 }
 
 export function FormattedUsername({
-  rank = "Member",
+  rank = "Active Members",
   username = "User",
   className = "",
 }: UserRankBadgeProps) {

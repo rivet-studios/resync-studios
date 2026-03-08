@@ -71,7 +71,7 @@ type SubmitProductForm = z.infer<typeof submitProductSchema>;
 const CATEGORIES = ["Game Assets", "Accessories", "Services", "Other"];
 
 function StatusBadge({ status }: { status: string | null }) {
-  if (status === "approved") {
+  if (status === "Approved") {
     return (
       <Badge variant="default" className="bg-green-600 border-green-600" data-testid="badge-status-approved">
         <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -79,7 +79,7 @@ function StatusBadge({ status }: { status: string | null }) {
       </Badge>
     );
   }
-  if (status === "denied") {
+  if (status === "Denied") {
     return (
       <Badge variant="destructive" data-testid="badge-status-denied">
         <XCircle className="w-3 h-3 mr-1" />
@@ -438,7 +438,7 @@ export default function Marketplace() {
                         )}
                       </div>
 
-                      {product.status === "pending" && (
+                      {product.status === "Pending" && (
                         <div className="space-y-2">
                           <Input
                             placeholder="Review notes (optional)"
@@ -484,7 +484,7 @@ export default function Marketplace() {
                         </div>
                       )}
 
-                      {product.status === "approved" && (
+                      {product.status === "Approved" && (
                         <div className="flex items-center gap-4 flex-wrap pt-2 border-t border-[#1e1e1e]">
                           <label className="flex items-center gap-2 text-sm cursor-pointer">
                             <Checkbox
