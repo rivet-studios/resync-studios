@@ -222,7 +222,9 @@ export default function Support() {
                   <strong>Security Note:</strong> RS Support will{" "}
                   <strong>NEVER</strong> ask for sensitive information like
                   passwords or credit card numbers. If you receive such a
-                  request, report it immediately to the Staff Director at vision@                </p>
+                  request, report it immediately to the Staff Director at
+                  vision@resyncstudios.com{" "}
+                </p>
                 <p>
                   We have moved our support portal to
                   https://support.resyncstudios.com. Click the button above to

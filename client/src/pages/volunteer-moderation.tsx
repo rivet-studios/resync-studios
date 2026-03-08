@@ -360,7 +360,9 @@ export default function VolunteerModeration() {
       {/* Embed Form */}
       <div className="space-y-4">
         <div>
-          <h2 className="font-display text-2xl font-bold mb-2">Apply Now</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">
+            Applications are currently closed
+          </h2>
           <p className="text-muted-foreground">
             Fill out the form below to apply for our volunteer moderation
             program. Applications are reviewed in batches and may take up to 3
