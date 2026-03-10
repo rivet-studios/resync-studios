@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import {
   User as UserIcon,
   Calendar,
@@ -16,8 +17,15 @@ import {
   FileText,
   Shield,
   PenLine,
+  AlertTriangle,
+  ScrollText,
+  StickyNote,
+  Plus,
+  Trash2,
+  Ban,
+  Activity,
 } from "lucide-react";
-import type { User, ForumThread } from "@shared/schema";
+import type { User, ForumThread, Warning, ModerationLog, StaffNote } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { ReportDialog } from "@/components/report-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,11 +33,24 @@ import { Link } from "wouter";
 import { formatDistanceToNow, format } from "date-fns";
 import { VipBadge } from "@/components/vip-badge";
 import { rankConfig } from "@/components/user-rank-badge";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function UserProfile() {
   const { id } = useParams<{ id: string }>();
   const { user: currentUser } = useAuth();
+  const { toast } = useToast();
   const userId = id || currentUser?.id;
+  const staffRanks = [
+    "Trial Moderator", "Moderator", "Administrator", "Senior Administrator",
+    "Developer", "Staff Internal Affairs", "Team Member", "Staff Department Director",
+    "Operations Manager", "Company Director",
+  ];
+  const isStaffViewer = currentUser?.isModerator || currentUser?.isAdmin ||
+    staffRanks.includes(currentUser?.userRank || "") ||
+    (currentUser?.additionalRanks || []).some((r: string) => staffRanks.includes(r));
+  const [newNote, setNewNote] = useState("");
 
   const { data: profile, isLoading } = useQuery<User>({
     queryKey: ["/api/users", userId],
@@ -46,6 +67,52 @@ export default function UserProfile() {
   >({
     queryKey: ["/api/forums/threads"],
     enabled: !!userId,
+  });
+
+  const { data: userWarnings } = useQuery<Warning[]>({
+    queryKey: ["/api/warnings/user", userId],
+    enabled: !!userId && !!isStaffViewer,
+  });
+
+  const { data: staffNotes } = useQuery<StaffNote[]>({
+    queryKey: ["/api/staff-notes", userId],
+    enabled: !!userId && !!isStaffViewer,
+  });
+
+  const { data: modLogs } = useQuery<ModerationLog[]>({
+    queryKey: ["/api/moderation-logs/user", userId],
+    enabled: !!userId && !!isStaffViewer,
+  });
+
+  const addNoteMutation = useMutation({
+    mutationFn: async (content: string) => {
+      await apiRequest("POST", "/api/staff-notes", {
+        userId,
+        authorId: currentUser?.id,
+        content,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/staff-notes", userId] });
+      setNewNote("");
+      toast({ title: "Note added" });
+    },
+    onError: () => {
+      toast({ title: "Failed to add note", variant: "destructive" });
+    },
+  });
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: async (noteId: string) => {
+      await apiRequest("DELETE", `/api/staff-notes/${noteId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/staff-notes", userId] });
+      toast({ title: "Note deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete note", variant: "destructive" });
+    },
   });
 
   const userThreads =
@@ -486,6 +553,215 @@ export default function UserProfile() {
           )}
         </CardContent>
       </Card>
+
+      {isStaffViewer && profile && currentUser && (
+        <div className="space-y-6" data-testid="section-staff-tools">
+          <Separator />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Shield className="w-5 h-5 text-muted-foreground" />
+              Staff Tools
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href={`/modcp?tab=warnings&userId=${profile.id}`}>
+                <Button variant="outline" size="sm" data-testid="button-issue-warning">
+                  <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
+                  Issue Warning
+                </Button>
+              </Link>
+              <Link href={`/modcp?tab=bans&userId=${profile.id}`}>
+                <Button variant="outline" size="sm" data-testid="button-issue-ban">
+                  <Ban className="w-3.5 h-3.5 mr-1.5" />
+                  Issue Ban
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <Card data-testid="card-warning-history">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-muted-foreground" />
+                Warning History
+                {userWarnings && userWarnings.length > 0 && (
+                  <Badge variant="secondary" className="ml-1" data-testid="badge-warning-count">
+                    {userWarnings.length}
+                  </Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-6">
+              {userWarnings && userWarnings.length > 0 ? (
+                <div className="space-y-3">
+                  {userWarnings.map((warning) => {
+                    const severityStyles: Record<string, string> = {
+                      Verbal: "bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-400",
+                      Written: "bg-orange-100 text-orange-800 dark:bg-orange-500/10 dark:text-orange-400",
+                      Final: "bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400",
+                    };
+                    return (
+                      <div
+                        key={warning.id}
+                        className={`p-3 rounded-md border ${!warning.isActive ? "opacity-50" : ""}`}
+                        data-testid={`warning-item-${warning.id}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                          <Badge
+                            variant="secondary"
+                            className={severityStyles[warning.severity] || ""}
+                            data-testid={`badge-severity-${warning.id}`}
+                          >
+                            {warning.severity}
+                          </Badge>
+                          {!warning.isActive && (
+                            <Badge variant="outline" className="text-xs" data-testid={`badge-inactive-${warning.id}`}>
+                              Inactive
+                            </Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {warning.createdAt
+                              ? formatDistanceToNow(new Date(warning.createdAt), { addSuffix: true })
+                              : "recently"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground" data-testid={`text-warning-reason-${warning.id}`}>
+                          {warning.reason}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Issued by: {warning.issuedBy}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-6 text-center">
+                  <AlertTriangle className="w-7 h-7 mx-auto text-muted-foreground/40 mb-2" />
+                  <p className="text-sm text-muted-foreground">No warnings on record</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card data-testid="card-staff-notes">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <StickyNote className="w-4 h-4 text-muted-foreground" />
+                Staff Notes
+                {staffNotes && staffNotes.length > 0 && (
+                  <Badge variant="secondary" className="ml-1" data-testid="badge-notes-count">
+                    {staffNotes.length}
+                  </Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-6 space-y-4">
+              <div className="flex gap-2">
+                <Textarea
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Add a staff note about this user..."
+                  className="resize-none text-sm"
+                  rows={2}
+                  data-testid="input-staff-note"
+                />
+                <Button
+                  size="sm"
+                  disabled={!newNote.trim() || addNoteMutation.isPending}
+                  onClick={() => addNoteMutation.mutate(newNote.trim())}
+                  data-testid="button-add-note"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+              {staffNotes && staffNotes.length > 0 ? (
+                <div className="space-y-2">
+                  {staffNotes.map((note) => (
+                    <div
+                      key={note.id}
+                      className="p-3 rounded-md border flex gap-3"
+                      data-testid={`note-item-${note.id}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-foreground" data-testid={`text-note-content-${note.id}`}>
+                          {note.content}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          By {note.authorId} &middot;{" "}
+                          {note.createdAt
+                            ? formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })
+                            : "recently"}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteNoteMutation.mutate(note.id)}
+                        disabled={deleteNoteMutation.isPending}
+                        data-testid={`button-delete-note-${note.id}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-4 text-center">
+                  <StickyNote className="w-7 h-7 mx-auto text-muted-foreground/40 mb-2" />
+                  <p className="text-sm text-muted-foreground">No staff notes yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card data-testid="card-moderation-history">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Activity className="w-4 h-4 text-muted-foreground" />
+                Moderation History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-6">
+              {modLogs && modLogs.length > 0 ? (
+                <div className="space-y-1">
+                  {modLogs.slice(0, 10).map((log, index) => (
+                    <div key={log.id}>
+                      <div
+                        className="flex items-start gap-3 p-3 rounded-md"
+                        data-testid={`modlog-item-${log.id}`}
+                      >
+                        <ScrollText className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground" data-testid={`text-modlog-action-${log.id}`}>
+                            {log.action}
+                          </p>
+                          {log.details && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {log.details}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            By {log.actorId} &middot;{" "}
+                            {log.createdAt
+                              ? formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })
+                              : "recently"}
+                          </p>
+                        </div>
+                      </div>
+                      {index < Math.min(modLogs.length, 10) - 1 && <Separator />}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-6 text-center">
+                  <Activity className="w-7 h-7 mx-auto text-muted-foreground/40 mb-2" />
+                  <p className="text-sm text-muted-foreground">No moderation actions on record</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

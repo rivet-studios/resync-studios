@@ -374,6 +374,66 @@ export const policies = pgTable("policies", {
 
 export type Policy = typeof policies.$inferSelect;
 
+export const warningSeverityEnum = pgEnum("warning_severity", [
+  "Verbal",
+  "Written",
+  "Final",
+]);
+
+export const moderationLogs = pgTable("moderation_logs", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  action: varchar("action").notNull(),
+  actorId: varchar("actor_id").notNull(),
+  targetId: varchar("target_id"),
+  targetType: varchar("target_type"),
+  details: text("details"),
+  metadata: text("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertModerationLogSchema = createInsertSchema(moderationLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const warnings = pgTable("warnings", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  issuedBy: varchar("issued_by").notNull(),
+  reason: text("reason").notNull(),
+  severity: warningSeverityEnum("severity").notNull(),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertWarningSchema = createInsertSchema(warnings).omit({
+  id: true,
+  isActive: true,
+  createdAt: true,
+});
+
+export const staffNotes = pgTable("staff_notes", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertStaffNoteSchema = createInsertSchema(staffNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Product = typeof products.$inferSelect;
@@ -382,3 +442,9 @@ export type Ban = typeof bans.$inferSelect;
 export type InsertBan = z.infer<typeof insertBanSchema>;
 export type Appeal = typeof appeals.$inferSelect;
 export type InsertAppeal = z.infer<typeof insertAppealSchema>;
+export type ModerationLog = typeof moderationLogs.$inferSelect;
+export type InsertModerationLog = z.infer<typeof insertModerationLogSchema>;
+export type Warning = typeof warnings.$inferSelect;
+export type InsertWarning = z.infer<typeof insertWarningSchema>;
+export type StaffNote = typeof staffNotes.$inferSelect;
+export type InsertStaffNote = z.infer<typeof insertStaffNoteSchema>;

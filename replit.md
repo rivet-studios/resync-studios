@@ -1,181 +1,49 @@
 # RIVET Studios Platform - Development Notes
 
-## Project Overview
-Full-featured gaming community platform for RIVET Studios with Discord/email authentication, VIP subscriptions, forums, blog, store, marketplace, user profiles, comprehensive rank system, moderation tools, ban/appeal system, and Stripe payment processing.
+## Overview
+The RIVET Studios Platform is a comprehensive gaming community platform designed to offer a rich, integrated experience for users. It features Discord and email authentication, a robust VIP subscription system, interactive forums, a blog, an e-commerce store and marketplace, detailed user profiles with a multi-tiered rank system, and extensive moderation tools including a ban and appeal system. The platform aims to foster community engagement, facilitate content sharing, and provide a streamlined payment experience through Stripe integration. The project's ambition is to create a dynamic and self-sustaining online hub for the RIVET Studios community.
 
-## Current Status (March 08, 2026)
-- ✅ Core authentication (Discord, Email/Password, Roblox linking)
-- ✅ Comprehensive user rank system (40+ ranks)
-- ✅ Landing page with hero, stats counter, and features grid
-- ✅ Blog functionality (admin-only posting)
-- ✅ Forums with categories, threading, staff moderation tools (pin/lock/delete/move/edit)
-- ✅ User profiles with redesigned layout and badges
-- ✅ VIP subscription system with 4 tiers
-- ✅ Store page with product catalog, categories, badges, and clickable product cards
-- ✅ Product detail page with Buy Now (Stripe) and Add to Cart functionality
-- ✅ Marketplace page for community product submissions
-- ✅ Product badges: Community Provided (grey), Featured (blue), LIMITED EDITION (golden), VERIFIED (green)
-- ✅ Operations Manager product review and badge assignment
-- ✅ User reporting system with ReportDialog component
-- ✅ Ban management (issue/lift bans via ModCP)
-- ✅ Appeal system for banned users
-- ✅ Policies hub aggregating all legal documents
-- ✅ Settings page with full functionality across all tabs
-- ✅ Stripe payment integration with checkout, portal, and webhooks
-- ✅ Professional navigation header with search
-- ✅ AdminCP with live stats, user management, announcements, site settings, reports
-- ✅ ModCP with real activity feed, user search for bans, duration options, status filtering
-- ✅ Live announcement management system
-- ✅ Support page with FAQ and contact form
-- ✅ Projects showcase page
-- ✅ Site offline mode (toggle from AdminCP)
-- ✅ Staff Directory
-- ✅ Scroll position fixed on navigation (ScrollToTop component)
-- ✅ Legal and policy pages centered and optimized for readability
-- ✅ Public access to forums, blogs, store, subscriptions (no login required to view)
+## User Preferences
+I prefer detailed explanations for complex features.
+I want iterative development with regular updates.
+Please ask for confirmation before making any major architectural changes or deleting significant portions of code.
+I prefer clean, readable code with consistent formatting.
+I like to be informed about the implications of design choices on performance and scalability.
 
-### Forum Staff Tools (March 2026):
-- **Thread Moderation API**: `PATCH /api/forums/threads/:id` (pin/lock/move/edit), `DELETE /api/forums/threads/:id`
-- **Reply Moderation API**: `PATCH /api/forums/replies/:id` (edit), `DELETE /api/forums/replies/:id`
-- **Category Admin API**: `POST/PATCH/DELETE /api/admin/forum-categories/:id`, `GET /api/admin/forum-stats`
-- **Thread Page Controls**: Staff toolbar with pin/lock/move/delete actions; inline reply editing; edit thread button links to `/forums/thread/:id/edit`
-- **Edit Thread Page**: `client/src/pages/forums/edit-thread.tsx` at `/forums/thread/:id/edit` — author or staff can edit title/content/category
-- **ModCP Forum Tab**: Thread search, filter by pinned/locked, quick actions (pin/lock/move/delete), reported forum content section
-- **AdminCP Forums Tab**: Forum stats, category CRUD management (create/edit/delete with name, description, group, order)
-- **Auth**: Staff ranks (Trial Moderator through Company Director), isAdmin, isModerator; authors can edit own threads/replies
-- **Validation**: Zod schemas for thread updates, reply updates, and category creation
+## System Architecture
+The platform is built with a dark theme UI (`#050505` backgrounds, `#121212` cards, white text) utilizing the Inter font family. Core UI components like Card and Badge are consistently applied. The global `--radius` is set to `0.5rem`, with `rounded-xl` as the maximum corner radius for a cleaner aesthetic.
 
-### Staff Case Detail Page (March 2026):
-- **Route**: `/modcp/case/:type/:id` — dedicated page for viewing report/appeal/ban details
-- **Component**: `client/src/pages/case-detail.tsx` — shows full case info, status badge, moderator notes, action buttons
-- **Auth**: Same staff rank gate as `/modcp` applied in `App.tsx`
-- **ModCP Links**: "View Case" links on report and appeal cards in ModCP navigate to case detail page
-- **Actions**: Mark reviewed/dismissed/action taken for reports; approve/deny for appeals; lift ban for active bans
-- **Notes**: Staff can add moderator/review notes when taking action
+Key features and their technical implementations include:
+- **Authentication**: Supports Discord, Email/Password, and Roblox account linking with a verification flow using the Roblox API.
+- **User Management**: Features a comprehensive rank system with over 40 ranks, VIP subscriptions across 4 tiers, and a staff directory. Discord role and nickname synchronization are automatically managed upon rank changes.
+- **Content Management**:
+    - **Forums**: Supports categories, threading, and staff moderation tools (pin, lock, delete, move, edit).
+    - **Blog**: Admin-only posting with search and category filtering.
+    - **Announcements**: Live management system for platform-wide notifications.
+    - **Policies**: Dynamic policy management with a `policies` table, allowing Operations Managers to edit HTML content via AdminCP, with fallbacks to hardcoded content.
+- **E-commerce**:
+    - **Store**: Product catalog with categories, badges (Community Provided, Featured, LIMITED EDITION, VERIFIED), and Stripe integration for `Buy Now` and `Add to Cart` functionality.
+    - **Marketplace**: Allows community product submissions.
+    - **Product Badges**: Operations Managers review products and assign badges.
+- **Moderation System**:
+    - **Reports**: User reporting system for content and profiles with a `ReportDialog` component.
+    - **Bans**: Management through ModCP, including a `Ban Wall` component that restricts banned users to the appeals page.
+    - **Appeals**: System for banned users to appeal decisions.
+    - **Audit Log**: `moderation_logs` table automatically logs various moderation actions.
+    - **Warnings**: `warnings` table for issuing and tracking user warnings with severity levels.
+    - **Staff Notes**: `staff_notes` table for internal notes on user profiles.
+    - **Staff Tools**: Dedicated "Staff Tools" section on user profiles for quick actions, warning history, staff notes, and moderation history.
+    - **Case Detail Page**: Centralized page (`/modcp/case/:type/:id`) for viewing and managing reports, appeals, and bans.
+    - **Forum Staff Tools**: API endpoints and UI elements for staff to moderate threads and replies.
+- **Admin/Mod Control Panels**: Redesigned with professional dark sidebar layouts.
+    - **AdminCP**: Features live stats, user management (including rank changes), announcements, site settings (e.g., offline mode toggle), and system reports. Includes an "Emergency Mode" for one-click offline activation.
+    - **ModCP**: Provides a live activity feed, user search for ban/warning issuance, ban duration options, and filtering for reports and appeals.
+- **Global Search**: `SearchDialog` with debounced input, type filtering, and grouped results, accessible via `Cmd+K`/`Ctrl+K`.
+- **Offline Mode**: A configurable site-wide offline mode with Admin bypass capabilities and a custom maintenance page.
+- **Design System**: Global design consistency achieved through semantic tokens, `VipBadge` component for VIP members, and a lifetime username gradient for `Lifetime` rank holders.
 
-### Ban Wall (March 2026):
-- **Component**: `client/src/components/ban-wall.tsx` — blocks banned users from all pages except `/appeals`
-- **Integration**: Wraps Router in `App.tsx`; queries `/api/bans/my` when user is logged in
-- **Display**: Shows ban reason, date, duration, and link to appeal
-
-### Site Offline Mode (March 2026):
-- **Public Endpoint**: `GET /api/site-status` — returns offline status without auth
-- **OfflineGate Component**: Wraps all routes in App.tsx, checks status every 30s
-- **Admin Bypass**: Company Director, Operations Manager, Team Member, Developer, Staff Internal Affairs, isAdmin, @resyncstudios.com emails can bypass offline mode
-- **Maintenance Page**: Shows custom offline message with professional design
-
-### UI Overhaul (March 2026):
-- **Landing Page**: Full dark theme redesign with radial gradients, semantic tokens, consistent Card/Badge components
-- **Forums**: Improved category sidebar with counts, thread cards with avatars/views/timestamps, skeleton loading
-- **Store**: Better category cards with icons, improved product grid, semantic theme tokens
-- **Blog**: Search and category filtering, improved featured post card, author cards, better post creation dialog
-- **Dashboard**: Welcome header with avatar, quick stats row, quick action buttons, improved card layouts
-- **AdminCP**: System health indicators, user rank breakdown, inline rank editing, better activity feed
-- **ModCP**: Clickable stat cards, attention banner, confirmation dialogs for bans/appeals, more duration options
-- **Profiles**: Larger avatar with staff indicator, profile stats grid, linked accounts section, recent activity feed
-- **Case Detail**: Fixed type matching bug (lowercase URLs now work), fixed getStatusColor switch cases
-- **Appeals**: Fixed filter values to use Title Case matching database enum
-
-## Recent Additions
-
-### Global Search (March 2026):
-- **API Route**: `GET /api/search?q=:query&type=:type` — searches across members, forum topics, products, blog posts
-- **SearchDialog**: Fully functional with debounced input, filter buttons, grouped results, click-to-navigate
-- **Keyboard Shortcut**: `Cmd+K` / `Ctrl+K` opens search dialog
-
-### Discord Bot Role Sync (March 2026):
-- **Role Mapping**: `RANK_TO_ROLE` map in `server/discord-bot.ts` uses env vars (`DISCORD_ROLE_*`) for rank-to-Discord-role mapping
-- **Auto-sync**: When admin changes a user's rank via `/api/admin/users/:id/rank`, Discord roles are updated automatically
-- **Nickname Sync**: Discord nickname also updated on rank change
-- **Function**: `updateDiscordRoles(discordId, newRank, oldRank)` exported from `server/discord-bot.ts`
-
-### Report Buttons (March 2026):
-- **Forum Threads**: Report button on thread OP and each reply (only visible when logged in, hidden for own posts)
-- **User Profiles**: Report button in profile header (only visible for other users' profiles)
-- **ReportDialog**: Pre-existing component now wired into thread.tsx and user.tsx
-
-### Roblox Account Linking (March 2026):
-- **Verification Flow**: Enter username → server looks up via Roblox API → generates verification code → user adds to Roblox profile description → server verifies
-- **API Routes**: `POST /api/roblox/start-verification`, `POST /api/roblox/verify`, `POST /api/roblox/unlink`
-- **Settings UI**: Roblox card in Integrations tab shows link/unlink buttons, inline verification form with code copy
-- **Uses Roblox public API**: `users.roblox.com/v1/users/search` and `users.roblox.com/v1/users/:id`
-
-### Policy Management:
-- **Policies Table**: New `policies` table with slug, title, content (HTML), updatedBy, updatedAt
-- **API Routes**: `GET /api/policies`, `GET /api/policies/:slug`, `PUT /api/policies/:slug` (Operations Manager+ only)
-- **AdminCP Policies Tab**: List of all 8 policies with edit/customize buttons, HTML content editor, save to DB
-- **PolicyWrapper Component**: Wraps each policy page; loads DB content if available, falls back to hardcoded content
-- **Access Control**: Operations Manager, Company Director, admins, and @resyncstudios.com emails can edit policies
-
-### VIP Badge & Lifetime Gradient:
-- **VIP Badge**: Replaced text/icon gradient badges with CDN image badge (`VipBadge` component renders the holographic VIP image)
-- **Lifetime Username Gradient**: Users with `Lifetime` rank get gold-to-blue gradient (`#FFBF00` to `#00BFFF`) applied to their username display in: profile page, forum threads, forum home thread list, and header dropdown
-- **rankConfig**: Centralized rank configuration in `user-rank-badge.tsx` with `isGradient` and `gradient` properties for Lifetime and VIP ranks
-
-
-### AdminCP Expansion:
-- **Live Stats Dashboard**: Total members, forum posts, active bans, pending reports — all from real database counts via `GET /api/admin/stats` (auto-refreshes every 30s)
-- **Real Activity Feed**: Combined feed of latest bans, reports, and appeals via `GET /api/admin/activity`
-- **User Management Tab**: Search users, view user list, change user ranks with full rank selector dropdown
-- **Platform Settings Tab**: Toggle offline mode with switch, edit offline message, view platform overview stats
-- **Announcements Tab**: Full create form (title, content, category, image URL), list/delete existing announcements
-- **System Reports Tab**: View all reports with status badges
-- **Emergency Mode**: One-click offline mode button on dashboard
-
-### ModCP Expansion:
-- **Live Dashboard**: Real combined activity feed replacing placeholder, showing latest bans/reports/appeals
-- **User Search for Bans**: Search-as-you-type user lookup instead of raw ID input, select from dropdown results
-- **Ban Duration Options**: 1 day, 7 days, 30 days, permanent — with computed expiration dates
-- **Reports Filtering**: Filter by status (All, Pending, Reviewed, Dismissed, Action Taken)
-- **Appeals Filtering**: Filter by status (All, Pending, Approved, Denied)
-
-### Settings Expansion:
-- **Billing Tab**: Shows VIP tier, Stripe subscription status, manage subscription via Stripe portal
-- **Orders Tab**: Payment history from database with date, description, amount, status
-- **Payment Methods Tab**: Link to Stripe customer portal for card management
-- **Downloads Tab**: Shows user's submitted/owned products
-- **Discounts Tab**: Proper empty state layout
-
-### Stripe Integration:
-- **stripe-replit-sync**: Non-blocking initialization on startup (schema, webhook, backfill)
-- **Routes**: GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/portal, GET /api/stripe/subscription
-- **Webhook**: Registered BEFORE express.json() middleware for raw body handling
-
-### UI Simplification (March 2026):
-- Reduced global `--radius` from `0.75rem` to `0.5rem` for cleaner, less bubbly corners
-- Replaced all `rounded-3xl`, `rounded-[2.5rem]`, `rounded-[2rem]` with `rounded-xl` across all pages
-- Store page fully redesigned to match reactstudios.com reference: gradient category cards, featured product image overlays, 4-column product grid
-- Header dropdown and sidebar items use `rounded-xl` instead of `rounded-2xl`
-
-### Design System:
-- **Color Palette**: Dark theme throughout (`#050505` backgrounds, `#121212` cards, white text).
-- **Typography**: Inter (font-sans), with semibold/medium weights throughout (no font-black/900).
-- **Logo**: Clean inline SVG without container box, displayed directly in header and footer.
-- **Components**: Redesigned AdminCP, ModCP, and Settings using professional dark sidebar layout.
-- **Corner Radius**: `--radius: 0.5rem` globally; `rounded-xl` max for cards/panels (no rounded-3xl).
-
-## Database Schema
-- Users (with VIP tier, Discord/Roblox linking, user ranks, isAdmin, isModerator, stripeCustomerId, stripeSubscriptionId)
-- Products (marketplace submissions with badges and review status)
-- Bans (active ban records with reason, duration, prior rank)
-- Appeals (ban appeal submissions with review status)
-- Reports (user/content reports with status tracking)
-- Announcements (live-edited by admins with categories)
-- Payments (tracks card charges with status)
-- Site Settings (offline mode, custom message)
-- Forums (categories, threads, replies)
-
-## API Routes Summary
-- **Admin**: GET /api/admin/stats, GET /api/admin/activity, GET /api/admin/users, GET /api/admin/search-users, POST /api/admin/assign-rank, PATCH /api/admin/users/:id/rank, PATCH /api/admin/site-settings, GET /api/admin/site-settings, POST /api/admin/set-user-password, POST /api/admin/assign-subscription, POST /api/admin/announcements, DELETE /api/admin/announcements/:id
-- **Products**: GET /api/products, GET /api/products/all (ops), GET /api/products/my, POST /api/products, PATCH /api/products/:id/review, PATCH /api/products/:id/badges
-- **Bans**: GET /api/bans, GET /api/bans/my, POST /api/bans, DELETE /api/bans/:id
-- **Appeals**: GET /api/appeals, GET /api/appeals/my, POST /api/appeals, PATCH /api/appeals/:id
-- **Reports**: GET /api/reports, GET /api/reports/my, POST /api/reports, PATCH /api/reports/:id
-- **Payments**: GET /api/payments/my
-- **Stripe**: GET /api/stripe/publishable-key, GET /api/stripe/products, POST /api/stripe/checkout, POST /api/stripe/product-checkout, POST /api/stripe/portal, GET /api/stripe/subscription
-- **Search**: GET /api/search?q=:query&type=:type
-- **Roblox**: POST /api/roblox/start-verification, POST /api/roblox/verify, POST /api/roblox/unlink
-
-## Deployment
-- Configured for deployment on Render
-- Domain: resyncstudios.com
+## External Dependencies
+- **Discord**: Used for authentication and role synchronization via a Discord bot.
+- **Roblox API**: Used for account linking and verification.
+- **Stripe**: Integrated for payment processing, VIP subscriptions, product purchases, customer portal management, and webhooks.
+- **Render**: The platform is configured for deployment on Render.

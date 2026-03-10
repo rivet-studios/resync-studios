@@ -35,6 +35,15 @@ import {
   products,
   bans,
   appeals,
+  moderationLogs,
+  type ModerationLog,
+  type InsertModerationLog,
+  warnings,
+  type Warning,
+  type InsertWarning,
+  staffNotes,
+  type StaffNote,
+  type InsertStaffNote,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, lt } from "drizzle-orm";
@@ -139,6 +148,17 @@ export interface IStorage {
   getStats(): Promise<{
     totalMembers: number;
   }>;
+  createModerationLog(log: InsertModerationLog): Promise<ModerationLog>;
+  getModerationLogs(filters?: { action?: string; actorId?: string; targetId?: string; limit?: number }): Promise<ModerationLog[]>;
+  getUserModerationLogs(targetId: string): Promise<ModerationLog[]>;
+  createWarning(warning: InsertWarning): Promise<Warning>;
+  getWarnings(activeOnly?: boolean): Promise<Warning[]>;
+  getUserWarnings(userId: string): Promise<Warning[]>;
+  getWarning(id: string): Promise<Warning | undefined>;
+  deactivateWarning(id: string): Promise<Warning | undefined>;
+  createStaffNote(note: InsertStaffNote): Promise<StaffNote>;
+  getStaffNotes(userId: string): Promise<StaffNote[]>;
+  deleteStaffNote(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -740,6 +760,59 @@ export class DatabaseStorage implements IStorage {
       .values({ slug, title, content, updatedBy })
       .returning();
     return created;
+  }
+  async createModerationLog(log: InsertModerationLog): Promise<ModerationLog> {
+    const [entry] = await db.insert(moderationLogs).values(log).returning();
+    return entry;
+  }
+  async getModerationLogs(filters?: { action?: string; actorId?: string; targetId?: string; limit?: number }): Promise<ModerationLog[]> {
+    const conditions = [];
+    if (filters?.action) conditions.push(eq(moderationLogs.action, filters.action));
+    if (filters?.actorId) conditions.push(eq(moderationLogs.actorId, filters.actorId));
+    if (filters?.targetId) conditions.push(eq(moderationLogs.targetId, filters.targetId));
+
+    const query = db.select().from(moderationLogs);
+    if (conditions.length > 0) {
+      return query.where(and(...conditions)).orderBy(desc(moderationLogs.createdAt)).limit(filters?.limit || 100);
+    }
+    return query.orderBy(desc(moderationLogs.createdAt)).limit(filters?.limit || 100);
+  }
+  async getUserModerationLogs(targetId: string): Promise<ModerationLog[]> {
+    return db.select().from(moderationLogs)
+      .where(eq(moderationLogs.targetId, targetId))
+      .orderBy(desc(moderationLogs.createdAt))
+      .limit(50);
+  }
+  async createWarning(warning: InsertWarning): Promise<Warning> {
+    const [w] = await db.insert(warnings).values(warning).returning();
+    return w;
+  }
+  async getWarnings(activeOnly?: boolean): Promise<Warning[]> {
+    if (activeOnly) {
+      return db.select().from(warnings).where(eq(warnings.isActive, true)).orderBy(desc(warnings.createdAt));
+    }
+    return db.select().from(warnings).orderBy(desc(warnings.createdAt));
+  }
+  async getUserWarnings(userId: string): Promise<Warning[]> {
+    return db.select().from(warnings).where(eq(warnings.userId, userId)).orderBy(desc(warnings.createdAt));
+  }
+  async getWarning(id: string): Promise<Warning | undefined> {
+    const [w] = await db.select().from(warnings).where(eq(warnings.id, id));
+    return w;
+  }
+  async deactivateWarning(id: string): Promise<Warning | undefined> {
+    const [w] = await db.update(warnings).set({ isActive: false }).where(eq(warnings.id, id)).returning();
+    return w;
+  }
+  async createStaffNote(note: InsertStaffNote): Promise<StaffNote> {
+    const [n] = await db.insert(staffNotes).values(note).returning();
+    return n;
+  }
+  async getStaffNotes(userId: string): Promise<StaffNote[]> {
+    return db.select().from(staffNotes).where(eq(staffNotes.userId, userId)).orderBy(desc(staffNotes.createdAt));
+  }
+  async deleteStaffNote(id: string): Promise<void> {
+    await db.delete(staffNotes).where(eq(staffNotes.id, id));
   }
 }
 

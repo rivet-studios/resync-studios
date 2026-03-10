@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,6 +61,10 @@ import {
   Trash2,
   FolderOpen,
   PinOff,
+  TriangleAlert,
+  ShieldAlert,
+  CircleSlash,
+  ClipboardList,
 } from "lucide-react";
 
 export default function ModCP() {
@@ -81,6 +85,37 @@ export default function ModCP() {
   const [forumFilter, setForumFilter] = useState<"all" | "pinned" | "locked">("all");
   const [moveThreadId, setMoveThreadId] = useState<string | null>(null);
   const [moveCategoryId, setMoveCategoryId] = useState("");
+  const [warningUserId, setWarningUserId] = useState("");
+  const [warningUsername, setWarningUsername] = useState("");
+  const [warningReason, setWarningReason] = useState("");
+  const [warningSeverity, setWarningSeverity] = useState<"Verbal" | "Written" | "Final">("Verbal");
+  const [warningSearchQuery, setWarningSearchQuery] = useState("");
+  const [showWarningUserDropdown, setShowWarningUserDropdown] = useState(false);
+  const [warningFilter, setWarningFilter] = useState<"all" | "active" | "inactive">("all");
+  const [auditActionFilter, setAuditActionFilter] = useState("All");
+  const [auditActorFilter, setAuditActorFilter] = useState("");
+  const [auditTargetFilter, setAuditTargetFilter] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    const userId = params.get("userId");
+    if (tab) setActiveTab(tab);
+    if (userId && tab === "warnings") {
+      setWarningUserId(userId);
+      fetch(`/api/users/${userId}`, { credentials: "include" })
+        .then(r => r.json())
+        .then(u => { if (u?.username) setWarningUsername(u.username); })
+        .catch(() => {});
+    }
+    if (userId && tab === "bans") {
+      setBanUserId(userId);
+      fetch(`/api/users/${userId}`, { credentials: "include" })
+        .then(r => r.json())
+        .then(u => { if (u?.username) setBanUsername(u.username); })
+        .catch(() => {});
+    }
+  }, []);
 
   const staffRanks = [
     "Appeals Moderator",
@@ -129,6 +164,23 @@ export default function ModCP() {
     enabled: isMod && activeTab === "bans" && userSearchQuery.length >= 2,
   });
 
+  const { data: warnings = [], isLoading: warningsLoading } = useQuery<any[]>({
+    queryKey: ["/api/warnings"],
+    enabled: isMod && (activeTab === "warnings" || activeTab === "dashboard"),
+  });
+
+  const { data: warningSearchResults = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/search-users", warningSearchQuery],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/search-users?q=${encodeURIComponent(warningSearchQuery)}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Search failed");
+      return res.json();
+    },
+    enabled: isMod && activeTab === "warnings" && warningSearchQuery.length >= 2,
+  });
+
   const { data: forumThreads = [], isLoading: threadsLoading } = useQuery<any[]>({
     queryKey: ["/api/forums/threads"],
     enabled: isMod && (activeTab === "forums" || activeTab === "dashboard"),
@@ -137,6 +189,11 @@ export default function ModCP() {
   const { data: forumCategories = [] } = useQuery<any[]>({
     queryKey: ["/api/forums/categories"],
     enabled: isMod && activeTab === "forums",
+  });
+
+  const { data: moderationLogs = [], isLoading: logsLoading } = useQuery<any[]>({
+    queryKey: ["/api/moderation-logs"],
+    enabled: isMod && (activeTab === "audit" || activeTab === "dashboard"),
   });
 
   const activityFeed = useMemo(() => {
@@ -172,6 +229,7 @@ export default function ModCP() {
   const openReportsCount = reports.filter((r: any) => r.status === "Pending").length;
   const pendingAppealsCount = pendingAppeals.filter((a: any) => a.status === "Pending").length;
   const resolvedReportsCount = reports.filter((r: any) => r.status !== "Pending").length;
+  const activeWarningsCount = warnings.filter((w: any) => w.isActive).length;
 
   const createBanMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -293,6 +351,45 @@ export default function ModCP() {
     },
   });
 
+  const createWarningMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/warnings", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Warning issued successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/warnings"] });
+      setWarningUserId("");
+      setWarningUsername("");
+      setWarningReason("");
+      setWarningSeverity("Verbal");
+      setWarningSearchQuery("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to issue warning", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const deactivateWarningMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("PATCH", `/api/warnings/${id}`, { isActive: false });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Warning deactivated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/warnings"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to deactivate warning", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const filteredWarnings = useMemo(() => {
+    if (warningFilter === "all") return warnings;
+    if (warningFilter === "active") return warnings.filter((w: any) => w.isActive);
+    return warnings.filter((w: any) => !w.isActive);
+  }, [warnings, warningFilter]);
+
   const filteredForumThreads = useMemo(() => {
     let threads = forumThreads;
     if (forumFilter === "pinned") threads = threads.filter((t: any) => t.isPinned);
@@ -312,6 +409,34 @@ export default function ModCP() {
       r.targetType === "thread" || r.targetType === "reply"
     );
   }, [reports]);
+
+  const filteredLogs = useMemo(() => {
+    let logs = moderationLogs;
+    if (auditActionFilter !== "All") {
+      logs = logs.filter((l: any) => l.action === auditActionFilter);
+    }
+    if (auditActorFilter.trim()) {
+      const q = auditActorFilter.toLowerCase();
+      logs = logs.filter((l: any) =>
+        l.actor?.username?.toLowerCase().includes(q) || l.actorId?.toLowerCase().includes(q)
+      );
+    }
+    if (auditTargetFilter.trim()) {
+      const q = auditTargetFilter.toLowerCase();
+      logs = logs.filter((l: any) =>
+        l.target?.username?.toLowerCase().includes(q) || l.targetId?.toLowerCase().includes(q) || l.targetType?.toLowerCase().includes(q)
+      );
+    }
+    return logs;
+  }, [moderationLogs, auditActionFilter, auditActorFilter, auditTargetFilter]);
+
+  const auditActionTypes = useMemo(() => {
+    const actions = new Set<string>();
+    moderationLogs.forEach((l: any) => {
+      if (l.action) actions.add(l.action);
+    });
+    return Array.from(actions).sort();
+  }, [moderationLogs]);
 
   function calculateExpiresAt(duration: string): string | null {
     if (duration === "permanent") return null;
@@ -421,7 +546,9 @@ export default function ModCP() {
     { id: "bans", label: "Ban Management", icon: Ban, count: activeBanCount || undefined },
     { id: "reports", label: "Reports", icon: FileText, count: openReportsCount || undefined },
     { id: "appeals", label: "Appeals", icon: Scale, count: pendingAppealsCount || undefined },
+    { id: "warnings", label: "Warnings", icon: TriangleAlert, count: activeWarningsCount || undefined },
     { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "Pending").length || undefined },
+    { id: "audit", label: "Audit Log", icon: ClipboardList, count: undefined },
   ];
 
   function getActivityIcon(type: string) {
@@ -431,6 +558,20 @@ export default function ModCP() {
       case "appeal": return <Scale className="w-4 h-4 text-blue-400" />;
       default: return <History className="w-4 h-4 text-muted-foreground" />;
     }
+  }
+
+  function getAuditIcon(action: string) {
+    const lower = action.toLowerCase();
+    if (lower.includes("ban") && lower.includes("lift")) return <Unlock className="w-4 h-4 text-green-400" />;
+    if (lower.includes("ban")) return <Ban className="w-4 h-4 text-red-400" />;
+    if (lower.includes("report")) return <FileText className="w-4 h-4 text-yellow-400" />;
+    if (lower.includes("appeal") && lower.includes("approve")) return <CheckCircle className="w-4 h-4 text-green-400" />;
+    if (lower.includes("appeal") && lower.includes("deny")) return <XCircle className="w-4 h-4 text-red-400" />;
+    if (lower.includes("appeal")) return <Scale className="w-4 h-4 text-blue-400" />;
+    if (lower.includes("warn")) return <AlertTriangle className="w-4 h-4 text-orange-400" />;
+    if (lower.includes("pin") || lower.includes("lock") || lower.includes("thread") || lower.includes("forum")) return <MessageSquareText className="w-4 h-4 text-purple-400" />;
+    if (lower.includes("delete") || lower.includes("remove")) return <Trash2 className="w-4 h-4 text-red-400" />;
+    return <ClipboardList className="w-4 h-4 text-muted-foreground" />;
   }
 
   function getActivityLabel(item: { type: string; data: any }) {
@@ -1153,6 +1294,241 @@ export default function ModCP() {
             </div>
           </>
         )}
+        {activeTab === "warnings" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-warnings-title">Warning Management</h1>
+                <p className="text-sm text-muted-foreground mt-1">Issue and manage user warnings.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={warningFilter === "all" ? "default" : "outline"}
+                  onClick={() => setWarningFilter("all")}
+                  data-testid="button-filter-warnings-all"
+                >
+                  All
+                </Button>
+                <Button
+                  size="sm"
+                  variant={warningFilter === "active" ? "default" : "outline"}
+                  onClick={() => setWarningFilter("active")}
+                  data-testid="button-filter-warnings-active"
+                >
+                  Active
+                </Button>
+                <Button
+                  size="sm"
+                  variant={warningFilter === "inactive" ? "default" : "outline"}
+                  onClick={() => setWarningFilter("inactive")}
+                  data-testid="button-filter-warnings-inactive"
+                >
+                  Inactive
+                </Button>
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-muted-foreground" />
+                  Issue Warning
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={warningUsername || warningSearchQuery}
+                      onChange={(e) => {
+                        setWarningSearchQuery(e.target.value);
+                        setWarningUsername("");
+                        setWarningUserId("");
+                        setShowWarningUserDropdown(true);
+                      }}
+                      onFocus={() => setShowWarningUserDropdown(true)}
+                      placeholder="Search user to warn..."
+                      className="pl-10"
+                      data-testid="input-warning-user-search"
+                    />
+                  </div>
+                  {showWarningUserDropdown && warningSearchResults.length > 0 && !warningUserId && (
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
+                      {warningSearchResults.map((u: any) => (
+                        <button
+                          key={u.id}
+                          onClick={() => {
+                            setWarningUserId(u.id);
+                            setWarningUsername(u.username || u.email);
+                            setWarningSearchQuery("");
+                            setShowWarningUserDropdown(false);
+                          }}
+                          className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
+                          data-testid={`button-select-warning-user-${u.id}`}
+                        >
+                          <User className="w-3 h-3 text-muted-foreground" />
+                          <span className="font-medium">{u.username || u.email}</span>
+                          {u.userRank && <span className="text-xs text-muted-foreground ml-auto">{u.userRank}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Select value={warningSeverity} onValueChange={(v) => setWarningSeverity(v as "Verbal" | "Written" | "Final")}>
+                    <SelectTrigger className="w-[160px]" data-testid="select-warning-severity">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Verbal">Verbal</SelectItem>
+                      <SelectItem value="Written">Written</SelectItem>
+                      <SelectItem value="Final">Final</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex-1">
+                    <Input
+                      value={warningReason}
+                      onChange={(e) => setWarningReason(e.target.value)}
+                      placeholder="Reason for warning..."
+                      data-testid="input-warning-reason"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    disabled={!warningUserId || !warningReason.trim() || createWarningMutation.isPending}
+                    onClick={() => {
+                      createWarningMutation.mutate({
+                        userId: warningUserId,
+                        reason: warningReason,
+                        severity: warningSeverity,
+                        issuedBy: user?.id,
+                      });
+                    }}
+                    data-testid="button-issue-warning"
+                  >
+                    <TriangleAlert className="w-4 h-4 mr-1" />
+                    {createWarningMutation.isPending ? "Issuing..." : "Issue Warning"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <TriangleAlert className="w-4 h-4 text-muted-foreground" />
+                  Warnings
+                </CardTitle>
+                <Badge variant="secondary">{filteredWarnings.length}</Badge>
+              </CardHeader>
+              <CardContent>
+                {warningsLoading ? (
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full rounded-md" />
+                    ))}
+                  </div>
+                ) : filteredWarnings.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <TriangleAlert className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      {warningFilter !== "all" ? `No ${warningFilter} warnings` : "No warnings issued yet"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {filteredWarnings.map((warning: any) => (
+                      <div
+                        key={warning.id}
+                        className={`flex items-start gap-3 rounded-md p-3 ${warning.isActive ? "bg-muted/50" : "bg-muted/20 opacity-60"}`}
+                        data-testid={`row-warning-${warning.id}`}
+                      >
+                        <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
+                          warning.severity === "Final" ? "bg-red-500/10" :
+                          warning.severity === "Written" ? "bg-yellow-500/10" :
+                          "bg-blue-500/10"
+                        }`}>
+                          <TriangleAlert className={`w-4 h-4 ${
+                            warning.severity === "Final" ? "text-red-400" :
+                            warning.severity === "Written" ? "text-yellow-400" :
+                            "text-blue-400"
+                          }`} />
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge
+                              variant="outline"
+                              className={
+                                warning.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                                warning.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
+                                "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                              }
+                            >
+                              {warning.severity}
+                            </Badge>
+                            <span className="font-semibold text-sm">{warning.user?.username || warning.userId}</span>
+                            {!warning.isActive && (
+                              <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{warning.reason}</p>
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {warning.createdAt ? getRelativeTime(warning.createdAt) : ""}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              Issued by: {warning.issuer?.username || warning.issuedBy}
+                            </span>
+                            {warning.expiresAt && (
+                              <span>Expires: {new Date(warning.expiresAt).toLocaleDateString()}</span>
+                            )}
+                          </div>
+                        </div>
+                        {warning.isActive && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                data-testid={`button-deactivate-warning-${warning.id}`}
+                              >
+                                <CircleSlash className="w-3 h-3 mr-1" /> Rescind
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Rescind Warning</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to deactivate this {warning.severity.toLowerCase()} warning for <strong>{warning.user?.username || warning.userId}</strong>?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deactivateWarningMutation.mutate(warning.id)}
+                                  data-testid={`button-confirm-deactivate-warning-${warning.id}`}
+                                >
+                                  Rescind Warning
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
         {activeTab === "forums" && (
           <>
             <div>
@@ -1414,6 +1790,141 @@ export default function ModCP() {
                             </Button>
                           </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
+        {activeTab === "audit" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-audit-title">Audit Log</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {filteredLogs.length} entr{filteredLogs.length !== 1 ? "ies" : "y"} {auditActionFilter !== "All" || auditActorFilter || auditTargetFilter ? "(filtered)" : "total"}
+                </p>
+              </div>
+            </div>
+
+            <Card>
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <Select value={auditActionFilter} onValueChange={setAuditActionFilter}>
+                      <SelectTrigger className="w-[180px]" data-testid="select-audit-action-filter">
+                        <SelectValue placeholder="Action type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All Actions</SelectItem>
+                        {auditActionTypes.map((action) => (
+                          <SelectItem key={action} value={action}>{action}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="relative flex-1 min-w-[150px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={auditActorFilter}
+                      onChange={(e) => setAuditActorFilter(e.target.value)}
+                      placeholder="Filter by actor..."
+                      className="pl-10"
+                      data-testid="input-audit-actor-filter"
+                    />
+                  </div>
+                  <div className="relative flex-1 min-w-[150px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={auditTargetFilter}
+                      onChange={(e) => setAuditTargetFilter(e.target.value)}
+                      placeholder="Filter by target..."
+                      className="pl-10"
+                      data-testid="input-audit-target-filter"
+                    />
+                  </div>
+                  {(auditActionFilter !== "All" || auditActorFilter || auditTargetFilter) && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setAuditActionFilter("All");
+                        setAuditActorFilter("");
+                        setAuditTargetFilter("");
+                      }}
+                      data-testid="button-clear-audit-filters"
+                    >
+                      <XCircle className="w-3 h-3 mr-1" /> Clear
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <ClipboardList className="w-4 h-4 text-muted-foreground" />
+                  Activity Timeline
+                </CardTitle>
+                <Badge variant="secondary">{filteredLogs.length}</Badge>
+              </CardHeader>
+              <CardContent>
+                {logsLoading ? (
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Skeleton key={i} className="h-14 w-full rounded-md" />
+                    ))}
+                  </div>
+                ) : filteredLogs.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <ClipboardList className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      {auditActionFilter !== "All" || auditActorFilter || auditTargetFilter
+                        ? "No log entries match your filters"
+                        : "No moderation activity recorded yet"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {filteredLogs.map((log: any) => (
+                      <div
+                        key={log.id}
+                        className="flex items-start gap-3 rounded-md p-3 hover-elevate"
+                        data-testid={`row-audit-log-${log.id}`}
+                      >
+                        <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                          {getAuditIcon(log.action)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+                            <span className="text-sm font-medium">
+                              {log.actor?.username || log.actorId}
+                            </span>
+                            {log.targetId && (
+                              <>
+                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {log.target?.username || log.targetId}
+                                </span>
+                              </>
+                            )}
+                            {log.targetType && (
+                              <span className="text-[11px] text-muted-foreground">({log.targetType})</span>
+                            )}
+                          </div>
+                          {log.details && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{log.details}</p>
+                          )}
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
+                            <Clock className="w-3 h-3" />
+                            {log.createdAt ? getRelativeTime(log.createdAt) : "Unknown"}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -12,6 +12,8 @@ import {
   insertBanSchema,
   insertAppealSchema,
   insertAnnouncementSchema,
+  insertWarningSchema,
+  insertStaffNoteSchema,
   users,
   forumThreads,
   type User,
@@ -254,6 +256,10 @@ export async function registerRoutes(
 
   app.get("/api/admin/search-users", requireAuth, async (req, res) => {
     try {
+      const user = req.user as any;
+      if (!isForumStaff(user) && !isAdminUser(user)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
       const { q } = req.query;
       const allUsers = await storage.getAllUsers();
       const filtered = allUsers.filter(
@@ -436,6 +442,21 @@ export async function registerRoutes(
       if (parsed.content !== undefined) allowedFields.content = parsed.content;
 
       const updated = await storage.updateForumThread(req.params.id, allowedFields);
+      if (isStaff) {
+        const actions = [];
+        if (parsed.isPinned !== undefined) actions.push(parsed.isPinned ? "pinned" : "unpinned");
+        if (parsed.isLocked !== undefined) actions.push(parsed.isLocked ? "locked" : "unlocked");
+        if (parsed.categoryId !== undefined) actions.push("moved");
+        if (actions.length > 0) {
+          await storage.createModerationLog({
+            action: `thread_${actions.join("_")}`,
+            actorId: user.id,
+            targetId: req.params.id,
+            targetType: "thread",
+            details: `Thread ${actions.join(", ")}`,
+          });
+        }
+      }
       res.json(updated);
     } catch (error) {
       if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
@@ -448,6 +469,13 @@ export async function registerRoutes(
       const user = req.user as any;
       if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
       await storage.deleteForumThread(req.params.id);
+      await storage.createModerationLog({
+        action: "thread_deleted",
+        actorId: user.id,
+        targetId: req.params.id,
+        targetType: "thread",
+        details: "Thread deleted",
+      });
       res.json({ message: "Thread deleted" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete thread" });
@@ -545,6 +573,140 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get forum stats" });
+    }
+  });
+
+  // Moderation logs routes
+  app.get("/api/moderation-logs", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const { action, actorId, targetId, limit } = req.query;
+      const logs = await storage.getModerationLogs({
+        action: action as string,
+        actorId: actorId as string,
+        targetId: targetId as string,
+        limit: limit ? parseInt(limit as string) : undefined,
+      });
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch moderation logs" });
+    }
+  });
+
+  app.get("/api/moderation-logs/user/:userId", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const logs = await storage.getUserModerationLogs(req.params.userId);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user moderation logs" });
+    }
+  });
+
+  // Warnings routes
+  app.get("/api/warnings", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const activeOnly = req.query.active === "true";
+      const allWarnings = await storage.getWarnings(activeOnly);
+      res.json(allWarnings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch warnings" });
+    }
+  });
+
+  app.get("/api/warnings/user/:userId", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const userWarnings = await storage.getUserWarnings(req.params.userId);
+      res.json(userWarnings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user warnings" });
+    }
+  });
+
+  app.post("/api/warnings", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const data = insertWarningSchema.parse({
+        ...req.body,
+        issuedBy: user.id,
+      });
+      const warning = await storage.createWarning(data);
+      await storage.createModerationLog({
+        action: "warning_issued",
+        actorId: user.id,
+        targetId: data.userId,
+        targetType: "user",
+        details: `${data.severity} warning: ${data.reason}`,
+      });
+      res.status(201).json(warning);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      res.status(500).json({ message: "Failed to create warning" });
+    }
+  });
+
+  app.patch("/api/warnings/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const warning = await storage.deactivateWarning(req.params.id);
+      if (!warning) return res.status(404).json({ message: "Warning not found" });
+      await storage.createModerationLog({
+        action: "warning_rescinded",
+        actorId: user.id,
+        targetId: warning.userId,
+        targetType: "user",
+        details: `Rescinded ${warning.severity} warning`,
+      });
+      res.json(warning);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to deactivate warning" });
+    }
+  });
+
+  // Staff notes routes
+  app.get("/api/staff-notes/:userId", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const notes = await storage.getStaffNotes(req.params.userId);
+      res.json(notes);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch staff notes" });
+    }
+  });
+
+  app.post("/api/staff-notes", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const data = insertStaffNoteSchema.parse({
+        ...req.body,
+        authorId: user.id,
+      });
+      const note = await storage.createStaffNote(data);
+      res.status(201).json(note);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      res.status(500).json({ message: "Failed to create staff note" });
+    }
+  });
+
+  app.delete("/api/staff-notes/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      await storage.deleteStaffNote(req.params.id);
+      res.json({ message: "Note deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete staff note" });
     }
   });
 
@@ -996,6 +1158,13 @@ export async function registerRoutes(
         bannedBy: user.id,
       });
       const ban = await storage.createBan(data);
+      await storage.createModerationLog({
+        action: "ban_issued",
+        actorId: user.id,
+        targetId: data.userId,
+        targetType: "user",
+        details: `Ban issued: ${data.reason}${data.isPermanent ? " (Permanent)" : ""}`,
+      });
       res.status(201).json(ban);
     } catch (error) {
       res.status(400).json({ message: "Invalid ban data" });
@@ -1026,6 +1195,13 @@ export async function registerRoutes(
       }
       const ban = await storage.deactivateBan(req.params.id);
       if (!ban) return res.status(404).json({ message: "Ban not found" });
+      await storage.createModerationLog({
+        action: "ban_lifted",
+        actorId: user.id,
+        targetId: ban.userId,
+        targetType: "user",
+        details: "Ban lifted",
+      });
       res.json({ message: "Ban lifted", ban });
     } catch (error) {
       res.status(500).json({ message: "Failed to lift ban" });
@@ -1145,6 +1321,14 @@ export async function registerRoutes(
         await storage.deactivateBan(appeal.banId);
       }
 
+      await storage.createModerationLog({
+        action: `appeal_${status.toLowerCase()}`,
+        actorId: user.id,
+        targetId: appeal.userId,
+        targetType: "appeal",
+        details: `Appeal ${status}${reviewNotes ? `: ${reviewNotes}` : ""}`,
+      });
+
       res.json(updated);
     } catch (error) {
       res.status(500).json({ message: "Appeal update failed" });
@@ -1181,6 +1365,13 @@ export async function registerRoutes(
         moderatorNotes,
       );
       if (!report) return res.status(404).json({ message: "Report not found" });
+      await storage.createModerationLog({
+        action: `report_${status.toLowerCase().replace(/\s+/g, "_")}`,
+        actorId: user.id,
+        targetId: report.targetId || req.params.id,
+        targetType: "report",
+        details: `Report ${status}${moderatorNotes ? `: ${moderatorNotes}` : ""}`,
+      });
       res.json(report);
     } catch (error) {
       res.status(500).json({ message: "Report update failed" });
