@@ -65,6 +65,8 @@ import {
   ShieldAlert,
   CircleSlash,
   ClipboardList,
+  Zap,
+  UserPlus,
 } from "lucide-react";
 
 export default function ModCP() {
@@ -95,6 +97,12 @@ export default function ModCP() {
   const [auditActionFilter, setAuditActionFilter] = useState("All");
   const [auditActorFilter, setAuditActorFilter] = useState("");
   const [auditTargetFilter, setAuditTargetFilter] = useState("");
+  const [massWarningUserIds, setMassWarningUserIds] = useState<string[]>([]);
+  const [massWarningUsernames, setMassWarningUsernames] = useState<Record<string, string>>({});
+  const [massWarningReason, setMassWarningReason] = useState("");
+  const [massWarningSeverity, setMassWarningSeverity] = useState<"Verbal" | "Written" | "Final">("Verbal");
+  const [massWarningSearchQuery, setMassWarningSearchQuery] = useState("");
+  const [showMassWarningDropdown, setShowMassWarningDropdown] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -195,6 +203,66 @@ export default function ModCP() {
     queryKey: ["/api/moderation-logs"],
     enabled: isMod && (activeTab === "audit" || activeTab === "dashboard"),
   });
+
+  const { data: escalations = [], isLoading: escalationsLoading } = useQuery<any[]>({
+    queryKey: ["/api/warnings/escalations"],
+    enabled: isMod && (activeTab === "escalations" || activeTab === "dashboard"),
+  });
+
+  const { data: massWarningSearchResults = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/search-users", massWarningSearchQuery],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/search-users?q=${encodeURIComponent(massWarningSearchQuery)}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Search failed");
+      return res.json();
+    },
+    enabled: isMod && activeTab === "mass-warning" && massWarningSearchQuery.length >= 2,
+  });
+
+  const massWarningMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/warnings/mass", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: `Mass warning issued to ${massWarningUserIds.length} users` });
+      queryClient.invalidateQueries({ queryKey: ["/api/warnings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/warnings/escalations"] });
+      setMassWarningUserIds([]);
+      setMassWarningUsernames({});
+      setMassWarningReason("");
+      setMassWarningSeverity("Verbal");
+      setMassWarningSearchQuery("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to issue mass warning", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const usersAtRisk = useMemo(() => {
+    const warningsByUser: Record<string, { count: number; username: string; userId: string; warnings: any[] }> = {};
+    warnings.filter((w: any) => w.isActive).forEach((w: any) => {
+      const uid = w.userId;
+      if (!warningsByUser[uid]) {
+        warningsByUser[uid] = { count: 0, username: w.user?.username || uid, userId: uid, warnings: [] };
+      }
+      warningsByUser[uid].count++;
+      warningsByUser[uid].warnings.push(w);
+    });
+    return Object.values(warningsByUser).filter(u => u.count >= 2).sort((a, b) => b.count - a.count);
+  }, [warnings]);
+
+  const reportPriority = useMemo(() => {
+    const targetCounts: Record<string, number> = {};
+    reports.forEach((r: any) => {
+      if (r.targetId) {
+        targetCounts[r.targetId] = (targetCounts[r.targetId] || 0) + 1;
+      }
+    });
+    return targetCounts;
+  }, [reports]);
 
   const activityFeed = useMemo(() => {
     const items: Array<{ type: string; date: string; data: any }> = [];
@@ -547,6 +615,8 @@ export default function ModCP() {
     { id: "reports", label: "Reports", icon: FileText, count: openReportsCount || undefined },
     { id: "appeals", label: "Appeals", icon: Scale, count: pendingAppealsCount || undefined },
     { id: "warnings", label: "Warnings", icon: TriangleAlert, count: activeWarningsCount || undefined },
+    { id: "mass-warning", label: "Mass Warning", icon: Users, count: undefined },
+    { id: "escalations", label: "Escalation Tracker", icon: Zap, count: escalations.length || undefined },
     { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "Pending").length || undefined },
     { id: "audit", label: "Audit Log", icon: ClipboardList, count: undefined },
   ];
@@ -757,6 +827,86 @@ export default function ModCP() {
                 )}
               </CardContent>
             </Card>
+
+            {usersAtRisk.length > 0 && (
+              <Card className="border-orange-500/20" data-testid="card-users-at-risk">
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-orange-400" />
+                    Users at Risk
+                  </CardTitle>
+                  <Badge variant="secondary">{usersAtRisk.length}</Badge>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground mb-3">Users with 2 or more active warnings that may require escalation.</p>
+                  <div className="space-y-2">
+                    {usersAtRisk.map((u) => (
+                      <div
+                        key={u.userId}
+                        className="flex items-center justify-between gap-4 rounded-md p-3 bg-muted/50"
+                        data-testid={`row-at-risk-${u.userId}`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-md bg-orange-500/10 flex items-center justify-center shrink-0">
+                            <User className="w-4 h-4 text-orange-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-semibold text-sm">{u.username}</span>
+                            <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                              {u.warnings.map((w: any) => (
+                                <Badge
+                                  key={w.id}
+                                  variant="outline"
+                                  className={`text-[10px] ${
+                                    w.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                                    w.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
+                                    "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                  }`}
+                                >
+                                  {w.severity}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge variant="secondary" className={`text-[10px] ${u.count >= 3 ? "bg-red-500/20 text-red-400" : "bg-orange-500/20 text-orange-400"}`}>
+                            {u.count} warnings
+                          </Badge>
+                          {u.count >= 3 && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                setBanUserId(u.userId);
+                                setBanUsername(u.username);
+                                setBanReason(`Accumulated ${u.count} active warnings`);
+                                setActiveTab("bans");
+                              }}
+                              data-testid={`button-escalate-ban-${u.userId}`}
+                            >
+                              <Ban className="w-3 h-3 mr-1" /> Escalate to Ban
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setWarningUserId(u.userId);
+                              setWarningUsername(u.username);
+                              setActiveTab("warnings");
+                            }}
+                            data-testid={`button-view-warnings-${u.userId}`}
+                          >
+                            View Warnings
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
 
@@ -846,6 +996,26 @@ export default function ModCP() {
                       </CardContent>
                     </Card>
                   )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Reason Template</label>
+                  <Select
+                    value=""
+                    onValueChange={(v) => setBanReason(v)}
+                  >
+                    <SelectTrigger data-testid="select-ban-reason-template">
+                      <SelectValue placeholder="Select a common reason..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Harassment or bullying of other community members">Harassment</SelectItem>
+                      <SelectItem value="Spamming or flooding channels with unwanted content">Spam</SelectItem>
+                      <SelectItem value="Violation of Terms of Service">TOS Violation</SelectItem>
+                      <SelectItem value="Posting inappropriate, offensive, or NSFW content">Inappropriate Content</SelectItem>
+                      <SelectItem value="Use of cheats, exploits, or unauthorized modifications">Cheating / Exploiting</SelectItem>
+                      <SelectItem value="Impersonating staff or other community members">Impersonation</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -1065,6 +1235,16 @@ export default function ModCP() {
                               <Badge variant="outline" className={getStatusBadgeClasses(report.status)}>
                                 {report.status}
                               </Badge>
+                              {(reportPriority[report.targetId] || 0) > 1 && (
+                                <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px]" data-testid={`badge-priority-${report.id}`}>
+                                  <AlertTriangle className="w-2.5 h-2.5 mr-0.5" /> High Priority
+                                </Badge>
+                              )}
+                              {report.targetType === "user" && (
+                                <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[10px]">
+                                  User Report
+                                </Badge>
+                              )}
                               <span className="text-xs text-muted-foreground">{report.targetType}</span>
                               <span className="text-[11px] text-muted-foreground">{getRelativeTime(report.createdAt)}</span>
                             </div>
@@ -1329,6 +1509,35 @@ export default function ModCP() {
               </div>
             </div>
 
+            <Card data-testid="card-escalation-path">
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-muted-foreground" />
+                  Warning Escalation Path
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {[
+                    { label: "Verbal Warning", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+                    { label: "Written Warning", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+                    { label: "Final Warning", color: "bg-red-500/20 text-red-400 border-red-500/30" },
+                    { label: "Ban", color: "bg-red-600/20 text-red-500 border-red-600/30" },
+                  ].map((step, i) => (
+                    <div key={step.label} className="flex items-center gap-2">
+                      <Badge variant="outline" className={step.color} data-testid={`badge-escalation-${i}`}>
+                        {step.label}
+                      </Badge>
+                      {i < 3 && <ArrowRight className="w-3 h-3 text-muted-foreground" />}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Users progress through this escalation path. After a Final Warning, the next step is a ban. Users with 3+ active warnings are flagged for ban escalation.
+                </p>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
@@ -1529,6 +1738,264 @@ export default function ModCP() {
             </Card>
           </>
         )}
+        {activeTab === "mass-warning" && (
+          <>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-mass-warning-title">Mass Warning</h1>
+              <p className="text-sm text-muted-foreground mt-1">Issue the same warning to multiple users at once.</p>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
+                  <Users className="w-4 h-4" /> Select Users
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={massWarningSearchQuery}
+                      onChange={(e) => {
+                        setMassWarningSearchQuery(e.target.value);
+                        setShowMassWarningDropdown(true);
+                      }}
+                      onFocus={() => setShowMassWarningDropdown(true)}
+                      placeholder="Search users to add..."
+                      className="pl-10"
+                      data-testid="input-mass-warning-search"
+                    />
+                  </div>
+                  {showMassWarningDropdown && massWarningSearchResults.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
+                      {massWarningSearchResults
+                        .filter((u: any) => !massWarningUserIds.includes(u.id))
+                        .map((u: any) => (
+                          <button
+                            key={u.id}
+                            onClick={() => {
+                              setMassWarningUserIds((prev) => [...prev, u.id]);
+                              setMassWarningUsernames((prev) => ({ ...prev, [u.id]: u.username || u.email }));
+                              setMassWarningSearchQuery("");
+                              setShowMassWarningDropdown(false);
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
+                            data-testid={`button-add-mass-user-${u.id}`}
+                          >
+                            <UserPlus className="w-3 h-3 text-muted-foreground" />
+                            <span className="font-medium">{u.username || u.email}</span>
+                            {u.userRank && <span className="text-xs text-muted-foreground ml-auto">{u.userRank}</span>}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+
+                {massWarningUserIds.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {massWarningUserIds.map((uid) => (
+                      <Badge key={uid} variant="secondary" className="flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        {massWarningUsernames[uid] || uid}
+                        <button
+                          onClick={() => {
+                            setMassWarningUserIds((prev) => prev.filter((id) => id !== uid));
+                            setMassWarningUsernames((prev) => {
+                              const next = { ...prev };
+                              delete next[uid];
+                              return next;
+                            });
+                          }}
+                          className="ml-1"
+                          data-testid={`button-remove-mass-user-${uid}`}
+                        >
+                          <XCircle className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Select value={massWarningSeverity} onValueChange={(v) => setMassWarningSeverity(v as "Verbal" | "Written" | "Final")}>
+                    <SelectTrigger className="w-[160px]" data-testid="select-mass-warning-severity">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Verbal">Verbal</SelectItem>
+                      <SelectItem value="Written">Written</SelectItem>
+                      <SelectItem value="Final">Final</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex-1">
+                    <Input
+                      value={massWarningReason}
+                      onChange={(e) => setMassWarningReason(e.target.value)}
+                      placeholder="Reason for warning..."
+                      data-testid="input-mass-warning-reason"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        disabled={massWarningUserIds.length === 0 || !massWarningReason.trim() || massWarningMutation.isPending}
+                        data-testid="button-issue-mass-warning"
+                      >
+                        <TriangleAlert className="w-4 h-4 mr-1" />
+                        {massWarningMutation.isPending ? "Issuing..." : `Issue Warning to ${massWarningUserIds.length} User${massWarningUserIds.length !== 1 ? "s" : ""}`}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Mass Warning</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          You are about to issue a <strong>{massWarningSeverity}</strong> warning to <strong>{massWarningUserIds.length}</strong> user{massWarningUserIds.length !== 1 ? "s" : ""}.
+                          <br />Reason: {massWarningReason}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            massWarningMutation.mutate({
+                              userIds: massWarningUserIds,
+                              reason: massWarningReason,
+                              severity: massWarningSeverity,
+                            });
+                          }}
+                          data-testid="button-confirm-mass-warning"
+                        >
+                          Issue Warnings
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {activeTab === "escalations" && (
+          <>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-escalations-title">Escalation Tracker</h1>
+              <p className="text-sm text-muted-foreground mt-1">Users with multiple active warnings. Users with 3+ warnings are flagged for potential ban.</p>
+            </div>
+
+            {escalationsLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-24 w-full rounded-md" />
+                ))}
+              </div>
+            ) : escalations.length === 0 ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="flex flex-col items-center justify-center">
+                    <Zap className="w-10 h-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">No users with multiple active warnings</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {escalations.map((esc: any) => (
+                  <Card
+                    key={esc.userId}
+                    className={esc.suggestBan ? "border-red-500/30" : ""}
+                    data-testid={`card-escalation-${esc.userId}`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="flex items-start gap-3">
+                          <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${esc.suggestBan ? "bg-red-500/10" : "bg-yellow-500/10"}`}>
+                            {esc.suggestBan ? (
+                              <Ban className="w-5 h-5 text-red-400" />
+                            ) : (
+                              <TriangleAlert className="w-5 h-5 text-yellow-400" />
+                            )}
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-sm">{esc.username}</span>
+                              <Badge variant="outline" className="text-[10px]">{esc.userRank}</Badge>
+                              <Badge
+                                variant="outline"
+                                className={esc.suggestBan
+                                  ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                  : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                }
+                              >
+                                {esc.warningCount} active warning{esc.warningCount !== 1 ? "s" : ""}
+                              </Badge>
+                            </div>
+                            {esc.suggestBan && (
+                              <p className="text-xs text-red-400 font-medium flex items-center gap-1">
+                                <Zap className="w-3 h-3" /> Ban recommended - 3+ active warnings
+                              </p>
+                            )}
+                            <div className="space-y-1 mt-2">
+                              {esc.warnings.map((w: any, i: number) => (
+                                <div key={w.id || i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-[10px] ${
+                                      w.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                                      w.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
+                                      "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                    }`}
+                                  >
+                                    {w.severity}
+                                  </Badge>
+                                  <span className="truncate">{w.reason}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setActiveTab("warnings");
+                              setWarningUserId(esc.userId);
+                              setWarningUsername(esc.username);
+                            }}
+                            data-testid={`button-view-warnings-${esc.userId}`}
+                          >
+                            <Eye className="w-3 h-3 mr-1" /> View
+                          </Button>
+                          {esc.suggestBan && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                setActiveTab("bans");
+                                setBanUserId(esc.userId);
+                                setBanUsername(esc.username);
+                                setUserSearchQuery(esc.username);
+                              }}
+                              data-testid={`button-ban-escalated-${esc.userId}`}
+                            >
+                              <Ban className="w-3 h-3 mr-1" /> Ban User
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
         {activeTab === "forums" && (
           <>
             <div>

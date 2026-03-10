@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +20,8 @@ import {
   User,
   FileText,
   Loader2,
+  Ban,
+  ArrowRight,
 } from "lucide-react";
 
 function getStatusColor(status: string): string {
@@ -60,7 +62,7 @@ export default function CaseDetail() {
     isError: reportsError,
   } = useQuery<any[]>({
     queryKey: ["/api/reports"],
-    enabled: isReport,
+    enabled: true,
   });
 
   const {
@@ -69,7 +71,7 @@ export default function CaseDetail() {
     isError: appealsError,
   } = useQuery<any[]>({
     queryKey: ["/api/appeals"],
-    enabled: isAppeal,
+    enabled: true,
   });
 
   const {
@@ -78,7 +80,7 @@ export default function CaseDetail() {
     isError: bansError,
   } = useQuery<any[]>({
     queryKey: ["/api/bans"],
-    enabled: isBan,
+    enabled: true,
   });
 
   const caseData = isReport
@@ -235,6 +237,35 @@ export default function CaseDetail() {
     : isAppeal
       ? caseData.status === "Pending"
       : caseData.isActive;
+
+  const caseUserId = isReport
+    ? caseData.targetId
+    : isAppeal
+      ? caseData.userId
+      : caseData.userId;
+
+  const relatedReports = useMemo(() => {
+    if (!caseUserId) return [];
+    return reports
+      .filter((r: any) => r.id !== id && (r.targetId === caseUserId || r.reporterId === caseUserId))
+      .slice(0, 5);
+  }, [reports, caseUserId, id]);
+
+  const relatedAppeals = useMemo(() => {
+    if (!caseUserId) return [];
+    return appeals
+      .filter((a: any) => a.id !== id && a.userId === caseUserId)
+      .slice(0, 5);
+  }, [appeals, caseUserId, id]);
+
+  const relatedBans = useMemo(() => {
+    if (!caseUserId) return [];
+    return bans
+      .filter((b: any) => b.id !== id && b.userId === caseUserId)
+      .slice(0, 5);
+  }, [bans, caseUserId, id]);
+
+  const hasRelatedCases = relatedReports.length > 0 || relatedAppeals.length > 0 || relatedBans.length > 0;
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -581,6 +612,87 @@ export default function CaseDetail() {
                   </Button>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {hasRelatedCases && (
+          <Card className="bg-[#121212] border-white/5 rounded-xl" data-testid="card-related-cases">
+            <CardContent className="p-6 space-y-4">
+              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
+                Related Cases
+              </h3>
+              <p className="text-xs text-white/30">
+                Other reports, appeals, and bans involving the same user.
+              </p>
+
+              {relatedReports.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-white/50 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Reports ({relatedReports.length})
+                  </p>
+                  {relatedReports.map((r: any) => (
+                    <Link key={r.id} href={`/modcp/case/report/${r.id}`}>
+                      <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer" data-testid={`related-report-${r.id}`}>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
+                          <span className="text-sm text-white/70 truncate">{r.reason}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge className={`text-[10px] ${getStatusColor(r.status)}`}>{r.status}</Badge>
+                          <ArrowRight className="w-3 h-3 text-white/30" />
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {relatedAppeals.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-white/50 flex items-center gap-1">
+                    <Scale className="w-3 h-3" /> Appeals ({relatedAppeals.length})
+                  </p>
+                  {relatedAppeals.map((a: any) => (
+                    <Link key={a.id} href={`/modcp/case/appeal/${a.id}`}>
+                      <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer" data-testid={`related-appeal-${a.id}`}>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Scale className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <span className="text-sm text-white/70 truncate">{a.reason}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge className={`text-[10px] ${getStatusColor(a.status)}`}>{a.status}</Badge>
+                          <ArrowRight className="w-3 h-3 text-white/30" />
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {relatedBans.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-white/50 flex items-center gap-1">
+                    <Ban className="w-3 h-3" /> Bans ({relatedBans.length})
+                  </p>
+                  {relatedBans.map((b: any) => (
+                    <Link key={b.id} href={`/modcp/case/ban/${b.id}`}>
+                      <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer" data-testid={`related-ban-${b.id}`}>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Ban className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                          <span className="text-sm text-white/70 truncate">{b.reason}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge className={`text-[10px] ${b.isActive ? "bg-red-500/20 text-red-400" : "bg-white/10 text-white/50"}`}>
+                            {b.isActive ? "Active" : "Lifted"}
+                          </Badge>
+                          <ArrowRight className="w-3 h-3 text-white/30" />
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

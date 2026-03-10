@@ -60,14 +60,25 @@ const features = [
 export default function Landing() {
   const { user } = useAuth();
 
-  const { data: publicStats } = useQuery<{ totalMembers: number; totalDiscussions: number }>({
+  const { data: publicStats } = useQuery<{
+    totalMembers: number;
+    totalDiscussions: number;
+  }>({
     queryKey: ["/api/public/stats"],
     staleTime: 60000,
   });
 
   const stats = [
-    { value: publicStats?.totalMembers || 0, label: "Connected Members", suffix: "+" },
-    { value: publicStats?.totalDiscussions || 0, label: "Active Discussions", suffix: "+" },
+    {
+      value: publicStats?.totalMembers || 0,
+      label: "Connected Members",
+      suffix: "",
+    },
+    {
+      value: publicStats?.totalDiscussions || 0,
+      label: "Active Discussions",
+      suffix: "",
+    },
     { value: 99.9, label: "Uptime", suffix: "%" },
     { value: 24, label: "Support", suffix: "/7" },
   ];
@@ -83,14 +94,24 @@ export default function Landing() {
 
         <div className="relative z-10 container mx-auto px-4 text-center space-y-10">
           <div className="space-y-6 max-w-3xl mx-auto">
-            <Badge variant="outline" className="bg-white/[0.04] border-white/[0.08] backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground tracking-wide uppercase gap-2" data-testid="badge-hero-tagline">
+            <Badge
+              variant="outline"
+              className="bg-white/[0.04] border-white/[0.08] backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground tracking-wide uppercase gap-2"
+              data-testid="badge-hero-tagline"
+            >
               <Sparkles className="w-3.5 h-3.5" />
               Building the Future of Digital Experiences
             </Badge>
-            <h1 className="text-6xl sm:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]" data-testid="text-hero-title">
+            <h1
+              className="text-6xl sm:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]"
+              data-testid="text-hero-title"
+            >
               RIVET Studios<span className="text-muted-foreground">™</span>
             </h1>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed" data-testid="text-hero-description">
+            <p
+              className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed"
+              data-testid="text-hero-description"
+            >
               We build worlds that breathe, stories that live, and brands that
               command attention. Every project is treated like a city — layered,
               alive, and engineered to last.
@@ -131,7 +152,11 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center space-y-2" data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}>
+              <div
+                key={stat.label}
+                className="text-center space-y-2"
+                data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, "-")}`}
+              >
                 <div className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>
@@ -153,7 +178,8 @@ export default function Landing() {
               Everything you need
             </h2>
             <p className="text-base text-muted-foreground font-normal leading-relaxed">
-              Our platform provides all the essential tools to build and manage thriving communities.
+              Our platform provides all the essential tools to build and manage
+              thriving communities.
             </p>
           </div>
 
@@ -164,7 +190,7 @@ export default function Landing() {
                 <Card
                   key={feature.title}
                   className="group border-white/[0.04] bg-card hover:bg-accent hover:border-white/[0.08] transition-all duration-300 rounded-xl overflow-hidden"
-                  data-testid={`card-feature-${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  data-testid={`card-feature-${feature.title.toLowerCase().replace(/\s+/g, "-")}`}
                 >
                   <CardContent className="p-8 space-y-5">
                     <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-all duration-300">
@@ -201,7 +227,8 @@ export default function Landing() {
                   Ready to get started?
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Join a growing community of creators, developers, and enthusiasts building the future together.
+                  Join a growing community of creators, developers, and
+                  enthusiasts building the future together.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                   <Button

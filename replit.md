@@ -40,7 +40,11 @@ Key features and their technical implementations include:
     - **ModCP**: Provides a live activity feed, user search for ban/warning issuance, ban duration options, and filtering for reports and appeals.
 - **Global Search**: `SearchDialog` with debounced input, type filtering, and grouped results, accessible via `Cmd+K`/`Ctrl+K`.
 - **Offline Mode**: A configurable site-wide offline mode with Admin bypass capabilities and a custom maintenance page.
-- **Design System**: Global design consistency achieved through semantic tokens, `VipBadge` component for VIP members, and a lifetime username gradient for `Lifetime` rank holders.
+- **Design System**: Global design consistency achieved through semantic tokens, `VipBadge` component for VIP members, and VIP-priority username coloring (Lifetime=animated gold-cyan gradient, Founders=holographic rainbow, Diamond=diamond gradient, Bronze=bronze gradient, fallback to rank color). Profile rank badges ordered: VIP > Community > Staff.
+- **Advanced Staff Tools**:
+    - **ModCP**: Users at Risk dashboard card, ban reason templates dropdown, report priority indicators, warning escalation path display, escalation tracker tab.
+    - **AdminCP**: Role change history sub-tab, bulk user rank change actions, quick banner announcements, account age distribution stats, staff activity card, user quick-view info panel.
+    - **Case Detail**: Related cases section showing other reports/appeals/bans for the same user.
 
 ## External Dependencies
 - **Discord**: Used for authentication and role synchronization via a Discord bot.

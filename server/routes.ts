@@ -671,6 +671,133 @@ export async function registerRoutes(
     }
   });
 
+  // Mass warnings route
+  app.post("/api/warnings/mass", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const { userIds, reason, severity } = req.body;
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ message: "userIds array is required" });
+      }
+      if (!reason || !severity) {
+        return res.status(400).json({ message: "reason and severity are required" });
+      }
+      const results = [];
+      for (const userId of userIds) {
+        const warning = await storage.createWarning({
+          userId,
+          issuedBy: user.id,
+          reason,
+          severity,
+        });
+        await storage.createModerationLog({
+          action: "warning_issued",
+          actorId: user.id,
+          targetId: userId,
+          targetType: "user",
+          details: `${severity} warning (mass): ${reason}`,
+        });
+        results.push(warning);
+      }
+      res.status(201).json(results);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to issue mass warnings" });
+    }
+  });
+
+  // Escalation tracker - users with multiple active warnings
+  app.get("/api/warnings/escalations", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isForumStaff(user)) return res.status(403).json({ message: "Forbidden" });
+      const allWarnings = await storage.getWarnings(true);
+      const userWarningMap: Record<string, { count: number; warnings: any[]; user?: any }> = {};
+      for (const w of allWarnings) {
+        if (!userWarningMap[w.userId]) {
+          userWarningMap[w.userId] = { count: 0, warnings: [] };
+        }
+        userWarningMap[w.userId].count++;
+        userWarningMap[w.userId].warnings.push(w);
+      }
+      const escalations = [];
+      for (const [userId, data] of Object.entries(userWarningMap)) {
+        if (data.count >= 2) {
+          const targetUser = await storage.getUser(userId);
+          escalations.push({
+            userId,
+            username: targetUser?.username || userId,
+            email: targetUser?.email,
+            userRank: targetUser?.userRank,
+            warningCount: data.count,
+            warnings: data.warnings,
+            suggestBan: data.count >= 3,
+          });
+        }
+      }
+      escalations.sort((a, b) => b.warningCount - a.warningCount);
+      res.json(escalations);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch escalations" });
+    }
+  });
+
+  // Bulk rank change
+  app.post("/api/admin/bulk-rank-change", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+      const { userIds, userRank } = req.body;
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ message: "userIds array is required" });
+      }
+      if (!userRank) {
+        return res.status(400).json({ message: "userRank is required" });
+      }
+      const results = [];
+      for (const userId of userIds) {
+        const targetUser = await storage.getUser(userId);
+        const oldRank = targetUser?.userRank || "none";
+        await storage.updateUserRank(userId, userRank);
+        await storage.createModerationLog({
+          action: "rank_changed",
+          actorId: user.id,
+          targetId: userId,
+          targetType: "user",
+          details: `Bulk rank change from "${oldRank}" to "${userRank}"`,
+          metadata: JSON.stringify({ oldRank, newRank: userRank }),
+        });
+        results.push({ userId, oldRank, newRank: userRank });
+      }
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to bulk update ranks" });
+    }
+  });
+
+  // Role change history
+  app.get("/api/admin/role-history", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+      const logs = await storage.getModerationLogs({ action: "rank_changed" });
+      const logsWithUsers = await Promise.all(
+        logs.map(async (log: any) => {
+          const actor = await storage.getUser(log.actorId);
+          const target = log.targetId ? await storage.getUser(log.targetId) : null;
+          return {
+            ...log,
+            actor: actor ? { id: actor.id, username: actor.username } : null,
+            target: target ? { id: target.id, username: target.username } : null,
+          };
+        }),
+      );
+      res.json(logsWithUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch role history" });
+    }
+  });
+
   // Staff notes routes
   app.get("/api/staff-notes/:userId", requireAuth, async (req, res) => {
     try {
@@ -1529,6 +1656,15 @@ export async function registerRoutes(
       const oldRank = targetUser?.userRank || undefined;
       await storage.updateUserRank(req.params.id, userRank);
       const updatedUser = await storage.getUser(req.params.id);
+
+      await storage.createModerationLog({
+        action: "rank_changed",
+        actorId: user!.id,
+        targetId: req.params.id,
+        targetType: "user",
+        details: `Rank changed from "${oldRank || 'none'}" to "${userRank}"`,
+        metadata: JSON.stringify({ oldRank, newRank: userRank }),
+      });
 
       if (updatedUser?.discordId) {
         updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch(

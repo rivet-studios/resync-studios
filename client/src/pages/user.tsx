@@ -32,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { formatDistanceToNow, format } from "date-fns";
 import { VipBadge } from "@/components/vip-badge";
-import { rankConfig } from "@/components/user-rank-badge";
+import { rankConfig, getUsernameColor } from "@/components/user-rank-badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -216,7 +216,11 @@ export default function UserProfile() {
     "border-gray-300 bg-gray-50 text-gray-500 dark:bg-white/5 dark:text-white/50 dark:border-white/10";
 
   const rc = rankConfig[profile.userRank || ""];
-  const isLifetimeGradient = profile.userRank === "Lifetime" && rc?.isGradient;
+  const usernameStyle = getUsernameColor(
+    profile.vipTier,
+    profile.userRank,
+    (profile as any).additionalRanks,
+  );
 
   const joinDate = profile.createdAt ? new Date(profile.createdAt) : null;
   const memberDuration = joinDate ? formatDistanceToNow(joinDate) : "recently";
@@ -290,17 +294,8 @@ export default function UserProfile() {
             <div className="flex-1 text-center md:text-left space-y-3">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                 <h1
-                  className="text-3xl sm:text-4xl font-bold tracking-tight"
-                  style={
-                    isLifetimeGradient
-                      ? {
-                          color: "transparent",
-                          backgroundImage: rc.gradient,
-                          WebkitBackgroundClip: "text",
-                          backgroundClip: "text",
-                        }
-                      : { color: "var(--foreground)" }
-                  }
+                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${usernameStyle.className || ""}`}
+                  style={usernameStyle.color ? { color: usernameStyle.color } : undefined}
                   data-testid="text-username"
                 >
                   {profile.username}
@@ -323,41 +318,37 @@ export default function UserProfile() {
                 className="flex flex-wrap gap-2 justify-center md:justify-start"
                 data-testid="container-badges"
               >
-                {vipLabel && (
-                  <Badge
-                    variant="outline"
-                    className={`rounded-md text-xs font-semibold border ${vipBadgeStyles[vipLabel] || defaultStyle}`}
-                    data-testid="badge-vip-tier"
-                  >
-                    {vipLabel}
-                  </Badge>
-                )}
-                {profile.userRank && profile.userRank !== "Active Members" && (
-                  <Badge
-                    variant="outline"
-                    className={`rounded-md text-xs font-semibold border ${rankBadgeStyles[profile.userRank] || defaultStyle}`}
-                    data-testid="badge-rank"
-                  >
-                    {profile.userRank}
-                  </Badge>
-                )}
-                {(profile as any).additionalRanks?.map((rank: string) => (
-                  <Badge
-                    key={rank}
-                    variant="outline"
-                    className={`rounded-md text-xs font-semibold border ${rankBadgeStyles[rank] || defaultStyle}`}
-                    data-testid={`badge-additional-${rank}`}
-                  >
-                    {rank}
-                  </Badge>
-                ))}
-                <Badge
-                  variant="outline"
-                  className={`rounded-md text-xs font-semibold border ${defaultStyle}`}
-                  data-testid="badge-active"
-                >
-                  Active Member
-                </Badge>
+                {(() => {
+                  const vipRanks = ["Lifetime", "Founders Edition VIP", "Diamond VIP", "Bronze VIP"];
+                  const communityRanks = ["Active Members", "Trusted Member", "Community Partner", "Vehicle Tester"];
+                  const allRanks = [
+                    ...(profile.userRank && profile.userRank !== "Active Members" ? [profile.userRank] : []),
+                    ...((profile as any).additionalRanks || []),
+                  ];
+                  const uniqueRanks = [...new Set(allRanks)];
+
+                  const vip = uniqueRanks.filter(r => vipRanks.includes(r));
+                  const community = uniqueRanks.filter(r => communityRanks.includes(r));
+                  const staff = uniqueRanks.filter(r => !vipRanks.includes(r) && !communityRanks.includes(r));
+
+                  if (vipLabel && !vip.includes(vipLabel)) {
+                    vip.unshift(vipLabel);
+                  }
+
+                  const ordered = [...vip, ...community, ...staff];
+                  if (ordered.length === 0) ordered.push("Active Members");
+
+                  return ordered.map((rank) => (
+                    <Badge
+                      key={rank}
+                      variant="outline"
+                      className={`rounded-md text-xs font-semibold border ${vipBadgeStyles[rank] || rankBadgeStyles[rank] || defaultStyle}`}
+                      data-testid={`badge-rank-${rank.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {rank}
+                    </Badge>
+                  ));
+                })()}
               </div>
 
               <div className="flex flex-wrap items-center gap-4 pt-1 text-sm text-muted-foreground justify-center md:justify-start">

@@ -87,9 +87,51 @@
   animation: gradient-shift 3s ease infinite;
 }
 
+.lifetime-gradient {
+  background: linear-gradient(90deg, #FFBF00, #00BFFF, #FFD700, #FFBF00);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.holographic-gradient {
+  background: linear-gradient(90deg, #FFD700, #FF6B6B, #A855F7, #00BFFF, #10B981, #FFD700);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: holographic-shift 6s ease infinite;
+}
+
+.diamond-gradient {
+  background: linear-gradient(90deg, #B9F2FF, #00BFFF, #B9F2FF);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bronze-gradient {
+  background: linear-gradient(90deg, #CD7F32, #A0522D, #CD7F32);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 @keyframes gradient-shift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes holographic-shift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 50%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 50%; }
   100% { background-position: 0% 50%; }
 }
 

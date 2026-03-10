@@ -1,4 +1,4 @@
-export const rankConfig: Record<
+const rankEntries: Record<
   string,
   {
     label: string;
@@ -9,7 +9,6 @@ export const rankConfig: Record<
     gradient?: string;
   }
 > = {
-  // Lifetime rank
   Lifetime: {
     label: "Lifetime",
     color: "#F59E0B",
@@ -18,46 +17,43 @@ export const rankConfig: Record<
     isGradient: true,
     gradient: "linear-gradient(to right, #FFBF00, #00BFFF)",
   },
-  // Leadership ranks
-  Company_Director: {
+  "Company Director": {
     label: "Company Director",
     color: "#4B7DF7",
     badgeUrl: null,
     formatted: true,
   },
-  Operations_Manager: {
+  "Operations Manager": {
     label: "Operations Manager",
     color: "#EF4444",
     badgeUrl: null,
     formatted: true,
   },
-  // Team ranks
-  Team_Member: {
+  "Team Member": {
     label: "Team Member",
     color: "#4B7DF7",
     badgeUrl: null,
     formatted: true,
   },
-  // Staff ranks
-  Staff_Internal_Affairs: {
+  "Staff Internal Affairs": {
     label: "Staff Internal Affairs",
     color: "#6B7280",
     badgeUrl: null,
     formatted: true,
   },
-  Staff_Department_Director: {
+  "Staff Department Director": {
     label: "Staff Department Director",
     color: "#A855F7",
     badgeUrl: null,
     formatted: true,
   },
-  Appeals_Moderator: {
+  "Appeals Moderator": {
     label: "Appeals Moderator",
     color: "#06B6D4",
     badgeUrl: null,
     formatted: true,
   },
-  Senior_Administrator: {
+  "Senior Administrator": {
     label: "Senior Administrator",
     color: "#EF4444",
     badgeUrl: null,
@@ -69,7 +65,7 @@ export const rankConfig: Record<
     badgeUrl: null,
     formatted: true,
   },
-  trial_moderator: {
+  "Trial Moderator": {
     label: "Trial Moderator",
     color: "#0D9488",
     badgeUrl: null,
@@ -87,9 +83,13 @@ export const rankConfig: Record<
     badgeUrl: null,
     formatted: true,
   },
-
-  // VIP ranks
-  Bronze_VIP: {
+  "Customer Relations": {
+    label: "Customer Relations",
+    color: "#6B7280",
+    badgeUrl: null,
+    formatted: true,
+  },
+  "Bronze VIP": {
     label: "Bronze VIP",
     color: "#CD7F32",
     badgeUrl: null,
@@ -97,7 +97,7 @@ export const rankConfig: Record<
     isGradient: true,
     gradient: "linear-gradient(to right, #CD7F32, #A0522D)",
   },
-  Diamond_VIP: {
+  "Diamond VIP": {
     label: "Diamond VIP",
     color: "#B9F2FF",
     badgeUrl: null,
@@ -105,7 +105,7 @@ export const rankConfig: Record<
     isGradient: true,
     gradient: "linear-gradient(to right, #B9F2FF, #00BFFF)",
   },
-  Founders_Edition_VIP: {
+  "Founders Edition VIP": {
     label: "Founders Edition VIP",
     color: "#FFBF00",
     badgeUrl: null,
@@ -113,22 +113,27 @@ export const rankConfig: Record<
     isGradient: true,
     gradient: "linear-gradient(to right, #FFBF00, #FFD700, #00BFFF)",
   },
-  // Member types & statuses
-  Trusted_Member: {
+  "Trusted Member": {
     label: "Trusted Member",
     color: "#10B981",
     badgeUrl: null,
     formatted: true,
   },
-  Active_Members: {
+  "Active Members": {
     label: "Active Members",
     color: "#3B82F6",
     badgeUrl: null,
     formatted: true,
   },
-  Community_Partner: {
+  "Community Partner": {
     label: "Community Partner",
     color: "#8B5CF6",
+    badgeUrl: null,
+    formatted: true,
+  },
+  "Vehicle Tester": {
+    label: "Vehicle Tester",
+    color: "#F97316",
     badgeUrl: null,
     formatted: true,
   },
@@ -138,14 +143,18 @@ export const rankConfig: Record<
     badgeUrl: null,
     formatted: true,
   },
-  // Sub-groups
-  Customer_Relations: {
-    label: "Customer Relations",
-    color: "#6B7280",
-    badgeUrl: null,
-    formatted: true,
-  },
 };
+
+function buildRankConfig(entries: typeof rankEntries) {
+  const config: typeof rankEntries = { ...entries };
+  for (const [key, value] of Object.entries(entries)) {
+    const underscoreKey = key.replace(/\s+/g, "_");
+    if (underscoreKey !== key) config[underscoreKey] = value;
+  }
+  return config;
+}
+
+export const rankConfig = buildRankConfig(rankEntries);
 
 interface UserRankBadgeProps {
   rank?: string;
@@ -198,21 +207,55 @@ export function UserRankBadge({
   );
 }
 
+export function getVipGradientClass(vipTier?: string | null): string | null {
+  if (vipTier === "Lifetime") return "lifetime-gradient";
+  if (vipTier === "Founders Edition VIP") return "holographic-gradient";
+  if (vipTier === "Diamond VIP") return "diamond-gradient";
+  if (vipTier === "Bronze VIP") return "bronze-gradient";
+  return null;
+}
+
+export function getUsernameColor(
+  vipTier?: string | null,
+  primaryRank?: string | null,
+  additionalRanks?: string[] | null,
+): { className?: string; color?: string } {
+  const gradientClass = getVipGradientClass(vipTier);
+  if (gradientClass) return { className: gradientClass };
+
+  const primaryConfig = primaryRank ? rankConfig[primaryRank as keyof typeof rankConfig] : null;
+  if (primaryConfig?.color && primaryRank !== "Active Members") {
+    return { color: primaryConfig.color };
+  }
+
+  if (additionalRanks) {
+    for (const rank of additionalRanks) {
+      const config = rankConfig[rank as keyof typeof rankConfig];
+      if (config?.color) return { color: config.color };
+    }
+  }
+
+  return {};
+}
+
 export function FormattedUsername({
   rank = "Active Members",
   username = "User",
   className = "",
-}: UserRankBadgeProps) {
-  const config = rankConfig[rank as keyof typeof rankConfig];
+  vipTier,
+  additionalRanks,
+}: UserRankBadgeProps & { vipTier?: string | null; additionalRanks?: string[] | null }) {
+  const styling = getUsernameColor(vipTier, rank, additionalRanks);
 
-  // If rank is not formatted or no username, return plain
-  if (!config?.formatted || !username) {
+  if (!username) {
     return <span className={className}>{username}</span>;
   }
 
+  const config = rankConfig[rank as keyof typeof rankConfig];
+
   return (
     <div className={`inline-flex items-center gap-1.5 ${className}`}>
-      {config.badgeUrl && (
+      {config?.badgeUrl && (
         <img
           src={config.badgeUrl}
           alt={config.label}
@@ -224,13 +267,8 @@ export function FormattedUsername({
         />
       )}
       <span
-        className="font-bold uppercase"
-        style={{
-          color: config.isGradient ? "transparent" : config.color,
-          backgroundImage: config.isGradient ? config.gradient : "none",
-          WebkitBackgroundClip: config.isGradient ? "text" : "border-box",
-          backgroundClip: config.isGradient ? "text" : "border-box",
-        }}
+        className={`font-bold uppercase ${styling.className || ""}`}
+        style={styling.color ? { color: styling.color } : undefined}
       >
         {username}
       </span>

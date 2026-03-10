@@ -54,7 +54,13 @@ import {
   Clock,
   UserCheck,
   Crown,
+  History,
+  UserPlus,
+  Bell,
+  Calendar,
+  CheckSquare,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AdminStats {
   totalUsers: number;
@@ -100,6 +106,12 @@ export default function AdminCP() {
   const [editCategoryOrder, setEditCategoryOrder] = useState("0");
   const [inlineEditUserId, setInlineEditUserId] = useState<string | null>(null);
   const [inlineEditRank, setInlineEditRank] = useState("");
+  const [usersSubTab, setUsersSubTab] = useState<"list" | "role-history" | "bulk">("list");
+  const [bulkSelectedUserIds, setBulkSelectedUserIds] = useState<string[]>([]);
+  const [bulkRank, setBulkRank] = useState("");
+  const [bannerTitle, setBannerTitle] = useState("");
+  const [bannerContent, setBannerContent] = useState("");
+  const [quickViewUserId, setQuickViewUserId] = useState<string | null>(null);
 
   const adminRanks = [
     "Developer",
@@ -178,6 +190,114 @@ export default function AdminCP() {
     queryKey: ["/api/admin/forum-stats"],
     enabled: !!isAdmin && activeTab === "forums",
   });
+
+  const { data: quickViewWarnings = [] } = useQuery<any[]>({
+    queryKey: ["/api/warnings/user", quickViewUserId],
+    queryFn: async () => {
+      const res = await fetch(`/api/warnings/user/${quickViewUserId}`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!isAdmin && !!quickViewUserId,
+  });
+
+  const { data: quickViewBans = [] } = useQuery<any[]>({
+    queryKey: ["/api/bans"],
+    enabled: !!isAdmin && !!quickViewUserId,
+  });
+
+  const quickViewUser = useMemo(() => {
+    if (!quickViewUserId) return null;
+    return allUsers.find((u: any) => u.id === quickViewUserId) || null;
+  }, [quickViewUserId, allUsers]);
+
+  const quickViewUserBans = useMemo(() => {
+    if (!quickViewUserId) return [];
+    return quickViewBans.filter((b: any) => b.userId === quickViewUserId);
+  }, [quickViewUserId, quickViewBans]);
+
+  const { data: roleHistory = [], isLoading: roleHistoryLoading } = useQuery<any[]>({
+    queryKey: ["/api/admin/role-history"],
+    enabled: !!isAdmin && activeTab === "users" && usersSubTab === "role-history",
+  });
+
+  const accountAgeDistribution = useMemo(() => {
+    if (!allUsers.length) return [];
+    const now = new Date();
+    const buckets: Record<string, number> = {
+      "< 1 week": 0,
+      "1-4 weeks": 0,
+      "1-3 months": 0,
+      "3-6 months": 0,
+      "6-12 months": 0,
+      "1+ year": 0,
+    };
+    allUsers.forEach((u: any) => {
+      if (!u.createdAt) return;
+      const created = new Date(u.createdAt);
+      const diffDays = Math.floor((now.getTime() - created.getTime()) / 86400000);
+      if (diffDays < 7) buckets["< 1 week"]++;
+      else if (diffDays < 28) buckets["1-4 weeks"]++;
+      else if (diffDays < 90) buckets["1-3 months"]++;
+      else if (diffDays < 180) buckets["3-6 months"]++;
+      else if (diffDays < 365) buckets["6-12 months"]++;
+      else buckets["1+ year"]++;
+    });
+    return Object.entries(buckets).map(([label, count]) => ({ label, count }));
+  }, [allUsers]);
+
+  const bulkRankMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/admin/bulk-rank-change", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: `Rank updated for ${bulkSelectedUserIds.length} users` });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/role-history"] });
+      setBulkSelectedUserIds([]);
+      setBulkRank("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to bulk update ranks", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const createBannerMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/admin/announcements", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Banner announcement created" });
+      queryClient.invalidateQueries({ queryKey: ["/api/blog"] });
+      setBannerTitle("");
+      setBannerContent("");
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to create banner", description: e.message, variant: "destructive" });
+    },
+  });
+
+  const staffActivity = useMemo(() => {
+    const staffCounts: Record<string, { username: string; count: number; lastAction: string }> = {};
+    activity.forEach((item: any) => {
+      const actorId = item.actorId;
+      if (!actorId) return;
+      if (!staffCounts[actorId]) {
+        const staffUser = allUsers.find((u: any) => u.id === actorId);
+        staffCounts[actorId] = { username: staffUser?.username || actorId.substring(0, 8), count: 0, lastAction: "" };
+      }
+      staffCounts[actorId].count++;
+      if (!staffCounts[actorId].lastAction || new Date(item.createdAt) > new Date(staffCounts[actorId].lastAction)) {
+        staffCounts[actorId].lastAction = item.createdAt;
+      }
+    });
+    return Object.entries(staffCounts)
+      .map(([id, data]) => ({ id, ...data }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [activity, allUsers]);
 
   const rankBreakdown = useMemo(() => {
     if (!allUsers.length) return [];
@@ -870,29 +990,336 @@ export default function AdminCP() {
                 </Card>
               </div>
             </div>
+
+            {staffActivity.length > 0 && (
+              <Card data-testid="card-staff-activity">
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    Staff Activity
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">
+                    Most Active
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {staffActivity.map((staff, i) => (
+                      <div
+                        key={staff.id}
+                        className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30"
+                        data-testid={`row-staff-activity-${staff.id}`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary shrink-0">
+                            {i + 1}
+                          </div>
+                          <span className="font-medium text-sm text-foreground truncate">
+                            {staff.username}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <Badge variant="secondary" className="text-[10px]">
+                            {staff.count} action{staff.count !== 1 ? "s" : ""}
+                          </Badge>
+                          {staff.lastAction && (
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {new Date(staff.lastAction).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <Card data-testid="card-system-banner">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-muted-foreground" />
+                    Quick Banner Announcement
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-xs text-muted-foreground">Create a quick site-wide banner announcement.</p>
+                  <Input
+                    value={bannerTitle}
+                    onChange={(e) => setBannerTitle(e.target.value)}
+                    placeholder="Banner title..."
+                    data-testid="input-banner-title"
+                  />
+                  <Textarea
+                    value={bannerContent}
+                    onChange={(e) => setBannerContent(e.target.value)}
+                    placeholder="Banner message..."
+                    className="resize-none min-h-[80px]"
+                    data-testid="input-banner-content"
+                  />
+                  <Button
+                    onClick={() => {
+                      if (!bannerTitle || !bannerContent) return;
+                      createBannerMutation.mutate({
+                        title: bannerTitle,
+                        content: bannerContent,
+                        category: "Important",
+                        isPublished: true,
+                      });
+                    }}
+                    disabled={!bannerTitle || !bannerContent || createBannerMutation.isPending}
+                    className="w-full"
+                    data-testid="button-create-banner"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    {createBannerMutation.isPending ? "Publishing..." : "Publish Banner"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card data-testid="card-account-age-stats">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    Account Age Distribution
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {accountAgeDistribution.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Calendar className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">No data available</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {accountAgeDistribution.map(({ label, count }) => {
+                        const maxCount = Math.max(...accountAgeDistribution.map((d) => d.count), 1);
+                        const pct = Math.round((count / maxCount) * 100);
+                        return (
+                          <div key={label} className="space-y-1" data-testid={`age-bucket-${label.replace(/\s/g, "-")}`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs text-muted-foreground">{label}</span>
+                              <span className="text-xs font-medium text-foreground">{count}</span>
+                            </div>
+                            <div className="w-full h-2 rounded-md bg-secondary overflow-hidden">
+                              <div
+                                className="h-full rounded-md bg-primary/60 transition-all"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </>
         )}
 
         {activeTab === "users" && (
           <>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                User Management
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Search, view, and manage user roles
-              </p>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                  User Management
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Search, view, and manage user roles
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={usersSubTab === "list" ? "default" : "outline"}
+                  onClick={() => setUsersSubTab("list")}
+                  data-testid="button-users-subtab-list"
+                >
+                  <Users className="w-3 h-3 mr-1" /> Users
+                </Button>
+                <Button
+                  size="sm"
+                  variant={usersSubTab === "role-history" ? "default" : "outline"}
+                  onClick={() => setUsersSubTab("role-history")}
+                  data-testid="button-users-subtab-role-history"
+                >
+                  <History className="w-3 h-3 mr-1" /> Role History
+                </Button>
+                <Button
+                  size="sm"
+                  variant={usersSubTab === "bulk" ? "default" : "outline"}
+                  onClick={() => setUsersSubTab("bulk")}
+                  data-testid="button-users-subtab-bulk"
+                >
+                  <CheckSquare className="w-3 h-3 mr-1" /> Bulk Actions
+                </Button>
+              </div>
             </div>
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search users by name or email..."
-                value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
-                className="pl-10"
-                data-testid="input-user-search"
-              />
-            </div>
+
+            {usersSubTab === "role-history" && (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    Role Change History
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">{roleHistory.length}</Badge>
+                </CardHeader>
+                <CardContent>
+                  {roleHistoryLoading ? (
+                    <div className="space-y-2">
+                      {[1, 2, 3].map((i) => (
+                        <Skeleton key={i} className="h-14 w-full rounded-md" />
+                      ))}
+                    </div>
+                  ) : roleHistory.length === 0 ? (
+                    <div className="text-center py-12">
+                      <History className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">No role changes recorded yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1 max-h-[600px] overflow-y-auto">
+                      {roleHistory.map((log: any) => {
+                        let meta: any = {};
+                        try { meta = JSON.parse(log.metadata || "{}"); } catch {}
+                        return (
+                          <div
+                            key={log.id}
+                            className="flex items-center gap-3 p-3 rounded-md bg-secondary/30"
+                            data-testid={`row-role-history-${log.id}`}
+                          >
+                            <div className="w-8 h-8 rounded-md bg-blue-500/10 flex items-center justify-center shrink-0">
+                              <Crown className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-medium">{log.target?.username || log.targetId?.substring(0, 8)}</span>
+                                {meta.oldRank && (
+                                  <>
+                                    <Badge variant="outline" className="text-[10px]">{meta.oldRank}</Badge>
+                                    <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                                  </>
+                                )}
+                                {meta.newRank && (
+                                  <Badge variant="secondary" className="text-[10px]">{meta.newRank}</Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5 flex-wrap">
+                                <span>by {log.actor?.username || log.actorId?.substring(0, 8)}</span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {log.createdAt ? new Date(log.createdAt).toLocaleString() : ""}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {usersSubTab === "bulk" && (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                    Bulk Rank Change
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xs text-muted-foreground">Select users from the list below and assign them a new rank all at once.</p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Select value={bulkRank} onValueChange={setBulkRank}>
+                      <SelectTrigger className="w-[200px]" data-testid="select-bulk-rank">
+                        <SelectValue placeholder="Select rank..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allRankOptions.map((rank) => (
+                          <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      disabled={bulkSelectedUserIds.length === 0 || !bulkRank || bulkRankMutation.isPending}
+                      onClick={() => {
+                        bulkRankMutation.mutate({ userIds: bulkSelectedUserIds, userRank: bulkRank });
+                      }}
+                      data-testid="button-apply-bulk-rank"
+                    >
+                      {bulkRankMutation.isPending ? "Applying..." : `Apply to ${bulkSelectedUserIds.length} User${bulkSelectedUserIds.length !== 1 ? "s" : ""}`}
+                    </Button>
+                    {bulkSelectedUserIds.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setBulkSelectedUserIds([])}
+                        data-testid="button-clear-bulk-selection"
+                      >
+                        Clear Selection
+                      </Button>
+                    )}
+                  </div>
+                  <div className="relative max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search users..."
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      className="pl-10"
+                      data-testid="input-bulk-user-search"
+                    />
+                  </div>
+                  <div className="space-y-1 max-h-[500px] overflow-y-auto">
+                    {displayUsers.map((u: any) => (
+                      <div
+                        key={u.id}
+                        className="flex items-center gap-3 p-3 rounded-md bg-secondary/30 hover-elevate cursor-pointer"
+                        onClick={() => {
+                          setBulkSelectedUserIds((prev) =>
+                            prev.includes(u.id) ? prev.filter((id) => id !== u.id) : [...prev, u.id]
+                          );
+                        }}
+                        data-testid={`row-bulk-user-${u.id}`}
+                      >
+                        <Checkbox
+                          checked={bulkSelectedUserIds.includes(u.id)}
+                          onCheckedChange={(checked) => {
+                            setBulkSelectedUserIds((prev) =>
+                              checked ? [...prev, u.id] : prev.filter((id) => id !== u.id)
+                            );
+                          }}
+                          data-testid={`checkbox-bulk-user-${u.id}`}
+                        />
+                        <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-semibold text-xs uppercase shrink-0">
+                          {(u.username || u.email || "?")[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm text-foreground truncate">{u.username || "No username"}</div>
+                          <div className="text-xs text-muted-foreground truncate">{u.email}</div>
+                        </div>
+                        <Badge variant="outline" className="text-xs">{u.userRank || "Member"}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {usersSubTab === "list" && (
+              <>
+                <div className="relative max-w-md">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search users by name or email..."
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-user-search"
+                  />
+                </div>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
@@ -920,10 +1347,11 @@ export default function AdminCP() {
                       </div>
                     ) : (
                       displayUsers.map((u: any) => (
+                        <div key={u.id}>
                         <div
-                          key={u.id}
-                          className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30 hover-elevate"
+                          className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30 hover-elevate cursor-pointer"
                           data-testid={`row-user-${u.id}`}
+                          onClick={() => setQuickViewUserId(quickViewUserId === u.id ? null : u.id)}
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-semibold text-sm uppercase shrink-0">
@@ -1023,12 +1451,76 @@ export default function AdminCP() {
                             )}
                           </div>
                         </div>
+                        {quickViewUserId === u.id && quickViewUser && (
+                          <div className="mt-1 p-4 rounded-md bg-secondary/50 space-y-3" data-testid={`panel-quick-view-${u.id}`}>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rank</p>
+                                <p className="text-sm font-medium text-foreground">{quickViewUser.userRank || "Member"}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">VIP Tier</p>
+                                <p className="text-sm font-medium text-foreground">{quickViewUser.vipTier || "None"}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Joined</p>
+                                <p className="text-sm font-medium text-foreground">{quickViewUser.createdAt ? new Date(quickViewUser.createdAt).toLocaleDateString() : "Unknown"}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Warnings</p>
+                                <p className="text-sm font-medium text-foreground">{quickViewWarnings.length} ({quickViewWarnings.filter((w: any) => w.isActive).length} active)</p>
+                              </div>
+                            </div>
+                            {quickViewUser.bio && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bio</p>
+                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{quickViewUser.bio}</p>
+                              </div>
+                            )}
+                            {(quickViewUser.additionalRanks || []).length > 0 && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Additional Ranks</p>
+                                <div className="flex gap-1 flex-wrap">
+                                  {quickViewUser.additionalRanks.map((r: string) => (
+                                    <Badge key={r} variant="outline" className="text-[10px]">{r}</Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {quickViewUserBans.length > 0 && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Ban History</p>
+                                <div className="space-y-1">
+                                  {quickViewUserBans.slice(0, 3).map((b: any) => (
+                                    <div key={b.id} className="flex items-center gap-2 text-xs">
+                                      <Badge variant="outline" className={b.isActive ? "bg-red-500/20 text-red-400 border-red-500/30 text-[10px]" : "text-[10px]"}>
+                                        {b.isActive ? "Active" : "Lifted"}
+                                      </Badge>
+                                      <span className="text-muted-foreground truncate">{b.reason}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Button size="sm" variant="outline" asChild>
+                                <a href={`/user/${u.id}`} data-testid={`link-view-profile-${u.id}`}>View Profile</a>
+                              </Button>
+                              <Button size="sm" variant="outline" asChild>
+                                <a href={`/modcp?tab=warnings&userId=${u.id}`} data-testid={`link-view-user-warnings-${u.id}`}>View Warnings</a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        </div>
                       ))
                     )}
                   </div>
                 )}
               </CardContent>
             </Card>
+              </>
+            )}
           </>
         )}
 
