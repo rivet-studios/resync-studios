@@ -88,7 +88,7 @@ export default function Login() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-[#09090B] dark:text-white">Password</label>
-              <a href="#" className="text-xs text-[#71717A] hover:text-[#09090B] dark:hover:text-white transition-colors" data-testid="link-forgot-password">
+              <a href="/forgot-password" className="text-xs text-[#71717A] hover:text-[#09090B] dark:hover:text-white transition-colors" data-testid="link-forgot-password">
                 Forgot password?
               </a>
             </div>
@@ -146,7 +146,7 @@ export default function Login() {
             className="w-full gap-2 rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white font-medium text-sm shadow-sm"
             data-testid="button-login-discord"
           >
-            <a href="/api/login">
+            <a href="/api/auth/discord">
               <SiDiscord className="w-4 h-4" />
               Login with Discord
             </a>

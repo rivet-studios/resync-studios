@@ -62,8 +62,8 @@ export async function registerRoutes(
         .status(401)
         .json({ message: "Unauthorized. Contact support for help." });
     }
-    const { password, ...userWithoutPassword } = user as any;
-    res.json(userWithoutPassword);
+    const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitive } = user as any;
+    res.json(userWithoutSensitive);
   });
 
   app.post("/api/auth/signup", async (req, res) => {
@@ -144,17 +144,109 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ message: "Email is required" });
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.json({ message: "If an account exists with that email, a reset link has been sent." });
+      }
+
+      const crypto = await import("crypto");
+      const token = crypto.randomBytes(32).toString("hex");
+      const expires = new Date(Date.now() + 60 * 60 * 1000);
+
+      await storage.updateUser(user.id, {
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+      } as any);
+
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
+      const baseUrl = process.env.NODE_ENV === "production"
+        ? "https://resyncstudios.com"
+        : process.env.REPLIT_DEV_DOMAIN
+          ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+          : "https://resyncstudios.com";
+      const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+
+      await resend.emails.send({
+        from: "RIVET Studios <support@resyncstudios.com>",
+        to: email,
+        subject: "Password Reset Request",
+        html: `
+          <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #050505; color: #ffffff; padding: 40px; border-radius: 12px;">
+            <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Password Reset</h1>
+            <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              You requested a password reset for your RIVET Studios account. Click the button below to set a new password. This link expires in 1 hour.
+            </p>
+            <a href="${resetUrl}" style="display: inline-block; background: #18181B; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+              Reset Password
+            </a>
+            <p style="color: #71717a; font-size: 12px; margin-top: 32px;">
+              If you didn't request this, you can safely ignore this email.
+            </p>
+          </div>
+        `,
+      });
+
+      res.json({ message: "If an account exists with that email, a reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Failed to process request" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and password are required" });
+      }
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const user = await storage.getUserByResetToken(token);
+
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      const hashedPassword = hashPassword(password);
+      await storage.updateUser(user.id, {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      } as any);
+
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  function sanitizeUser(user: any) {
+    const { password, passwordResetToken, passwordResetExpires, ...safe } = user;
+    return safe;
+  }
+
   app.get("/api/users", async (req, res) => {
     try {
       const { search } = req.query;
       const allUsers = await storage.getAllUsers();
+      const sanitized = allUsers.map(sanitizeUser);
       if (search) {
-        const filtered = allUsers.filter((u) =>
+        const filtered = sanitized.filter((u: any) =>
           u.username?.toLowerCase().includes((search as string).toLowerCase()),
         );
         return res.json(filtered);
       }
-      res.json(allUsers);
+      res.json(sanitized);
     } catch (error) {
       res
         .status(500)
@@ -166,7 +258,7 @@ export async function registerRoutes(
     try {
       const user = await storage.getUser(req.params.id);
       if (!user) return res.status(404).json({ message: "User not found" });
-      res.json(user);
+      res.json(sanitizeUser(user));
     } catch (error) {
       res
         .status(500)

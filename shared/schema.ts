@@ -127,6 +127,9 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   // Date of Birth
   dateOfBirth: varchar("date_of_birth"),
+  // Password Reset
+  passwordResetToken: varchar("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

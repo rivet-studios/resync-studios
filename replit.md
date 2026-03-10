@@ -14,7 +14,7 @@ I like to be informed about the implications of design choices on performance an
 The platform is built with a dark theme UI (`#050505` backgrounds, `#121212` cards, white text) utilizing the Inter font family. Core UI components like Card and Badge are consistently applied. The global `--radius` is set to `0.5rem`, with `rounded-xl` as the maximum corner radius for a cleaner aesthetic.
 
 Key features and their technical implementations include:
-- **Authentication**: Supports Discord, Email/Password, and Roblox account linking with a verification flow using the Roblox API.
+- **Authentication**: Supports Discord OAuth (`/api/auth/discord`), Email/Password with forgot/reset password flow (via Resend email from `support@resyncstudios.com`), and Roblox account linking with a verification flow using the Roblox API. Sensitive fields (`password`, `passwordResetToken`, `passwordResetExpires`) are stripped from all public API responses.
 - **User Management**: Features a comprehensive rank system with over 40 ranks, VIP subscriptions across 4 tiers, and a staff directory. Discord role and nickname synchronization are automatically managed upon rank changes.
 - **Content Management**:
     - **Forums**: Supports categories, threading, and staff moderation tools (pin, lock, delete, move, edit).

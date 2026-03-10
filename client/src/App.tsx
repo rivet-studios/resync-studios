@@ -14,6 +14,8 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import Dashboard from "@/pages/dashboard";
 
 import ForumHome from "@/pages/forums/home";
@@ -242,6 +244,8 @@ function Router() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
+            <Route path="/forgot-password" component={ForgotPassword} />
+            <Route path="/reset-password" component={ResetPassword} />
             <Route path="/blog" component={Blog} />
             <Route path="/blog/:id" component={News} />
             <Route path="/store" component={Store} />
