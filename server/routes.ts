@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
-import { updateDiscordNickname, updateDiscordRoles } from "./discord-bot";
+import { updateDiscordNickname, updateDiscordRoles, syncUserFromDiscord, getRoleMappingStatus } from "./discord-bot";
 import {
   insertForumThreadSchema,
   insertForumReplySchema,
@@ -368,6 +368,37 @@ export async function registerRoutes(
       res.json({ message: "Rank assigned" });
     } catch (error) {
       res.status(500).json({ message: "Failed to assign rank" });
+    }
+  });
+
+  app.get("/api/admin/discord-status", requireAuth, async (req, res) => {
+    try {
+      const actingUser = req.user as any;
+      if (!isAdminUser(actingUser)) return res.status(403).json({ message: "Forbidden" });
+      const status = getRoleMappingStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get Discord status" });
+    }
+  });
+
+  app.post("/api/admin/discord-sync/:userId", requireAuth, async (req, res) => {
+    try {
+      const actingUser = req.user as any;
+      if (!isAdminUser(actingUser)) return res.status(403).json({ message: "Forbidden" });
+
+      const targetUser = await storage.getUser(req.params.userId);
+      if (!targetUser) return res.status(404).json({ message: "User not found" });
+      if (!targetUser.discordId) return res.status(400).json({ message: "User has no linked Discord account" });
+
+      const success = await syncUserFromDiscord(targetUser.discordId);
+      if (success) {
+        res.json({ message: "Discord sync completed" });
+      } else {
+        res.status(500).json({ message: "Discord sync failed" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to sync from Discord" });
     }
   });
 

@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as DiscordStrategy } from "passport-discord";
 import { storage } from "./storage";
-import { updateDiscordNickname } from "./discord-bot";
+import { updateDiscordNickname, syncUserFromDiscord } from "./discord-bot";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
@@ -103,13 +103,16 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
               await updateDiscordNickname(discordId, newUsername);
             }
           } else {
-            // Update existing user with latest Discord info
             user =
               (await storage.updateUser(user.id, {
                 discordUsername: profile.username,
                 discordAvatar: profile.avatar,
                 discordLinkedAt: new Date(),
               })) || user;
+
+            syncUserFromDiscord(discordId).catch((err) =>
+              console.error("❌ Login sync failed:", err)
+            );
           }
 
           done(null, user as any);

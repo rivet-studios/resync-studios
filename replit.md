@@ -51,7 +51,7 @@ Key features and their technical implementations include:
 - **Scroll Management**: `ScrollToTop` component scrolls to top on route changes. CSS `scroll-behavior: auto` (not `smooth`) to avoid scrolling lag.
 
 ## External Dependencies
-- **Discord**: Used for authentication and role synchronization via a Discord bot.
+- **Discord**: Used for authentication and role synchronization via a Discord bot. The bot auto-discovers guild roles by matching role names (no manual role ID env vars needed). Role sync is bidirectional: Discord role changes update platform ranks, and platform rank changes update Discord roles. Nickname/display name and avatar changes in Discord are synced to user profiles. The bot also syncs roles/profile on each Discord OAuth login. Fail-safe: rank is only updated when mapped roles are found (prevents accidental demotions). Admin endpoints: `GET /api/admin/discord-status` shows mapping status, `POST /api/admin/discord-sync/:userId` triggers manual sync.
 - **Roblox API**: Used for account linking and verification.
 - **Stripe**: Integrated for payment processing, VIP subscriptions, product purchases, customer portal management, and webhooks.
 - **Render**: The platform is configured for deployment on Render.
