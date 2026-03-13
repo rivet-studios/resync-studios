@@ -1,30 +1,31 @@
 import { Client, GatewayIntentBits, Events, REST, Routes } from "discord.js";
 import { storage } from "./storage";
+import { or } from "drizzle-orm";
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || "";
 const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 const RANK_NAMES_TO_DISCORD_ROLES: Record<string, string[]> = {
-  "Active Members": ["RS Member", "Verified Member", "Default"],
+  "Active Members": ["RS Member", "Verified Member"],
   "Trusted Member": ["Trusted Member"],
-  "Community Partner": ["Community Partner"],
+  "Community Partner": ["TJ Studios"],
   "Vehicle Tester": ["Vehicle Tester"],
-  "Bronze VIP": ["Bronze VIP", "VIP"],
-  "Diamond VIP": ["Diamond VIP"],
-  "Founders Edition VIP": ["Founders Edition VIP", "Founder's Edition VIP", "VIP++"],
-  "Lifetime": ["Lifetime", "Lifetime VIP"],
+  "Bronze VIP": ["Bronze VIP®"],
+  "Diamond VIP": ["Diamond VIP®"],
+  "Founders Edition VIP": ["Founder's Edition VIP®"],
+  "Lifetime": ["Founder's Edition Lifetime®"],
   "Customer Relations": ["Customer Relations"],
-  "Appeals Moderator": ["Appeals Moderator"],
-  "Trial Moderator": ["Trial Moderator", "Community Moderator"],
-  "Moderator": ["Moderator", "Community Sr. Moderator"],
-  "Administrator": ["Administrator", "Community Administrator"],
-  "Senior Administrator": ["Senior Administrator", "Community Sr. Administrator"],
-  "Developer": ["Developer"],
+  "Appeals Moderator": ["Appeal Analyst"],
+  "Trial Moderator": ["Trial Moderator"],
+  "Moderator": ["Moderator"],
+  "Administrator": ["Admin"],
+  "Senior Administrator": ["Senior Admin"],
+  "Developer": ["Gameplay Engineer", "Creative Designer"],
   "Staff Internal Affairs": ["Staff Internal Affairs"],
-  "Team Member": ["Team Member"],
-  "Staff Department Director": ["Staff Department Director", "MI Director"],
-  "Operations Manager": ["Operations Manager"],
-  "Company Director": ["Company Director"],
+  "Team Member": ["RS™ Team Member"],
+  "Staff Department Director": ["Staff Director"],
+  "Operations Manager": ["RS™ Operations Manager"],
+  "Company Director": ["RS™ Chief Executive Officer"],
 };
 
 const RANK_HIERARCHY = [
