@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MainHeader } from "@/components/main-header";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
@@ -60,6 +61,48 @@ import MyCases from "@/pages/my-cases";
 import Onboarding from "@/pages/onboarding";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
+
+const ADMIN_RANKS = [
+  "Developer",
+  "Staff Internal Affairs",
+  "Team Member",
+  "Staff Department Director",
+  "Operations Manager",
+  "Company Director",
+];
+
+const MOD_RANKS = [
+  "Appeals Moderator",
+  "Trial Moderator",
+  "Moderator",
+  "Administrator",
+  "Senior Administrator",
+  ...ADMIN_RANKS,
+];
+
+function hasRank(user: any, ranks: string[]): boolean {
+  if (!user) return false;
+  if (ranks.includes(user.userRank || "")) return true;
+  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r))) return true;
+  return false;
+}
+
+function canAccessModCP(user: any): boolean {
+  return !!user && (user.isModerator || hasRank(user, MOD_RANKS));
+}
+
+function canAccessAdminCP(user: any): boolean {
+  return !!user && (
+    user.isAdmin ||
+    hasRank(user, ADMIN_RANKS) ||
+    user.email?.toLowerCase().endsWith("@resyncstudios.com")
+  );
+}
+
+function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [pathname] = useLocation();
+  return <ErrorBoundary key={pathname}>{children}</ErrorBoundary>;
+}
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -276,54 +319,13 @@ function Router() {
             <Route path="/my-cases" component={MyCases} />
             <Route path="/admin" component={Admin} />
             <Route path="/modcp/case/:type/:id">
-              {user?.isModerator ||
-              user?.userRank === "Appeals Moderator" ||
-              user?.userRank === "Trial Moderator" ||
-              user?.userRank === "Moderator" ||
-              user?.userRank === "Administrator" ||
-              user?.userRank === "Senior Administrator" ||
-              user?.userRank === "Developer" ||
-              user?.userRank === "Staff Internal Affairs" ||
-              user?.userRank === "Team Member" ||
-              user?.userRank === "Staff Department Director" ||
-              user?.userRank === "Operations Manager" ||
-              user?.userRank === "Company Director" ? (
-                <CaseDetail />
-              ) : (
-                <NotFound />
-              )}
+              {canAccessModCP(user) ? <CaseDetail /> : <NotFound />}
             </Route>
             <Route path="/modcp">
-              {user?.isModerator ||
-              user?.userRank === "Appeals Moderator" ||
-              user?.userRank === "Trial Moderator" ||
-              user?.userRank === "Moderator" ||
-              user?.userRank === "Administrator" ||
-              user?.userRank === "Senior Administrator" ||
-              user?.userRank === "Developer" ||
-              user?.userRank === "Staff Internal Affairs" ||
-              user?.userRank === "Team Member" ||
-              user?.userRank === "Staff Department Director" ||
-              user?.userRank === "Operations Manager" ||
-              user?.userRank === "Company Director" ? (
-                <ModCP />
-              ) : (
-                <NotFound />
-              )}
+              {canAccessModCP(user) ? <ModCP /> : <NotFound />}
             </Route>
             <Route path="/admincp">
-              {user?.isAdmin ||
-              user?.userRank === "Team Member" ||
-              user?.userRank === "Company Director" ||
-              user?.userRank === "Developer" ||
-              user?.userRank === "Staff Internal Affairs" ||
-              user?.userRank === "Staff Department Director" ||
-              user?.userRank === "Operations Manager" ||
-              user?.email?.toLowerCase().endsWith("@resyncstudios.com") ? (
-                <AdminCP />
-              ) : (
-                <NotFound />
-              )}
+              {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}
             </Route>
             <Route path="/guidelines" component={Guidelines} />
             <Route path="/privacy" component={Privacy} />
@@ -372,7 +374,9 @@ function App() {
           <TooltipProvider>
             <AppInit />
             <ScrollToTop />
-            <Router />
+            <RouteErrorBoundary>
+              <Router />
+            </RouteErrorBoundary>
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>

@@ -324,21 +324,7 @@ export async function registerRoutes(
   app.get("/api/admin/users", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      const adminRanks = [
-        "Staff Internal Affairs",
-        "Staff Department Director",
-        "Team Member",
-        "Operations Manager",
-        "Company Director",
-      ];
-      const hasAccess =
-        user.email?.endsWith("@resyncstudios.com") ||
-        adminRanks.includes(user.userRank) ||
-        (user.additionalRanks || []).some((r: string) =>
-          adminRanks.includes(r),
-        );
-
-      if (!hasAccess) return res.status(403).json({ message: "Forbidden" });
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
       const allUsers = await storage.getAllUsers();
       res.json(allUsers);
     } catch (error) {
@@ -367,6 +353,8 @@ export async function registerRoutes(
 
   app.post("/api/admin/assign-rank", requireAuth, async (req, res) => {
     try {
+      const actingUser = req.user as any;
+      if (!isAdminUser(actingUser)) return res.status(403).json({ message: "Forbidden" });
       const { userId, rank } = req.body;
       const user = await storage.getUser(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -605,9 +593,18 @@ export async function registerRoutes(
   });
 
   function isAdminUser(user: any): boolean {
+    const adminRanks = [
+      "Developer",
+      "Staff Internal Affairs",
+      "Team Member",
+      "Staff Department Director",
+      "Operations Manager",
+      "Company Director",
+    ];
     return user.isAdmin ||
       user.email?.toLowerCase().endsWith("@resyncstudios.com") ||
-      ["Operations Manager", "Company Director"].includes(user.userRank);
+      adminRanks.includes(user.userRank) ||
+      (user.additionalRanks || []).some((r: string) => adminRanks.includes(r));
   }
 
   // Admin forum category management
@@ -932,7 +929,7 @@ export async function registerRoutes(
   app.post("/api/admin/set-user-password", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
 
       const { userId, password } = req.body;
       const hashedPassword = hashPassword(password);
@@ -946,7 +943,7 @@ export async function registerRoutes(
   app.post("/api/admin/assign-subscription", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
 
       const { targetUsername, vipTier } = req.body;
       const targetUser = await storage.getUserByUsername(targetUsername);
@@ -963,7 +960,7 @@ export async function registerRoutes(
   app.post("/api/admin/announcements", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
 
       const data = insertAnnouncementSchema.parse({
         ...req.body,
@@ -979,7 +976,7 @@ export async function registerRoutes(
   app.delete("/api/admin/announcements/:id", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
 
       await storage.deleteAnnouncement(req.params.id);
       res.json({ message: "Announcement deleted" });
@@ -1613,10 +1610,7 @@ export async function registerRoutes(
   app.get("/api/admin/stats", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (
-        !user?.isAdmin &&
-        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
-      ) {
+      if (!user || !isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const stats = await storage.getAdminStats();
@@ -1629,11 +1623,7 @@ export async function registerRoutes(
   app.get("/api/admin/activity", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (
-        !user?.isAdmin &&
-        !user?.isModerator &&
-        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
-      ) {
+      if (!user || (!isAdminUser(user) && !user.isModerator)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const activity = await storage.getRecentActivity(20);
@@ -1646,10 +1636,7 @@ export async function registerRoutes(
   app.patch("/api/admin/site-settings", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (
-        !user?.isAdmin &&
-        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
-      ) {
+      if (!user || !isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { isOffline, offlineMessage } = req.body;
@@ -1737,10 +1724,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id/rank", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
-      if (
-        !user?.isAdmin &&
-        !user?.email?.toLowerCase().endsWith("@resyncstudios.com")
-      ) {
+      if (!user || !isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const { userRank } = req.body;
