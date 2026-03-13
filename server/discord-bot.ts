@@ -12,7 +12,7 @@ const RANK_NAMES_TO_DISCORD_ROLES: Record<string, string[]> = {
   "Vehicle Tester": ["Vehicle Tester"],
   "Bronze VIP": ["Bronze VIP®"],
   "Diamond VIP": ["Diamond VIP®"],
-  "Founders Edition VIP": ["Founder's Edition VIP®"],
+  "Founders Edition VIP": ["Founders Edition VIP®", "Founders Edition VIP®"],
   "Lifetime": ["Founder's Edition Lifetime®"],
   "Customer Relations": ["Customer Relations"],
   "Appeals Moderator": ["Appeal Analyst"],
@@ -71,6 +71,7 @@ async function discoverGuildRoles(): Promise<void> {
     for (const role of guildRoles) {
       roleNameToId[role.name] = role.id;
     }
+
 
     const newRankToRole: Record<string, string> = {};
     const newRoleToRank: Record<string, string> = {};
