@@ -12,15 +12,15 @@ const RANK_NAMES_TO_DISCORD_ROLES: Record<string, string[]> = {
   "Vehicle Tester": ["Vehicle Tester"],
   "Bronze VIP": ["Bronze VIP®"],
   "Diamond VIP": ["Diamond VIP®"],
-  "Founders Edition VIP": ["Founders Edition VIP®", "Founders Edition VIP®"],
-  "Lifetime": ["Founder's Edition Lifetime®"],
+  "Founders Edition VIP": ["Founders Edition VIP®", "Founder's Edition VIP®"],
+  Lifetime: ["Founder's Edition Lifetime®"],
   "Customer Relations": ["Customer Relations"],
   "Appeals Moderator": ["Appeal Analyst"],
   "Trial Moderator": ["Trial Moderator"],
-  "Moderator": ["Moderator"],
-  "Administrator": ["Admin"],
+  Moderator: ["Moderator"],
+  Administrator: ["Admin"],
   "Senior Administrator": ["Senior Admin"],
-  "Developer": ["Gameplay Engineer", "Creative Designer"],
+  Developer: ["Gameplay Engineer", "Creative Designer"],
   "Staff Internal Affairs": ["Staff Internal Affairs"],
   "Team Member": ["RS™ Team Member"],
   "Staff Department Director": ["Staff Director"],
@@ -72,11 +72,12 @@ async function discoverGuildRoles(): Promise<void> {
       roleNameToId[role.name] = role.id;
     }
 
-
     const newRankToRole: Record<string, string> = {};
     const newRoleToRank: Record<string, string> = {};
 
-    for (const [rank, possibleNames] of Object.entries(RANK_NAMES_TO_DISCORD_ROLES)) {
+    for (const [rank, possibleNames] of Object.entries(
+      RANK_NAMES_TO_DISCORD_ROLES,
+    )) {
       const envKey = `DISCORD_ROLE_${rank.toUpperCase().replace(/[^A-Z0-9]/g, "_")}`;
       const envValue = process.env[envKey];
 
@@ -101,17 +102,19 @@ async function discoverGuildRoles(): Promise<void> {
 
     const mapped = Object.keys(newRankToRole);
     const unmapped = Object.keys(RANK_NAMES_TO_DISCORD_ROLES).filter(
-      (r) => !newRankToRole[r]
+      (r) => !newRankToRole[r],
     );
 
     console.log(
-      `✅ Discord role discovery complete: ${mapped.length} ranks mapped, ${unmapped.length} unmapped`
+      `✅ Discord role discovery complete: ${mapped.length} ranks mapped, ${unmapped.length} unmapped`,
     );
     if (mapped.length > 0) {
       console.log(`   Mapped: ${mapped.join(", ")}`);
     }
     if (unmapped.length > 0) {
-      console.log(`   Unmapped (no matching Discord role found): ${unmapped.join(", ")}`);
+      console.log(
+        `   Unmapped (no matching Discord role found): ${unmapped.join(", ")}`,
+      );
     }
   } catch (error) {
     console.error("❌ Failed to discover guild roles:", error);
@@ -132,10 +135,7 @@ export async function initializeDiscordBot() {
     await discoverGuildRoles();
 
     client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-      ],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     });
 
     client.once(Events.ClientReady, (readyClient) => {
@@ -163,7 +163,11 @@ export async function initializeDiscordBot() {
         const oldAvatar = oldMember.user?.avatar;
         const newAvatar = newMember.user?.avatar;
 
-        if (oldUsername !== newUsername || oldDisplayName !== newDisplayName || oldAvatar !== newAvatar) {
+        if (
+          oldUsername !== newUsername ||
+          oldDisplayName !== newDisplayName ||
+          oldAvatar !== newAvatar
+        ) {
           const updates: Record<string, any> = {};
 
           if (oldUsername !== newUsername && newUsername) {
@@ -194,13 +198,19 @@ export async function initializeDiscordBot() {
         const newRoleIds = new Set(newMember.roles.cache.map((r) => r.id));
 
         const addedRoles = [...newRoleIds].filter((id) => !oldRoleIds.has(id));
-        const removedRoles = [...oldRoleIds].filter((id) => !newRoleIds.has(id));
+        const removedRoles = [...oldRoleIds].filter(
+          (id) => !newRoleIds.has(id),
+        );
 
         if (addedRoles.length === 0 && removedRoles.length === 0) return;
 
-        const managedRoleIds = new Set(Object.values(RANK_TO_ROLE).filter(Boolean));
+        const managedRoleIds = new Set(
+          Object.values(RANK_TO_ROLE).filter(Boolean),
+        );
         const relevantAdded = addedRoles.filter((id) => managedRoleIds.has(id));
-        const relevantRemoved = removedRoles.filter((id) => managedRoleIds.has(id));
+        const relevantRemoved = removedRoles.filter((id) =>
+          managedRoleIds.has(id),
+        );
 
         if (relevantAdded.length === 0 && relevantRemoved.length === 0) return;
 
@@ -237,8 +247,8 @@ export async function initializeDiscordBot() {
     } catch (gatewayError) {
       console.warn(
         "⚠️ Discord Gateway connection failed (privileged intents may not be enabled). " +
-        "Falling back to REST-only mode. To enable real-time sync from Discord, " +
-        "enable the 'Server Members Intent' in your Discord Developer Portal → Bot settings.",
+          "Falling back to REST-only mode. To enable real-time sync from Discord, " +
+          "enable the 'Server Members Intent' in your Discord Developer Portal → Bot settings.",
       );
       client = null;
     }
@@ -409,7 +419,11 @@ export function getRoleMappingStatus(): {
 } {
   const mapped = Object.keys(RANK_TO_ROLE);
   const unmapped = Object.keys(RANK_NAMES_TO_DISCORD_ROLES).filter(
-    (r) => !RANK_TO_ROLE[r]
+    (r) => !RANK_TO_ROLE[r],
   );
-  return { mapped, unmapped, total: Object.keys(RANK_NAMES_TO_DISCORD_ROLES).length };
+  return {
+    mapped,
+    unmapped,
+    total: Object.keys(RANK_NAMES_TO_DISCORD_ROLES).length,
+  };
 }
