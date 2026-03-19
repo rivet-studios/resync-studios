@@ -51,11 +51,6 @@ const departments: Department[] = [
         role: "Company Representative, Team Member",
         joinDate: "2024-Present",
       },
-      {
-        name: "Kryos",
-        role: "Operations Manager",
-        joinDate: "2024-Present",
-      },
     ],
   },
   {
@@ -76,11 +71,6 @@ const departments: Department[] = [
     color: "text-green-500",
     members: [
       {
-        name: "nil",
-        role: "nil",
-        joinDate: "Unknown",
-      },
-      {
         name: "silentdirective.",
         role: "Partnership Relations",
         joinDate: "2024-Present",
@@ -98,32 +88,22 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "ArielOperations",
-        role: "Chief Development Officer, Lead Developer",
-        joinDate: "2024-Present",
-      },
-      {
-        name: "cxiqlne",
-        role: "Gameplay Systems Developer",
+        name: "itzcxiqlne",
+        role: "Gameplay Engineer & Creative Designer",
         joinDate: "2018-Present",
       },
       {
-        name: "Reni",
-        role: "Gameplay Systems Developer",
-        joinDate: "2019-Present",
-      },
-      {
         name: "silentdirective.",
-        role: "Gameplay Systems Developer, Vehicle Artist",
+        role: "Creative Designer",
         joinDate: "2024-Present",
       },
       {
-        name: "cxiqlne",
+        name: "itzcxiqlne",
         role: "Programmer",
         joinDate: "2018-Present",
       },
       {
-        name: "cxiqlne",
+        name: "itzcxiqlne",
         role: "Vehicle Engineer",
         joinDate: "2018-Present",
       },
@@ -137,7 +117,6 @@ const departments: Department[] = [
       {
         name: "Alexx",
         role: "Trust & Safety Director",
-        additionalInfo: "Reinstated as Senior Administrator late 2025",
         joinDate: "2023",
         endDate: "2025",
       },
@@ -146,6 +125,36 @@ const departments: Department[] = [
         role: "Staff Department Director",
         joinDate: "2024",
         endDate: "2026",
+      },
+      {
+        name: "Kryos",
+        role: "Operations Manager",
+        joinDate: "2024",
+        endDate: "2026",
+      },
+      {
+        name: "Bobby283543",
+        role: "Team Member",
+        joinDate: "2025",
+        endDate: "2026",
+      }, 
+        {
+          name: "Reni",
+          role: "Gameplay Engineer",
+          joinDate: "2019",
+          endDate: "2026",
+        },
+      {
+        name: "WolfGaming_2025",
+        role: "Operations Manager",
+        joinDate: "2020",
+        endDate: "2024",
+      },
+      {
+        name: "tinyauthoritarian",
+        role: "Team Member",
+        joinDate: "2024",
+        endDate: "2025",
       },
     ],
   },
@@ -226,7 +235,7 @@ export default function StaffDirectory() {
             team member at RS, please contact us at or apply for a volunteer
             staff position
             <a
-              href="https://rivetstudios.fillout.com/apply"
+              href=" https://rivetstudios.fillout.com/apply"
               className="text-primary hover:underline"
             >
               here

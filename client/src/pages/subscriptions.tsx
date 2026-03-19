@@ -43,7 +43,7 @@ const tiers = [
     id: "founders",
     name: "Founder's Edition VIP®",
     rating: "4.8",
-    price: "64.99",
+    price: "43.99",
     featured: true,
     description:
       "The Founder's Edition VIP® package is our most exclusive tier, created for supporters who want the highest level of access within RIVET Studios exclusively.",
@@ -64,7 +64,7 @@ export default function Subscriptions() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const handleSubscribe = async (tier: typeof tiers[0]) => {
+  const handleSubscribe = async (tier: (typeof tiers)[0]) => {
     if (!user) {
       setLocation("/login");
       return;
@@ -89,7 +89,8 @@ export default function Subscriptions() {
     } catch (error: any) {
       toast({
         title: "Checkout Error",
-        description: error?.message || "Failed to start checkout. Please try again.",
+        description:
+          error?.message || "Failed to start checkout. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -100,7 +101,10 @@ export default function Subscriptions() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-500">
       <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight" data-testid="text-subscriptions-title">
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          data-testid="text-subscriptions-title"
+        >
           Choose your plan
         </h1>
         <p className="text-sm text-muted-foreground">
