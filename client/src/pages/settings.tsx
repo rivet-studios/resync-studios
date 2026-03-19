@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -479,15 +479,17 @@ export default function Settings() {
     () => localStorage.getItem("resync-reduce-motion") === "true",
   );
 
-  const params = new URLSearchParams(window.location.search);
-  const initialTab = params.get("tab") || "account";
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const searchString = useSearch();
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("tab") || "account";
+  });
 
   useEffect(() => {
-    const newParams = new URLSearchParams(window.location.search);
-    const tab = newParams.get("tab");
-    if (tab) setActiveTab(tab);
-  }, [location]);
+    const params = new URLSearchParams(searchString);
+    const tab = params.get("tab");
+    if (tab && tab !== activeTab) setActiveTab(tab);
+  }, [searchString]);
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -654,8 +656,8 @@ export default function Settings() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-white/10 text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                   }`}
                   data-testid={`settings-tab-${tab.id}`}
                 >
@@ -1065,7 +1067,7 @@ export default function Settings() {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
                       <SiRoblox className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -1106,7 +1108,7 @@ export default function Settings() {
                   </div>
 
                   {robloxLinkStep === "username" && (
-                    <div className="mt-4 p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-3">
+                    <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-3">
                       <p className="text-sm text-muted-foreground">Enter your Roblox username to begin linking:</p>
                       <div className="flex gap-2">
                         <Input
@@ -1131,14 +1133,14 @@ export default function Settings() {
                   )}
 
                   {robloxLinkStep === "verify" && robloxVerification && (
-                    <div className="mt-4 p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-4">
+                    <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-4">
                       <div>
                         <p className="text-sm font-medium">Verifying: {robloxVerification.robloxDisplayName} ({robloxVerification.robloxUsername})</p>
                         <p className="text-sm text-muted-foreground mt-2">
                           To verify you own this Roblox account, add the following code to your Roblox profile description:
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.05] border border-white/10">
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary border border-border">
                         <code className="text-sm font-mono text-white flex-1" data-testid="text-verification-code">{robloxVerification.verificationCode}</code>
                         <Button
                           variant="ghost"

@@ -147,7 +147,7 @@ export default function ProductDetail() {
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6">
-          <div className="aspect-square bg-[#121212] rounded-xl overflow-hidden" data-testid="product-image-container">
+          <div className="aspect-square bg-card rounded-xl overflow-hidden" data-testid="product-image-container">
             {product.imageUrl ? (
               <img
                 src={product.imageUrl}

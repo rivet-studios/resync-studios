@@ -1259,6 +1259,25 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/marketplace/stats", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const allProducts = await storage.getProducts();
+      const myProducts = allProducts.filter((p) => p.submitterId === user.id);
+      const approvedProducts = myProducts.filter((p) => p.status === "Approved");
+      res.json({
+        totalProducts: myProducts.length,
+        approvedProducts: approvedProducts.length,
+        pendingProducts: myProducts.filter((p) => p.status === "Pending").length,
+        totalSales: 0,
+        totalCommission: 0,
+        recentSales: [],
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch marketplace stats" });
+    }
+  });
+
   app.post("/api/products", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;

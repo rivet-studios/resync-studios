@@ -53,7 +53,7 @@ export function BanWall({ children }: BanWallProps) {
           </p>
         </div>
 
-        <div className="bg-[#121212] border border-white/5 rounded-xl p-6 space-y-4 text-left">
+        <div className="bg-card border border-white/5 rounded-xl p-6 space-y-4 text-left">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs text-white/30 uppercase tracking-wider font-semibold">
               <Calendar className="w-3.5 h-3.5" />

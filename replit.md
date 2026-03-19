@@ -11,7 +11,7 @@ I prefer clean, readable code with consistent formatting.
 I like to be informed about the implications of design choices on performance and scalability.
 
 ## System Architecture
-The platform is built with a dark theme UI (`#050505` backgrounds, `#121212` cards, white text) utilizing the Inter font family. Core UI components like Card and Badge are consistently applied. The global `--radius` is set to `0.5rem`, with `rounded-xl` as the maximum corner radius for a cleaner aesthetic.
+The platform supports both light and dark themes (dark default) with semantic CSS tokens (`bg-card`, `bg-background`, `text-foreground`, etc.) defined in `index.css`. Light mode variables are in the `.light` class, dark mode is the `:root` default. The UI uses the Inter font family, Core UI components like Card and Badge are consistently applied. The global `--radius` is set to `0.5rem`, with `rounded-xl` as the maximum corner radius for a cleaner aesthetic. Navigation uses a sidebar layout (`AppSidebar` + `SidebarProvider` from shadcn) with grouped sections (Platform, Account, Store, Support, Staff) and a collapsible trigger. The theme toggle is in the sidebar header. Hardcoded hex colors (`bg-[#121212]`, `border-[#1e1e1e]`) have been replaced with semantic tokens across most pages.
 
 Key features and their technical implementations include:
 - **Authentication**: Supports Discord OAuth (`/api/auth/discord`), Email/Password with forgot/reset password flow (via Resend email from `support@resyncstudios.com`), and Roblox account linking with a verification flow using the Roblox API. Sensitive fields (`password`, `passwordResetToken`, `passwordResetExpires`) are stripped from all public API responses.
@@ -23,7 +23,7 @@ Key features and their technical implementations include:
     - **Policies**: Dynamic policy management with a `policies` table, allowing Operations Managers to edit HTML content via AdminCP, with fallbacks to hardcoded content.
 - **E-commerce**:
     - **Store**: Product catalog with categories, badges (Community Provided, Featured, LIMITED EDITION, VERIFIED), and Stripe integration for `Buy Now` and `Add to Cart` functionality.
-    - **Marketplace**: Allows community product submissions.
+    - **Marketplace**: Tabbed dashboard (My Products, Submit Product, Review Queue) with stats cards (Total Products, Approved, Pending, Total Sales). API endpoint `GET /api/marketplace/stats` provides seller dashboard data.
     - **Product Badges**: Operations Managers review products and assign badges.
 - **Moderation System**:
     - **Reports**: User reporting system for content and profiles with a `ReportDialog` component.

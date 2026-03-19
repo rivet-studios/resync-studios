@@ -316,7 +316,7 @@ export default function CaseDetail() {
           </Badge>
         </div>
 
-        <Card className="bg-[#121212] border-white/5 rounded-xl">
+        <Card className="bg-card border-white/5 rounded-xl">
           <CardContent className="p-6 space-y-6">
             <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
               Case Details
@@ -461,7 +461,7 @@ export default function CaseDetail() {
         </Card>
 
         {caseData.moderatorNotes && (
-          <Card className="bg-[#121212] border-white/5 rounded-xl">
+          <Card className="bg-card border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-3">
               <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
                 Moderator Notes
@@ -474,7 +474,7 @@ export default function CaseDetail() {
         )}
 
         {caseData.reviewNotes && (
-          <Card className="bg-[#121212] border-white/5 rounded-xl">
+          <Card className="bg-card border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-3">
               <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
                 Review Notes
@@ -490,7 +490,7 @@ export default function CaseDetail() {
         )}
 
         {isPending && (
-          <Card className="bg-[#121212] border-white/5 rounded-xl">
+          <Card className="bg-card border-white/5 rounded-xl">
             <CardContent className="p-6 space-y-4">
               <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
                 Actions
@@ -617,7 +617,7 @@ export default function CaseDetail() {
         )}
 
         {hasRelatedCases && (
-          <Card className="bg-[#121212] border-white/5 rounded-xl" data-testid="card-related-cases">
+          <Card className="bg-card border-white/5 rounded-xl" data-testid="card-related-cases">
             <CardContent className="p-6 space-y-4">
               <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
                 Related Cases

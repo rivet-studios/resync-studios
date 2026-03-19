@@ -4,7 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-import { MainHeader } from "@/components/main-header";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useAuth } from "@/hooks/useAuth";
@@ -106,10 +107,14 @@ function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <MainHeader />
-      <main className="flex-1 w-full">{children}</main>
-      <footer className="bg-card border-t border-border/50 py-20">
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset className="flex flex-col min-h-screen bg-background">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4">
+          <SidebarTrigger className="-ml-1" />
+        </header>
+        <main className="flex-1 w-full">{children}</main>
+        <footer className="bg-card border-t border-border/50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="space-y-6">
@@ -259,7 +264,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

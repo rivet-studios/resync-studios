@@ -63,7 +63,7 @@ export default function ForumCategoryPage() {
           </div>
         </div>
 
-        <div className="border border-white/5 rounded-xl overflow-hidden bg-[#0a0a0a]">
+        <div className="border border-white/5 rounded-xl overflow-hidden bg-card">
           <div className="divide-y divide-white/5">
             {threads?.map((thread) => (
               <div

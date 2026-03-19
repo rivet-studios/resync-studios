@@ -103,7 +103,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl bg-[#121212] border-white/5 p-0 overflow-hidden shadow-2xl [&>button]:hidden">
+      <DialogContent className="max-w-3xl bg-card border-white/5 p-0 overflow-hidden shadow-2xl [&>button]:hidden">
         <div className="p-6 space-y-4">
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-white/60 transition-colors" />

@@ -76,7 +76,7 @@ export default function CreateThread() {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       <div className="max-w-3xl mx-auto p-6">
-        <Card className="border border-white/5 shadow-xl bg-[#0a0a0a]">
+        <Card className="border border-white/5 shadow-xl bg-card">
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-white">Start a New Discussion</CardTitle>
           </CardHeader>
@@ -99,7 +99,7 @@ export default function CreateThread() {
                             <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select a category"} />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[100] bg-[#121212] border-white/10 text-white">
+                        <SelectContent className="z-[100] bg-card border-white/10 text-white">
                           {categories?.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id}>
                               {cat.name}

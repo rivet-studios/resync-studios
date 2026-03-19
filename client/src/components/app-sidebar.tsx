@@ -1,7 +1,6 @@
 import { useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { VipBadge } from "@/components/vip-badge";
-import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -25,73 +24,82 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Home,
-  Target,
-  Users,
-  MessageSquare,
-  Crown,
-  Settings,
-  User,
-  LogOut,
-  Gamepad2,
-  ChevronUp,
-  BarChart3,
-  Shield,
-  FileText,
-  UsersRound,
-  Megaphone,
+  LayoutDashboard,
   BookOpen,
-  Handshake,
-  Radio,
-  Heart,
-  Info,
-  MapPin,
-  Lock,
+  MessageSquare,
+  User,
+  CreditCard,
+  ShoppingBag,
+  Receipt,
+  Store,
+  Crown,
+  ShoppingCart,
+  FileText,
+  HelpCircle,
+  Settings,
+  LogOut,
+  ChevronUp,
+  Shield,
+  BarChart3,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import logoSvg from "@assets/logo.svg";
 
-const mainNavItems = [
-  { title: "Dashboard", url: "/", icon: Home },
-  { title: "About RIVET Studios", url: "/about", icon: Info },
-  { title: "The Golden Era,  1995", url: "/rosewood", icon: MapPin },
-  { title: "Announcements", url: "/news", icon: Megaphone },
-  { title: "nil", url: "/not-found", icon: Target },
-  { title: "Forums", url: "/forums", icon: MessageSquare },
-  { title: "Our Team", url: "/team", icon: UsersRound },
+const ADMIN_RANKS = [
+  "Developer",
+  "Staff Internal Affairs",
+  "Team Member",
+  "Staff Department Director",
+  "Operations Manager",
+  "Company Director",
 ];
 
-const accountNavItems = [
+const MOD_RANKS = [
+  "Appeals Moderator",
+  "Trial Moderator",
+  "Moderator",
+  "Administrator",
+  "Senior Administrator",
+  ...ADMIN_RANKS,
+];
+
+function hasRank(user: any, ranks: string[]): boolean {
+  if (!user) return false;
+  if (ranks.includes(user.userRank || "")) return true;
+  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r))) return true;
+  return false;
+}
+
+const platformItems = [
+  { title: "Home", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Blog", url: "/blog", icon: BookOpen },
+  { title: "Forums", url: "/forums", icon: MessageSquare },
+];
+
+const accountItems = [
+  { title: "My Account", url: "/settings?tab=account", icon: User },
+  { title: "Billing", url: "/settings?tab=billing", icon: CreditCard },
+  { title: "Orders", url: "/settings?tab=orders", icon: Receipt },
+  { title: "Payment Methods", url: "/settings?tab=payments", icon: ShoppingBag },
+];
+
+const storeItems = [
+  { title: "Store", url: "/store", icon: Store },
   { title: "Subscriptions", url: "/store/subscriptions", icon: Crown },
-  { title: "Profile", url: "/profile", icon: User },
-  { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Moderator CP", url: "/modcp", icon: Shield },
-  { title: "Admin CP", url: "/admincp", icon: BarChart3 },
-  { title: "Admin Panel", url: "/admin", icon: Lock },
-  { title: "Community Rules", url: "/community-rules", icon: Heart },
-  { title: "Community Guidelines", url: "/guidelines", icon: Shield },
-  { title: "Privacy Policy", url: "/privacy", icon: Shield },
-  { title: "Terms of Service", url: "/terms", icon: FileText },
-  { title: "DMCA Policy", url: "/dmca", icon: Shield },
-  { title: "LEO & Emergency Guidelines", url: "/leo-guidelines", icon: Radio },
-  {
-    title: "TGE (The Golden Era) Rules",
-    url: "/project-rosewood-rules",
-    icon: BookOpen,
-  },
-  {
-    title: "Volunteer Staff Terms & Conditions",
-    url: "/volunteer-agreement",
-    icon: Handshake,
-  },
+  { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
+];
+
+const supportItems = [
+  { title: "Policies", url: "/policies", icon: FileText },
+  { title: "Support", url: "/support", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
   const [location, setLocation] = useLocation();
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const { user, logoutMutation } = useAuth();
 
   const getInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    }
     if (user?.username) {
       return user.username.slice(0, 2).toUpperCase();
     }
@@ -99,34 +107,101 @@ export function AppSidebar() {
   };
 
   const getDisplayName = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    return user?.username || user?.email || "User";
+    if (user?.username) return user.username;
+    return user?.email || "User";
   };
+
+  const isActive = (url: string) => {
+    if (url === "/" && location === "/") return true;
+    if (url.startsWith("/settings")) {
+      return location.startsWith("/settings");
+    }
+    if (url !== "/" && location.startsWith(url.split("?")[0])) return true;
+    return false;
+  };
+
+  const showModCP = user && (user.isModerator || hasRank(user, MOD_RANKS));
+  const showAdminCP = user && (
+    user.isAdmin ||
+    hasRank(user, ADMIN_RANKS) ||
+    user.email?.toLowerCase().endsWith("@resyncstudios.com")
+  );
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Gamepad2 className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="font-display font-bold text-lg">RIVET Studios</span>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <img src={logoSvg} alt="RS" className="w-6 h-6" />
+            <span className="font-semibold text-base tracking-tight">RIVET Studios™</span>
+          </Link>
+          <ThemeToggle />
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
+              {platformItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={location === item.url}
-                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                    isActive={isActive(item.url)}
+                    data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    <Link href={item.url}>
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        {user && (
+          <>
+            <SidebarGroup>
+              <SidebarGroupLabel>Account</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {accountItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <SidebarSeparator />
+          </>
+        )}
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Store</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {storeItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.url)}
+                    data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
@@ -142,15 +217,15 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupLabel>Support</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {accountNavItems.map((item) => (
+              {supportItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={location === item.url}
-                    data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                    isActive={isActive(item.url)}
+                    data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
@@ -163,15 +238,42 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {user?.vipTier && user.vipTier !== "none" && (
+        {(showModCP || showAdminCP) && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
-              <SidebarGroupLabel>VIP Status</SidebarGroupLabel>
-              <SidebarGroupContent className="px-2">
-                <div className="flex items-center gap-2">
-                  <VipBadge tier={user.vipTier as any} size="sm" />
-                </div>
+              <SidebarGroupLabel>Staff</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {showModCP && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive("/modcp")}
+                        data-testid="sidebar-modcp"
+                      >
+                        <Link href="/modcp">
+                          <Shield className="w-4 h-4" />
+                          <span>ModCP</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
+                  {showAdminCP && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive("/admincp")}
+                        data-testid="sidebar-admincp"
+                      >
+                        <Link href="/admincp">
+                          <BarChart3 className="w-4 h-4" />
+                          <span>AdminCP</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
+                </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
           </>
@@ -179,88 +281,110 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  className="w-full justify-between"
-                  data-testid="button-user-menu"
-                >
-                  <div className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage
-                        src={user?.profileImageUrl || undefined}
-                        alt={getDisplayName()}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="text-xs">
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start text-left">
-                      <span className="text-sm font-medium truncate max-w-[120px]">
-                        {getDisplayName()}
-                      </span>
-                      {user?.email && (
-                        <span className="text-xs text-muted-foreground truncate max-w-[120px]">
-                          {user.email}
+        {user ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    className="w-full justify-between"
+                    data-testid="button-sidebar-user-menu"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage
+                          src={user.profileImageUrl || undefined}
+                          alt={getDisplayName()}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-xs">
+                          {getInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-start text-left">
+                        <span className="text-sm font-medium truncate max-w-[120px]">
+                          {getDisplayName()}
                         </span>
-                      )}
+                        {user.vipTier && user.vipTier !== "none" && (
+                          <VipBadge tier={user.vipTier as any} size="sm" />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <ChevronUp className="w-4 h-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={async () => {
-                    try {
-                      const response = await fetch("/api/auth/logout", {
-                        method: "POST",
-                        credentials: "include",
-                      });
-                      if (response.ok) {
-                        setLocation("/login");
-                      } else {
-                        toast({
-                          title: "Error",
-                          description: "Logout failed",
-                          variant: "destructive",
-                        });
-                      }
-                    } catch (error) {
-                      console.error("Logout failed:", error);
-                      toast({
-                        title: "Error",
-                        description: "Logout failed",
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                  className="cursor-pointer text-destructive"
-                  data-testid="button-logout"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+                    <ChevronUp className="w-4 h-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href={`/profile/${user.id}`} className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>My Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings?tab=account" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>My Account</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings?tab=billing" className="cursor-pointer">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      <span>Billing</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings?tab=orders" className="cursor-pointer">
+                      <Receipt className="mr-2 h-4 w-4" />
+                      <span>Orders</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/marketplace" className="cursor-pointer">
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      <span>Marketplace</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/support" className="cursor-pointer">
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      <span>Support</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logoutMutation.mutate()}
+                    className="cursor-pointer text-destructive"
+                    data-testid="button-sidebar-logout"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                data-testid="sidebar-login"
+              >
+                <Link href="/login">
+                  <User className="w-4 h-4" />
+                  <span>Login</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

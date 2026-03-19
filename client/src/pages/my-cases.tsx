@@ -139,7 +139,7 @@ export default function MyCases() {
                 return (
                   <Card
                     key={report.id}
-                    className="bg-[#121212] border-white/5 rounded-xl overflow-hidden"
+                    className="bg-card border-white/5 rounded-xl overflow-hidden"
                     data-testid={`card-my-report-${report.id}`}
                   >
                     <CardContent className="p-5">
@@ -196,7 +196,7 @@ export default function MyCases() {
               })}
             </div>
           ) : (
-            <Card className="bg-[#121212] border-white/5 rounded-xl">
+            <Card className="bg-card border-white/5 rounded-xl">
               <CardContent className="p-8 text-center">
                 <FileText className="w-8 h-8 text-white/10 mx-auto mb-2" />
                 <p className="text-xs text-white/30">
@@ -223,7 +223,7 @@ export default function MyCases() {
                 return (
                   <Card
                     key={appeal.id}
-                    className="bg-[#121212] border-white/5 rounded-xl overflow-hidden"
+                    className="bg-card border-white/5 rounded-xl overflow-hidden"
                     data-testid={`card-my-appeal-${appeal.id}`}
                   >
                     <CardContent className="p-5">
@@ -271,7 +271,7 @@ export default function MyCases() {
               })}
             </div>
           ) : (
-            <Card className="bg-[#121212] border-white/5 rounded-xl">
+            <Card className="bg-card border-white/5 rounded-xl">
               <CardContent className="p-8 text-center">
                 <Scale className="w-8 h-8 text-white/10 mx-auto mb-2" />
                 <p className="text-xs text-white/30">

@@ -61,7 +61,7 @@ export default function Onboarding() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <div className="hidden lg:flex w-[35%] bg-[#0a0a0a] border-r border-white/[0.04] p-12 flex-col justify-between">
+      <div className="hidden lg:flex w-[35%] bg-card border-r border-white/[0.04] p-12 flex-col justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white flex items-center justify-center rounded">
             <span className="text-black font-semibold text-xl italic">RS</span>
