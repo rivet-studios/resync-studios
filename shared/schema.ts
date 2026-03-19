@@ -257,9 +257,9 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 });
 
 export const productStatusEnum = pgEnum("product_status", [
-  "Pending",
-  "Approved",
-  "Denied",
+  "pending",
+  "approved",
+  "denied",
 ]);
 
 export const products = pgTable("products", {
@@ -272,8 +272,8 @@ export const products = pgTable("products", {
   imageUrl: varchar("image_url"),
   category: varchar("category"),
   submitterId: varchar("submitter_id").notNull(),
-  status: productStatusEnum("status").default("Pending"),
-  isCommunityProvided: boolean("is_community_provided").default(false),
+  status: productStatusEnum("status").default("pending"),
+  isCommunityProvided: boolean("is_community_provided").default(true),
   isFeatured: boolean("is_featured").default(false),
   isLimitedEdition: boolean("is_limited_edition").default(false),
   isVerified: boolean("is_verified").default(false),

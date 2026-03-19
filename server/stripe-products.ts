@@ -4,20 +4,23 @@ const VIP_TIERS = [
   {
     id: "bronze",
     name: "Bronze VIP®",
-    description: "The Bronze VIP® package is designed for supporters who want to help RIVET Studios grow while enhancing their RIVET Studios account experience exclusively.",
+    description:
+      "The Bronze VIP® package is designed for supporters who want to help RIVET Studios grow while enhancing their RIVET Studios account experience exclusively.",
     priceAmount: 1399,
   },
   {
     id: "diamond",
     name: "Diamond VIP®",
-    description: "The Diamond VIP® package is built for supporters who want the highest level of benefits within RIVET Studios exclusively.",
+    description:
+      "The Diamond VIP® package is built for supporters who want the highest level of benefits within RIVET Studios exclusively.",
     priceAmount: 3499,
   },
   {
     id: "founders",
     name: "Founder's Edition VIP®",
-    description: "The Founder's Edition VIP® package is our most exclusive tier, created for supporters who want the highest level of access within RIVET Studios exclusively.",
-    priceAmount: 6499,
+    description:
+      "The Founder's Edition VIP® package is our most exclusive tier, created for supporters who want the highest level of access within RIVET Studios exclusively.",
+    priceAmount: 4399,
   },
 ];
 
@@ -44,7 +47,9 @@ export async function initializeStripeProducts(): Promise<void> {
       const envKey = `STRIPE_PRICE_${tier.id.toUpperCase()}`;
       if (process.env[envKey]) {
         priceCache[tier.id] = process.env[envKey]!;
-        console.log(`✅ VIP tier ${tier.id}: using env price ${process.env[envKey]}`);
+        console.log(
+          `✅ VIP tier ${tier.id}: using env price ${process.env[envKey]}`,
+        );
         continue;
       }
 
@@ -56,7 +61,9 @@ export async function initializeStripeProducts(): Promise<void> {
 
       if (existingProducts.data.length > 0) {
         productId = existingProducts.data[0].id;
-        console.log(`✅ VIP tier ${tier.id}: found existing product ${productId}`);
+        console.log(
+          `✅ VIP tier ${tier.id}: found existing product ${productId}`,
+        );
       } else {
         const product = await stripe.products.create({
           name: tier.name,
@@ -74,12 +81,16 @@ export async function initializeStripeProducts(): Promise<void> {
       });
 
       const matchingPrice = existingPrices.data.find(
-        (p) => p.unit_amount === tier.priceAmount && p.recurring?.interval === "month"
+        (p) =>
+          p.unit_amount === tier.priceAmount &&
+          p.recurring?.interval === "month",
       );
 
       if (matchingPrice) {
         priceCache[tier.id] = matchingPrice.id;
-        console.log(`✅ VIP tier ${tier.id}: using existing price ${matchingPrice.id}`);
+        console.log(
+          `✅ VIP tier ${tier.id}: using existing price ${matchingPrice.id}`,
+        );
       } else {
         const price = await stripe.prices.create({
           product: productId,
@@ -95,6 +106,9 @@ export async function initializeStripeProducts(): Promise<void> {
 
     console.log("✅ All VIP Stripe products initialized");
   } catch (error: any) {
-    console.error("⚠️ Failed to initialize Stripe VIP products:", error.message);
+    console.error(
+      "⚠️ Failed to initialize Stripe VIP products:",
+      error.message,
+    );
   }
 }

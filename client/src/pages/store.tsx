@@ -219,7 +219,7 @@ export default function Store() {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
               data-testid="link-browse-categories"
             >
-              Browse all categories <ArrowRight className="w-4 h-4" />
+              View marketplace <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -316,14 +316,20 @@ export default function Store() {
             <Card>
               <CardContent className="py-16 text-center">
                 <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="text-foreground font-semibold mb-2" data-testid="text-no-products">
+                <h3
+                  className="text-foreground font-semibold mb-2"
+                  data-testid="text-no-products"
+                >
                   No products yet
                 </h3>
                 <p className="text-muted-foreground text-sm mb-6">
                   Be the first to submit a product to the marketplace
                 </p>
                 <Link href="/marketplace">
-                  <Button variant="outline" data-testid="button-submit-first-product">
+                  <Button
+                    variant="outline"
+                    data-testid="button-submit-first-product"
+                  >
                     Submit a Product <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
