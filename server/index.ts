@@ -203,6 +203,9 @@ httpServer.listen(port, host, () => {
         stripeSync.syncBackfill()
           .then(() => console.log('✅ Stripe data synced'))
           .catch((err: any) => console.error('⚠️ Stripe backfill error:', err.message));
+
+        const { initializeStripeProducts } = await import('./stripe-products');
+        await initializeStripeProducts();
       } catch (error: any) {
         console.error('⚠️ Stripe init failed (non-critical):', error.message);
       }

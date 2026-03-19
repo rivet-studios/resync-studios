@@ -34,6 +34,7 @@ import { db } from "./db";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { getVipPriceId } from "./stripe-products";
 
 const uploadDir = path.join(process.cwd(), "uploads", "avatars");
 if (!fs.existsSync(uploadDir)) {
@@ -2102,15 +2103,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "A valid tierId is required" });
       }
 
-      const tierPriceMap: Record<string, string> = {
-        bronze: process.env.STRIPE_PRICE_BRONZE || "price_bronze_vip",
-        diamond: process.env.STRIPE_PRICE_DIAMOND || "price_diamond_vip",
-        founders: process.env.STRIPE_PRICE_FOUNDERS || "price_founders_vip",
-      };
-
-      const priceId = tierPriceMap[tierId];
+      const priceId = await getVipPriceId(tierId);
       if (!priceId) {
-        return res.status(400).json({ message: "Invalid subscription tier" });
+        return res.status(400).json({ message: "Invalid subscription tier. VIP products may not be configured yet." });
       }
 
       let customerId = user.stripeCustomerId;
