@@ -27,6 +27,7 @@ Key features and their technical implementations include:
     - **VIP Checkout**: Subscriptions page (`/store/subscriptions`) directly creates Stripe Checkout Sessions via `POST /api/stripe/checkout` with `tierId` mapping to Stripe Price IDs (configurable via `STRIPE_PRICE_BRONZE`, `STRIPE_PRICE_DIAMOND`, `STRIPE_PRICE_FOUNDERS` env vars). Success/cancel redirects back to subscriptions page.
     - **Marketplace**: Tabbed dashboard (My Products, Submit Product, Review Queue) with stats cards (Total Products, Approved, Pending, Total Sales). API endpoint `GET /api/marketplace/stats` provides seller dashboard data.
     - **Product Badges**: Operations Managers review products and assign badges.
+    - **Stripe Product Sync**: When a marketplace product is approved, a corresponding Stripe Product and Price are automatically created. The `stripeProductId` and `stripePriceId` are stored in the `products` table. Product checkout uses the stored Stripe Price when available.
 - **Moderation System**:
     - **Reports**: User reporting system for content and profiles with a `ReportDialog` component.
     - **Bans**: Management through ModCP, including a `Ban Wall` component that restricts banned users to the appeals page.

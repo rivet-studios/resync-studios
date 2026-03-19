@@ -1517,17 +1517,30 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
-      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+      const userRanks = [user.userRank, ...(user.additionalRanks || [])];
+      const hasOpsAccess = user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
+      if (!hasOpsAccess) {
         return res
           .status(403)
           .json({ message: "Only Operations Managers can review products" });
       }
-      const { status, reviewNotes } = req.body;
-      if (!["Approved", "Denied"].includes(status)) {
+      let { status, reviewNotes } = req.body;
+      const statusMap: Record<string, string> = {
+        approved: "Approved",
+        denied: "Denied",
+        Approved: "Approved",
+        Denied: "Denied",
+      };
+      status = statusMap[status];
+      if (!status) {
         return res
           .status(400)
-          .json({ message: "Status must be approved or denied" });
+          .json({ message: "Status must be Approved or Denied" });
       }
+      const existingProduct = await storage.getProduct(req.params.id);
+      if (!existingProduct)
+        return res.status(404).json({ message: "Product not found" });
+
       const updates: any = {
         status,
         reviewedBy: user.id,
@@ -1535,6 +1548,35 @@ export async function registerRoutes(
       };
       if (status === "Approved") {
         updates.isCommunityProvided = true;
+
+        if (!existingProduct.stripeProductId) {
+          try {
+            const stripe = await getUncachableStripeClient();
+            const stripeProduct = await stripe.products.create({
+              name: existingProduct.name,
+              description: existingProduct.description || undefined,
+              images: existingProduct.imageUrl ? [existingProduct.imageUrl] : [],
+              metadata: {
+                platform_product_id: existingProduct.id,
+                category: existingProduct.category || "",
+                submitter_id: existingProduct.submitterId,
+              },
+            });
+            const stripePrice = await stripe.prices.create({
+              product: stripeProduct.id,
+              unit_amount: existingProduct.price,
+              currency: "usd",
+              metadata: {
+                platform_product_id: existingProduct.id,
+              },
+            });
+            updates.stripeProductId = stripeProduct.id;
+            updates.stripePriceId = stripePrice.id;
+            console.log(`✅ Stripe product created for "${existingProduct.name}": ${stripeProduct.id}, price: ${stripePrice.id}`);
+          } catch (stripeErr: any) {
+            console.error(`⚠️ Failed to create Stripe product for "${existingProduct.name}":`, stripeErr.message);
+          }
+        }
       }
       const product = await storage.updateProduct(req.params.id, updates);
       if (!product)
@@ -1549,7 +1591,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
-      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+      const userRanks = [user.userRank, ...(user.additionalRanks || [])];
+      const hasOpsAccess = user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
+      if (!hasOpsAccess) {
         return res
           .status(403)
           .json({ message: "Only Operations Managers can assign badges" });
@@ -2188,11 +2232,9 @@ export async function registerRoutes(
         customerId = customer.id;
       }
 
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        payment_method_types: ["card"],
-        line_items: [
-          {
+      const lineItem = product.stripePriceId
+        ? { price: product.stripePriceId, quantity: 1 }
+        : {
             price_data: {
               currency: "usd",
               product_data: {
@@ -2203,8 +2245,12 @@ export async function registerRoutes(
               unit_amount: product.price,
             },
             quantity: 1,
-          },
-        ],
+          };
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ["card"],
+        line_items: [lineItem],
         mode: "payment",
         metadata: { productId: product.id, userId: user.id },
         success_url: `${getBaseUrl(req)}/store/product/${product.id}?success=true`,

@@ -169,10 +169,11 @@ export default function Marketplace() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
+  const opsRanks = ["Operations Manager", "Company Director"];
   const isOpsManager =
-    user?.userRank === "Operations Manager" ||
-    user?.userRank === "Company Director" ||
-    user?.isAdmin;
+    user?.isAdmin ||
+    opsRanks.includes(user?.userRank || "") ||
+    (user?.additionalRanks || []).some((r: string) => opsRanks.includes(r));
 
   const form = useForm<SubmitProductForm>({
     resolver: zodResolver(submitProductSchema),

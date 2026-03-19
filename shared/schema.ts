@@ -279,6 +279,8 @@ export const products = pgTable("products", {
   isVerified: boolean("is_verified").default(false),
   reviewedBy: varchar("reviewed_by"),
   reviewNotes: text("review_notes"),
+  stripeProductId: varchar("stripe_product_id"),
+  stripePriceId: varchar("stripe_price_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -292,6 +294,8 @@ export const insertProductSchema = createInsertSchema(products).omit({
   isVerified: true,
   reviewedBy: true,
   reviewNotes: true,
+  stripeProductId: true,
+  stripePriceId: true,
   createdAt: true,
   updatedAt: true,
 });
