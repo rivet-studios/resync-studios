@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import passport from "./auth";
 import { hashPassword, verifyPassword } from "./auth-utils";
-import { updateDiscordNickname, updateDiscordRoles, syncUserFromDiscord, getRoleMappingStatus } from "./discord-bot";
+import { updateDiscordNickname, updateDiscordRoles, syncUserFromDiscord, getRoleMappingStatus, getDiscordMemberCount } from "./discord-bot";
 import {
   insertForumThreadSchema,
   insertForumReplySchema,
@@ -2024,18 +2024,63 @@ export async function registerRoutes(
     }
   });
 
+  let cachedExternalStats = { discordMembers: 0, robloxMembers: 0, fetchedAt: 0 };
+  const EXTERNAL_STATS_TTL = 120_000;
+
+  async function fetchExternalStats() {
+    const now = Date.now();
+    if (now - cachedExternalStats.fetchedAt < EXTERNAL_STATS_TTL) {
+      return cachedExternalStats;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    try {
+      const [discordCount, robloxCount] = await Promise.all([
+        getDiscordMemberCount().catch(() => cachedExternalStats.discordMembers),
+        (async () => {
+          try {
+            const robloxGroupId = process.env.ROBLOX_GROUP_ID || "35703915";
+            const resp = await fetch(
+              `https://groups.roblox.com/v1/groups/${robloxGroupId}`,
+              { signal: controller.signal }
+            );
+            if (!resp.ok) return cachedExternalStats.robloxMembers;
+            const data = await resp.json();
+            return data.memberCount || cachedExternalStats.robloxMembers;
+          } catch {
+            return cachedExternalStats.robloxMembers;
+          }
+        })(),
+      ]);
+
+      cachedExternalStats = { discordMembers: discordCount, robloxMembers: robloxCount, fetchedAt: now };
+    } catch {
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    return cachedExternalStats;
+  }
+
   app.get("/api/public/stats", async (_req, res) => {
     try {
       const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
       const [threadCount] = await db
         .select({ count: sql`count(*)` })
         .from(forumThreads);
+
+      const external = await fetchExternalStats();
+
       res.json({
         totalMembers: Number(userCount.count),
         totalDiscussions: Number(threadCount.count),
+        discordMembers: external.discordMembers,
+        robloxMembers: external.robloxMembers,
       });
     } catch (error) {
-      res.json({ totalMembers: 0, totalDiscussions: 0 });
+      res.json({ totalMembers: 0, totalDiscussions: 0, discordMembers: 0, robloxMembers: 0 });
     }
   });
 

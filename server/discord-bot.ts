@@ -412,6 +412,19 @@ export function getDiscordClient(): REST | null {
   return rest;
 }
 
+export async function getDiscordMemberCount(): Promise<number> {
+  if (!rest) return 0;
+  try {
+    const guild = (await rest.get(Routes.guild(GUILD_ID), {
+      query: new URLSearchParams({ with_counts: "true" }),
+    })) as { approximate_member_count?: number };
+    return guild.approximate_member_count || 0;
+  } catch (error) {
+    console.error("❌ Failed to fetch Discord member count:", error);
+    return 0;
+  }
+}
+
 export function getRoleMappingStatus(): {
   mapped: string[];
   unmapped: string[];

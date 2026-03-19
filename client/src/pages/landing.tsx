@@ -15,8 +15,15 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import { SiDiscord, SiRoblox } from "react-icons/si";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+
+function formatCount(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return num.toString();
+}
 
 const features = [
   {
@@ -63,9 +70,12 @@ export default function Landing() {
   const { data: publicStats } = useQuery<{
     totalMembers: number;
     totalDiscussions: number;
+    discordMembers: number;
+    robloxMembers: number;
   }>({
     queryKey: ["/api/public/stats"],
     staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   const stats = [
@@ -94,6 +104,36 @@ export default function Landing() {
 
         <div className="relative z-10 container mx-auto px-4 text-center space-y-10">
           <div className="space-y-6 max-w-3xl mx-auto">
+            <div className="flex flex-wrap items-center justify-center gap-3" data-testid="section-hero-stats">
+              <div
+                className="inline-flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-5 py-2.5"
+                data-testid="stat-platform-members"
+              >
+                <Sparkles className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground/90">
+                  Now powering {formatCount(publicStats?.totalMembers || 0)}+ members
+                </span>
+              </div>
+              <div
+                className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-2.5"
+                data-testid="stat-discord-members"
+              >
+                <SiDiscord className="w-5 h-5 text-[#5865F2]" />
+                <span className="text-sm font-medium text-foreground/90">
+                  {formatCount(publicStats?.discordMembers || 0)}
+                </span>
+              </div>
+              <div
+                className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-2.5"
+                data-testid="stat-roblox-members"
+              >
+                <SiRoblox className="w-4 h-4 text-white" />
+                <span className="text-sm font-medium text-foreground/90">
+                  {formatCount(publicStats?.robloxMembers || 0)}
+                </span>
+              </div>
+            </div>
+
             <Badge
               variant="outline"
               className="bg-white/[0.04] border-white/[0.08] backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground tracking-wide uppercase gap-2"
