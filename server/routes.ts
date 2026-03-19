@@ -2041,7 +2041,7 @@ export async function registerRoutes(
         getDiscordMemberCount().catch(() => cachedExternalStats.discordMembers),
         (async () => {
           try {
-            const robloxGroupId = process.env.ROBLOX_GROUP_ID || "35703915";
+            const robloxGroupId = process.env.ROBLOX_GROUP_ID || "34964480";
             const resp = await fetch(
               `https://groups.roblox.com/v1/groups/${robloxGroupId}`,
               { signal: controller.signal }
