@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star } from "lucide-react";
+import { Check, Star, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 const tiers = [
   {
@@ -56,11 +59,50 @@ const tiers = [
 
 export default function Subscriptions() {
   const [billingCycle, setBillingCycle] = useState<"month" | "year">("month");
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  const handleSubscribe = async (tier: typeof tiers[0]) => {
+    if (!user) {
+      setLocation("/login");
+      return;
+    }
+
+    setLoadingTier(tier.id);
+    try {
+      const response = await apiRequest("POST", "/api/stripe/checkout", {
+        tierId: tier.id,
+      });
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create checkout session. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Checkout Error",
+        description: error?.message || "Failed to start checkout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingTier(null);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-500">
       <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight">Choose your plan</h1>
+        <h1 className="text-2xl font-bold tracking-tight" data-testid="text-subscriptions-title">
+          Choose your plan
+        </h1>
         <p className="text-sm text-muted-foreground">
           Select the perfect subscription plan for your needs. Upgrade or
           downgrade anytime.
@@ -73,6 +115,7 @@ export default function Subscriptions() {
               size="sm"
               onClick={() => setBillingCycle("month")}
               className="text-xs h-8 px-4"
+              data-testid="button-billing-month"
             >
               Month
             </Button>
@@ -81,6 +124,7 @@ export default function Subscriptions() {
               size="sm"
               onClick={() => setBillingCycle("year")}
               className="text-xs h-8 px-4"
+              data-testid="button-billing-year"
             >
               Year
             </Button>
@@ -95,6 +139,7 @@ export default function Subscriptions() {
             className={`relative border-border/40 shadow-none rounded-xl overflow-visible flex flex-col ${
               tier.featured ? "ring-2 ring-primary border-primary/20" : ""
             }`}
+            data-testid={`card-tier-${tier.id}`}
           >
             {tier.featured && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -140,11 +185,20 @@ export default function Subscriptions() {
 
               <div className="pt-2">
                 <Button
-                  asChild
                   className="w-full font-bold h-11"
                   variant={tier.featured ? "default" : "outline"}
+                  onClick={() => handleSubscribe(tier)}
+                  disabled={loadingTier === tier.id}
+                  data-testid={`button-subscribe-${tier.id}`}
                 >
-                  <Link href={`/checkout/${tier.id}`}>Get Started</Link>
+                  {loadingTier === tier.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Redirecting to checkout...
+                    </>
+                  ) : (
+                    "Get Started"
+                  )}
                 </Button>
               </div>
 

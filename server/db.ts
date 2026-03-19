@@ -53,7 +53,7 @@ export async function initializeDatabase() {
           'Customer Relations',
           'Appeals Moderator',
           'Trial Moderator',
-          'Senior Moderator',
+          'Moderator',
           'Administrator',
           'Senior Administrator',
           'Developer',

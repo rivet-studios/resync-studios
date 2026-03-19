@@ -54,7 +54,7 @@ import ProductDetail from "@/pages/product";
 import CaseDetail from "@/pages/case-detail";
 import Policies from "@/pages/policies";
 import UserSearch from "@/pages/user-search";
-import Checkout from "@/pages/checkout";
+
 import Marketplace from "@/pages/marketplace";
 import Appeals from "@/pages/appeals";
 import MyCases from "@/pages/my-cases";
@@ -300,7 +300,7 @@ function Router() {
             <Route path="/store" component={Store} />
             <Route path="/store/product/:id" component={ProductDetail} />
             <Route path="/store/subscriptions" component={Subscriptions} />
-            <Route path="/checkout/:tierId" component={Checkout} />
+
             <Route path="/policies" component={Policies} />
             <Route path="/forums" component={ForumHome} />
             <Route path="/forums/category/:id" component={ForumCategory} />

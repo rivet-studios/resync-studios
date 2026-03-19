@@ -65,7 +65,10 @@ export interface IStorage {
   getForumCategories(): Promise<ForumCategory[]>;
   getForumCategory(id: string): Promise<ForumCategory | undefined>;
   createForumCategory(category: InsertForumCategory): Promise<ForumCategory>;
-  updateForumCategory(id: string, updates: Partial<ForumCategory>): Promise<ForumCategory | undefined>;
+  updateForumCategory(
+    id: string,
+    updates: Partial<ForumCategory>,
+  ): Promise<ForumCategory | undefined>;
   deleteForumCategory(id: string): Promise<void>;
   getForumThreads(categoryId?: string): Promise<ForumThread[]>;
   getForumThread(id: string): Promise<ForumThread | undefined>;
@@ -78,7 +81,10 @@ export interface IStorage {
   getForumReplies(threadId: string): Promise<ForumReply[]>;
   getForumReply(id: string): Promise<ForumReply | undefined>;
   createForumReply(reply: InsertForumReply): Promise<ForumReply>;
-  updateForumReply(id: string, updates: Partial<ForumReply>): Promise<ForumReply | undefined>;
+  updateForumReply(
+    id: string,
+    updates: Partial<ForumReply>,
+  ): Promise<ForumReply | undefined>;
   deleteForumReply(id: string): Promise<void>;
   getAnnouncements(): Promise<Announcement[]>;
   getAnnouncement(id: string): Promise<Announcement | undefined>;
@@ -150,7 +156,12 @@ export interface IStorage {
     totalMembers: number;
   }>;
   createModerationLog(log: InsertModerationLog): Promise<ModerationLog>;
-  getModerationLogs(filters?: { action?: string; actorId?: string; targetId?: string; limit?: number }): Promise<ModerationLog[]>;
+  getModerationLogs(filters?: {
+    action?: string;
+    actorId?: string;
+    targetId?: string;
+    limit?: number;
+  }): Promise<ModerationLog[]>;
   getUserModerationLogs(targetId: string): Promise<ModerationLog[]>;
   createWarning(warning: InsertWarning): Promise<Warning>;
   getWarnings(activeOnly?: boolean): Promise<Warning[]>;
@@ -189,12 +200,15 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
   async getUserByResetToken(token: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(
-      and(
-        eq(users.passwordResetToken, token),
-        sql`${users.passwordResetExpires} > NOW()`
-      )
-    );
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.passwordResetToken, token),
+          sql`${users.passwordResetExpires} > NOW()`,
+        ),
+      );
     return user;
   }
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -344,7 +358,10 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return thread;
   }
-  async updateForumCategory(id: string, updates: Partial<ForumCategory>): Promise<ForumCategory | undefined> {
+  async updateForumCategory(
+    id: string,
+    updates: Partial<ForumCategory>,
+  ): Promise<ForumCategory | undefined> {
     const [cat] = await db
       .update(forumCategories)
       .set(updates)
@@ -353,7 +370,10 @@ export class DatabaseStorage implements IStorage {
     return cat;
   }
   async deleteForumCategory(id: string): Promise<void> {
-    const threads = await db.select({ id: forumThreads.id }).from(forumThreads).where(eq(forumThreads.categoryId, id));
+    const threads = await db
+      .select({ id: forumThreads.id })
+      .from(forumThreads)
+      .where(eq(forumThreads.categoryId, id));
     for (const thread of threads) {
       await db.delete(forumReplies).where(eq(forumReplies.threadId, thread.id));
     }
@@ -365,10 +385,16 @@ export class DatabaseStorage implements IStorage {
     await db.delete(forumThreads).where(eq(forumThreads.id, id));
   }
   async getForumReply(id: string): Promise<ForumReply | undefined> {
-    const [reply] = await db.select().from(forumReplies).where(eq(forumReplies.id, id));
+    const [reply] = await db
+      .select()
+      .from(forumReplies)
+      .where(eq(forumReplies.id, id));
     return reply;
   }
-  async updateForumReply(id: string, updates: Partial<ForumReply>): Promise<ForumReply | undefined> {
+  async updateForumReply(
+    id: string,
+    updates: Partial<ForumReply>,
+  ): Promise<ForumReply | undefined> {
     const [reply] = await db
       .update(forumReplies)
       .set(updates)
@@ -575,7 +601,7 @@ export class DatabaseStorage implements IStorage {
   }
   async createBan(banData: InsertBan): Promise<Ban> {
     const targetUser = await this.getUser(banData.userId);
-    const priorRank = targetUser?.userRank || "Member";
+    const priorRank = targetUser?.userRank || "Active Members";
     const [ban] = await db
       .insert(bans)
       .values({ ...banData, priorRank })
@@ -593,7 +619,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bans.id, id))
       .returning();
     if (ban) {
-      const restoreRank = (ban.priorRank || "Member") as any;
+      const restoreRank = (ban.priorRank || "Active Members") as any;
       await db
         .update(users)
         .set({ userRank: restoreRank, updatedAt: new Date() })
@@ -775,20 +801,35 @@ export class DatabaseStorage implements IStorage {
     const [entry] = await db.insert(moderationLogs).values(log).returning();
     return entry;
   }
-  async getModerationLogs(filters?: { action?: string; actorId?: string; targetId?: string; limit?: number }): Promise<ModerationLog[]> {
+  async getModerationLogs(filters?: {
+    action?: string;
+    actorId?: string;
+    targetId?: string;
+    limit?: number;
+  }): Promise<ModerationLog[]> {
     const conditions = [];
-    if (filters?.action) conditions.push(eq(moderationLogs.action, filters.action));
-    if (filters?.actorId) conditions.push(eq(moderationLogs.actorId, filters.actorId));
-    if (filters?.targetId) conditions.push(eq(moderationLogs.targetId, filters.targetId));
+    if (filters?.action)
+      conditions.push(eq(moderationLogs.action, filters.action));
+    if (filters?.actorId)
+      conditions.push(eq(moderationLogs.actorId, filters.actorId));
+    if (filters?.targetId)
+      conditions.push(eq(moderationLogs.targetId, filters.targetId));
 
     const query = db.select().from(moderationLogs);
     if (conditions.length > 0) {
-      return query.where(and(...conditions)).orderBy(desc(moderationLogs.createdAt)).limit(filters?.limit || 100);
+      return query
+        .where(and(...conditions))
+        .orderBy(desc(moderationLogs.createdAt))
+        .limit(filters?.limit || 100);
     }
-    return query.orderBy(desc(moderationLogs.createdAt)).limit(filters?.limit || 100);
+    return query
+      .orderBy(desc(moderationLogs.createdAt))
+      .limit(filters?.limit || 100);
   }
   async getUserModerationLogs(targetId: string): Promise<ModerationLog[]> {
-    return db.select().from(moderationLogs)
+    return db
+      .select()
+      .from(moderationLogs)
       .where(eq(moderationLogs.targetId, targetId))
       .orderBy(desc(moderationLogs.createdAt))
       .limit(50);
@@ -799,19 +840,31 @@ export class DatabaseStorage implements IStorage {
   }
   async getWarnings(activeOnly?: boolean): Promise<Warning[]> {
     if (activeOnly) {
-      return db.select().from(warnings).where(eq(warnings.isActive, true)).orderBy(desc(warnings.createdAt));
+      return db
+        .select()
+        .from(warnings)
+        .where(eq(warnings.isActive, true))
+        .orderBy(desc(warnings.createdAt));
     }
     return db.select().from(warnings).orderBy(desc(warnings.createdAt));
   }
   async getUserWarnings(userId: string): Promise<Warning[]> {
-    return db.select().from(warnings).where(eq(warnings.userId, userId)).orderBy(desc(warnings.createdAt));
+    return db
+      .select()
+      .from(warnings)
+      .where(eq(warnings.userId, userId))
+      .orderBy(desc(warnings.createdAt));
   }
   async getWarning(id: string): Promise<Warning | undefined> {
     const [w] = await db.select().from(warnings).where(eq(warnings.id, id));
     return w;
   }
   async deactivateWarning(id: string): Promise<Warning | undefined> {
-    const [w] = await db.update(warnings).set({ isActive: false }).where(eq(warnings.id, id)).returning();
+    const [w] = await db
+      .update(warnings)
+      .set({ isActive: false })
+      .where(eq(warnings.id, id))
+      .returning();
     return w;
   }
   async createStaffNote(note: InsertStaffNote): Promise<StaffNote> {
@@ -819,7 +872,11 @@ export class DatabaseStorage implements IStorage {
     return n;
   }
   async getStaffNotes(userId: string): Promise<StaffNote[]> {
-    return db.select().from(staffNotes).where(eq(staffNotes.userId, userId)).orderBy(desc(staffNotes.createdAt));
+    return db
+      .select()
+      .from(staffNotes)
+      .where(eq(staffNotes.userId, userId))
+      .orderBy(desc(staffNotes.createdAt));
   }
   async deleteStaffNote(id: string): Promise<void> {
     await db.delete(staffNotes).where(eq(staffNotes.id, id));

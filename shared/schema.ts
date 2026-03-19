@@ -306,7 +306,7 @@ export const bans = pgTable("bans", {
   isPermanent: boolean("is_permanent").default(true),
   expiresAt: timestamp("expires_at"),
   isActive: boolean("is_active").default(true),
-  priorRank: varchar("prior_rank").default("Active. Members"),
+  priorRank: varchar("prior_rank").default("Active Members"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -396,7 +396,9 @@ export const moderationLogs = pgTable("moderation_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertModerationLogSchema = createInsertSchema(moderationLogs).omit({
+export const insertModerationLogSchema = createInsertSchema(
+  moderationLogs,
+).omit({
   id: true,
   createdAt: true,
 });

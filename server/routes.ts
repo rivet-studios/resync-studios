@@ -25,6 +25,43 @@ import {
 } from "./stripeClient";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const uploadDir = path.join(process.cwd(), "uploads", "avatars");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const mimeToExt: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/gif": ".gif",
+  "image/webp": ".webp",
+};
+
+const avatarStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const userId = (req.user as any)?.id || "unknown";
+    const ext = mimeToExt[file.mimetype] || ".png";
+    cb(null, `${userId}-${Date.now()}${ext}`);
+  },
+});
+
+const avatarUpload = multer({
+  storage: avatarStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only JPEG, PNG, GIF, and WebP images are allowed"));
+    }
+  },
+});
 
 function getBaseUrl(req: Request): string {
   if (process.env.APP_URL) return process.env.APP_URL;
@@ -1039,7 +1076,7 @@ export async function registerRoutes(
         username: z.string().min(3).max(30).optional(),
         bio: z.string().max(500).optional(),
         signature: z.string().max(500).optional(),
-        profileImageUrl: z.string().url().or(z.literal("")).optional(),
+        profileImageUrl: z.string().refine((val) => val === "" || val.startsWith("/uploads/") || /^https?:\/\//.test(val), { message: "Invalid image URL" }).optional(),
         dateOfBirth: z
           .string()
           .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
@@ -1065,6 +1102,33 @@ export async function registerRoutes(
       res.json({ message: "Profile updated" });
     } catch (error) {
       res.status(500).json({ message: "Update failed" });
+    }
+  });
+
+  app.post("/api/users/profile/avatar", requireAuth, (req, res, next) => {
+    avatarUpload.single("avatar")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({ message: "File too large. Maximum size is 5MB." });
+        }
+        return res.status(400).json({ message: `Upload error: ${err.message}` });
+      }
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+      next();
+    });
+  }, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+      const imageUrl = `/uploads/avatars/${req.file.filename}`;
+      await storage.updateUser(userId, { profileImageUrl: imageUrl } as any);
+      res.json({ message: "Avatar uploaded", profileImageUrl: imageUrl });
+    } catch (error: any) {
+      res.status(500).json({ message: "Upload failed" });
     }
   });
 
@@ -1873,9 +1937,21 @@ export async function registerRoutes(
       const user = await storage.getUser((req.user as any).id);
       if (!user) return res.status(401).json({ message: "User not found" });
 
-      const { priceId } = req.body;
-      if (!priceId || typeof priceId !== "string") {
-        return res.status(400).json({ message: "A valid priceId is required" });
+      const { tierId } = req.body;
+
+      if (!tierId || typeof tierId !== "string") {
+        return res.status(400).json({ message: "A valid tierId is required" });
+      }
+
+      const tierPriceMap: Record<string, string> = {
+        bronze: process.env.STRIPE_PRICE_BRONZE || "price_bronze_vip",
+        diamond: process.env.STRIPE_PRICE_DIAMOND || "price_diamond_vip",
+        founders: process.env.STRIPE_PRICE_FOUNDERS || "price_founders_vip",
+      };
+
+      const priceId = tierPriceMap[tierId];
+      if (!priceId) {
+        return res.status(400).json({ message: "Invalid subscription tier" });
       }
 
       let customerId = user.stripeCustomerId;
@@ -1895,8 +1971,12 @@ export async function registerRoutes(
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
-        success_url: `${getBaseUrl(req)}/settings?tab=payments&success=true`,
-        cancel_url: `${getBaseUrl(req)}/settings?tab=payments&cancelled=true`,
+        success_url: `${getBaseUrl(req)}/store/subscriptions?success=true`,
+        cancel_url: `${getBaseUrl(req)}/store/subscriptions?cancelled=true`,
+        metadata: {
+          userId: user.id,
+          tierId: tierId || "",
+        },
       });
 
       res.json({ url: session.url });

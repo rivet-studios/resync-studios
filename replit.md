@@ -15,6 +15,7 @@ The platform supports both light and dark themes (dark default) with semantic CS
 
 Key features and their technical implementations include:
 - **Authentication**: Supports Discord OAuth (`/api/auth/discord`), Email/Password with forgot/reset password flow (via Resend email from `support@resyncstudios.com`), and Roblox account linking with a verification flow using the Roblox API. Sensitive fields (`password`, `passwordResetToken`, `passwordResetExpires`) are stripped from all public API responses.
+- **Profile Image Upload**: Users can upload avatar images via file upload (multer, `POST /api/users/profile/avatar`) or paste a URL. Uploaded files go to `uploads/avatars/` and are served statically at `/uploads/`. Max file size 5MB. Supported formats: JPEG, PNG, GIF, WebP.
 - **User Management**: Features a comprehensive rank system with over 40 ranks, VIP subscriptions across 4 tiers, and a staff directory. Discord role and nickname synchronization are automatically managed upon rank changes.
 - **Content Management**:
     - **Forums**: Supports categories, threading, and staff moderation tools (pin, lock, delete, move, edit).
@@ -23,6 +24,7 @@ Key features and their technical implementations include:
     - **Policies**: Dynamic policy management with a `policies` table, allowing Operations Managers to edit HTML content via AdminCP, with fallbacks to hardcoded content.
 - **E-commerce**:
     - **Store**: Product catalog with categories, badges (Community Provided, Featured, LIMITED EDITION, VERIFIED), and Stripe integration for `Buy Now` and `Add to Cart` functionality.
+    - **VIP Checkout**: Subscriptions page (`/store/subscriptions`) directly creates Stripe Checkout Sessions via `POST /api/stripe/checkout` with `tierId` mapping to Stripe Price IDs (configurable via `STRIPE_PRICE_BRONZE`, `STRIPE_PRICE_DIAMOND`, `STRIPE_PRICE_FOUNDERS` env vars). Success/cancel redirects back to subscriptions page.
     - **Marketplace**: Tabbed dashboard (My Products, Submit Product, Review Queue) with stats cards (Total Products, Approved, Pending, Total Sales). API endpoint `GET /api/marketplace/stats` provides seller dashboard data.
     - **Product Badges**: Operations Managers review products and assign badges.
 - **Moderation System**:
