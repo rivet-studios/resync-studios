@@ -273,6 +273,22 @@ httpServer.listen(port, host, () => {
     }
 
     markServerReady();
+
+    setInterval(async () => {
+      try {
+        const { db } = await import("./db");
+        const { announcements } = await import("@shared/schema");
+        const { lte, eq, and } = await import("drizzle-orm");
+        const now = new Date();
+        await db.update(announcements)
+          .set({ isPublished: true })
+          .where(and(
+            eq(announcements.isPublished, false),
+            lte(announcements.scheduledFor, now)
+          ));
+      } catch {}
+    }, 60000);
+
     console.log("✅ Startup sequence complete");
   } catch (err) {
     console.error("❌ Startup failed:", err);

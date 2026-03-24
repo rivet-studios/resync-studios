@@ -140,6 +140,16 @@ export default function AdminCP() {
     enabled: !!isAdmin && activeTab === "dashboard",
   });
 
+  const { data: auditLogData = [], isLoading: auditLoading } = useQuery<any[]>({
+    queryKey: ["/api/admin/audit-log"],
+    enabled: !!isAdmin && activeTab === "audit-log",
+  });
+
+  const { data: allAchievements = [] } = useQuery<any[]>({
+    queryKey: ["/api/achievements"],
+    enabled: !!isAdmin && activeTab === "achievements",
+  });
+
   const { data: analytics, isLoading: analyticsLoading } = useQuery<{
     totalUsers: number;
     newUsersToday: number;
@@ -570,6 +580,8 @@ export default function AdminCP() {
     { id: "announcements", label: "Announcements", icon: Megaphone },
     { id: "policies", label: "Policies", icon: Scale },
     { id: "reports", label: "Reports", icon: AlertTriangle },
+    { id: "audit-log", label: "Audit Log", icon: History },
+    { id: "achievements", label: "Achievements", icon: Crown },
   ];
 
   const displayUsers = userSearch.length >= 2 ? searchResults : allUsers;
@@ -2546,6 +2558,91 @@ export default function AdminCP() {
             ) : (
               <p className="text-sm text-muted-foreground">Failed to load analytics data</p>
             )}
+          </>
+        )}
+
+        {activeTab === "audit-log" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="text-xl font-bold" data-testid="text-audit-log-title">Audit Log</h2>
+                <p className="text-sm text-muted-foreground">System-wide activity and admin action trail</p>
+              </div>
+            </div>
+            {auditLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : auditLogData.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <History className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-muted-foreground">No audit log entries yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-2">
+                {auditLogData.map((entry: any) => (
+                  <Card key={entry.id} data-testid={`card-audit-${entry.id}`}>
+                    <CardContent className="p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{entry.action}</p>
+                          {entry.target_type && (
+                            <p className="text-xs text-muted-foreground">
+                              Target: {entry.target_type} / {entry.target_id?.substring(0, 8)}...
+                            </p>
+                          )}
+                          {entry.details && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {typeof entry.details === 'string' ? entry.details : JSON.stringify(entry.details)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[10px] text-muted-foreground">
+                            {new Date(entry.created_at).toLocaleString()}
+                          </p>
+                          {entry.ip_address && (
+                            <p className="text-[10px] text-muted-foreground">IP: {entry.ip_address}</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === "achievements" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="text-xl font-bold" data-testid="text-admin-achievements-title">Achievement Management</h2>
+                <p className="text-sm text-muted-foreground">Manage platform achievements and badges</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {allAchievements.map((a: any) => (
+                <Card key={a.id} data-testid={`card-admin-achievement-${a.id}`}>
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Crown className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{a.name}</p>
+                      <p className="text-xs text-muted-foreground">{a.description}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="text-[10px]">{a.category}</Badge>
+                        <span className="text-[10px] text-muted-foreground">+{a.points} pts</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </>
         )}
       </div>

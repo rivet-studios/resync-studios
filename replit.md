@@ -61,6 +61,18 @@ Key features and their technical implementations include:
 - **Notifications System**: `/notifications` page with mark-read functionality. Backend: `GET /api/notifications`, `GET /api/notifications/unread-count`, `POST /api/notifications/mark-read`, `POST /api/notifications`. Data stored in `notifications` table.
 - **Activity Feed**: `/activity` page showing platform activity with typed icons. Backend: `GET /api/activity-feed`, `POST /api/activity-feed`. Data stored in `activity_feed` table.
 - **Analytics Dashboard**: AdminCP → Analytics tab with user growth metrics (today/week/month), VIP distribution, rank distribution, forum/product/report counts, and a 30-day signup bar chart. Backend: `GET /api/admin/analytics`.
+- **Direct Messaging**: `/messages` page with conversation list and message thread view. DB table: `direct_messages`. Backend: `GET /api/messages` (conversations), `GET /api/messages/:userId` (thread), `POST /api/messages` (send), `GET /api/messages/unread-count`.
+- **Reputation & Achievements**: User reputation points earned from platform activity. 12 seeded achievements (First Post, Helping Hand, etc.). DB tables: `achievement_definitions`, `user_achievements`. Backend: `GET /api/achievements`, `GET /api/users/:id/reputation`, `POST /api/admin/achievements/grant`. AdminCP tab for achievement management.
+- **Content Reactions**: Like/react to forum posts and content. DB table: `reactions`. Backend: `POST /api/reactions/toggle`, `GET /api/reactions/:targetType/:targetId`.
+- **Forum Polls**: Create polls within forum threads. DB table: `forum_polls`. Backend: `POST /api/forums/polls`, `GET /api/forums/polls/:threadId`, `POST /api/forums/polls/:pollId/vote`.
+- **Bookmarks**: Bookmark forum threads and content. DB table: `bookmarks`. Backend: `POST /api/bookmarks/toggle`, `GET /api/bookmarks`.
+- **Referral System**: `/referrals` page with unique referral codes. DB columns: `referral_code`, `referred_by` on users. Backend: `GET /api/referrals/code`, `POST /api/referrals/apply`.
+- **Profile Customization**: Profile banner/cover image upload (`POST /api/users/profile/banner`, max 10MB). Banners display on profile page. Featured badge selection. Upload dir: `uploads/banners/`.
+- **Scheduled Announcements**: Announcements can be scheduled for future publishing. `scheduled_for` column on `announcements` table. Auto-publisher runs every 60s to publish scheduled items.
+- **Rate Limiting**: In-memory rate limiter on auth endpoints: login (10/15min), signup (5/hr), forgot-password (3/15min).
+- **Admin Audit Log**: `audit_log` table with `GET /api/admin/audit-log` endpoint. AdminCP tab shows filterable system event trail with action, target, details, IP, timestamps.
+- **Enhanced Dashboard**: Dashboard stats cards include Reputation, Achievements/Badges, Products, Threads, Blog Posts, Cases, and unread Messages counts.
+- **Navigation**: Sidebar and header both include Community section (Messages, Activity Feed, Notifications, Achievements, Referrals) for logged-in users.
 
 ## External Dependencies
 - **Discord**: Used for authentication and role synchronization via a Discord bot. The bot auto-discovers guild roles by matching role names (no manual role ID env vars needed). Role sync is bidirectional: Discord role changes update platform ranks, and platform rank changes update Discord roles. Nickname/display name and avatar changes in Discord are synced to user profiles. The bot also syncs roles/profile on each Discord OAuth login. Fail-safe: rank is only updated when mapped roles are found (prevents accidental demotions). Admin endpoints: `GET /api/admin/discord-status` shows mapping status, `POST /api/admin/discord-sync/:userId` triggers manual sync.

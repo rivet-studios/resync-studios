@@ -268,12 +268,21 @@ export default function UserProfile() {
         )}
       </div>
 
-      <Card data-testid="card-profile">
+      <Card data-testid="card-profile" className="overflow-hidden">
+        {(profile as any).profileBannerUrl && (
+          <div className="h-36 md:h-48 w-full overflow-hidden" data-testid="img-profile-banner">
+            <img
+              src={(profile as any).profileBannerUrl}
+              alt="Profile banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
         <CardContent className="p-6 md:p-8">
-          <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+          <div className={`flex flex-col md:flex-row gap-6 items-center md:items-start ${(profile as any).profileBannerUrl ? "-mt-16" : ""}`}>
             <div className="relative shrink-0">
               <Avatar
-                className="w-28 h-28 md:w-32 md:h-32 border-2 border-border"
+                className={`w-28 h-28 md:w-32 md:h-32 border-2 border-border ${(profile as any).profileBannerUrl ? "ring-4 ring-background" : ""}`}
                 data-testid="img-avatar"
               >
                 <AvatarImage src={profile.profileImageUrl || undefined} />

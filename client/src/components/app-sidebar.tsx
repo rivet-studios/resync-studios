@@ -46,6 +46,9 @@ import {
   Gift,
   Bell,
   Rss,
+  Mail,
+  Trophy,
+  UserPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -105,8 +108,11 @@ const supportItems = [
 ];
 
 const communityItems = [
+  { title: "Messages", url: "/messages", icon: Mail },
   { title: "Activity Feed", url: "/activity", icon: Rss },
   { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Achievements", url: "/achievements", icon: Trophy },
+  { title: "Referrals", url: "/referrals", icon: UserPlus },
 ];
 
 export function AppSidebar() {

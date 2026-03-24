@@ -33,6 +33,13 @@ import {
   faqEntries,
   notifications,
   activityFeed,
+  directMessages,
+  reactions,
+  achievementDefinitions,
+  userAchievements,
+  forumPolls,
+  bookmarks,
+  auditLog,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -40,7 +47,7 @@ import {
   getUncachableStripeClient,
   getStripePublishableKey,
 } from "./stripeClient";
-import { sql, eq, desc, and, count, gte } from "drizzle-orm";
+import { sql, eq, desc, and, or, count, gte } from "drizzle-orm";
 import { db } from "./db";
 import multer from "multer";
 import path from "path";
@@ -65,6 +72,31 @@ const avatarStorage = multer.diskStorage({
     const userId = (req.user as any)?.id || "unknown";
     const ext = mimeToExt[file.mimetype] || ".png";
     cb(null, `${userId}-${Date.now()}${ext}`);
+  },
+});
+
+const bannerDir = path.join(process.cwd(), "uploads", "banners");
+if (!fs.existsSync(bannerDir)) fs.mkdirSync(bannerDir, { recursive: true });
+
+const bannerStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, bannerDir),
+  filename: (req, file, cb) => {
+    const userId = (req.user as any)?.id || "unknown";
+    const ext = mimeToExt[file.mimetype] || ".png";
+    cb(null, `banner-${userId}-${Date.now()}${ext}`);
+  },
+});
+
+const bannerUpload = multer({
+  storage: bannerStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only JPEG, PNG, GIF, and WebP images are allowed"));
+    }
   },
 });
 
@@ -1184,6 +1216,10 @@ export async function registerRoutes(
         ...req.body,
         authorId: user.id,
       });
+      if (req.body.scheduledFor) {
+        (data as any).scheduledFor = new Date(req.body.scheduledFor);
+        (data as any).isPublished = false;
+      }
       const announcement = await storage.createAnnouncement(data);
       res.status(201).json(announcement);
     } catch (error) {
@@ -1295,6 +1331,36 @@ export async function registerRoutes(
         const imageUrl = `/uploads/avatars/${req.file.filename}`;
         await storage.updateUser(userId, { profileImageUrl: imageUrl } as any);
         res.json({ message: "Avatar uploaded", profileImageUrl: imageUrl });
+      } catch (error: any) {
+        res.status(500).json({ message: "Upload failed" });
+      }
+    },
+  );
+
+  app.post(
+    "/api/users/profile/banner",
+    requireAuth,
+    (req, res, next) => {
+      bannerUpload.single("banner")(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({ message: "File too large. Maximum size is 10MB." });
+          }
+          return res.status(400).json({ message: `Upload error: ${err.message}` });
+        }
+        if (err) return res.status(400).json({ message: err.message });
+        next();
+      });
+    },
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        if (!req.file) {
+          return res.status(400).json({ message: "No image file provided" });
+        }
+        const bannerUrl = `/uploads/banners/${req.file.filename}`;
+        await storage.updateUser(userId, { profileBannerUrl: bannerUrl } as any);
+        res.json({ message: "Banner uploaded", profileBannerUrl: bannerUrl });
       } catch (error: any) {
         res.status(500).json({ message: "Upload failed" });
       }
@@ -2986,6 +3052,412 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to fetch analytics" });
     }
   });
+
+  // ===== DIRECT MESSAGES =====
+  app.get("/api/messages", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const conversations = await db.execute(sql`
+        SELECT DISTINCT ON (partner_id) partner_id, last_message, last_time, unread_count
+        FROM (
+          SELECT
+            CASE WHEN sender_id = ${userId} THEN receiver_id ELSE sender_id END as partner_id,
+            content as last_message,
+            created_at as last_time,
+            CASE WHEN receiver_id = ${userId} AND is_read = false THEN 1 ELSE 0 END as unread_count
+          FROM direct_messages
+          WHERE sender_id = ${userId} OR receiver_id = ${userId}
+          ORDER BY created_at DESC
+        ) sub
+        ORDER BY partner_id, last_time DESC
+      `);
+      res.json((conversations as any).rows || []);
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+      res.status(500).json({ message: "Failed to fetch conversations" });
+    }
+  });
+
+  app.get("/api/messages/:userId", requireAuth, async (req, res) => {
+    try {
+      const currentUserId = (req.user as any).id;
+      const otherUserId = req.params.userId;
+      const messages = await db.select().from(directMessages)
+        .where(or(
+          and(eq(directMessages.senderId, currentUserId), eq(directMessages.receiverId, otherUserId)),
+          and(eq(directMessages.senderId, otherUserId), eq(directMessages.receiverId, currentUserId))
+        ))
+        .orderBy(directMessages.createdAt);
+
+      await db.execute(sql`
+        UPDATE direct_messages SET is_read = true
+        WHERE sender_id = ${otherUserId} AND receiver_id = ${currentUserId} AND is_read = false
+      `);
+
+      res.json(messages);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  app.post("/api/messages", requireAuth, async (req, res) => {
+    try {
+      const senderId = (req.user as any).id;
+      const { receiverId, content } = req.body;
+      if (!receiverId || !content) return res.status(400).json({ message: "Receiver and content required" });
+
+      const [msg] = await db.insert(directMessages).values({
+        senderId,
+        receiverId,
+        content,
+      }).returning();
+
+      await db.insert(notifications).values({
+        userId: receiverId,
+        type: "message",
+        title: "New Message",
+        message: `You received a new message`,
+        link: `/messages?user=${senderId}`,
+      });
+
+      res.json(msg);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  app.get("/api/messages/unread-count", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const [result] = await db.select({ count: count() }).from(directMessages)
+        .where(and(eq(directMessages.receiverId, userId), eq(directMessages.isRead, false)));
+      res.json({ count: result?.count || 0 });
+    } catch {
+      res.json({ count: 0 });
+    }
+  });
+
+  // ===== REACTIONS =====
+  app.post("/api/reactions", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { targetType, targetId, reactionType } = req.body;
+      if (!targetType || !targetId) return res.status(400).json({ message: "Target required" });
+
+      const existing = await db.select().from(reactions)
+        .where(and(
+          eq(reactions.userId, userId),
+          eq(reactions.targetType, targetType),
+          eq(reactions.targetId, targetId),
+          eq(reactions.reactionType, reactionType || "like")
+        ));
+
+      if (existing.length > 0) {
+        await db.delete(reactions).where(eq(reactions.id, existing[0].id));
+        const [countResult] = await db.select({ count: count() }).from(reactions)
+          .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+        return res.json({ liked: false, count: countResult?.count || 0 });
+      }
+
+      await db.insert(reactions).values({
+        userId,
+        targetType,
+        targetId,
+        reactionType: reactionType || "like",
+      });
+
+      const [countResult] = await db.select({ count: count() }).from(reactions)
+        .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+      res.json({ liked: true, count: countResult?.count || 0 });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to toggle reaction" });
+    }
+  });
+
+  app.get("/api/reactions/:targetType/:targetId", async (req, res) => {
+    try {
+      const { targetType, targetId } = req.params;
+      const [countResult] = await db.select({ count: count() }).from(reactions)
+        .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+      const userId = (req.user as any)?.id;
+      let userReacted = false;
+      if (userId) {
+        const existing = await db.select().from(reactions)
+          .where(and(
+            eq(reactions.userId, userId),
+            eq(reactions.targetType, targetType),
+            eq(reactions.targetId, targetId)
+          ));
+        userReacted = existing.length > 0;
+      }
+      res.json({ count: countResult?.count || 0, userReacted });
+    } catch {
+      res.json({ count: 0, userReacted: false });
+    }
+  });
+
+  // ===== ACHIEVEMENTS =====
+  app.get("/api/achievements", async (_req, res) => {
+    try {
+      const achievements = await db.select().from(achievementDefinitions).orderBy(achievementDefinitions.category);
+      res.json(achievements);
+    } catch {
+      res.json([]);
+    }
+  });
+
+  app.get("/api/achievements/user/:userId", async (req, res) => {
+    try {
+      const result = await db.execute(sql`
+        SELECT ua.*, ad.name, ad.description, ad.icon, ad.category, ad.points
+        FROM user_achievements ua
+        JOIN achievement_definitions ad ON ua.achievement_id = ad.id
+        WHERE ua.user_id = ${req.params.userId}
+        ORDER BY ua.earned_at DESC
+      `);
+      res.json((result as any).rows || []);
+    } catch {
+      res.json([]);
+    }
+  });
+
+  app.post("/api/admin/achievements", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const { name, description, icon, category, points } = req.body;
+      const [achievement] = await db.insert(achievementDefinitions).values({
+        name, description, icon: icon || "trophy", category: category || "general", points: points || 10,
+      }).returning();
+      res.json(achievement);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to create achievement" });
+    }
+  });
+
+  app.post("/api/admin/achievements/grant", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const { userId, achievementId } = req.body;
+      const existing = await db.select().from(userAchievements)
+        .where(and(eq(userAchievements.userId, userId), eq(userAchievements.achievementId, achievementId)));
+      if (existing.length > 0) return res.status(400).json({ message: "Already earned" });
+
+      const [ua] = await db.insert(userAchievements).values({ userId, achievementId }).returning();
+
+      const [achDef] = await db.select().from(achievementDefinitions).where(eq(achievementDefinitions.id, achievementId));
+      if (achDef) {
+        await db.execute(sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + ${achDef.points} WHERE id = ${userId}`);
+        await db.insert(notifications).values({
+          userId, type: "achievement", title: "Achievement Unlocked!",
+          message: `You earned "${achDef.name}" (+${achDef.points} rep)`,
+          link: `/profile`,
+        });
+      }
+      res.json(ua);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to grant achievement" });
+    }
+  });
+
+  // ===== BOOKMARKS =====
+  app.get("/api/bookmarks", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const userBookmarks = await db.select().from(bookmarks)
+        .where(eq(bookmarks.userId, userId))
+        .orderBy(desc(bookmarks.createdAt));
+      res.json(userBookmarks);
+    } catch {
+      res.json([]);
+    }
+  });
+
+  app.post("/api/bookmarks", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { targetType, targetId } = req.body;
+      if (!targetType || !targetId) return res.status(400).json({ message: "Target required" });
+
+      const existing = await db.select().from(bookmarks)
+        .where(and(eq(bookmarks.userId, userId), eq(bookmarks.targetType, targetType), eq(bookmarks.targetId, targetId)));
+
+      if (existing.length > 0) {
+        await db.delete(bookmarks).where(eq(bookmarks.id, existing[0].id));
+        return res.json({ bookmarked: false });
+      }
+
+      await db.insert(bookmarks).values({ userId, targetType, targetId });
+      res.json({ bookmarked: true });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to toggle bookmark" });
+    }
+  });
+
+  // ===== FORUM POLLS =====
+  app.post("/api/forums/polls", requireAuth, async (req, res) => {
+    try {
+      const { threadId, question, options, allowMultiple, endsAt } = req.body;
+      if (!threadId || !question || !options) return res.status(400).json({ message: "Missing fields" });
+
+      const [poll] = await db.insert(forumPolls).values({
+        threadId, question, options, allowMultiple: allowMultiple || false,
+        endsAt: endsAt ? new Date(endsAt) : null,
+      }).returning();
+      res.json(poll);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to create poll" });
+    }
+  });
+
+  app.get("/api/forums/polls/:threadId", async (req, res) => {
+    try {
+      const polls = await db.select().from(forumPolls)
+        .where(eq(forumPolls.threadId, req.params.threadId));
+      res.json(polls[0] || null);
+    } catch {
+      res.json(null);
+    }
+  });
+
+  app.post("/api/forums/polls/:pollId/vote", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { optionIndex } = req.body;
+      const pollId = req.params.pollId;
+
+      const [poll] = await db.select().from(forumPolls).where(eq(forumPolls.id, pollId));
+      if (!poll) return res.status(404).json({ message: "Poll not found" });
+
+      if (poll.endsAt && new Date(poll.endsAt) < new Date()) {
+        return res.status(400).json({ message: "Poll has ended" });
+      }
+
+      const votes = (poll.votes as Record<string, string[]>) || {};
+      for (const key of Object.keys(votes)) {
+        votes[key] = (votes[key] || []).filter((id: string) => id !== userId);
+      }
+      const optKey = String(optionIndex);
+      if (!votes[optKey]) votes[optKey] = [];
+      votes[optKey].push(userId);
+
+      await db.update(forumPolls).set({ votes }).where(eq(forumPolls.id, pollId));
+      const [updated] = await db.select().from(forumPolls).where(eq(forumPolls.id, pollId));
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to vote" });
+    }
+  });
+
+  // ===== REFERRAL SYSTEM =====
+  app.get("/api/referral/code", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      let code = (user as any).referralCode;
+      if (!code) {
+        const crypto = await import("crypto");
+        code = crypto.randomBytes(6).toString("hex");
+        await db.execute(sql`UPDATE users SET referral_code = ${code} WHERE id = ${userId}`);
+      }
+      const referralCount = await db.execute(sql`SELECT COUNT(*) as count FROM users WHERE referred_by = ${userId}`);
+      res.json({ code, referralCount: parseInt((referralCount as any).rows?.[0]?.count || "0", 10) });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to get referral code" });
+    }
+  });
+
+  app.post("/api/referral/apply", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { referralCode } = req.body;
+      if (!referralCode) return res.status(400).json({ message: "Missing referral code" });
+
+      const currentUser = await db.execute(sql`SELECT referred_by FROM users WHERE id = ${userId}`);
+      const current = (currentUser as any).rows?.[0];
+      if (current?.referred_by) return res.status(400).json({ message: "Referral already applied" });
+
+      const referrerResult = await db.execute(sql`SELECT id FROM users WHERE referral_code = ${referralCode}`);
+      const referrer = (referrerResult as any).rows?.[0];
+      if (!referrer) return res.status(404).json({ message: "Invalid referral code" });
+      if (referrer.id === userId) return res.status(400).json({ message: "Cannot refer yourself" });
+
+      await db.execute(sql`UPDATE users SET referred_by = ${referrer.id} WHERE id = ${userId} AND referred_by IS NULL`);
+      await db.execute(sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + 10 WHERE id = ${referrer.id}`);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to apply referral" });
+    }
+  });
+
+  // ===== AUDIT LOG =====
+  app.get("/api/admin/audit-log", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const limitVal = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 200);
+      const offsetVal = Math.max(parseInt(req.query.offset as string) || 0, 0);
+      const actionFilter = req.query.action as string;
+
+      let result;
+      if (actionFilter) {
+        result = await db.execute(sql`SELECT * FROM audit_log WHERE action = ${actionFilter} ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`);
+      } else {
+        result = await db.execute(sql`SELECT * FROM audit_log ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`);
+      }
+      res.json((result as any).rows || []);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch audit log" });
+    }
+  });
+
+  // ===== USER REPUTATION =====
+  app.get("/api/users/:userId/reputation", async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      const achievements = await db.execute(sql`
+        SELECT ua.*, ad.name, ad.description, ad.icon, ad.points
+        FROM user_achievements ua
+        JOIN achievement_definitions ad ON ua.achievement_id = ad.id
+        WHERE ua.user_id = ${req.params.userId}
+        ORDER BY ua.earned_at DESC
+      `);
+      res.json({
+        reputationPoints: (user as any).reputationPoints || 0,
+        achievements: (achievements as any).rows || [],
+      });
+    } catch {
+      res.json({ reputationPoints: 0, achievements: [] });
+    }
+  });
+
+  // ===== RATE LIMITING MIDDLEWARE =====
+  const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+  function rateLimit(windowMs: number, maxRequests: number) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const key = `${(req as any).ip || "unknown"}-${req.path}`;
+      const now = Date.now();
+      const entry = rateLimitMap.get(key);
+      if (!entry || now > entry.resetAt) {
+        rateLimitMap.set(key, { count: 1, resetAt: now + windowMs });
+        return next();
+      }
+      if (entry.count >= maxRequests) {
+        return res.status(429).json({ message: "Too many requests. Please try again later." });
+      }
+      entry.count++;
+      next();
+    };
+  }
+
+  // Apply rate limiting to auth endpoints
+  app.use("/api/auth/login", rateLimit(15 * 60 * 1000, 10));
+  app.use("/api/auth/signup", rateLimit(60 * 60 * 1000, 5));
+  app.use("/api/auth/forgot-password", rateLimit(15 * 60 * 1000, 3));
 
   // ---- Security / session info endpoint ----
   app.get("/api/auth/security-info", async (req, res) => {

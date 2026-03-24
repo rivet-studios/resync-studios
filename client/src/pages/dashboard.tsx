@@ -25,6 +25,9 @@ import {
   Store,
   BookOpen,
   MessagesSquare,
+  Star,
+  Trophy,
+  Mail,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -53,6 +56,20 @@ export default function Dashboard() {
 
   const { data: myAppeals = [] } = useQuery<any[]>({
     queryKey: ["/api/appeals/my"],
+    enabled: !!user,
+  });
+
+  const { data: reputation } = useQuery<{ reputationPoints: number; achievements: any[] }>({
+    queryKey: ["/api/users", user?.id, "reputation"],
+    queryFn: async () => {
+      const res = await fetch(`/api/users/${user?.id}/reputation`);
+      return res.json();
+    },
+    enabled: !!user?.id,
+  });
+
+  const { data: unreadMessages } = useQuery<{ count: number }>({
+    queryKey: ["/api/messages/unread-count"],
     enabled: !!user,
   });
 
@@ -139,7 +156,33 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <Card className="hover-elevate" data-testid="stat-reputation">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0">
+                <Star className="w-4 h-4 text-yellow-500" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-foreground">{reputation?.reputationPoints || 0}</p>
+                <p className="text-xs text-muted-foreground">Reputation</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover-elevate" data-testid="stat-achievements">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-md bg-purple-500/10 flex items-center justify-center shrink-0">
+                <Trophy className="w-4 h-4 text-purple-500" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-foreground">{reputation?.achievements?.length || 0}</p>
+                <p className="text-xs text-muted-foreground">Badges</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         <Card className="hover-elevate" data-testid="stat-products">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -190,6 +233,19 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">
                   {pendingCases > 0 ? `${pendingCases} pending` : "Cases"}
                 </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover-elevate" data-testid="stat-messages">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-md bg-blue-500/10 flex items-center justify-center shrink-0">
+                <Mail className="w-4 h-4 text-blue-500" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-foreground">{unreadMessages?.count || 0}</p>
+                <p className="text-xs text-muted-foreground">Messages</p>
               </div>
             </div>
           </CardContent>

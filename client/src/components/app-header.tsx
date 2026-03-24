@@ -42,6 +42,9 @@ import {
   Activity,
   ScrollText,
   Menu,
+  Mail,
+  Trophy,
+  UserPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -84,6 +87,14 @@ const storeItems = [
   { title: "Subscriptions", url: "/store/subscriptions", icon: Crown },
   { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
   { title: "Gift Cards", url: "/gift-cards", icon: Gift },
+];
+
+const communityItems = [
+  { title: "Messages", url: "/messages", icon: Mail },
+  { title: "Activity Feed", url: "/activity", icon: Rss },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Achievements", url: "/achievements", icon: Trophy },
+  { title: "Referrals", url: "/referrals", icon: UserPlus },
 ];
 
 const supportItems = [
@@ -173,6 +184,34 @@ export function AppHeader() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    communityItems.some((i) => isActive(i.url))
+                      ? "bg-accent text-accent-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  }`}
+                  data-testid="header-community-dropdown"
+                >
+                  Community
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {communityItems.map((item) => (
+                  <DropdownMenuItem key={item.url} asChild>
+                    <Link href={item.url} className="cursor-pointer">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -339,6 +378,7 @@ export function AppHeader() {
                 <nav className="flex-1 overflow-y-auto py-4">
                   <MobileNavSection title="Platform" items={platformItems} isActive={isActive} onNavigate={() => setMobileOpen(false)} />
                   <MobileNavSection title="Store" items={storeItems} isActive={isActive} onNavigate={() => setMobileOpen(false)} />
+                  {user && <MobileNavSection title="Community" items={communityItems} isActive={isActive} onNavigate={() => setMobileOpen(false)} />}
                   <MobileNavSection title="Support" items={supportItems} isActive={isActive} onNavigate={() => setMobileOpen(false)} />
                   {(showModCP || showAdminCP) && (
                     <MobileNavSection

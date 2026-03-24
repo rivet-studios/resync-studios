@@ -134,6 +134,13 @@ export const users = pgTable("users", {
   twoFactorSecret: varchar("two_factor_secret"),
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
   twoFactorBackupCodes: text("two_factor_backup_codes"),
+  // Reputation & Referrals
+  reputationPoints: integer("reputation_points").default(0),
+  referralCode: varchar("referral_code"),
+  referredBy: varchar("referred_by"),
+  // Profile Customization
+  profileBannerUrl: varchar("profile_banner_url"),
+  featuredBadgeId: varchar("featured_badge_id"),
   // Timestamps
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -207,6 +214,7 @@ export const announcements = pgTable("announcements", {
   isPublished: boolean("is_published").default(false),
   category: varchar("category").default("General"),
   imageUrl: varchar("image_url"),
+  scheduledFor: timestamp("scheduled_for"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -528,6 +536,134 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type ActivityFeedItem = typeof activityFeed.$inferSelect;
 export type InsertActivityFeedItem = z.infer<typeof insertActivityFeedSchema>;
+
+// Direct Messages
+export const directMessages = pgTable("direct_messages", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").notNull(),
+  receiverId: varchar("receiver_id").notNull(),
+  content: text("content").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDirectMessageSchema = createInsertSchema(directMessages).omit({
+  id: true,
+  isRead: true,
+  createdAt: true,
+});
+
+// Reactions (for forum posts, blog, etc.)
+export const reactions = pgTable("reactions", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  targetType: varchar("target_type").notNull(),
+  targetId: varchar("target_id").notNull(),
+  reactionType: varchar("reaction_type").notNull().default("like"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertReactionSchema = createInsertSchema(reactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Achievements
+export const achievementDefinitions = pgTable("achievement_definitions", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description").notNull(),
+  icon: varchar("icon").notNull().default("trophy"),
+  category: varchar("category").notNull().default("general"),
+  requirement: jsonb("requirement"),
+  points: integer("points").notNull().default(10),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userAchievements = pgTable("user_achievements", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  achievementId: varchar("achievement_id").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+});
+
+export const insertAchievementDefinitionSchema = createInsertSchema(achievementDefinitions).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Forum Polls
+export const forumPolls = pgTable("forum_polls", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  threadId: varchar("thread_id").notNull(),
+  question: text("question").notNull(),
+  options: jsonb("options").notNull(),
+  votes: jsonb("votes").default(sql`'{}'::jsonb`),
+  allowMultiple: boolean("allow_multiple").default(false),
+  endsAt: timestamp("ends_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertForumPollSchema = createInsertSchema(forumPolls).omit({
+  id: true,
+  votes: true,
+  createdAt: true,
+});
+
+// Bookmarks
+export const bookmarks = pgTable("bookmarks", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  targetType: varchar("target_type").notNull(),
+  targetId: varchar("target_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBookmarkSchema = createInsertSchema(bookmarks).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Audit Log (enhanced admin audit trail)
+export const auditLog = pgTable("audit_log", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id"),
+  action: varchar("action").notNull(),
+  targetType: varchar("target_type"),
+  targetId: varchar("target_id"),
+  details: jsonb("details"),
+  ipAddress: varchar("ip_address"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLog).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type DirectMessage = typeof directMessages.$inferSelect;
+export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
+export type Reaction = typeof reactions.$inferSelect;
+export type InsertReaction = z.infer<typeof insertReactionSchema>;
+export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type ForumPoll = typeof forumPolls.$inferSelect;
+export type Bookmark = typeof bookmarks.$inferSelect;
+export type AuditLogEntry = typeof auditLog.$inferSelect;
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;

@@ -74,6 +74,9 @@ import GiftCards from "@/pages/gift-cards";
 import FAQ from "@/pages/faq";
 import NotificationsPage from "@/pages/notifications";
 import ActivityFeedPage from "@/pages/activity-feed";
+import MessagesPage from "@/pages/messages";
+import AchievementsPage from "@/pages/achievements";
+import ReferralsPage from "@/pages/referrals";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 
@@ -400,6 +403,9 @@ function Router() {
             <Route path="/faq" component={FAQ} />
             <Route path="/notifications" component={NotificationsPage} />
             <Route path="/activity" component={ActivityFeedPage} />
+            <Route path="/messages" component={MessagesPage} />
+            <Route path="/achievements" component={AchievementsPage} />
+            <Route path="/referrals" component={ReferralsPage} />
             <Route component={NotFound} />
           </Switch>
         </BanWall>

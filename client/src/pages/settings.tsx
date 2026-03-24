@@ -1035,6 +1035,62 @@ export default function Settings() {
                     </Button>
                   </div>
 
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Profile Banner</label>
+                    <p className="text-xs text-muted-foreground">Upload a cover image for your profile (JPG, PNG, GIF, WebP up to 10MB)</p>
+                    {(user as any)?.profileBannerUrl && (
+                      <div className="h-24 w-full rounded-md overflow-hidden border border-border">
+                        <img src={(user as any).profileBannerUrl} alt="Current banner" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <input
+                        id="banner-upload"
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        className="hidden"
+                        data-testid="input-banner-upload"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.size > 10 * 1024 * 1024) {
+                            toast({ title: "File too large", description: "Max file size is 10MB", variant: "destructive" });
+                            return;
+                          }
+                          const formData = new FormData();
+                          formData.append("banner", file);
+                          try {
+                            const res = await fetch("/api/users/profile/banner", {
+                              method: "POST",
+                              body: formData,
+                              credentials: "include",
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                              queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+                              toast({ title: "Banner updated" });
+                            } else {
+                              toast({ title: "Upload failed", description: data.message, variant: "destructive" });
+                            }
+                          } catch {
+                            toast({ title: "Upload failed", description: "Please try again", variant: "destructive" });
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("banner-upload")?.click()}
+                        data-testid="button-upload-banner"
+                      >
+                        <Upload className="w-3.5 h-3.5 mr-1.5" />
+                        Upload Banner
+                      </Button>
+                    </div>
+                  </div>
+
                   <form
                     onSubmit={profileForm.handleSubmit((data) => updateProfileMutation.mutate(data))}
                     className="space-y-5"
