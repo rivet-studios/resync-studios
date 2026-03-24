@@ -50,6 +50,7 @@ Key features and their technical implementations include:
     - **Case Detail**: Related cases section showing other reports/appeals/bans for the same user.
 
 - **Authorization Helpers**: Server-side `isAdminUser()` and `isForumStaff()` functions centralize access control checks. Client-side `canAccessAdminCP()` and `canAccessModCP()` helpers in `App.tsx` mirror server logic (including `additionalRanks` checks). Both sides check the same admin ranks: Developer, Staff Internal Affairs, Team Member, Staff Department Director, Operations Manager, Company Director.
+- **Wake Gateway**: `WakeGateway` component wraps the main app, polling `GET /api/health` every 2.5s until backend confirms readiness (`{ ok: true }`). Shows a branded RS loading screen during server wake-up (Render cold starts). Backend tracks readiness via `markServerReady()` in `server/index.ts`, set after DB, routes, and Vite/static serving are initialized. Includes retry + bypass buttons after 18s timeout.
 - **Error Handling**: `ErrorBoundary` component wraps the Router, keyed by pathname so route-specific crashes reset on navigation. Prevents blank white screens from unhandled render errors.
 - **Scroll Management**: `ScrollToTop` component scrolls to top on route changes. CSS `scroll-behavior: auto` (not `smooth`) to avoid scrolling lag.
 

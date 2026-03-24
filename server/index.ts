@@ -144,9 +144,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// ---- Health check endpoint (available immediately) ----
+// ---- Health check endpoints ----
+let serverReady = false;
+
+export function markServerReady() {
+  serverReady = true;
+}
+
 app.get("/_health", (_req, res) => {
   res.json({ status: "ok", mode: process.env.NODE_ENV });
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: serverReady,
+    service: "rivet-backend",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // ---- Global error handler (keep it registered early) ----
@@ -258,6 +272,7 @@ httpServer.listen(port, host, () => {
       await setupVite(httpServer, app);
     }
 
+    markServerReady();
     console.log("✅ Startup sequence complete");
   } catch (err) {
     console.error("❌ Startup failed:", err);

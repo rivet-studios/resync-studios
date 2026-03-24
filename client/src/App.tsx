@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { WakeGateway } from "@/components/wake-gateway";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
@@ -388,9 +389,11 @@ function App() {
           <TooltipProvider>
             <AppInit />
             <ScrollToTop />
-            <RouteErrorBoundary>
-              <Router />
-            </RouteErrorBoundary>
+            <WakeGateway>
+              <RouteErrorBoundary>
+                <Router />
+              </RouteErrorBoundary>
+            </WakeGateway>
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>

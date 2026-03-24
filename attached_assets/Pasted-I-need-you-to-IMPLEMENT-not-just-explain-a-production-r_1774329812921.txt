@@ -1,0 +1,241 @@
+I need you to IMPLEMENT (not just explain) a production-ready custom wake/loading gateway system for my site so users DO NOT see Render’s default wake-up loading screen.
+
+READ THIS CAREFULLY AND FOLLOW EXACTLY.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Stack:
+- Frontend: React + Vite + TypeScript
+- Backend: Node.js + Express
+- Deployment: Render
+
+Brand:
+- RIVET Studios (RS)
+- Tone: cinematic, urban, professional, polished
+- Colors: black, gunmetal gray, white accents, subtle blue glow
+- No generic or playful UI
+
+Goal:
+Users must FIRST see a custom RS-branded loading/wake page that I control.
+This page will:
+- check if backend is awake
+- show status
+- redirect into app when ready
+
+Users should NOT see Render’s default loading screen IF this is set up correctly.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+CRITICAL ARCHITECTURE RULE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+The public-facing entrypoint MUST hit the custom gateway FIRST.
+
+If users hit the sleeping Render backend directly, this entire system fails.
+
+You MUST:
+- implement the gateway
+- AND explain how to deploy so traffic goes through it first
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — INSPECT PROJECT (MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Before coding:
+1. Find frontend entrypoint (main.tsx / index.tsx)
+2. Find App/router setup
+3. Find backend server entrypoint (Express bootstrap)
+4. Find where routes are registered
+5. Identify env variable usage
+
+DO NOT GUESS STRUCTURE.
+USE WHAT EXISTS.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — BACKEND IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Add a health endpoint:
+
+Route:
+GET /api/health
+
+Response:
+{
+  "ok": true,
+  "service": "rivet-backend",
+  "timestamp": "<ISO STRING>"
+}
+
+Requirements:
+- Must respond instantly
+- Must NOT depend on heavy logic
+- Must work in production on Render
+- Must NOT require auth
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — FRONTEND WAKE GATEWAY
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Create a component/page:
+
+Name:
+- WakeGateway OR ConnectionGate
+
+Responsibilities:
+- Show branded loading screen
+- Poll backend health every 2–3 seconds
+- Redirect when backend is ready
+
+━━━━━━━━━━━━━━━━━━━━━━━
+UI / BRANDING REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Design must be:
+
+- Dark background
+- Centered layout
+- Clean typography
+- Subtle glow (optional)
+- Professional / cinematic
+- NOT generic
+
+Content:
+
+Heading:
+Connecting to RIVET Studios
+
+Body:
+Our services are currently waking up and preparing your session.
+This usually only takes a moment.
+
+Status messages (dynamic):
+- Contacting platform services…
+- Waiting for backend response…
+- Finalising connection…
+- Still waking up. You can retry below.
+
+Include:
+- loading spinner/animation
+- retry button
+- optional "Open Site Anyway" button (after timeout)
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — LOGIC REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Polling:
+- fetch backend health every 2–3 seconds
+
+Success:
+- if response is 200 AND { ok: true }
+→ redirect to main app
+
+Failure handling:
+- network errors
+- invalid JSON
+- timeout
+
+Timeout behavior:
+- after ~15–20 seconds:
+  show retry button
+  show fallback button
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Use environment variables:
+
+- VITE_BACKEND_HEALTH_URL
+- VITE_APP_URL
+
+DO NOT hardcode production URLs unless necessary.
+
+Update `.env.example` if needed.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6 — ROUTING
+━━━━━━━━━━━━━━━━━━━━━━━
+
+You MUST choose the cleanest option:
+
+Option A:
+- `/` = WakeGateway
+- `/app` = main app
+
+OR
+
+Option B:
+- `/wake` = gateway
+- explain how to route domain through it
+
+Pick the BEST approach based on current project structure.
+
+DO NOT break existing routing or auth.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7 — IMPLEMENTATION RULES
+━━━━━━━━━━━━━━━━━━━━━━━
+
+- Use TypeScript
+- Use existing styling system if present
+- Keep changes minimal
+- DO NOT refactor unrelated code
+- DO NOT redesign the app
+- DO NOT replace frameworks
+- DO NOT break auth or sessions
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 8 — WHAT YOU MUST OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━
+
+After implementing:
+
+1. Show ALL files created
+2. Show ALL files modified
+3. Show EXACT code added/changed
+4. Explain:
+   - how polling works
+   - how redirect works
+5. List environment variables added
+6. Give deployment instructions:
+
+   VERY IMPORTANT:
+   - how to ensure users hit gateway FIRST
+   - domain setup
+   - Render behavior explanation
+
+7. Explain limitations:
+   - when Render screen may still appear
+   - how to fully avoid it (if possible)
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STRICT INSTRUCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+DO NOT:
+- give only explanation
+- stay high-level
+- suggest ideas without code
+
+DO:
+- inspect repo
+- implement directly
+- show real code changes
+- keep it production-ready
+
+━━━━━━━━━━━━━━━━━━━━━━━
+IF YOU START BEING VAGUE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Correct yourself and continue with actual implementation.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+FINAL NOTE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+This is a real production feature for a live platform.
+
+Treat it as such.
