@@ -81,14 +81,14 @@ export default function Landing() {
 
   const stats = [
     {
-      value: publicStats?.totalMembers || 20.7,
+      value: publicStats?.totalMembers || 40,
       label: "Connected Members",
-      suffix: "K",
+      suffix: "+",
     },
     {
       value: publicStats?.totalDiscussions || 3,
       label: "Active Discussions",
-      suffix: "",
+      suffix: "+",
     },
     { value: 99.9, label: "Uptime", suffix: "%" },
     { value: 24, label: "Support", suffix: "/7" },
@@ -115,7 +115,7 @@ export default function Landing() {
               >
                 <Sparkles className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground/90">
-                  Now powering {formatCount(publicStats?.totalMembers || 20.7)}K
+                  Now powering {formatCount(publicStats?.totalMembers || 40)}+
                   members
                 </span>
               </div>
@@ -126,7 +126,6 @@ export default function Landing() {
                 <SiDiscord className="w-5 h-5 text-[#5865F2]" />
                 <span className="text-sm font-medium text-foreground/90">
                   {formatCount(publicStats?.discordMembers || 30)}
-                  Discord Members
                 </span>
               </div>
               <div
@@ -136,7 +135,6 @@ export default function Landing() {
                 <SiRoblox className="w-4 h-4 text-white" />
                 <span className="text-sm font-medium text-foreground/90">
                   {formatCount(publicStats?.robloxMembers || 10)}
-                  Group members
                 </span>
               </div>
             </div>
