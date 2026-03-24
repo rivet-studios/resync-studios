@@ -20,9 +20,19 @@ import {
   insertAnnouncementSchema,
   insertWarningSchema,
   insertStaffNoteSchema,
+  insertFaqEntrySchema,
+  insertNotificationSchema,
+  insertActivityFeedSchema,
   users,
   forumThreads,
+  forumReplies,
+  products,
+  bans,
+  reports,
   changelogEntries,
+  faqEntries,
+  notifications,
+  activityFeed,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -30,7 +40,7 @@ import {
   getUncachableStripeClient,
   getStripePublishableKey,
 } from "./stripeClient";
-import { sql, eq, desc } from "drizzle-orm";
+import { sql, eq, desc, and, count, gte } from "drizzle-orm";
 import { db } from "./db";
 import multer from "multer";
 import path from "path";
@@ -111,6 +121,8 @@ export async function registerRoutes(
       password,
       passwordResetToken,
       passwordResetExpires,
+      twoFactorSecret,
+      twoFactorBackupCodes,
       ...userWithoutSensitive
     } = user as any;
     res.json(userWithoutSensitive);
@@ -294,7 +306,7 @@ export async function registerRoutes(
   });
 
   function sanitizeUser(user: any) {
-    const { password, passwordResetToken, passwordResetExpires, ...safe } =
+    const { password, passwordResetToken, passwordResetExpires, twoFactorSecret, twoFactorBackupCodes, ...safe } =
       user;
     return safe;
   }
@@ -2747,6 +2759,234 @@ export async function registerRoutes(
     }
   });
 
+  // ---- FAQ Endpoints ----
+  app.get("/api/faq", async (_req, res) => {
+    try {
+      const entries = await db
+        .select()
+        .from(faqEntries)
+        .where(eq(faqEntries.isPublished, true))
+        .orderBy(faqEntries.sortOrder, faqEntries.createdAt);
+      res.json(entries);
+    } catch (err) {
+      console.error("Failed to fetch FAQ:", err);
+      res.status(500).json({ message: "Failed to fetch FAQ entries" });
+    }
+  });
+
+  app.post("/api/admin/faq", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const parsed = insertFaqEntrySchema.parse(req.body);
+      const [entry] = await db.insert(faqEntries).values(parsed).returning();
+      res.json(entry);
+    } catch (err: any) {
+      if (err?.name === "ZodError") return res.status(400).json({ message: "Invalid data", errors: err.errors });
+      console.error("Failed to create FAQ:", err);
+      res.status(500).json({ message: "Failed to create FAQ entry" });
+    }
+  });
+
+  app.put("/api/admin/faq/:id", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const { question, answer, category, sortOrder, isPublished } = req.body;
+      const [entry] = await db
+        .update(faqEntries)
+        .set({ question, answer, category, sortOrder, isPublished, updatedAt: new Date() })
+        .where(eq(faqEntries.id, req.params.id))
+        .returning();
+      if (!entry) return res.status(404).json({ message: "FAQ entry not found" });
+      res.json(entry);
+    } catch (err) {
+      console.error("Failed to update FAQ:", err);
+      res.status(500).json({ message: "Failed to update FAQ entry" });
+    }
+  });
+
+  app.delete("/api/admin/faq/:id", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      await db.delete(faqEntries).where(eq(faqEntries.id, req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Failed to delete FAQ:", err);
+      res.status(500).json({ message: "Failed to delete FAQ entry" });
+    }
+  });
+
+  // ---- Notifications Endpoints ----
+  app.get("/api/notifications", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    try {
+      const items = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.userId, user.id))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+      res.json(items);
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get("/api/notifications/unread-count", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    try {
+      const [result] = await db
+        .select({ count: count() })
+        .from(notifications)
+        .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)));
+      res.json({ count: result?.count || 0 });
+    } catch (err) {
+      console.error("Failed to fetch unread count:", err);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    try {
+      const [notif] = await db
+        .update(notifications)
+        .set({ isRead: true })
+        .where(and(eq(notifications.id, req.params.id), eq(notifications.userId, user.id)))
+        .returning();
+      if (!notif) return res.status(404).json({ message: "Notification not found" });
+      res.json(notif);
+    } catch (err) {
+      console.error("Failed to mark notification read:", err);
+      res.status(500).json({ message: "Failed to update notification" });
+    }
+  });
+
+  app.post("/api/notifications/read-all", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true })
+        .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)));
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Failed to mark all read:", err);
+      res.status(500).json({ message: "Failed to mark all as read" });
+    }
+  });
+
+  // ---- Activity Feed Endpoints ----
+  app.get("/api/activity-feed", async (_req, res) => {
+    try {
+      const items = await db
+        .select()
+        .from(activityFeed)
+        .orderBy(desc(activityFeed.createdAt))
+        .limit(50);
+      res.json(items);
+    } catch (err) {
+      console.error("Failed to fetch activity feed:", err);
+      res.status(500).json({ message: "Failed to fetch activity feed" });
+    }
+  });
+
+  // ---- Admin Analytics Endpoint ----
+  app.get("/api/admin/analytics", requireAuth, async (req, res) => {
+    const user = req.user as any;
+    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    try {
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const [totalUsersResult] = await db.select({ count: count() }).from(users);
+      const [newTodayResult] = await db
+        .select({ count: count() })
+        .from(users)
+        .where(gte(users.createdAt, todayStart));
+      const [newWeekResult] = await db
+        .select({ count: count() })
+        .from(users)
+        .where(gte(users.createdAt, sevenDaysAgo));
+      const [newMonthResult] = await db
+        .select({ count: count() })
+        .from(users)
+        .where(gte(users.createdAt, thirtyDaysAgo));
+
+      const [totalThreadsResult] = await db.select({ count: count() }).from(forumThreads);
+
+      let totalReplies = 0;
+      try {
+        const [repliesResult] = await db.select({ count: count() }).from(forumReplies);
+        totalReplies = repliesResult?.count || 0;
+      } catch { totalReplies = 0; }
+
+      let totalProducts = 0;
+      try {
+        const [productsResult] = await db.select({ count: count() }).from(products);
+        totalProducts = productsResult?.count || 0;
+      } catch { totalProducts = 0; }
+
+      let totalBans = 0;
+      try {
+        const [bansResult] = await db.select({ count: count() }).from(bans);
+        totalBans = bansResult?.count || 0;
+      } catch { totalBans = 0; }
+
+      let totalReports = 0;
+      try {
+        const [reportsResult] = await db.select({ count: count() }).from(reports);
+        totalReports = reportsResult?.count || 0;
+      } catch { totalReports = 0; }
+
+      const recentSignupsResult = await db.execute(sql`
+        SELECT DATE(created_at) as date, COUNT(*)::int as count
+        FROM users
+        WHERE created_at >= ${thirtyDaysAgo}
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+      `);
+
+      const rankDistributionResult = await db.execute(sql`
+        SELECT user_rank as rank, COUNT(*)::int as count
+        FROM users
+        GROUP BY user_rank
+        ORDER BY count DESC
+      `);
+
+      const vipCountsResult = await db.execute(sql`
+        SELECT vip_tier as tier, COUNT(*)::int as count
+        FROM users
+        WHERE vip_tier IS NOT NULL AND vip_tier != 'none'
+        GROUP BY vip_tier
+        ORDER BY count DESC
+      `);
+
+      res.json({
+        totalUsers: totalUsersResult?.count || 0,
+        newUsersToday: newTodayResult?.count || 0,
+        newUsersThisWeek: newWeekResult?.count || 0,
+        newUsersThisMonth: newMonthResult?.count || 0,
+        totalThreads: totalThreadsResult?.count || 0,
+        totalReplies,
+        totalProducts,
+        totalBans,
+        totalReports,
+        recentSignups: (recentSignupsResult as any).rows || [],
+        rankDistribution: (rankDistributionResult as any).rows || [],
+        vipCounts: (vipCountsResult as any).rows || [],
+      });
+    } catch (err) {
+      console.error("Failed to fetch analytics:", err);
+      res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
   // ---- Security / session info endpoint ----
   app.get("/api/auth/security-info", async (req, res) => {
     if (!(req as any).isAuthenticated?.() || !req.user) {
@@ -2778,8 +3018,153 @@ export async function registerRoutes(
       activeSessions,
       accountCreated: user.createdAt,
       lastLogin: user.updatedAt || user.createdAt,
-      twoFactorEnabled: false,
+      twoFactorEnabled: !!(user as any).twoFactorEnabled,
     });
+  });
+
+  // ===== TWO-FACTOR AUTHENTICATION =====
+  app.post("/api/auth/2fa/setup", async (req, res) => {
+    if (!(req as any).isAuthenticated?.() || !req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const { authenticator } = await import("otplib");
+      const QRCode = await import("qrcode");
+      const user = await storage.getUser((req.user as any).id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      if ((user as any).twoFactorEnabled) {
+        return res.status(400).json({ message: "2FA is already enabled" });
+      }
+
+      const secret = authenticator.generateSecret();
+      const otpauth = authenticator.keyuri(
+        user.email || user.username || "user",
+        "RIVET Studios",
+        secret
+      );
+      const qrCodeDataUrl = await QRCode.toDataURL(otpauth);
+
+      await db.execute(
+        sql`UPDATE users SET two_factor_secret = ${secret} WHERE id = ${user.id}`
+      );
+
+      res.json({ secret, qrCode: qrCodeDataUrl });
+    } catch (error) {
+      console.error("2FA setup error:", error);
+      res.status(500).json({ message: "Failed to set up 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/verify", async (req, res) => {
+    if (!(req as any).isAuthenticated?.() || !req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const { authenticator } = await import("otplib");
+      const { token } = req.body;
+      if (!token) return res.status(400).json({ message: "Token required" });
+
+      const user = await storage.getUser((req.user as any).id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const secret = (user as any).twoFactorSecret;
+      if (!secret) return res.status(400).json({ message: "2FA not set up" });
+
+      const isValid = authenticator.check(token, secret);
+      if (!isValid) return res.status(400).json({ message: "Invalid code" });
+
+      const crypto = await import("crypto");
+      const backupCodes = Array.from({ length: 8 }, () =>
+        crypto.randomBytes(4).toString("hex")
+      );
+
+      await db.execute(
+        sql`UPDATE users SET two_factor_enabled = true, two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+      );
+
+      res.json({ success: true, backupCodes });
+    } catch (error) {
+      console.error("2FA verify error:", error);
+      res.status(500).json({ message: "Failed to verify 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/disable", async (req, res) => {
+    if (!(req as any).isAuthenticated?.() || !req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const { authenticator } = await import("otplib");
+      const { token } = req.body;
+      if (!token) return res.status(400).json({ message: "Token required" });
+
+      const user = await storage.getUser((req.user as any).id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      if (!(user as any).twoFactorEnabled) {
+        return res.status(400).json({ message: "2FA is not enabled" });
+      }
+
+      const secret = (user as any).twoFactorSecret;
+      const isValid = authenticator.check(token, secret);
+
+      if (!isValid) {
+        const backupCodes = JSON.parse((user as any).twoFactorBackupCodes || "[]");
+        const codeIndex = backupCodes.indexOf(token);
+        if (codeIndex === -1) {
+          return res.status(400).json({ message: "Invalid code" });
+        }
+        backupCodes.splice(codeIndex, 1);
+        await db.execute(
+          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+        );
+      }
+
+      await db.execute(
+        sql`UPDATE users SET two_factor_enabled = false, two_factor_secret = NULL, two_factor_backup_codes = NULL WHERE id = ${user.id}`
+      );
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("2FA disable error:", error);
+      res.status(500).json({ message: "Failed to disable 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/validate", async (req, res) => {
+    try {
+      const { authenticator } = await import("otplib");
+      const { userId, token } = req.body;
+      if (!userId || !token) return res.status(400).json({ message: "User ID and token required" });
+
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      if (!(user as any).twoFactorEnabled) {
+        return res.json({ success: true });
+      }
+
+      const secret = (user as any).twoFactorSecret;
+      const isValid = authenticator.check(token, secret);
+
+      if (isValid) return res.json({ success: true });
+
+      const backupCodes = JSON.parse((user as any).twoFactorBackupCodes || "[]");
+      const codeIndex = backupCodes.indexOf(token);
+      if (codeIndex !== -1) {
+        backupCodes.splice(codeIndex, 1);
+        await db.execute(
+          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+        );
+        return res.json({ success: true });
+      }
+
+      res.status(400).json({ message: "Invalid 2FA code" });
+    } catch (error) {
+      console.error("2FA validate error:", error);
+      res.status(500).json({ message: "Failed to validate 2FA" });
+    }
   });
 
   return httpServer;

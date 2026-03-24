@@ -66,6 +66,10 @@ import {
   Camera,
   PanelLeft,
   PanelTop,
+  Shield,
+  Smartphone,
+  Copy,
+  CheckCircle,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
@@ -110,6 +114,7 @@ const SETTINGS_TABS = [
   { id: "downloads", label: "Downloads", icon: Download },
   { id: "integrations", label: "Integrations", icon: LinkIcon },
   { id: "orders", label: "Orders", icon: Package },
+  { id: "security", label: "Security", icon: Shield },
   { id: "payments", label: "Payment Methods", icon: CreditCard },
 ];
 
@@ -466,6 +471,268 @@ function DiscountsTab() {
             <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
             <p className="text-muted-foreground font-medium" data-testid="text-no-discounts">No active promotions</p>
             <p className="text-xs text-muted-foreground mt-1">Check back later for special offers and discount codes</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function SecurityTab() {
+  const { toast } = useToast();
+  const [setupStep, setSetupStep] = useState<"idle" | "scanning" | "verifying" | "complete">("idle");
+  const [qrCode, setQrCode] = useState("");
+  const [secret, setSecret] = useState("");
+  const [verifyCode, setVerifyCode] = useState("");
+  const [disableCode, setDisableCode] = useState("");
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [copiedBackup, setCopiedBackup] = useState(false);
+
+  const { data: securityInfo, isLoading } = useQuery<{
+    twoFactorEnabled: boolean;
+    hasPassword: boolean;
+    hasDiscord: boolean;
+    activeSessions: number;
+  }>({
+    queryKey: ["/api/auth/security-info"],
+  });
+
+  const setupMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/auth/2fa/setup");
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      setQrCode(data.qrCode);
+      setSecret(data.secret);
+      setSetupStep("scanning");
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message || "Failed to start 2FA setup", variant: "destructive" });
+    },
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/auth/2fa/verify", { token: verifyCode });
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      setBackupCodes(data.backupCodes || []);
+      setSetupStep("complete");
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/security-info"] });
+      toast({ title: "2FA Enabled", description: "Two-factor authentication has been enabled." });
+    },
+    onError: (err: any) => {
+      toast({ title: "Invalid Code", description: err.message || "The code you entered is incorrect.", variant: "destructive" });
+    },
+  });
+
+  const disableMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/auth/2fa/disable", { token: disableCode });
+      return res.json();
+    },
+    onSuccess: () => {
+      setDisableCode("");
+      setSetupStep("idle");
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/security-info"] });
+      toast({ title: "2FA Disabled", description: "Two-factor authentication has been disabled." });
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message || "Failed to disable 2FA", variant: "destructive" });
+    },
+  });
+
+  const copyBackupCodes = () => {
+    navigator.clipboard.writeText(backupCodes.join("\n"));
+    setCopiedBackup(true);
+    setTimeout(() => setCopiedBackup(false), 2000);
+    toast({ title: "Copied", description: "Backup codes copied to clipboard." });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold" data-testid="text-security-title">Security</h2>
+        <p className="text-sm text-muted-foreground mt-1">Manage your account security settings</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Smartphone className="w-5 h-5" />
+            Two-Factor Authentication (2FA)
+          </CardTitle>
+          <CardDescription>
+            Add an extra layer of security to your account using an authenticator app
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {securityInfo?.twoFactorEnabled && setupStep !== "complete" ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="text-green-500 font-medium">2FA is enabled</span>
+              </div>
+              <div className="border-t pt-4 space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Enter a code from your authenticator app or a backup code to disable 2FA:
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter 2FA code"
+                    value={disableCode}
+                    onChange={(e) => setDisableCode(e.target.value)}
+                    maxLength={8}
+                    data-testid="input-disable-2fa"
+                  />
+                  <Button
+                    variant="destructive"
+                    onClick={() => disableMutation.mutate()}
+                    disabled={!disableCode || disableMutation.isPending}
+                    data-testid="button-disable-2fa"
+                  >
+                    {disableMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Disable"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : setupStep === "idle" ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Use an authenticator app like Google Authenticator, Authy, or 1Password to generate one-time codes.
+              </p>
+              <Button
+                onClick={() => setupMutation.mutate()}
+                disabled={setupMutation.isPending}
+                data-testid="button-enable-2fa"
+              >
+                {setupMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Shield className="w-4 h-4 mr-2" />
+                )}
+                Enable 2FA
+              </Button>
+            </div>
+          ) : setupStep === "scanning" ? (
+            <div className="space-y-4">
+              <p className="text-sm font-medium">Step 1: Scan the QR code</p>
+              <p className="text-sm text-muted-foreground">
+                Open your authenticator app and scan this QR code:
+              </p>
+              <div className="flex justify-center py-4 bg-white rounded-lg">
+                <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" data-testid="img-2fa-qr" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">Or enter this key manually:</p>
+                <code className="block text-xs bg-muted p-2 rounded font-mono break-all" data-testid="text-2fa-secret">
+                  {secret}
+                </code>
+              </div>
+              <div className="border-t pt-4 space-y-3">
+                <p className="text-sm font-medium">Step 2: Enter the code from your app</p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="6-digit code"
+                    value={verifyCode}
+                    onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    maxLength={6}
+                    data-testid="input-verify-2fa"
+                  />
+                  <Button
+                    onClick={() => verifyMutation.mutate()}
+                    disabled={verifyCode.length !== 6 || verifyMutation.isPending}
+                    data-testid="button-verify-2fa"
+                  >
+                    {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                  </Button>
+                </div>
+              </div>
+              <Button variant="ghost" onClick={() => setSetupStep("idle")} data-testid="button-cancel-2fa">
+                Cancel
+              </Button>
+            </div>
+          ) : setupStep === "complete" ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="text-green-500 font-medium">2FA has been enabled successfully</span>
+              </div>
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-semibold text-destructive">
+                  Save your backup codes
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Store these codes somewhere safe. You can use them to access your account if you lose your authenticator device.
+                  Each code can only be used once.
+                </p>
+                <div className="grid grid-cols-2 gap-2 bg-muted rounded-md p-3">
+                  {backupCodes.map((code, i) => (
+                    <code key={i} className="text-xs font-mono" data-testid={`text-backup-code-${i}`}>
+                      {code}
+                    </code>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" onClick={copyBackupCodes} data-testid="button-copy-backup-codes">
+                  {copiedBackup ? (
+                    <><CheckCircle className="w-4 h-4 mr-2" /> Copied</>
+                  ) : (
+                    <><Copy className="w-4 h-4 mr-2" /> Copy Codes</>
+                  )}
+                </Button>
+              </div>
+              <Button variant="ghost" onClick={() => setSetupStep("idle")} data-testid="button-done-2fa">
+                Done
+              </Button>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Shield className="w-5 h-5" />
+            Account Security Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-sm">Password</span>
+              <Badge variant={securityInfo?.hasPassword ? "default" : "secondary"} data-testid="badge-password-status">
+                {securityInfo?.hasPassword ? "Set" : "Not Set"}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-sm">Discord Linked</span>
+              <Badge variant={securityInfo?.hasDiscord ? "default" : "secondary"} data-testid="badge-discord-status">
+                {securityInfo?.hasDiscord ? "Linked" : "Not Linked"}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-sm">Two-Factor Auth</span>
+              <Badge variant={securityInfo?.twoFactorEnabled ? "default" : "secondary"} data-testid="badge-2fa-status">
+                {securityInfo?.twoFactorEnabled ? "Enabled" : "Disabled"}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm">Active Sessions</span>
+              <Badge variant="secondary" data-testid="badge-sessions-count">
+                {securityInfo?.activeSessions || 0}
+              </Badge>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -1315,6 +1582,8 @@ export default function Settings() {
           {activeTab === "orders" && <OrdersTab />}
 
           {activeTab === "payments" && <PaymentMethodsTab user={user} toast={toast} />}
+
+          {activeTab === "security" && <SecurityTab />}
         </div>
       </div>
     </div>

@@ -71,6 +71,9 @@ import Onboarding from "@/pages/onboarding";
 import Status from "@/pages/status";
 import Changelog from "@/pages/changelog";
 import GiftCards from "@/pages/gift-cards";
+import FAQ from "@/pages/faq";
+import NotificationsPage from "@/pages/notifications";
+import ActivityFeedPage from "@/pages/activity-feed";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 
@@ -394,6 +397,9 @@ function Router() {
             <Route path="/status" component={Status} />
             <Route path="/changelog" component={Changelog} />
             <Route path="/gift-cards" component={GiftCards} />
+            <Route path="/faq" component={FAQ} />
+            <Route path="/notifications" component={NotificationsPage} />
+            <Route path="/activity" component={ActivityFeedPage} />
             <Route component={NotFound} />
           </Switch>
         </BanWall>

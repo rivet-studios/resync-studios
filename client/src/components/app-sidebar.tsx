@@ -44,6 +44,8 @@ import {
   Activity,
   ScrollText,
   Gift,
+  Bell,
+  Rss,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -97,8 +99,14 @@ const storeItems = [
 const supportItems = [
   { title: "Policies", url: "/policies", icon: FileText },
   { title: "Support", url: "/support", icon: HelpCircle },
+  { title: "FAQ", url: "/faq", icon: HelpCircle },
   { title: "Status", url: "/status", icon: Activity },
   { title: "Changelog", url: "/changelog", icon: ScrollText },
+];
+
+const communityItems = [
+  { title: "Activity Feed", url: "/activity", icon: Rss },
+  { title: "Notifications", url: "/notifications", icon: Bell },
 ];
 
 export function AppSidebar() {
@@ -243,6 +251,33 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {user && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel>Community</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {communityItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
 
         {(showModCP || showAdminCP) && (
           <>

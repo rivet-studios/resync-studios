@@ -30,6 +30,8 @@ import {
   Crown,
   ShoppingCart,
   Gift,
+  Bell,
+  Rss,
   FileText,
   HelpCircle,
   Settings,
@@ -87,6 +89,7 @@ const storeItems = [
 const supportItems = [
   { title: "Policies", url: "/policies", icon: FileText },
   { title: "Support", url: "/support", icon: HelpCircle },
+  { title: "FAQ", url: "/faq", icon: HelpCircle },
   { title: "Status", url: "/status", icon: Activity },
   { title: "Changelog", url: "/changelog", icon: ScrollText },
 ];

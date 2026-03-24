@@ -59,6 +59,7 @@ import {
   Bell,
   Calendar,
   CheckSquare,
+  Loader2,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -137,6 +138,24 @@ export default function AdminCP() {
   const { data: activity = [] } = useQuery<ActivityItem[]>({
     queryKey: ["/api/admin/activity"],
     enabled: !!isAdmin && activeTab === "dashboard",
+  });
+
+  const { data: analytics, isLoading: analyticsLoading } = useQuery<{
+    totalUsers: number;
+    newUsersToday: number;
+    newUsersThisWeek: number;
+    newUsersThisMonth: number;
+    totalThreads: number;
+    totalReplies: number;
+    totalProducts: number;
+    totalBans: number;
+    totalReports: number;
+    vipCounts: { tier: string; count: number }[];
+    rankDistribution: { rank: string; count: number }[];
+    recentSignups: { date: string; count: number }[];
+  }>({
+    queryKey: ["/api/admin/analytics"],
+    enabled: !!isAdmin && activeTab === "analytics",
   });
 
   const { data: allUsers = [], isLoading: usersLoading } = useQuery<any[]>({
@@ -544,6 +563,7 @@ export default function AdminCP() {
 
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "users", label: "Users", icon: Users },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "forums", label: "Forums", icon: MessageSquare },
@@ -2327,6 +2347,205 @@ export default function AdminCP() {
                 ))
               )}
             </div>
+          </>
+        )}
+
+        {activeTab === "analytics" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="text-xl font-bold" data-testid="text-analytics-title">Platform Analytics</h2>
+                <p className="text-sm text-muted-foreground">Detailed platform metrics and insights</p>
+              </div>
+            </div>
+
+            {analyticsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : analytics ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card data-testid="card-analytics-total-users">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Users className="w-4 h-4 text-blue-400" />
+                        <span className="text-xs text-muted-foreground">Total Users</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</p>
+                    </CardContent>
+                  </Card>
+                  <Card data-testid="card-analytics-new-today">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className="w-4 h-4 text-green-400" />
+                        <span className="text-xs text-muted-foreground">New Today</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.newUsersToday}</p>
+                    </CardContent>
+                  </Card>
+                  <Card data-testid="card-analytics-new-week">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className="w-4 h-4 text-cyan-400" />
+                        <span className="text-xs text-muted-foreground">This Week</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.newUsersThisWeek}</p>
+                    </CardContent>
+                  </Card>
+                  <Card data-testid="card-analytics-new-month">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs text-muted-foreground">This Month</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.newUsersThisMonth}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <MessageSquare className="w-4 h-4 text-indigo-400" />
+                        <span className="text-xs text-muted-foreground">Forum Threads</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.totalThreads}</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <MessageSquare className="w-4 h-4 text-teal-400" />
+                        <span className="text-xs text-muted-foreground">Forum Replies</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.totalReplies}</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <ShoppingBag className="w-4 h-4 text-orange-400" />
+                        <span className="text-xs text-muted-foreground">Products</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.totalProducts}</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle className="w-4 h-4 text-red-400" />
+                        <span className="text-xs text-muted-foreground">Reports</span>
+                      </div>
+                      <p className="text-2xl font-bold">{analytics.totalReports}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card data-testid="card-analytics-vip">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                        <Crown className="w-4 h-4 text-yellow-400" />
+                        VIP Distribution
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {analytics.vipCounts && analytics.vipCounts.length > 0 ? (
+                        <div className="space-y-3">
+                          {analytics.vipCounts.map((v) => (
+                            <div key={v.tier} className="flex items-center justify-between">
+                              <span className="text-sm capitalize">{v.tier}</span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-yellow-400 rounded-full"
+                                    style={{ width: `${Math.min(100, (v.count / analytics.totalUsers) * 100)}%` }}
+                                  />
+                                </div>
+                                <span className="text-sm font-medium w-8 text-right">{v.count}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No VIP members yet</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card data-testid="card-analytics-ranks">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-blue-400" />
+                        Top Ranks
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {analytics.rankDistribution && analytics.rankDistribution.length > 0 ? (
+                        <div className="space-y-3">
+                          {analytics.rankDistribution.slice(0, 10).map((r) => (
+                            <div key={r.rank} className="flex items-center justify-between">
+                              <span className="text-sm">{r.rank}</span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-blue-400 rounded-full"
+                                    style={{ width: `${Math.min(100, (r.count / analytics.totalUsers) * 100)}%` }}
+                                  />
+                                </div>
+                                <span className="text-sm font-medium w-8 text-right">{r.count}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No rank data available</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card data-testid="card-analytics-signups">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-green-400" />
+                      Recent Signups (Last 30 Days)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {analytics.recentSignups && analytics.recentSignups.length > 0 ? (
+                      <div className="flex items-end gap-1 h-32">
+                        {analytics.recentSignups.map((day) => {
+                          const maxCount = Math.max(...analytics.recentSignups.map((d) => d.count), 1);
+                          const height = (day.count / maxCount) * 100;
+                          return (
+                            <div
+                              key={day.date}
+                              className="flex-1 group relative"
+                              data-testid={`bar-signup-${day.date}`}
+                            >
+                              <div
+                                className="bg-green-400/60 hover:bg-green-400 rounded-t-sm transition-colors w-full"
+                                style={{ height: `${Math.max(height, 2)}%` }}
+                              />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">
+                                {day.date}: {day.count} signups
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No signup data available</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Failed to load analytics data</p>
+            )}
           </>
         )}
       </div>
