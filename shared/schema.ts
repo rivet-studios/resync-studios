@@ -442,6 +442,28 @@ export const insertStaffNoteSchema = createInsertSchema(staffNotes).omit({
   updatedAt: true,
 });
 
+export const changelogEntries = pgTable("changelog_entries", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  category: varchar("category", { length: 50 }).notNull().default("Platform"),
+  version: varchar("version", { length: 20 }),
+  authorId: varchar("author_id"),
+  isPublished: boolean("is_published").default(true),
+  publishedAt: timestamp("published_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertChangelogEntrySchema = createInsertSchema(changelogEntries).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type ChangelogEntry = typeof changelogEntries.$inferSelect;
+export type InsertChangelogEntry = z.infer<typeof insertChangelogEntrySchema>;
+
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Product = typeof products.$inferSelect;

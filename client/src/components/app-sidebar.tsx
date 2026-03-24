@@ -41,6 +41,8 @@ import {
   ChevronUp,
   Shield,
   BarChart3,
+  Activity,
+  ScrollText,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -93,6 +95,8 @@ const storeItems = [
 const supportItems = [
   { title: "Policies", url: "/policies", icon: FileText },
   { title: "Support", url: "/support", icon: HelpCircle },
+  { title: "Status", url: "/status", icon: Activity },
+  { title: "Changelog", url: "/changelog", icon: ScrollText },
 ];
 
 export function AppSidebar() {

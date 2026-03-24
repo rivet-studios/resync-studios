@@ -66,6 +66,8 @@ import Appeals from "@/pages/appeals";
 import MyCases from "@/pages/my-cases";
 
 import Onboarding from "@/pages/onboarding";
+import Status from "@/pages/status";
+import Changelog from "@/pages/changelog";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 
@@ -360,6 +362,8 @@ function Router() {
             <Route path="/about" component={AboutRS} />
             <Route path="/rosewood" component={Rosewood} />
             <Route path="/onboarding" component={Onboarding} />
+            <Route path="/status" component={Status} />
+            <Route path="/changelog" component={Changelog} />
             <Route component={NotFound} />
           </Switch>
         </BanWall>

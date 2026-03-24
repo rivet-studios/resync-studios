@@ -1,0 +1,322 @@
+I want you to act like a senior full-stack engineer working inside an existing production-style codebase.
+
+Your task is to inspect my current project first, then design and implement the next major website expansion for RIVET Studios.
+
+IMPORTANT:
+This is NOT a greenfield project.
+Do NOT redesign everything.
+Do NOT replace the stack.
+Do NOT refactor unrelated systems.
+Do NOT remove or break any current features.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Brand:
+- RIVET Studios (RS)
+- Tone: cinematic, professional, structured, modern, urban
+- Design direction: dark, premium, polished, operational, “real platform” feel
+- Avoid playful or generic startup styling
+
+Current stack:
+- Frontend: React + Vite + TypeScript
+- Backend: Node.js + Express
+- Likely existing auth, admin/staff systems, and internal tools
+- Deployment currently structured around the existing app
+
+Important existing feature:
+We ALREADY have a functioning maintenance mode / offline mode feature.
+It already supports:
+- custom maintenance messages
+- staff bypass access
+- staff can still access the platform while offline
+- staff can disable maintenance mode from inside the platform
+
+This is important:
+DO NOT rebuild maintenance mode from scratch.
+DO NOT duplicate it.
+DO NOT replace the current logic unless there is a strong reason.
+If you improve it, extend the existing system cleanly.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+PRIMARY GOAL
+━━━━━━━━━━━━━━━━━━━━━━━
+
+I want you to expand the website into a more complete platform by designing and implementing high-value features that make the site feel more professional, operational, and trustworthy.
+
+You must inspect the existing codebase first, determine what is already present, then implement the best next additions with minimal clean changes.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — INSPECT THE PROJECT FIRST
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Before making any changes, inspect and identify:
+
+1. Frontend entrypoint
+2. App/router structure
+3. Existing pages/routes
+4. Existing admin/staff systems
+5. Existing maintenance mode implementation
+6. Existing authentication / permissions logic
+7. Existing moderation/report/appeal/store/security related systems
+8. Existing styling approach (Tailwind, CSS modules, etc.)
+9. Existing components/layout primitives
+10. Existing API route structure
+
+Then summarize:
+- what already exists
+- what is partially implemented
+- what is missing
+- what should be built next
+
+Do not guess.
+Use the actual repo structure.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — IMPLEMENT THE BEST NEXT PLATFORM FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Based on the current codebase, I want you to implement a cohesive expansion focused on the following areas.
+
+You do NOT need to build every possible thing if some already exist, but you should implement the strongest missing pieces in a clean and compatible way.
+
+Priority features to evaluate and implement:
+
+1. STATUS PAGE
+Create a public-facing platform status page if one does not already exist.
+
+Purpose:
+- make the site feel operational and transparent
+- pair well with maintenance mode / wake gateway
+
+Features:
+- route like `/status`
+- show service statuses such as:
+  - platform/api
+  - database
+  - auth
+  - moderation systems
+  - store/payment systems if applicable
+- status labels:
+  - Operational
+  - Degraded
+  - Offline
+- optionally show:
+  - last checked time
+  - active maintenance notice
+  - planned maintenance notice
+- if maintenance mode is already active, reflect it here using existing logic where possible
+
+Important:
+Use current backend/health/readiness information if available.
+Do not invent fake status systems if real data can be derived from existing systems.
+
+2. CHANGELOG / UPDATES PAGE
+Create a structured updates/changelog page if one does not already exist.
+
+Purpose:
+- improve transparency
+- provide a clean place for public platform updates
+
+Features:
+- route like `/updates` or `/changelog`
+- clean card/list layout
+- categories/tags such as:
+  - Platform
+  - Security
+  - Moderation
+  - Store
+  - Rosewood / Project updates
+- support static seeded entries if no CMS exists yet
+- build it in a way that could later be connected to admin-created updates
+
+3. SECURITY / ACCOUNT PAGE
+Create or improve a security/account overview page.
+
+Purpose:
+- reinforce trust and professionalism
+- align with security-focused platform identity
+
+Potential features:
+- email verification status
+- 2FA status placeholder or real status if already supported
+- current session/device info if available
+- last login indicator if available
+- security recommendations panel
+- “log out other sessions” only if the current system supports it cleanly
+- otherwise scaffold the UI around real available data without faking unsupported features
+
+4. STAFF / OPERATIONS DASHBOARD IMPROVEMENTS
+If staff/admin systems already exist, improve them with a more operational dashboard experience.
+
+Possible features:
+- pending reports count
+- pending appeals count
+- escalations count
+- quick links to moderation/control systems
+- summary cards
+- system health overview
+- maintenance mode indicator
+- recent administrative activity if logs already exist
+
+Important:
+Respect role permissions.
+Do not expose staff information publicly.
+
+5. CASE / MODERATION EXPERIENCE IMPROVEMENTS
+If reports, appeals, warnings, or moderation systems exist, improve usability.
+
+Potential improvements:
+- timeline view for cases
+- clearer case status indicators
+- assigned/unassigned states
+- escalation visibility
+- conflict-of-interest handling if relevant and feasible
+- cleaner detail view layout
+
+Only do this if the underlying moderation systems are already present enough to support it.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — MAINTENANCE MODE INTEGRATION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Because maintenance mode already exists, I want you to preserve it and integrate new features with it intelligently.
+
+Required behaviour:
+- Status page should reflect maintenance state if appropriate
+- Staff dashboard may show maintenance status
+- Public pages should handle maintenance gracefully
+- Staff bypass must continue working
+- Custom maintenance messaging must remain intact
+
+Do not remove the current maintenance workflow.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — DESIGN / UI REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+The UI must feel:
+- premium
+- dark
+- structured
+- modern
+- operational
+- cinematic but not overdone
+
+Visual direction:
+- black / charcoal / gunmetal tones
+- clean spacing
+- confident typography
+- subtle accents
+- polished cards/panels
+- no generic template feel
+- no bright playful dashboard SaaS look
+
+The site should feel like:
+- a serious internal/public operations platform
+- not just a Roblox side project
+- not just an admin panel
+- a proper branded system
+
+Where appropriate, use language like:
+- Operational
+- Monitoring
+- Systems
+- Platform Status
+- Service Health
+- Recent Activity
+
+Do not overdo “hacker” aesthetics.
+Keep it credible and premium.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — TECHNICAL RULES
+━━━━━━━━━━━━━━━━━━━━━━━
+
+- Use the existing stack and conventions
+- Use TypeScript
+- Use existing routing patterns
+- Use existing component structure where possible
+- Keep code modular and readable
+- Prefer extending existing systems instead of replacing them
+- Do not refactor unrelated areas
+- Do not break auth
+- Do not break maintenance mode
+- Do not break wake gateway logic
+- Do not create fake backend data if real data exists
+- If something cannot be fully implemented, scaffold it honestly and document the limitation
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6 — IMPLEMENTATION APPROACH
+━━━━━━━━━━━━━━━━━━━━━━━
+
+I want you to:
+
+1. Inspect the repo
+2. Decide what already exists
+3. Select the strongest missing features from the priority list above
+4. Implement them directly in the repo
+5. Keep changes minimal but high quality
+6. Make the result feel cohesive, not random
+
+If multiple features are missing, prioritize in this order:
+1. Status page
+2. Changelog / updates page
+3. Security/account overview
+4. Staff dashboard improvements
+5. Moderation/case UX improvements
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7 — OUTPUT REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+After implementation, provide:
+
+1. A summary of what you found in the existing repo
+2. Which features you chose to implement and why
+3. All files created
+4. All files modified
+5. Exact code changes or clear code excerpts
+6. New routes/pages added
+7. Any new API endpoints added
+8. Any schema/data changes if applicable
+9. Any limitations or follow-up recommendations
+10. Manual test steps for each feature
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STEP 8 — STRICT INSTRUCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Do NOT:
+- give me only ideas
+- stay high level
+- turn this into a redesign proposal only
+- rebuild the app from scratch
+- remove existing systems
+- duplicate maintenance mode
+- invent imaginary project structure
+
+Do:
+- inspect first
+- implement directly
+- preserve compatibility
+- keep it production-safe
+- explain decisions clearly after changes are made
+
+━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL PRODUCT DIRECTION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+If the project already contains enough structure, I want the finished result to make the platform feel like it has:
+
+- public trust signals
+- operational maturity
+- cleaner visibility into service health
+- clearer internal navigation
+- stronger RS identity
+- more polished public-facing professionalism
+
+Make the site feel more complete, more intentional, and more credible.
+
+Start by inspecting the repo and summarizing the current structure before making changes.

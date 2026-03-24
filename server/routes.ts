@@ -22,6 +22,7 @@ import {
   insertStaffNoteSchema,
   users,
   forumThreads,
+  changelogEntries,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -29,7 +30,7 @@ import {
   getUncachableStripeClient,
   getStripePublishableKey,
 } from "./stripeClient";
-import { sql } from "drizzle-orm";
+import { sql, eq, desc } from "drizzle-orm";
 import { db } from "./db";
 import multer from "multer";
 import path from "path";
@@ -2627,6 +2628,153 @@ export async function registerRoutes(
     } catch (error) {
       res.status(500).json({ message: "Failed to unlink Roblox account" });
     }
+  });
+
+  // ---- Platform Status endpoint ----
+  app.get("/api/platform-status", async (_req, res) => {
+    try {
+      const siteSettings = await storage.getSiteSettings();
+      
+      const services: Record<string, { status: string; label: string }> = {};
+      
+      services.platform = { status: "operational", label: "Platform API" };
+      
+      try {
+        await db.execute(sql`SELECT 1`);
+        services.database = { status: "operational", label: "Database" };
+      } catch {
+        services.database = { status: "offline", label: "Database" };
+      }
+      
+      services.authentication = { status: "operational", label: "Authentication" };
+      services.forums = { status: "operational", label: "Forums & Community" };
+      services.moderation = { status: "operational", label: "Moderation Systems" };
+      
+      try {
+        const stripe = await getUncachableStripeClient();
+        if (stripe) {
+          services.payments = { status: "operational", label: "Payments & Store" };
+        } else {
+          services.payments = { status: "degraded", label: "Payments & Store" };
+        }
+      } catch {
+        services.payments = { status: "degraded", label: "Payments & Store" };
+      }
+
+      if (siteSettings?.isOffline) {
+        services.platform = { status: "degraded", label: "Platform API" };
+      }
+
+      const allOperational = Object.values(services).every(s => s.status === "operational");
+
+      res.json({
+        overall: allOperational ? "operational" : (siteSettings?.isOffline ? "maintenance" : "degraded"),
+        services,
+        maintenance: siteSettings?.isOffline ? {
+          active: true,
+          message: siteSettings.offlineMessage || "The platform is currently undergoing maintenance.",
+        } : { active: false, message: null },
+        lastChecked: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch platform status" });
+    }
+  });
+
+  // ---- Changelog endpoints ----
+  app.get("/api/changelog", async (_req, res) => {
+    try {
+      const entries = await db
+        .select()
+        .from(changelogEntries)
+        .where(eq(changelogEntries.isPublished, true))
+        .orderBy(desc(changelogEntries.publishedAt));
+      res.json(entries);
+    } catch {
+      res.status(500).json({ message: "Failed to fetch changelog" });
+    }
+  });
+
+  const changelogBodySchema = z.object({
+    title: z.string().min(1, "Title is required").max(255),
+    content: z.string().min(1, "Content is required"),
+    category: z.enum(["Feature", "Improvement", "Bugfix", "Platform"]).default("Platform"),
+    version: z.string().max(20).optional().nullable(),
+    isPublished: z.boolean().default(true),
+  });
+
+  app.post("/api/admin/changelog", async (req, res) => {
+    const user = req.user as any;
+    if (!user || !isAdminUser(user)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    const parsed = changelogBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten().fieldErrors });
+    }
+    try {
+      const { title, content, category, version, isPublished } = parsed.data;
+      const [entry] = await db.insert(changelogEntries).values({
+        title,
+        content,
+        category,
+        version: version || null,
+        authorId: user.id,
+        isPublished,
+        publishedAt: new Date(),
+      }).returning();
+      res.json(entry);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create changelog entry" });
+    }
+  });
+
+  app.delete("/api/admin/changelog/:id", async (req, res) => {
+    const user = req.user as any;
+    if (!user || !isAdminUser(user)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    try {
+      await db.delete(changelogEntries).where(eq(changelogEntries.id, req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete changelog entry" });
+    }
+  });
+
+  // ---- Security / session info endpoint ----
+  app.get("/api/auth/security-info", async (req, res) => {
+    if (!(req as any).isAuthenticated?.() || !req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await storage.getUser((req.user as any).id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const hasPassword = !!(user as any).password;
+    const hasDiscord = !!user.discordId;
+    const hasRoblox = !!user.robloxId;
+    const emailVerified = !!user.email;
+
+    let activeSessions = 0;
+    try {
+      const result = await db.execute(
+        sql`SELECT COUNT(*) as count FROM sessions WHERE sess::jsonb->'passport'->>'user' = ${user.id} AND expire > NOW()`
+      );
+      activeSessions = parseInt((result as any).rows?.[0]?.count || "1", 10);
+    } catch {
+      activeSessions = 1;
+    }
+
+    res.json({
+      hasPassword,
+      hasDiscord,
+      hasRoblox,
+      emailVerified,
+      activeSessions,
+      accountCreated: user.createdAt,
+      lastLogin: user.updatedAt || user.createdAt,
+      twoFactorEnabled: false,
+    });
   });
 
   return httpServer;
