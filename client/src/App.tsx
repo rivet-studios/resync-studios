@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AppHeader } from "@/components/app-header";
 import {
   SidebarProvider,
   SidebarInset,
@@ -16,6 +17,7 @@ import { WakeGateway } from "@/components/wake-gateway";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
+import { useNavigationLayout } from "@/hooks/use-navigation-layout";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -115,16 +117,9 @@ function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
   return <ErrorBoundary key={pathname}>{children}</ErrorBoundary>;
 }
 
-function PublicLayout({ children }: { children: React.ReactNode }) {
+function SiteFooter() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="flex flex-col min-h-screen bg-background">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4">
-          <SidebarTrigger className="-ml-1" />
-        </header>
-        <main className="flex-1 w-full">{children}</main>
-        <footer className="bg-card border-t border-border/50 py-10 md:py-20">
+    <footer className="bg-card border-t border-border/50 py-10 md:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
               <div className="col-span-2 md:col-span-1 space-y-6">
@@ -274,9 +269,42 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </footer>
+  );
+}
+
+function SidebarLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset className="flex flex-col min-h-screen bg-background">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4">
+          <SidebarTrigger className="-ml-1" />
+        </header>
+        <main className="flex-1 w-full">{children}</main>
+        <SiteFooter />
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+function HeaderLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      <AppHeader />
+      <main className="flex-1 w-full">{children}</main>
+      <SiteFooter />
+    </div>
+  );
+}
+
+function PublicLayout({ children }: { children: React.ReactNode }) {
+  const { layout } = useNavigationLayout();
+
+  if (layout === "header") {
+    return <HeaderLayout>{children}</HeaderLayout>;
+  }
+
+  return <SidebarLayout>{children}</SidebarLayout>;
 }
 
 function Router() {

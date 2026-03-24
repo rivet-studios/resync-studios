@@ -64,8 +64,11 @@ import {
   Loader2,
   Upload,
   Camera,
+  PanelLeft,
+  PanelTop,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
+import { useNavigationLayout } from "@/hooks/use-navigation-layout";
 
 const profileSchema = z.object({
   username: z
@@ -481,6 +484,7 @@ export default function Settings() {
   const [reduceMotion, setReduceMotion] = useState(
     () => localStorage.getItem("resync-reduce-motion") === "true",
   );
+  const { layout: navLayout, setLayout: setNavLayout } = useNavigationLayout();
 
   const searchString = useSearch();
   const [activeTab, setActiveTab] = useState(() => {
@@ -997,6 +1001,47 @@ export default function Settings() {
                               : "border-border hover:border-muted-foreground"
                           }`}
                           data-testid={`button-theme-${option.value}`}
+                        >
+                          <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                          <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                            {option.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Navigation Style</CardTitle>
+                  <CardDescription>Choose between a sidebar or header navigation</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { value: "sidebar" as const, label: "Sidebar", icon: PanelLeft },
+                      { value: "header" as const, label: "Header", icon: PanelTop },
+                    ].map((option) => {
+                      const Icon = option.icon;
+                      const isSelected = navLayout === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setNavLayout(option.value);
+                            toast({
+                              title: "Navigation updated",
+                              description: `Switched to ${option.label.toLowerCase()} navigation.`,
+                            });
+                          }}
+                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${
+                            isSelected
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-muted-foreground"
+                          }`}
+                          data-testid={`button-nav-${option.value}`}
                         >
                           <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                           <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
