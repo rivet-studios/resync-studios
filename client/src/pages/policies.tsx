@@ -64,9 +64,8 @@ const policyLinks = [
 
 export default function Policies() {
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
-      {/* Header */}
-      <div className="space-y-4">
+    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+      <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold">Policies & Guidelines</h1>
         <p className="text-lg text-muted-foreground">
           Important information about RIVET Studios™ policies, guidelines, and

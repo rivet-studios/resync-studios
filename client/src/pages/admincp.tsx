@@ -2276,16 +2276,16 @@ export default function AdminCP() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <Badge
                               variant={
-                                report.status === "Pending"
+                                report.status === "pending"
                                   ? "default"
                                   : "secondary"
                               }
                               className={
-                                report.status === "Pending"
+                                report.status === "pending"
                                   ? "bg-yellow-500/20 text-yellow-400"
-                                  : report.status === "Action Taken"
+                                  : report.status === "action_taken"
                                     ? "bg-green-500/20 text-green-400"
-                                    : report.status === "Reviewed"
+                                    : report.status === "reviewed"
                                       ? "bg-blue-500/20 text-blue-400"
                                       : ""
                               }

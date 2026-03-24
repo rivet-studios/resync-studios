@@ -14,10 +14,10 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const reportStatusEnum = pgEnum("report_status", [
-  "Pending",
-  "In Review",
-  "Dismissed",
-  "Action Taken",
+  "pending",
+  "reviewed",
+  "dismissed",
+  "action_taken",
 ]);
 
 export const reports = pgTable("reports", {
@@ -29,7 +29,7 @@ export const reports = pgTable("reports", {
   targetType: varchar("target_type").notNull(),
   reason: text("reason").notNull(),
   details: text("details"),
-  status: reportStatusEnum("status").default("Pending"),
+  status: reportStatusEnum("status").default("pending"),
   moderatorNotes: text("moderator_notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -322,10 +322,9 @@ export const insertBanSchema = createInsertSchema(bans).omit({
 });
 
 export const appealStatusEnum = pgEnum("appeal_status", [
-  "Pending",
-  "In Review",
-  "Approved",
-  "Denied",
+  "pending",
+  "approved",
+  "denied",
 ]);
 
 export const appeals = pgTable("appeals", {
@@ -335,7 +334,7 @@ export const appeals = pgTable("appeals", {
   userId: varchar("user_id").notNull(),
   banId: varchar("ban_id"),
   reason: text("reason").notNull(),
-  status: appealStatusEnum("status").default("Pending"),
+  status: appealStatusEnum("status").default("pending"),
   reviewedBy: varchar("reviewed_by"),
   reviewNotes: text("review_notes"),
   createdAt: timestamp("created_at").defaultNow(),

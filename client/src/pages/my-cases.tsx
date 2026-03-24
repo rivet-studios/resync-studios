@@ -19,18 +19,18 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 function getReportStatusStyle(status: string) {
-  switch (status) {
-    case "Pending":
+  switch (status?.toLowerCase()) {
+    case "pending":
       return { bg: "bg-yellow-500/10", text: "text-yellow-400", icon: Clock };
-    case "Reviewed":
+    case "reviewed":
       return { bg: "bg-blue-500/10", text: "text-blue-400", icon: Eye };
-    case "Action Taken":
+    case "action_taken":
       return {
         bg: "bg-green-500/10",
         text: "text-green-400",
         icon: CheckCircle,
       };
-    case "Dismissed":
+    case "dismissed":
       return { bg: "bg-white/5", text: "text-white/40", icon: XCircle };
     default:
       return { bg: "bg-white/5", text: "text-white/40", icon: AlertCircle };
@@ -38,16 +38,16 @@ function getReportStatusStyle(status: string) {
 }
 
 function getAppealStatusStyle(status: string) {
-  switch (status) {
-    case "Pending":
+  switch (status?.toLowerCase()) {
+    case "pending":
       return { bg: "bg-yellow-500/10", text: "text-yellow-400", icon: Clock };
-    case "Approved":
+    case "approved":
       return {
         bg: "bg-green-500/10",
         text: "text-green-400",
         icon: CheckCircle,
       };
-    case "Denied":
+    case "denied":
       return { bg: "bg-red-500/10", text: "text-red-400", icon: XCircle };
     default:
       return { bg: "bg-white/5", text: "text-white/40", icon: AlertCircle };

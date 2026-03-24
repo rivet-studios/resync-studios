@@ -25,20 +25,20 @@ import {
 } from "lucide-react";
 
 function getStatusColor(status: string): string {
-  switch (status) {
-    case "Pending":
+  switch (status?.toLowerCase()) {
+    case "pending":
       return "bg-yellow-500/20 text-yellow-400";
-    case "Approved":
+    case "approved":
       return "bg-green-500/20 text-green-400";
-    case "Denied":
+    case "denied":
       return "bg-red-500/20 text-red-400";
-    case "In Review":
+    case "in review":
       return "bg-blue-500/20 text-blue-400";
-    case "Action Taken":
+    case "action_taken":
       return "bg-green-500/20 text-green-400";
-    case "Dismissed":
+    case "dismissed":
       return "bg-white/10 text-white/50";
-    case "Reviewed":
+    case "reviewed":
       return "bg-blue-500/20 text-blue-400";
     default:
       return "bg-white/10 text-white/50";
@@ -233,9 +233,9 @@ export default function CaseDetail() {
   }
 
   const isPending = isReport
-    ? caseData.status === "Pending"
+    ? caseData.status === "pending"
     : isAppeal
-      ? caseData.status === "Pending"
+      ? caseData.status === "pending"
       : caseData.isActive;
 
   const caseUserId = isReport
@@ -303,8 +303,8 @@ export default function CaseDetail() {
               isReport || isAppeal
                 ? caseData.status
                 : caseData.isActive
-                  ? "Pending"
-                  : "Resolved",
+                  ? "pending"
+                  : "resolved",
             )}
             data-testid="badge-case-status"
           >
@@ -511,7 +511,7 @@ export default function CaseDetail() {
                       size="sm"
                       onClick={() =>
                         updateReportMutation.mutate({
-                          status: "In Review",
+                          status: "reviewed",
                           moderatorNotes: notes,
                         })
                       }
@@ -530,7 +530,7 @@ export default function CaseDetail() {
                       size="sm"
                       onClick={() =>
                         updateReportMutation.mutate({
-                          status: "Action Taken",
+                          status: "action_taken",
                           moderatorNotes: notes,
                         })
                       }
@@ -545,7 +545,7 @@ export default function CaseDetail() {
                       variant="outline"
                       onClick={() =>
                         updateReportMutation.mutate({
-                          status: "Dismissed",
+                          status: "dismissed",
                           moderatorNotes: notes,
                         })
                       }
@@ -564,7 +564,7 @@ export default function CaseDetail() {
                       size="sm"
                       onClick={() =>
                         updateAppealMutation.mutate({
-                          status: "Approved",
+                          status: "approved",
                           reviewNotes: notes,
                         })
                       }
@@ -583,7 +583,7 @@ export default function CaseDetail() {
                       size="sm"
                       onClick={() =>
                         updateAppealMutation.mutate({
-                          status: "Denied",
+                          status: "denied",
                           reviewNotes: notes,
                         })
                       }

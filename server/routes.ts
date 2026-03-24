@@ -1415,7 +1415,7 @@ export async function registerRoutes(
   app.get("/api/products", async (req, res) => {
     try {
       const status = req.query.status as string | undefined;
-      const prods = await storage.getProducts(status || "Approved");
+      const prods = await storage.getProducts(status || "approved");
       const prodsWithSubmitters = await Promise.all(
         prods.map(async (p) => {
           const submitter = await storage.getUser(p.submitterId);
@@ -1483,12 +1483,12 @@ export async function registerRoutes(
       const allProducts = await storage.getProducts();
       const myProducts = allProducts.filter((p) => p.submitterId === user.id);
       const approvedProducts = myProducts.filter(
-        (p) => p.status === "Approved",
+        (p) => p.status === "approved",
       );
       res.json({
         totalProducts: myProducts.length,
         approvedProducts: approvedProducts.length,
-        pendingProducts: myProducts.filter((p) => p.status === "Pending")
+        pendingProducts: myProducts.filter((p) => p.status === "pending")
           .length,
         totalSales: 0,
         totalCommission: 0,
@@ -1526,16 +1526,16 @@ export async function registerRoutes(
       }
       let { status, reviewNotes } = req.body;
       const statusMap: Record<string, string> = {
-        approved: "Approved",
-        denied: "Denied",
-        Approved: "Approved",
-        Denied: "Denied",
+        approved: "approved",
+        denied: "denied",
+        Approved: "approved",
+        Denied: "denied",
       };
-      status = statusMap[status];
+      status = statusMap[status?.toLowerCase?.()];
       if (!status) {
         return res
           .status(400)
-          .json({ message: "Status must be Approved or Denied" });
+          .json({ message: "Status must be approved or denied" });
       }
       const existingProduct = await storage.getProduct(req.params.id);
       if (!existingProduct)
@@ -1546,7 +1546,7 @@ export async function registerRoutes(
         reviewedBy: user.id,
         reviewNotes: reviewNotes || null,
       };
-      if (status === "Approved") {
+      if (status === "approved") {
         updates.isCommunityProvided = true;
 
         if (!existingProduct.stripeProductId) {
@@ -1582,7 +1582,8 @@ export async function registerRoutes(
       if (!product)
         return res.status(404).json({ message: "Product not found" });
       res.json(product);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Product review failed:", error.message, error.stack);
       res.status(500).json({ message: "Review failed" });
     }
   });
@@ -1833,8 +1834,9 @@ export async function registerRoutes(
       ) {
         return res.status(403).json({ message: "Forbidden" });
       }
-      const { status, reviewNotes } = req.body;
-      if (!["Approved", "Denied"].includes(status)) {
+      const { status: rawStatus, reviewNotes } = req.body;
+      const statusLower = rawStatus?.toLowerCase?.();
+      if (!["approved", "denied"].includes(statusLower)) {
         return res
           .status(400)
           .json({ message: "Status must be approved or denied" });
@@ -1843,21 +1845,21 @@ export async function registerRoutes(
       if (!appeal) return res.status(404).json({ message: "Appeal not found" });
 
       const updated = await storage.updateAppeal(req.params.id, {
-        status: status as any,
+        status: statusLower as any,
         reviewedBy: user.id,
         reviewNotes,
       });
 
-      if (status === "Approved" && appeal.banId) {
+      if (statusLower === "approved" && appeal.banId) {
         await storage.deactivateBan(appeal.banId);
       }
 
       await storage.createModerationLog({
-        action: `appeal_${status.toLowerCase()}`,
+        action: `appeal_${statusLower}`,
         actorId: user.id,
         targetId: appeal.userId,
         targetType: "appeal",
-        details: `Appeal ${status}${reviewNotes ? `: ${reviewNotes}` : ""}`,
+        details: `Appeal ${statusLower}${reviewNotes ? `: ${reviewNotes}` : ""}`,
       });
 
       res.json(updated);
@@ -2210,7 +2212,7 @@ export async function registerRoutes(
       const product = await storage.getProduct(productId);
       if (!product)
         return res.status(404).json({ message: "Product not found" });
-      if (product.status !== "Approved")
+      if (product.status !== "approved")
         return res
           .status(400)
           .json({ message: "Product is not available for purchase" });
@@ -2438,7 +2440,7 @@ export async function registerRoutes(
       }
 
       if (!type || type === "products") {
-        const prods = await storage.getProducts("Approved");
+        const prods = await storage.getProducts("approved");
         results.products = prods
           .filter(
             (p) =>

@@ -55,7 +55,7 @@ const features = [
     icon: Shield,
     title: "Security & Moderation",
     description:
-      "Advanced security systems ensuring fair play and safe gaming environments with robust monitoring.",
+      "Advanced security systems ensuring fair play and safe gaming environments with robust monitoring. Powered by Sentinel — our new security & moderation system.",
   },
   {
     icon: Globe,
@@ -81,12 +81,12 @@ export default function Landing() {
 
   const stats = [
     {
-      value: publicStats?.totalMembers || 20,
+      value: publicStats?.totalMembers || 20.7,
       label: "Connected Members",
-      suffix: "",
+      suffix: "K",
     },
     {
-      value: publicStats?.totalDiscussions || 2,
+      value: publicStats?.totalDiscussions || 3,
       label: "Active Discussions",
       suffix: "",
     },
@@ -115,7 +115,7 @@ export default function Landing() {
               >
                 <Sparkles className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground/90">
-                  Now powering {formatCount(publicStats?.totalMembers || 20)}+
+                  Now powering {formatCount(publicStats?.totalMembers || 20.7)}K
                   members
                 </span>
               </div>
@@ -125,7 +125,8 @@ export default function Landing() {
               >
                 <SiDiscord className="w-5 h-5 text-[#5865F2]" />
                 <span className="text-sm font-medium text-foreground/90">
-                  {formatCount(publicStats?.discordMembers || 28)}
+                  {formatCount(publicStats?.discordMembers || 30)}
+                  Discord Members
                 </span>
               </div>
               <div
@@ -135,6 +136,7 @@ export default function Landing() {
                 <SiRoblox className="w-4 h-4 text-white" />
                 <span className="text-sm font-medium text-foreground/90">
                   {formatCount(publicStats?.robloxMembers || 10)}
+                  Group members
                 </span>
               </div>
             </div>

@@ -690,11 +690,11 @@ export class DatabaseStorage implements IStorage {
     const [reportCount] = await db
       .select({ count: sql`count(*)` })
       .from(reports)
-      .where(sql`${reports.status} = 'Pending'`);
+      .where(sql`${reports.status} = 'pending'`);
     const [appealCount] = await db
       .select({ count: sql`count(*)` })
       .from(appeals)
-      .where(sql`${appeals.status} = 'Pending'`);
+      .where(sql`${appeals.status} = 'pending'`);
     const [paymentCount] = await db
       .select({ count: sql`count(*)` })
       .from(payments);

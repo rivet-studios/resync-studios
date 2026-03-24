@@ -230,8 +230,8 @@ export default function Store() {
               ).length;
               const IconComponent = cat.icon;
               return (
+                <Link href={`/store/category/${encodeURIComponent(cat.name)}`} key={cat.name}>
                 <Card
-                  key={cat.name}
                   className="cursor-pointer hover-elevate overflow-visible"
                   data-testid={`card-category-${cat.name}`}
                 >
@@ -251,6 +251,7 @@ export default function Store() {
                     </div>
                   </CardContent>
                 </Card>
+                </Link>
               );
             })}
           </div>

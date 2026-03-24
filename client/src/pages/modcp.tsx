@@ -81,8 +81,8 @@ export default function ModCP() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [reportNotes, setReportNotes] = useState<Record<string, string>>({});
   const [appealNotes, setAppealNotes] = useState<Record<string, string>>({});
-  const [reportFilter, setReportFilter] = useState("All");
-  const [appealFilter, setAppealFilter] = useState("All");
+  const [reportFilter, setReportFilter] = useState("all");
+  const [appealFilter, setAppealFilter] = useState("all");
   const [forumSearchQuery, setForumSearchQuery] = useState("");
   const [forumFilter, setForumFilter] = useState<"all" | "pinned" | "locked">("all");
   const [moveThreadId, setMoveThreadId] = useState<string | null>(null);
@@ -284,19 +284,19 @@ export default function ModCP() {
   }, [activeBans, reports, pendingAppeals]);
 
   const filteredReports = useMemo(() => {
-    if (reportFilter === "All") return reports;
+    if (reportFilter === "all") return reports;
     return reports.filter((r: any) => r.status === reportFilter);
   }, [reports, reportFilter]);
 
   const filteredAppeals = useMemo(() => {
-    if (appealFilter === "All") return pendingAppeals;
+    if (appealFilter === "all") return pendingAppeals;
     return pendingAppeals.filter((a: any) => a.status === appealFilter);
   }, [pendingAppeals, appealFilter]);
 
   const activeBanCount = activeBans.filter((b: any) => b.isActive).length;
-  const openReportsCount = reports.filter((r: any) => r.status === "Pending").length;
-  const pendingAppealsCount = pendingAppeals.filter((a: any) => a.status === "Pending").length;
-  const resolvedReportsCount = reports.filter((r: any) => r.status !== "Pending").length;
+  const openReportsCount = reports.filter((r: any) => r.status === "pending").length;
+  const pendingAppealsCount = pendingAppeals.filter((a: any) => a.status === "pending").length;
+  const resolvedReportsCount = reports.filter((r: any) => r.status !== "pending").length;
   const activeWarningsCount = warnings.filter((w: any) => w.isActive).length;
 
   const createBanMutation = useMutation({
@@ -562,19 +562,19 @@ export default function ModCP() {
   }
 
   function getStatusBadgeClasses(status: string): string {
-    switch (status) {
-      case "Pending":
+    switch (status?.toLowerCase()) {
+      case "pending":
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "Approved":
+      case "approved":
         return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "Denied":
+      case "denied":
         return "bg-red-500/20 text-red-400 border-red-500/30";
-      case "In Review":
-      case "Reviewed":
+      case "in review":
+      case "reviewed":
         return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-      case "Action Taken":
+      case "action_taken":
         return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "Dismissed":
+      case "dismissed":
         return "bg-white/10 text-white/50 border-white/10";
       default:
         return "bg-white/10 text-white/50 border-white/10";
@@ -617,7 +617,7 @@ export default function ModCP() {
     { id: "warnings", label: "Warnings", icon: TriangleAlert, count: activeWarningsCount || undefined },
     { id: "mass-warning", label: "Mass Warning", icon: Users, count: undefined },
     { id: "escalations", label: "Escalation Tracker", icon: Zap, count: escalations.length || undefined },
-    { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "Pending").length || undefined },
+    { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "pending").length || undefined },
     { id: "audit", label: "Audit Log", icon: ClipboardList, count: undefined },
   ];
 
@@ -816,8 +816,8 @@ export default function ModCP() {
                           <p className="text-[11px] text-muted-foreground">{getRelativeTime(item.date)}</p>
                         </div>
                         <Badge variant="outline" className={getStatusBadgeClasses(
-                          item.type === "ban" ? (item.data.isActive ? "Pending" : "Dismissed") :
-                          item.data.status || "Pending"
+                          item.type === "ban" ? (item.data.isActive ? "pending" : "dismissed") :
+                          item.data.status || "pending"
                         )}>
                           {item.type === "ban" ? (item.data.isActive ? "Active" : "Lifted") : item.data.status}
                         </Badge>
@@ -1198,12 +1198,11 @@ export default function ModCP() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="In Review">In Review</SelectItem>
-                    <SelectItem value="Reviewed">Reviewed</SelectItem>
-                    <SelectItem value="Action Taken">Action Taken</SelectItem>
-                    <SelectItem value="Dismissed">Dismissed</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="reviewed">Reviewed</SelectItem>
+                    <SelectItem value="action_taken">Action Taken</SelectItem>
+                    <SelectItem value="dismissed">Dismissed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1271,7 +1270,7 @@ export default function ModCP() {
                             </div>
                           )}
 
-                          {report.status === "Pending" && (
+                          {report.status === "pending" && (
                             <div className="flex items-center gap-2 pt-2 flex-wrap">
                               <Input
                                 placeholder="Moderator notes..."
@@ -1283,7 +1282,7 @@ export default function ModCP() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "In Review", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "reviewed", moderatorNotes: reportNotes[report.id] })}
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-review-report-${report.id}`}
                               >
@@ -1291,7 +1290,7 @@ export default function ModCP() {
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "Action Taken", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "action_taken", moderatorNotes: reportNotes[report.id] })}
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-action-report-${report.id}`}
                               >
@@ -1300,7 +1299,7 @@ export default function ModCP() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "Dismissed", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "dismissed", moderatorNotes: reportNotes[report.id] })}
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-dismiss-report-${report.id}`}
                               >
@@ -1332,10 +1331,10 @@ export default function ModCP() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Approved">Approved</SelectItem>
-                    <SelectItem value="Denied">Denied</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="denied">Denied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1399,7 +1398,7 @@ export default function ModCP() {
                             </div>
                           )}
 
-                          {appeal.status === "Pending" && (
+                          {appeal.status === "pending" && (
                             <div className="flex items-center gap-2 pt-2 flex-wrap">
                               <Input
                                 placeholder="Review notes..."
@@ -1427,7 +1426,7 @@ export default function ModCP() {
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "Approved", reviewNotes: appealNotes[appeal.id] })}
+                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "approved", reviewNotes: appealNotes[appeal.id] })}
                                       data-testid={`button-confirm-approve-${appeal.id}`}
                                     >
                                       Approve
@@ -1455,7 +1454,7 @@ export default function ModCP() {
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "Denied", reviewNotes: appealNotes[appeal.id] })}
+                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "denied", reviewNotes: appealNotes[appeal.id] })}
                                       data-testid={`button-confirm-deny-${appeal.id}`}
                                     >
                                       Deny
@@ -2033,17 +2032,17 @@ export default function ModCP() {
               </Card>
             </div>
 
-            {forumReports.filter((r: any) => r.status === "Pending").length > 0 && (
+            {forumReports.filter((r: any) => r.status === "pending").length > 0 && (
               <Card className="border-yellow-500/20">
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                   <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-400" />
                     Reported Forum Content
                   </CardTitle>
-                  <Badge variant="secondary">{forumReports.filter((r: any) => r.status === "Pending").length} pending</Badge>
+                  <Badge variant="secondary">{forumReports.filter((r: any) => r.status === "pending").length} pending</Badge>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {forumReports.filter((r: any) => r.status === "Pending").map((report: any) => (
+                  {forumReports.filter((r: any) => r.status === "pending").map((report: any) => (
                     <div
                       key={report.id}
                       className="flex items-center gap-3 p-3 rounded-md bg-muted/50"
@@ -2062,7 +2061,7 @@ export default function ModCP() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "Action Taken", moderatorNotes: "" })}
+                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "action_taken", moderatorNotes: "" })}
                           data-testid={`button-action-report-${report.id}`}
                         >
                           <CheckCircle className="w-3 h-3 mr-1" /> Action Taken
@@ -2070,7 +2069,7 @@ export default function ModCP() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "Dismissed", moderatorNotes: "" })}
+                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "dismissed", moderatorNotes: "" })}
                           data-testid={`button-dismiss-report-${report.id}`}
                         >
                           <XCircle className="w-3 h-3 mr-1" /> Dismiss

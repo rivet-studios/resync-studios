@@ -100,8 +100,8 @@ export default function Dashboard() {
   }
 
   const totalCases = myReports.length + myAppeals.length;
-  const pendingCases = myReports.filter((r: any) => r.status === "Pending").length +
-    myAppeals.filter((a: any) => a.status === "Pending" || a.status === "pending").length;
+  const pendingCases = myReports.filter((r: any) => r.status === "pending").length +
+    myAppeals.filter((a: any) => a.status === "pending").length;
   const topProducts = products.slice(0, 3);
   const latestBlogs = blogs.slice(0, 3);
   const trendingThreads = threads.slice(0, 3);
@@ -426,9 +426,9 @@ export default function Dashboard() {
                       <Badge
                         variant="secondary"
                         className={`text-[10px] shrink-0 ${
-                          report.status === "Pending" ? "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400" :
-                          report.status === "Action Taken" ? "bg-green-500/10 text-green-600 dark:text-green-400" :
-                          report.status === "Reviewed" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" :
+                          report.status === "pending" ? "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400" :
+                          report.status === "action_taken" ? "bg-green-500/10 text-green-600 dark:text-green-400" :
+                          report.status === "reviewed" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" :
                           ""
                         }`}
                         data-testid={`badge-status-report-${report.id}`}
@@ -461,8 +461,8 @@ export default function Dashboard() {
                       <Badge
                         variant="secondary"
                         className={`text-[10px] shrink-0 ${
-                          (appeal.status === "pending" || appeal.status === "Pending") ? "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400" :
-                          (appeal.status === "approved" || appeal.status === "Approved") ? "bg-green-500/10 text-green-600 dark:text-green-400" :
+                          appeal.status === "pending" ? "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400" :
+                          appeal.status === "approved" ? "bg-green-500/10 text-green-600 dark:text-green-400" :
                           "bg-red-500/10 text-red-600 dark:text-red-400"
                         }`}
                         data-testid={`badge-status-appeal-${appeal.id}`}

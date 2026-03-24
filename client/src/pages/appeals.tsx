@@ -50,12 +50,12 @@ function isStaffUser(user: User | null | undefined): boolean {
 function getStatusVariant(
   status: string | null,
 ): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "Approved":
+  switch (status?.toLowerCase()) {
+    case "approved":
       return "default";
-    case "Denied":
+    case "denied":
       return "destructive";
-    case "Pending":
+    case "pending":
     default:
       return "secondary";
   }
@@ -376,7 +376,7 @@ export default function AppealsPage() {
                         variant={getStatusVariant(appeal.status)}
                         data-testid={`badge-appeal-status-${appeal.id}`}
                       >
-                        {appeal.status || "Pending"}
+                        {(appeal.status || "pending").replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
                       </Badge>
                     </div>
                   </CardContent>
@@ -434,7 +434,7 @@ export default function AppealsPage() {
                           variant={getStatusVariant(appeal.status)}
                           data-testid={`badge-queue-status-${appeal.id}`}
                         >
-                          {appeal.status || "Pending"}
+                          {(appeal.status || "pending").replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -454,7 +454,7 @@ export default function AppealsPage() {
                           ? new Date(appeal.createdAt).toLocaleDateString()
                           : "Unknown"}
                       </p>
-                      {appeal.status === "Pending" && (
+                      {appeal.status === "pending" && (
                         <div className="space-y-3 pt-2 border-t border-white/10">
                           <Textarea
                             value={reviewNotes[appeal.id] || ""}
@@ -473,7 +473,7 @@ export default function AppealsPage() {
                               onClick={() =>
                                 reviewAppeal.mutate({
                                   id: appeal.id,
-                                  status: "Approved",
+                                  status: "approved",
                                 })
                               }
                               disabled={reviewAppeal.isPending}
@@ -489,7 +489,7 @@ export default function AppealsPage() {
                               onClick={() =>
                                 reviewAppeal.mutate({
                                   id: appeal.id,
-                                  status: "Denied",
+                                  status: "denied",
                                 })
                               }
                               disabled={reviewAppeal.isPending}

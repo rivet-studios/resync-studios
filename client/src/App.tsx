@@ -5,7 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useAuth } from "@/hooks/useAuth";
@@ -50,6 +54,7 @@ import AdminCP from "@/pages/admincp";
 
 import Blog from "@/pages/blog";
 import Store from "@/pages/store";
+import StoreCategory from "@/pages/store-category";
 import ProductDetail from "@/pages/product";
 import CaseDetail from "@/pages/case-detail";
 import Policies from "@/pages/policies";
@@ -84,7 +89,8 @@ const MOD_RANKS = [
 function hasRank(user: any, ranks: string[]): boolean {
   if (!user) return false;
   if (ranks.includes(user.userRank || "")) return true;
-  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r))) return true;
+  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r)))
+    return true;
   return false;
 }
 
@@ -93,10 +99,11 @@ function canAccessModCP(user: any): boolean {
 }
 
 function canAccessAdminCP(user: any): boolean {
-  return !!user && (
-    user.isAdmin ||
-    hasRank(user, ADMIN_RANKS) ||
-    user.email?.toLowerCase().endsWith("@resyncstudios.com")
+  return (
+    !!user &&
+    (user.isAdmin ||
+      hasRank(user, ADMIN_RANKS) ||
+      user.email?.toLowerCase().endsWith("@resyncstudios.com"))
   );
 }
 
@@ -115,155 +122,155 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 w-full">{children}</main>
         <footer className="bg-card border-t border-border/50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5">
-                <img
-                  src="/attached_assets/logo.svg"
-                  alt="RS"
-                  className="w-6 h-6"
-                />
-                <h3 className="font-semibold text-base">RIVET Studios™</h3>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-12 mb-16">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src="/attached_assets/logo.svg"
+                    alt="RS"
+                    className="w-6 h-6"
+                  />
+                  <h3 className="font-semibold text-base">RIVET Studios™</h3>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Building the future of digital experiences with innovative
+                  solutions and community-driven development.
+                </p>
+                <div className="space-y-2 text-sm text-muted-foreground font-medium">
+                  <p className="flex items-center gap-2">
+                    {" "}
+                    support@resyncstudios.com
+                  </p>
+                  <p className="flex items-center gap-2">
+                    101 Duke Street, Sunshine, VIC, 3020, Australia
+                  </p>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Building the future of digital experiences with innovative
-                solutions and community-driven development.
+
+              <div className="space-y-6">
+                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+                  Navigation
+                </h4>
+                <ul className="space-y-3 text-sm font-normal">
+                  <li>
+                    <Link
+                      href="/"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/blog"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Blog
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/forums"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Forums
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/store"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Store
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/subscriptions"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Subscriptions
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+                  Support & Resources
+                </h4>
+                <ul className="space-y-3 text-sm font-normal">
+                  <li>
+                    <Link
+                      href="/support"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Knowledge Base
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/policies"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Policies
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="https://support.resyncstudios.com"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Support
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+                  Other
+                </h4>
+                <ul className="space-y-3 text-sm font-normal">
+                  <li>
+                    <Link
+                      href="/profile"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      My Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/search"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Search
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/team"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                      Staff Directory
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-xs text-muted-foreground font-normal">
+                © 2026 RIVET Studios™, All rights reserved.
               </p>
-              <div className="space-y-2 text-sm text-muted-foreground font-medium">
-                <p className="flex items-center gap-2">
-                  {" "}
-                  support@resyncstudios.com
-                </p>
-                <p className="flex items-center gap-2">
-                  101 Duke Street, Sunshine, VIC, 3020, Australia
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                Navigation
-              </h4>
-              <ul className="space-y-3 text-sm font-normal">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/blog"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/forums"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Forums
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/store"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Store
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/subscriptions"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Subscriptions
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="space-y-6">
-              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                Support & Resources
-              </h4>
-              <ul className="space-y-3 text-sm font-normal">
-                <li>
-                  <Link
-                    href="/support"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Knowledge Base
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/policies"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Policies
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="https://support.resyncstudios.com"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="space-y-6">
-              <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                Other
-              </h4>
-              <ul className="space-y-3 text-sm font-normal">
-                <li>
-                  <Link
-                    href="/user"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    My Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/search"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Search
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/team"
-                    className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                  >
-                    Staff Directory
-                  </Link>
-                </li>
-              </ul>
+              <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
+                Formerly RESYNC Studios™
+              </p>
             </div>
           </div>
-
-          <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-muted-foreground font-normal">
-              © 2026 RIVET Studios™, All rights reserved.
-            </p>
-            <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
-              Formerly RESYNC Studios™
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
       </SidebarInset>
     </SidebarProvider>
   );
@@ -298,6 +305,7 @@ function Router() {
             <Route path="/blog" component={Blog} />
             <Route path="/blog/:id" component={News} />
             <Route path="/store" component={Store} />
+            <Route path="/store/category/:category" component={StoreCategory} />
             <Route path="/store/product/:id" component={ProductDetail} />
             <Route path="/store/subscriptions" component={Subscriptions} />
 
@@ -315,7 +323,7 @@ function Router() {
             <Route path="/vip">
               <Redirect to="/store/subscriptions" />
             </Route>
-            <Route path="/user" component={UserProfile} />
+            <Route path="/profile" component={UserProfile} />
             <Route path="/profile/:id" component={UserProfile} />
             <Route path="/settings" component={Settings} />
             <Route path="/team" component={StaffDirectory} />
