@@ -29,6 +29,7 @@ import {
   Store,
   Crown,
   ShoppingCart,
+  Gift,
   FileText,
   HelpCircle,
   Settings,
@@ -80,6 +81,7 @@ const storeItems = [
   { title: "Store", url: "/store", icon: Store },
   { title: "Subscriptions", url: "/store/subscriptions", icon: Crown },
   { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
+  { title: "Gift Cards", url: "/gift-cards", icon: Gift },
 ];
 
 const supportItems = [

@@ -70,6 +70,7 @@ import MyCases from "@/pages/my-cases";
 import Onboarding from "@/pages/onboarding";
 import Status from "@/pages/status";
 import Changelog from "@/pages/changelog";
+import GiftCards from "@/pages/gift-cards";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 
@@ -392,6 +393,7 @@ function Router() {
             <Route path="/onboarding" component={Onboarding} />
             <Route path="/status" component={Status} />
             <Route path="/changelog" component={Changelog} />
+            <Route path="/gift-cards" component={GiftCards} />
             <Route component={NotFound} />
           </Switch>
         </BanWall>

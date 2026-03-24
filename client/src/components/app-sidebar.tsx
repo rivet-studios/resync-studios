@@ -43,6 +43,7 @@ import {
   BarChart3,
   Activity,
   ScrollText,
+  Gift,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -90,6 +91,7 @@ const storeItems = [
   { title: "Store", url: "/store", icon: Store },
   { title: "Subscriptions", url: "/store/subscriptions", icon: Crown },
   { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
+  { title: "Gift Cards", url: "/gift-cards", icon: Gift },
 ];
 
 const supportItems = [
