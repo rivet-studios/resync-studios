@@ -3,24 +3,24 @@ import { getUncachableStripeClient } from "./stripeClient";
 const VIP_TIERS = [
   {
     id: "bronze",
-    name: "Bronze VIP®",
+    name: "Bronze VIP",
     description:
-      "The Bronze VIP® package is designed for supporters who want to help RIVET Studios grow while enhancing their RIVET Studios account experience exclusively.",
-    priceAmount: 1399,
+      "The Bronze Supporter package is for supporters who want to contribute to RIVET Studios while receiving light account enhancements within the RIVET Studios ecosystem only. This tier includes select boosts, limited priority access, and basic recognition perks designed to modestly improve your website and Roblox experience. Your support helps fund development, servers, and updates for our PC titles. Perks remain active while your subscription is active.",
+    priceAmount: 999,
   },
   {
     id: "diamond",
-    name: "Diamond VIP®",
+    name: "Diamond VIP",
     description:
-      "The Diamond VIP® package is built for supporters who want the highest level of benefits within RIVET Studios exclusively.",
-    priceAmount: 3499,
+      "The Diamond Supporter package is built for supporters who want a powerful upgrade to their RIVET Studios experience. This tier unlocks expanded premium boosts, enhanced priority access, and high-value recognition across the RIVET Studios ecosystem only. Your support directly fuels development, infrastructure, and future expansion for our Roblox titles, while you receive a strong collection of impactful quality of life benefits. Perks remain active during your subscription.",
+    priceAmount: 1499,
   },
   {
     id: "founders",
-    name: "Founder's Edition VIP®",
+    name: "Founders Edition VIP",
     description:
-      "The Founder's Edition VIP® package is our most exclusive tier, created for supporters who want the highest level of access within RIVET Studios exclusively.",
-    priceAmount: 4399,
+      "The Founder’s Edition Supporter package is our most exclusive tier, created for supporters who want elite status within RIVET Studios. This membership delivers top-level boosts, elite recognition, and priority privileges across the RIVET Studios ecosystem. Your contribution supports long-term growth and expansion for our Roblox games while granting access to premier quality of life upgrades. Benefits remain active during your subscription.",
+    priceAmount: 1999,
   },
 ];
 
