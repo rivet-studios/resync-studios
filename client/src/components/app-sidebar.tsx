@@ -317,7 +317,7 @@ export function AppSidebar() {
                     <ChevronUp className="w-4 h-4" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" align="start" className="w-56">
+                <DropdownMenuContent side="top" align="start" className="w-56 z-[100]">
                   <DropdownMenuItem asChild>
                     <Link href={`/profile/${user.id}`} className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
