@@ -585,9 +585,9 @@ export default function AdminCP() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <div className="w-56 border-r border-border flex flex-col p-3 gap-1">
-        <div className="flex items-center gap-3 px-3 py-4 mb-2">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">
+      <div className="md:w-56 border-b md:border-b-0 md:border-r border-border flex md:flex-col p-3 gap-1 overflow-x-auto md:overflow-x-visible">
+        <div className="hidden md:flex items-center gap-3 px-3 py-4 mb-2">
           <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
             <Shield className="w-4 h-4 text-primary-foreground" />
           </div>
@@ -604,20 +604,20 @@ export default function AdminCP() {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-md font-medium text-sm transition-colors text-left ${
+            className={`flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-md font-medium text-xs md:text-sm transition-colors text-left whitespace-nowrap ${
               activeTab === item.id
                 ? "bg-secondary text-foreground"
                 : "text-muted-foreground hover-elevate"
             }`}
             data-testid={`button-admincp-tab-${item.id}`}
           >
-            <item.icon className="w-4 h-4" />
-            {item.label}
+            <item.icon className="w-4 h-4 shrink-0" />
+            <span className="hidden md:inline">{item.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+      <div className="flex-1 p-4 md:p-6 space-y-6 overflow-y-auto">
         {activeTab === "dashboard" && (
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">

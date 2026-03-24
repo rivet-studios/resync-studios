@@ -150,7 +150,7 @@ export default function Landing() {
               Building the Future of Digital Experiences
             </Badge>
             <h1
-              className="text-6xl sm:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]"
+              className="text-4xl sm:text-6xl md:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]"
               data-testid="text-hero-title"
             >
               RIVET Studios<span className="text-muted-foreground">™</span>

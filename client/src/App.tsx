@@ -124,10 +124,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           <SidebarTrigger className="-ml-1" />
         </header>
         <main className="flex-1 w-full">{children}</main>
-        <footer className="bg-card border-t border-border/50 py-20">
+        <footer className="bg-card border-t border-border/50 py-10 md:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-12 mb-16">
-              <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
+              <div className="col-span-2 md:col-span-1 space-y-6">
                 <div className="flex items-center gap-2.5">
                   <img
                     src="/attached_assets/logo.svg"

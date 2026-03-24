@@ -658,9 +658,9 @@ export default function ModCP() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <div className="w-64 border-r border-border flex flex-col p-4 space-y-1">
-        <div className="flex items-center gap-3 px-4 py-6 mb-2">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">
+      <div className="md:w-64 border-b md:border-b-0 md:border-r border-border flex md:flex-col p-3 md:p-4 gap-1 md:space-y-1 overflow-x-auto md:overflow-x-visible">
+        <div className="hidden md:flex items-center gap-3 px-4 py-6 mb-2">
           <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
             <Shield className="w-4 h-4 text-background" />
           </div>
@@ -674,17 +674,17 @@ export default function ModCP() {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-md font-medium text-sm transition-colors w-full text-left ${
+            className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-2.5 rounded-md font-medium text-xs md:text-sm transition-colors md:w-full text-left whitespace-nowrap ${
               activeTab === item.id
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover-elevate"
             }`}
             data-testid={`button-modcp-tab-${item.id}`}
           >
-            <item.icon className="w-4 h-4" />
-            <span className="flex-1">{item.label}</span>
+            <item.icon className="w-4 h-4 shrink-0" />
+            <span className="hidden md:inline flex-1">{item.label}</span>
             {item.count !== undefined && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 hidden md:inline-flex">
                 {item.count}
               </Badge>
             )}
@@ -692,7 +692,7 @@ export default function ModCP() {
         ))}
       </div>
 
-      <div className="flex-1 p-8 space-y-6 overflow-y-auto">
+      <div className="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto">
         {activeTab === "dashboard" && (
           <>
             <div>
