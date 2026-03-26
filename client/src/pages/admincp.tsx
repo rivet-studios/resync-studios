@@ -3,12 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -100,14 +95,18 @@ export default function AdminCP() {
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryGroup, setNewCategoryGroup] = useState("");
   const [newCategoryOrder, setNewCategoryOrder] = useState("0");
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null,
+  );
   const [editCategoryName, setEditCategoryName] = useState("");
   const [editCategoryDescription, setEditCategoryDescription] = useState("");
   const [editCategoryGroup, setEditCategoryGroup] = useState("");
   const [editCategoryOrder, setEditCategoryOrder] = useState("0");
   const [inlineEditUserId, setInlineEditUserId] = useState<string | null>(null);
   const [inlineEditRank, setInlineEditRank] = useState("");
-  const [usersSubTab, setUsersSubTab] = useState<"list" | "role-history" | "bulk">("list");
+  const [usersSubTab, setUsersSubTab] = useState<
+    "list" | "role-history" | "bulk"
+  >("list");
   const [bulkSelectedUserIds, setBulkSelectedUserIds] = useState<string[]>([]);
   const [bulkRank, setBulkRank] = useState("");
   const [bannerTitle, setBannerTitle] = useState("");
@@ -210,12 +209,18 @@ export default function AdminCP() {
     enabled: !!isAdmin && activeTab === "policies",
   });
 
-  const { data: forumCategories = [], isLoading: categoriesLoading } = useQuery<any[]>({
+  const { data: forumCategories = [], isLoading: categoriesLoading } = useQuery<
+    any[]
+  >({
     queryKey: ["/api/forums/categories"],
     enabled: !!isAdmin && activeTab === "forums",
   });
 
-  const { data: forumStats } = useQuery<{ totalThreads: number; totalReplies: number; totalCategories: number }>({
+  const { data: forumStats } = useQuery<{
+    totalThreads: number;
+    totalReplies: number;
+    totalCategories: number;
+  }>({
     queryKey: ["/api/admin/forum-stats"],
     enabled: !!isAdmin && activeTab === "forums",
   });
@@ -223,7 +228,9 @@ export default function AdminCP() {
   const { data: quickViewWarnings = [] } = useQuery<any[]>({
     queryKey: ["/api/warnings/user", quickViewUserId],
     queryFn: async () => {
-      const res = await fetch(`/api/warnings/user/${quickViewUserId}`, { credentials: "include" });
+      const res = await fetch(`/api/warnings/user/${quickViewUserId}`, {
+        credentials: "include",
+      });
       if (!res.ok) return [];
       return res.json();
     },
@@ -245,9 +252,12 @@ export default function AdminCP() {
     return quickViewBans.filter((b: any) => b.userId === quickViewUserId);
   }, [quickViewUserId, quickViewBans]);
 
-  const { data: roleHistory = [], isLoading: roleHistoryLoading } = useQuery<any[]>({
+  const { data: roleHistory = [], isLoading: roleHistoryLoading } = useQuery<
+    any[]
+  >({
     queryKey: ["/api/admin/role-history"],
-    enabled: !!isAdmin && activeTab === "users" && usersSubTab === "role-history",
+    enabled:
+      !!isAdmin && activeTab === "users" && usersSubTab === "role-history",
   });
 
   const accountAgeDistribution = useMemo(() => {
@@ -264,7 +274,9 @@ export default function AdminCP() {
     allUsers.forEach((u: any) => {
       if (!u.createdAt) return;
       const created = new Date(u.createdAt);
-      const diffDays = Math.floor((now.getTime() - created.getTime()) / 86400000);
+      const diffDays = Math.floor(
+        (now.getTime() - created.getTime()) / 86400000,
+      );
       if (diffDays < 7) buckets["< 1 week"]++;
       else if (diffDays < 28) buckets["1-4 weeks"]++;
       else if (diffDays < 90) buckets["1-3 months"]++;
@@ -288,7 +300,11 @@ export default function AdminCP() {
       setBulkRank("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to bulk update ranks", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to bulk update ranks",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -304,21 +320,35 @@ export default function AdminCP() {
       setBannerContent("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to create banner", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to create banner",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const staffActivity = useMemo(() => {
-    const staffCounts: Record<string, { username: string; count: number; lastAction: string }> = {};
+    const staffCounts: Record<
+      string,
+      { username: string; count: number; lastAction: string }
+    > = {};
     activity.forEach((item: any) => {
       const actorId = item.actorId;
       if (!actorId) return;
       if (!staffCounts[actorId]) {
         const staffUser = allUsers.find((u: any) => u.id === actorId);
-        staffCounts[actorId] = { username: staffUser?.username || actorId.substring(0, 8), count: 0, lastAction: "" };
+        staffCounts[actorId] = {
+          username: staffUser?.username || actorId.substring(0, 8),
+          count: 0,
+          lastAction: "",
+        };
       }
       staffCounts[actorId].count++;
-      if (!staffCounts[actorId].lastAction || new Date(item.createdAt) > new Date(staffCounts[actorId].lastAction)) {
+      if (
+        !staffCounts[actorId].lastAction ||
+        new Date(item.createdAt) > new Date(staffCounts[actorId].lastAction)
+      ) {
         staffCounts[actorId].lastAction = item.createdAt;
       }
     });
@@ -332,7 +362,7 @@ export default function AdminCP() {
     if (!allUsers.length) return [];
     const counts: Record<string, number> = {};
     allUsers.forEach((u: any) => {
-      const rank = u.userRank || "Member";
+      const rank = u.userRank || "Active Members";
       counts[rank] = (counts[rank] || 0) + 1;
     });
     return Object.entries(counts)
@@ -453,13 +483,21 @@ export default function AdminCP() {
       setNewCategoryOrder("0");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to create category", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to create category",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ id, ...data }: any) => {
-      const res = await apiRequest("PATCH", `/api/admin/forum-categories/${id}`, data);
+      const res = await apiRequest(
+        "PATCH",
+        `/api/admin/forum-categories/${id}`,
+        data,
+      );
       return res.json();
     },
     onSuccess: () => {
@@ -468,13 +506,20 @@ export default function AdminCP() {
       setEditingCategoryId(null);
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update category", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update category",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const deleteCategoryMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiRequest("DELETE", `/api/admin/forum-categories/${id}`);
+      const res = await apiRequest(
+        "DELETE",
+        `/api/admin/forum-categories/${id}`,
+      );
       return res.json();
     },
     onSuccess: () => {
@@ -483,7 +528,11 @@ export default function AdminCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/forum-stats"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to delete category", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to delete category",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -547,8 +596,7 @@ export default function AdminCP() {
   }
 
   const allRankOptions = [
-    "Member",
-    "Active Member",
+    "Active Members",
     "Trusted Member",
     "Community Partner",
     "Bronze VIP",
@@ -708,15 +756,17 @@ export default function AdminCP() {
                 {
                   label: "Pending Items",
                   value:
-                    (stats?.pendingReports || 0) +
-                    (stats?.pendingAppeals || 0),
+                    (stats?.pendingReports || 0) + (stats?.pendingAppeals || 0),
                   icon: AlertTriangle,
                   sub: `${stats?.pendingReports || 0} reports, ${stats?.pendingAppeals || 0} appeals`,
                   color: "text-yellow-400",
                   bg: "bg-yellow-500/10",
                 },
               ].map((stat) => (
-                <Card key={stat.label} data-testid={`card-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                <Card
+                  key={stat.label}
+                  data-testid={`card-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -771,7 +821,9 @@ export default function AdminCP() {
                     {
                       label: "Site Status",
                       icon: siteSettings?.isOffline ? WifiOff : Wifi,
-                      status: siteSettings?.isOffline ? "Offline Mode" : "Online",
+                      status: siteSettings?.isOffline
+                        ? "Offline Mode"
+                        : "Online",
                       ok: !siteSettings?.isOffline,
                     },
                   ].map((item) => (
@@ -922,10 +974,7 @@ export default function AdminCP() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <Badge
-                                variant="outline"
-                                className="text-[10px]"
-                              >
+                              <Badge variant="outline" className="text-[10px]">
                                 {item.type}
                               </Badge>
                               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
@@ -1076,7 +1125,9 @@ export default function AdminCP() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground">Create a quick site-wide banner announcement.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Create a quick site-wide banner announcement.
+                  </p>
                   <Input
                     value={bannerTitle}
                     onChange={(e) => setBannerTitle(e.target.value)}
@@ -1100,12 +1151,18 @@ export default function AdminCP() {
                         isPublished: true,
                       });
                     }}
-                    disabled={!bannerTitle || !bannerContent || createBannerMutation.isPending}
+                    disabled={
+                      !bannerTitle ||
+                      !bannerContent ||
+                      createBannerMutation.isPending
+                    }
                     className="w-full"
                     data-testid="button-create-banner"
                   >
                     <Bell className="w-4 h-4 mr-2" />
-                    {createBannerMutation.isPending ? "Publishing..." : "Publish Banner"}
+                    {createBannerMutation.isPending
+                      ? "Publishing..."
+                      : "Publish Banner"}
                   </Button>
                 </CardContent>
               </Card>
@@ -1121,18 +1178,31 @@ export default function AdminCP() {
                   {accountAgeDistribution.length === 0 ? (
                     <div className="text-center py-8">
                       <Calendar className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                      <p className="text-xs text-muted-foreground">No data available</p>
+                      <p className="text-xs text-muted-foreground">
+                        No data available
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {accountAgeDistribution.map(({ label, count }) => {
-                        const maxCount = Math.max(...accountAgeDistribution.map((d) => d.count), 1);
+                        const maxCount = Math.max(
+                          ...accountAgeDistribution.map((d) => d.count),
+                          1,
+                        );
                         const pct = Math.round((count / maxCount) * 100);
                         return (
-                          <div key={label} className="space-y-1" data-testid={`age-bucket-${label.replace(/\s/g, "-")}`}>
+                          <div
+                            key={label}
+                            className="space-y-1"
+                            data-testid={`age-bucket-${label.replace(/\s/g, "-")}`}
+                          >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs text-muted-foreground">{label}</span>
-                              <span className="text-xs font-medium text-foreground">{count}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {label}
+                              </span>
+                              <span className="text-xs font-medium text-foreground">
+                                {count}
+                              </span>
                             </div>
                             <div className="w-full h-2 rounded-md bg-secondary overflow-hidden">
                               <div
@@ -1173,7 +1243,9 @@ export default function AdminCP() {
                 </Button>
                 <Button
                   size="sm"
-                  variant={usersSubTab === "role-history" ? "default" : "outline"}
+                  variant={
+                    usersSubTab === "role-history" ? "default" : "outline"
+                  }
                   onClick={() => setUsersSubTab("role-history")}
                   data-testid="button-users-subtab-role-history"
                 >
@@ -1196,7 +1268,9 @@ export default function AdminCP() {
                   <CardTitle className="text-sm font-semibold uppercase tracking-wider">
                     Role Change History
                   </CardTitle>
-                  <Badge variant="outline" className="text-[10px]">{roleHistory.length}</Badge>
+                  <Badge variant="outline" className="text-[10px]">
+                    {roleHistory.length}
+                  </Badge>
                 </CardHeader>
                 <CardContent>
                   {roleHistoryLoading ? (
@@ -1208,13 +1282,17 @@ export default function AdminCP() {
                   ) : roleHistory.length === 0 ? (
                     <div className="text-center py-12">
                       <History className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                      <p className="text-sm text-muted-foreground">No role changes recorded yet</p>
+                      <p className="text-sm text-muted-foreground">
+                        No role changes recorded yet
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-1 max-h-[600px] overflow-y-auto">
                       {roleHistory.map((log: any) => {
                         let meta: any = {};
-                        try { meta = JSON.parse(log.metadata || "{}"); } catch {}
+                        try {
+                          meta = JSON.parse(log.metadata || "{}");
+                        } catch {}
                         return (
                           <div
                             key={log.id}
@@ -1226,22 +1304,41 @@ export default function AdminCP() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-sm font-medium">{log.target?.username || log.targetId?.substring(0, 8)}</span>
+                                <span className="text-sm font-medium">
+                                  {log.target?.username ||
+                                    log.targetId?.substring(0, 8)}
+                                </span>
                                 {meta.oldRank && (
                                   <>
-                                    <Badge variant="outline" className="text-[10px]">{meta.oldRank}</Badge>
+                                    <Badge
+                                      variant="outline"
+                                      className="text-[10px]"
+                                    >
+                                      {meta.oldRank}
+                                    </Badge>
                                     <ChevronRight className="w-3 h-3 text-muted-foreground" />
                                   </>
                                 )}
                                 {meta.newRank && (
-                                  <Badge variant="secondary" className="text-[10px]">{meta.newRank}</Badge>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-[10px]"
+                                  >
+                                    {meta.newRank}
+                                  </Badge>
                                 )}
                               </div>
                               <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5 flex-wrap">
-                                <span>by {log.actor?.username || log.actorId?.substring(0, 8)}</span>
+                                <span>
+                                  by{" "}
+                                  {log.actor?.username ||
+                                    log.actorId?.substring(0, 8)}
+                                </span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
-                                  {log.createdAt ? new Date(log.createdAt).toLocaleString() : ""}
+                                  {log.createdAt
+                                    ? new Date(log.createdAt).toLocaleString()
+                                    : ""}
                                 </span>
                               </div>
                             </div>
@@ -1262,26 +1359,43 @@ export default function AdminCP() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-xs text-muted-foreground">Select users from the list below and assign them a new rank all at once.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Select users from the list below and assign them a new rank
+                    all at once.
+                  </p>
                   <div className="flex items-center gap-3 flex-wrap">
                     <Select value={bulkRank} onValueChange={setBulkRank}>
-                      <SelectTrigger className="w-[200px]" data-testid="select-bulk-rank">
+                      <SelectTrigger
+                        className="w-[200px]"
+                        data-testid="select-bulk-rank"
+                      >
                         <SelectValue placeholder="Select rank..." />
                       </SelectTrigger>
                       <SelectContent>
                         {allRankOptions.map((rank) => (
-                          <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                          <SelectItem key={rank} value={rank}>
+                            {rank}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     <Button
-                      disabled={bulkSelectedUserIds.length === 0 || !bulkRank || bulkRankMutation.isPending}
+                      disabled={
+                        bulkSelectedUserIds.length === 0 ||
+                        !bulkRank ||
+                        bulkRankMutation.isPending
+                      }
                       onClick={() => {
-                        bulkRankMutation.mutate({ userIds: bulkSelectedUserIds, userRank: bulkRank });
+                        bulkRankMutation.mutate({
+                          userIds: bulkSelectedUserIds,
+                          userRank: bulkRank,
+                        });
                       }}
                       data-testid="button-apply-bulk-rank"
                     >
-                      {bulkRankMutation.isPending ? "Applying..." : `Apply to ${bulkSelectedUserIds.length} User${bulkSelectedUserIds.length !== 1 ? "s" : ""}`}
+                      {bulkRankMutation.isPending
+                        ? "Applying..."
+                        : `Apply to ${bulkSelectedUserIds.length} User${bulkSelectedUserIds.length !== 1 ? "s" : ""}`}
                     </Button>
                     {bulkSelectedUserIds.length > 0 && (
                       <Button
@@ -1311,7 +1425,9 @@ export default function AdminCP() {
                         className="flex items-center gap-3 p-3 rounded-md bg-secondary/30 hover-elevate cursor-pointer"
                         onClick={() => {
                           setBulkSelectedUserIds((prev) =>
-                            prev.includes(u.id) ? prev.filter((id) => id !== u.id) : [...prev, u.id]
+                            prev.includes(u.id)
+                              ? prev.filter((id) => id !== u.id)
+                              : [...prev, u.id],
                           );
                         }}
                         data-testid={`row-bulk-user-${u.id}`}
@@ -1320,7 +1436,9 @@ export default function AdminCP() {
                           checked={bulkSelectedUserIds.includes(u.id)}
                           onCheckedChange={(checked) => {
                             setBulkSelectedUserIds((prev) =>
-                              checked ? [...prev, u.id] : prev.filter((id) => id !== u.id)
+                              checked
+                                ? [...prev, u.id]
+                                : prev.filter((id) => id !== u.id),
                             );
                           }}
                           data-testid={`checkbox-bulk-user-${u.id}`}
@@ -1329,10 +1447,16 @@ export default function AdminCP() {
                           {(u.username || u.email || "?")[0]}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm text-foreground truncate">{u.username || "No username"}</div>
-                          <div className="text-xs text-muted-foreground truncate">{u.email}</div>
+                          <div className="font-medium text-sm text-foreground truncate">
+                            {u.username || "No username"}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {u.email}
+                          </div>
                         </div>
-                        <Badge variant="outline" className="text-xs">{u.userRank || "Member"}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {u.userRank || "Active Members"}
+                        </Badge>
                       </div>
                     ))}
                   </div>
@@ -1353,204 +1477,291 @@ export default function AdminCP() {
                   />
                 </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider">
-                  {userSearch
-                    ? `Search Results (${displayUsers.length})`
-                    : `All Users (${displayUsers.length})`}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {usersLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <Skeleton key={i} className="h-14 w-full rounded-md" />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-1 max-h-[600px] overflow-y-auto">
-                    {displayUsers.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground">
-                          No users found
-                        </p>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                    <CardTitle className="text-sm font-semibold uppercase tracking-wider">
+                      {userSearch
+                        ? `Search Results (${displayUsers.length})`
+                        : `All Users (${displayUsers.length})`}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {usersLoading ? (
+                      <div className="space-y-3">
+                        {[1, 2, 3].map((i) => (
+                          <Skeleton
+                            key={i}
+                            className="h-14 w-full rounded-md"
+                          />
+                        ))}
                       </div>
                     ) : (
-                      displayUsers.map((u: any) => (
-                        <div key={u.id}>
-                        <div
-                          className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30 hover-elevate cursor-pointer"
-                          data-testid={`row-user-${u.id}`}
-                          onClick={() => setQuickViewUserId(quickViewUserId === u.id ? null : u.id)}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-semibold text-sm uppercase shrink-0">
-                              {(u.username || u.email || "?")[0]}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="font-medium text-sm text-foreground truncate">
-                                {u.username || "No username"}
-                              </div>
-                              <div className="text-xs text-muted-foreground truncate">
-                                {u.email}
-                              </div>
-                            </div>
+                      <div className="space-y-1 max-h-[600px] overflow-y-auto">
+                        {displayUsers.length === 0 ? (
+                          <div className="text-center py-12">
+                            <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                            <p className="text-sm text-muted-foreground">
+                              No users found
+                            </p>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-                            {inlineEditUserId === u.id ? (
-                              <div className="flex items-center gap-2">
-                                <Select
-                                  value={inlineEditRank}
-                                  onValueChange={setInlineEditRank}
-                                >
-                                  <SelectTrigger
-                                    className="w-40"
-                                    data-testid={`select-inline-rank-${u.id}`}
-                                  >
-                                    <SelectValue placeholder="Select rank" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {allRankOptions.map((rank) => (
-                                      <SelectItem key={rank} value={rank}>
-                                        {rank}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    if (inlineEditRank) {
-                                      updateRankMutation.mutate({
-                                        userId: u.id,
-                                        userRank: inlineEditRank,
-                                      });
-                                    }
-                                  }}
-                                  disabled={
-                                    !inlineEditRank ||
-                                    updateRankMutation.isPending
-                                  }
-                                  data-testid={`button-save-rank-${u.id}`}
-                                >
-                                  <Check className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setInlineEditUserId(null);
-                                    setInlineEditRank("");
-                                  }}
-                                  data-testid={`button-cancel-rank-${u.id}`}
-                                >
-                                  <X className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <>
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {u.userRank || "Member"}
-                                </Badge>
-                                {u.isAdmin && (
-                                  <Badge variant="secondary" className="text-[10px]">
-                                    Admin
-                                  </Badge>
-                                )}
-                                {u.isModerator && (
-                                  <Badge variant="secondary" className="text-[10px]">
-                                    Mod
-                                  </Badge>
-                                )}
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setInlineEditUserId(u.id);
-                                    setInlineEditRank(u.userRank || "Member");
-                                  }}
-                                  data-testid={`button-edit-rank-${u.id}`}
-                                >
-                                  <Edit3 className="w-3.5 h-3.5" />
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        {quickViewUserId === u.id && quickViewUser && (
-                          <div className="mt-1 p-4 rounded-md bg-secondary/50 space-y-3" data-testid={`panel-quick-view-${u.id}`}>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rank</p>
-                                <p className="text-sm font-medium text-foreground">{quickViewUser.userRank || "Member"}</p>
-                              </div>
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">VIP Tier</p>
-                                <p className="text-sm font-medium text-foreground">{quickViewUser.vipTier || "None"}</p>
-                              </div>
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Joined</p>
-                                <p className="text-sm font-medium text-foreground">{quickViewUser.createdAt ? new Date(quickViewUser.createdAt).toLocaleDateString() : "Unknown"}</p>
-                              </div>
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Warnings</p>
-                                <p className="text-sm font-medium text-foreground">{quickViewWarnings.length} ({quickViewWarnings.filter((w: any) => w.isActive).length} active)</p>
-                              </div>
-                            </div>
-                            {quickViewUser.bio && (
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bio</p>
-                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{quickViewUser.bio}</p>
-                              </div>
-                            )}
-                            {(quickViewUser.additionalRanks || []).length > 0 && (
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Additional Ranks</p>
-                                <div className="flex gap-1 flex-wrap">
-                                  {quickViewUser.additionalRanks.map((r: string) => (
-                                    <Badge key={r} variant="outline" className="text-[10px]">{r}</Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            {quickViewUserBans.length > 0 && (
-                              <div>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Ban History</p>
-                                <div className="space-y-1">
-                                  {quickViewUserBans.slice(0, 3).map((b: any) => (
-                                    <div key={b.id} className="flex items-center gap-2 text-xs">
-                                      <Badge variant="outline" className={b.isActive ? "bg-red-500/20 text-red-400 border-red-500/30 text-[10px]" : "text-[10px]"}>
-                                        {b.isActive ? "Active" : "Lifted"}
-                                      </Badge>
-                                      <span className="text-muted-foreground truncate">{b.reason}</span>
+                        ) : (
+                          displayUsers.map((u: any) => (
+                            <div key={u.id}>
+                              <div
+                                className="flex items-center justify-between gap-4 p-3 rounded-md bg-secondary/30 hover-elevate cursor-pointer"
+                                data-testid={`row-user-${u.id}`}
+                                onClick={() =>
+                                  setQuickViewUserId(
+                                    quickViewUserId === u.id ? null : u.id,
+                                  )
+                                }
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-semibold text-sm uppercase shrink-0">
+                                    {(u.username || u.email || "?")[0]}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="font-medium text-sm text-foreground truncate">
+                                      {u.username || "No username"}
                                     </div>
-                                  ))}
+                                    <div className="text-xs text-muted-foreground truncate">
+                                      {u.email}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                                  {inlineEditUserId === u.id ? (
+                                    <div className="flex items-center gap-2">
+                                      <Select
+                                        value={inlineEditRank}
+                                        onValueChange={setInlineEditRank}
+                                      >
+                                        <SelectTrigger
+                                          className="w-40"
+                                          data-testid={`select-inline-rank-${u.id}`}
+                                        >
+                                          <SelectValue placeholder="Select rank" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {allRankOptions.map((rank) => (
+                                            <SelectItem key={rank} value={rank}>
+                                              {rank}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          if (inlineEditRank) {
+                                            updateRankMutation.mutate({
+                                              userId: u.id,
+                                              userRank: inlineEditRank,
+                                            });
+                                          }
+                                        }}
+                                        disabled={
+                                          !inlineEditRank ||
+                                          updateRankMutation.isPending
+                                        }
+                                        data-testid={`button-save-rank-${u.id}`}
+                                      >
+                                        <Check className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          setInlineEditUserId(null);
+                                          setInlineEditRank("");
+                                        }}
+                                        data-testid={`button-cancel-rank-${u.id}`}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs"
+                                      >
+                                        {u.userRank || "Active Members"}
+                                      </Badge>
+                                      {u.isAdmin && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-[10px]"
+                                        >
+                                          Corporate
+                                        </Badge>
+                                      )}
+                                      {u.isModerator && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-[10px]"
+                                        >
+                                          Community Staff
+                                        </Badge>
+                                      )}
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          setInlineEditUserId(u.id);
+                                          setInlineEditRank(
+                                            u.userRank || "Active Members",
+                                          );
+                                        }}
+                                        data-testid={`button-edit-rank-${u.id}`}
+                                      >
+                                        <Edit3 className="w-3.5 h-3.5" />
+                                      </Button>
+                                    </>
+                                  )}
                                 </div>
                               </div>
-                            )}
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Button size="sm" variant="outline" asChild>
-                                <a href={`/user/${u.id}`} data-testid={`link-view-profile-${u.id}`}>View Profile</a>
-                              </Button>
-                              <Button size="sm" variant="outline" asChild>
-                                <a href={`/modcp?tab=warnings&userId=${u.id}`} data-testid={`link-view-user-warnings-${u.id}`}>View Warnings</a>
-                              </Button>
+                              {quickViewUserId === u.id && quickViewUser && (
+                                <div
+                                  className="mt-1 p-4 rounded-md bg-secondary/50 space-y-3"
+                                  data-testid={`panel-quick-view-${u.id}`}
+                                >
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        Rank
+                                      </p>
+                                      <p className="text-sm font-medium text-foreground">
+                                        {quickViewUser.userRank || "Member"}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        VIP Tier
+                                      </p>
+                                      <p className="text-sm font-medium text-foreground">
+                                        {quickViewUser.vipTier || "None"}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        Joined
+                                      </p>
+                                      <p className="text-sm font-medium text-foreground">
+                                        {quickViewUser.createdAt
+                                          ? new Date(
+                                              quickViewUser.createdAt,
+                                            ).toLocaleDateString()
+                                          : "Unknown"}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        Warnings
+                                      </p>
+                                      <p className="text-sm font-medium text-foreground">
+                                        {quickViewWarnings.length} (
+                                        {
+                                          quickViewWarnings.filter(
+                                            (w: any) => w.isActive,
+                                          ).length
+                                        }{" "}
+                                        active)
+                                      </p>
+                                    </div>
+                                  </div>
+                                  {quickViewUser.bio && (
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        Bio
+                                      </p>
+                                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                                        {quickViewUser.bio}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {(quickViewUser.additionalRanks || [])
+                                    .length > 0 && (
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                                        Additional Ranks
+                                      </p>
+                                      <div className="flex gap-1 flex-wrap">
+                                        {quickViewUser.additionalRanks.map(
+                                          (r: string) => (
+                                            <Badge
+                                              key={r}
+                                              variant="outline"
+                                              className="text-[10px]"
+                                            >
+                                              {r}
+                                            </Badge>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {quickViewUserBans.length > 0 && (
+                                    <div>
+                                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                                        Ban History
+                                      </p>
+                                      <div className="space-y-1">
+                                        {quickViewUserBans
+                                          .slice(0, 3)
+                                          .map((b: any) => (
+                                            <div
+                                              key={b.id}
+                                              className="flex items-center gap-2 text-xs"
+                                            >
+                                              <Badge
+                                                variant="outline"
+                                                className={
+                                                  b.isActive
+                                                    ? "bg-red-500/20 text-red-400 border-red-500/30 text-[10px]"
+                                                    : "text-[10px]"
+                                                }
+                                              >
+                                                {b.isActive
+                                                  ? "Active"
+                                                  : "Lifted"}
+                                              </Badge>
+                                              <span className="text-muted-foreground truncate">
+                                                {b.reason}
+                                              </span>
+                                            </div>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <Button size="sm" variant="outline" asChild>
+                                      <a
+                                        href={`/user/${u.id}`}
+                                        data-testid={`link-view-profile-${u.id}`}
+                                      >
+                                        View Profile
+                                      </a>
+                                    </Button>
+                                    <Button size="sm" variant="outline" asChild>
+                                      <a
+                                        href={`/modcp?tab=warnings&userId=${u.id}`}
+                                        data-testid={`link-view-user-warnings-${u.id}`}
+                                      >
+                                        View Warnings
+                                      </a>
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </div>
+                          ))
                         )}
-                        </div>
-                      ))
+                      </div>
                     )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
               </>
             )}
           </>
@@ -1714,8 +1925,12 @@ export default function AdminCP() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  queryClient.invalidateQueries({ queryKey: ["/api/forums/categories"] });
-                  queryClient.invalidateQueries({ queryKey: ["/api/admin/forum-stats"] });
+                  queryClient.invalidateQueries({
+                    queryKey: ["/api/forums/categories"],
+                  });
+                  queryClient.invalidateQueries({
+                    queryKey: ["/api/admin/forum-stats"],
+                  });
                 }}
                 data-testid="button-refresh-forum-stats"
               >
@@ -1725,21 +1940,47 @@ export default function AdminCP() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { label: "Total Threads", value: forumStats?.totalThreads || 0, icon: MessageSquare, color: "text-blue-400", bg: "bg-blue-500/10" },
-                { label: "Total Replies", value: forumStats?.totalReplies || 0, icon: MessageSquare, color: "text-green-400", bg: "bg-green-500/10" },
-                { label: "Categories", value: forumStats?.totalCategories || 0, icon: Folder, color: "text-purple-400", bg: "bg-purple-500/10" },
+                {
+                  label: "Total Threads",
+                  value: forumStats?.totalThreads || 0,
+                  icon: MessageSquare,
+                  color: "text-blue-400",
+                  bg: "bg-blue-500/10",
+                },
+                {
+                  label: "Total Replies",
+                  value: forumStats?.totalReplies || 0,
+                  icon: MessageSquare,
+                  color: "text-green-400",
+                  bg: "bg-green-500/10",
+                },
+                {
+                  label: "Categories",
+                  value: forumStats?.totalCategories || 0,
+                  icon: Folder,
+                  color: "text-purple-400",
+                  bg: "bg-purple-500/10",
+                },
               ].map((stat) => (
-                <Card key={stat.label} data-testid={`card-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                <Card
+                  key={stat.label}
+                  data-testid={`card-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         {stat.label}
                       </span>
-                      <div className={`w-8 h-8 rounded-md ${stat.bg} flex items-center justify-center`}>
+                      <div
+                        className={`w-8 h-8 rounded-md ${stat.bg} flex items-center justify-center`}
+                      >
                         <stat.icon className={`w-4 h-4 ${stat.color}`} />
                       </div>
                     </div>
-                    <div className="text-3xl font-semibold text-foreground" data-testid={`text-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
+                    <div
+                      className="text-3xl font-semibold text-foreground"
+                      data-testid={`text-forum-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}
+                    >
                       {stat.value.toLocaleString()}
                     </div>
                   </CardContent>
@@ -1810,11 +2051,15 @@ export default function AdminCP() {
                       order: parseInt(newCategoryOrder) || 0,
                     });
                   }}
-                  disabled={!newCategoryName || createCategoryMutation.isPending}
+                  disabled={
+                    !newCategoryName || createCategoryMutation.isPending
+                  }
                   data-testid="button-create-category"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  {createCategoryMutation.isPending ? "Creating..." : "Create Category"}
+                  {createCategoryMutation.isPending
+                    ? "Creating..."
+                    : "Create Category"}
                 </Button>
               </CardContent>
             </Card>
@@ -1854,36 +2099,52 @@ export default function AdminCP() {
                           <div className="space-y-3">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Name</label>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                                  Name
+                                </label>
                                 <Input
                                   value={editCategoryName}
-                                  onChange={(e) => setEditCategoryName(e.target.value)}
+                                  onChange={(e) =>
+                                    setEditCategoryName(e.target.value)
+                                  }
                                   data-testid={`input-edit-category-name-${cat.id}`}
                                 />
                               </div>
                               <div>
-                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Group</label>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                                  Group
+                                </label>
                                 <Input
                                   value={editCategoryGroup}
-                                  onChange={(e) => setEditCategoryGroup(e.target.value)}
+                                  onChange={(e) =>
+                                    setEditCategoryGroup(e.target.value)
+                                  }
                                   data-testid={`input-edit-category-group-${cat.id}`}
                                 />
                               </div>
                             </div>
                             <div>
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                                Description
+                              </label>
                               <Textarea
                                 value={editCategoryDescription}
-                                onChange={(e) => setEditCategoryDescription(e.target.value)}
+                                onChange={(e) =>
+                                  setEditCategoryDescription(e.target.value)
+                                }
                                 data-testid={`input-edit-category-description-${cat.id}`}
                               />
                             </div>
                             <div className="w-32">
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Order</label>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                                Order
+                              </label>
                               <Input
                                 type="number"
                                 value={editCategoryOrder}
-                                onChange={(e) => setEditCategoryOrder(e.target.value)}
+                                onChange={(e) =>
+                                  setEditCategoryOrder(e.target.value)
+                                }
                                 data-testid={`input-edit-category-order-${cat.id}`}
                               />
                             </div>
@@ -1894,16 +2155,22 @@ export default function AdminCP() {
                                   updateCategoryMutation.mutate({
                                     id: cat.id,
                                     name: editCategoryName,
-                                    description: editCategoryDescription || undefined,
+                                    description:
+                                      editCategoryDescription || undefined,
                                     group: editCategoryGroup || undefined,
                                     order: parseInt(editCategoryOrder) || 0,
                                   });
                                 }}
-                                disabled={!editCategoryName || updateCategoryMutation.isPending}
+                                disabled={
+                                  !editCategoryName ||
+                                  updateCategoryMutation.isPending
+                                }
                                 data-testid={`button-save-category-${cat.id}`}
                               >
                                 <Check className="w-3 h-3 mr-1.5" />
-                                {updateCategoryMutation.isPending ? "Saving..." : "Save"}
+                                {updateCategoryMutation.isPending
+                                  ? "Saving..."
+                                  : "Save"}
                               </Button>
                               <Button
                                 size="sm"
@@ -1924,11 +2191,17 @@ export default function AdminCP() {
                                   {cat.name}
                                 </span>
                                 {cat.group && (
-                                  <Badge variant="outline" className="text-[10px]">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-[10px]"
+                                  >
                                     {cat.group}
                                   </Badge>
                                 )}
-                                <Badge variant="secondary" className="text-[10px]">
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px]"
+                                >
                                   Order: {cat.order ?? 0}
                                 </Badge>
                               </div>
@@ -1948,7 +2221,9 @@ export default function AdminCP() {
                                 onClick={() => {
                                   setEditingCategoryId(cat.id);
                                   setEditCategoryName(cat.name);
-                                  setEditCategoryDescription(cat.description || "");
+                                  setEditCategoryDescription(
+                                    cat.description || "",
+                                  );
                                   setEditCategoryGroup(cat.group || "");
                                   setEditCategoryOrder(String(cat.order ?? 0));
                                 }}
@@ -1959,7 +2234,9 @@ export default function AdminCP() {
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                onClick={() => deleteCategoryMutation.mutate(cat.id)}
+                                onClick={() =>
+                                  deleteCategoryMutation.mutate(cat.id)
+                                }
                                 data-testid={`button-delete-category-${cat.id}`}
                               >
                                 <Trash2 className="w-4 h-4 text-destructive" />
@@ -2221,10 +2498,7 @@ export default function AdminCP() {
                     (p: any) => p.slug === slug,
                   );
                   return (
-                    <Card
-                      key={slug}
-                      data-testid={`card-policy-${slug}`}
-                    >
+                    <Card key={slug} data-testid={`card-policy-${slug}`}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-3 min-w-0">
@@ -2366,8 +2640,15 @@ export default function AdminCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="text-xl font-bold" data-testid="text-analytics-title">Platform Analytics</h2>
-                <p className="text-sm text-muted-foreground">Detailed platform metrics and insights</p>
+                <h2
+                  className="text-xl font-bold"
+                  data-testid="text-analytics-title"
+                >
+                  Platform Analytics
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Detailed platform metrics and insights
+                </p>
               </div>
             </div>
 
@@ -2382,36 +2663,52 @@ export default function AdminCP() {
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="w-4 h-4 text-blue-400" />
-                        <span className="text-xs text-muted-foreground">Total Users</span>
+                        <span className="text-xs text-muted-foreground">
+                          Total Users
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.totalUsers.toLocaleString()}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card data-testid="card-analytics-new-today">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <TrendingUp className="w-4 h-4 text-green-400" />
-                        <span className="text-xs text-muted-foreground">New Today</span>
+                        <span className="text-xs text-muted-foreground">
+                          New Today
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.newUsersToday}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.newUsersToday}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card data-testid="card-analytics-new-week">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <TrendingUp className="w-4 h-4 text-cyan-400" />
-                        <span className="text-xs text-muted-foreground">This Week</span>
+                        <span className="text-xs text-muted-foreground">
+                          This Week
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.newUsersThisWeek}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.newUsersThisWeek}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card data-testid="card-analytics-new-month">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <TrendingUp className="w-4 h-4 text-purple-400" />
-                        <span className="text-xs text-muted-foreground">This Month</span>
+                        <span className="text-xs text-muted-foreground">
+                          This Month
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.newUsersThisMonth}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.newUsersThisMonth}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
@@ -2421,36 +2718,52 @@ export default function AdminCP() {
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <MessageSquare className="w-4 h-4 text-indigo-400" />
-                        <span className="text-xs text-muted-foreground">Forum Threads</span>
+                        <span className="text-xs text-muted-foreground">
+                          Forum Threads
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.totalThreads}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.totalThreads}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <MessageSquare className="w-4 h-4 text-teal-400" />
-                        <span className="text-xs text-muted-foreground">Forum Replies</span>
+                        <span className="text-xs text-muted-foreground">
+                          Forum Replies
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.totalReplies}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.totalReplies}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <ShoppingBag className="w-4 h-4 text-orange-400" />
-                        <span className="text-xs text-muted-foreground">Products</span>
+                        <span className="text-xs text-muted-foreground">
+                          Products
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.totalProducts}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.totalProducts}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-1">
                         <AlertTriangle className="w-4 h-4 text-red-400" />
-                        <span className="text-xs text-muted-foreground">Reports</span>
+                        <span className="text-xs text-muted-foreground">
+                          Reports
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold">{analytics.totalReports}</p>
+                      <p className="text-2xl font-bold">
+                        {analytics.totalReports}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
@@ -2467,22 +2780,33 @@ export default function AdminCP() {
                       {analytics.vipCounts && analytics.vipCounts.length > 0 ? (
                         <div className="space-y-3">
                           {analytics.vipCounts.map((v) => (
-                            <div key={v.tier} className="flex items-center justify-between">
-                              <span className="text-sm capitalize">{v.tier}</span>
+                            <div
+                              key={v.tier}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-sm capitalize">
+                                {v.tier}
+                              </span>
                               <div className="flex items-center gap-2">
                                 <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
                                   <div
                                     className="h-full bg-yellow-400 rounded-full"
-                                    style={{ width: `${Math.min(100, (v.count / analytics.totalUsers) * 100)}%` }}
+                                    style={{
+                                      width: `${Math.min(100, (v.count / analytics.totalUsers) * 100)}%`,
+                                    }}
                                   />
                                 </div>
-                                <span className="text-sm font-medium w-8 text-right">{v.count}</span>
+                                <span className="text-sm font-medium w-8 text-right">
+                                  {v.count}
+                                </span>
                               </div>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">No VIP members yet</p>
+                        <p className="text-sm text-muted-foreground">
+                          No VIP members yet
+                        </p>
                       )}
                     </CardContent>
                   </Card>
@@ -2495,25 +2819,35 @@ export default function AdminCP() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {analytics.rankDistribution && analytics.rankDistribution.length > 0 ? (
+                      {analytics.rankDistribution &&
+                      analytics.rankDistribution.length > 0 ? (
                         <div className="space-y-3">
                           {analytics.rankDistribution.slice(0, 10).map((r) => (
-                            <div key={r.rank} className="flex items-center justify-between">
+                            <div
+                              key={r.rank}
+                              className="flex items-center justify-between"
+                            >
                               <span className="text-sm">{r.rank}</span>
                               <div className="flex items-center gap-2">
                                 <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
                                   <div
                                     className="h-full bg-blue-400 rounded-full"
-                                    style={{ width: `${Math.min(100, (r.count / analytics.totalUsers) * 100)}%` }}
+                                    style={{
+                                      width: `${Math.min(100, (r.count / analytics.totalUsers) * 100)}%`,
+                                    }}
                                   />
                                 </div>
-                                <span className="text-sm font-medium w-8 text-right">{r.count}</span>
+                                <span className="text-sm font-medium w-8 text-right">
+                                  {r.count}
+                                </span>
                               </div>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">No rank data available</p>
+                        <p className="text-sm text-muted-foreground">
+                          No rank data available
+                        </p>
                       )}
                     </CardContent>
                   </Card>
@@ -2527,10 +2861,14 @@ export default function AdminCP() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {analytics.recentSignups && analytics.recentSignups.length > 0 ? (
+                    {analytics.recentSignups &&
+                    analytics.recentSignups.length > 0 ? (
                       <div className="flex items-end gap-1 h-32">
                         {analytics.recentSignups.map((day) => {
-                          const maxCount = Math.max(...analytics.recentSignups.map((d) => d.count), 1);
+                          const maxCount = Math.max(
+                            ...analytics.recentSignups.map((d) => d.count),
+                            1,
+                          );
                           const height = (day.count / maxCount) * 100;
                           return (
                             <div
@@ -2550,13 +2888,17 @@ export default function AdminCP() {
                         })}
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground">No signup data available</p>
+                      <p className="text-sm text-muted-foreground">
+                        No signup data available
+                      </p>
                     )}
                   </CardContent>
                 </Card>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Failed to load analytics data</p>
+              <p className="text-sm text-muted-foreground">
+                Failed to load analytics data
+              </p>
             )}
           </>
         )}
@@ -2565,8 +2907,15 @@ export default function AdminCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="text-xl font-bold" data-testid="text-audit-log-title">Audit Log</h2>
-                <p className="text-sm text-muted-foreground">System-wide activity and admin action trail</p>
+                <h2
+                  className="text-xl font-bold"
+                  data-testid="text-audit-log-title"
+                >
+                  Audit Log
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  System-wide activity and admin action trail
+                </p>
               </div>
             </div>
             {auditLoading ? (
@@ -2577,7 +2926,9 @@ export default function AdminCP() {
               <Card>
                 <CardContent className="py-12 text-center">
                   <History className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No audit log entries yet</p>
+                  <p className="text-muted-foreground">
+                    No audit log entries yet
+                  </p>
                 </CardContent>
               </Card>
             ) : (
@@ -2590,12 +2941,15 @@ export default function AdminCP() {
                           <p className="text-sm font-medium">{entry.action}</p>
                           {entry.target_type && (
                             <p className="text-xs text-muted-foreground">
-                              Target: {entry.target_type} / {entry.target_id?.substring(0, 8)}...
+                              Target: {entry.target_type} /{" "}
+                              {entry.target_id?.substring(0, 8)}...
                             </p>
                           )}
                           {entry.details && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {typeof entry.details === 'string' ? entry.details : JSON.stringify(entry.details)}
+                              {typeof entry.details === "string"
+                                ? entry.details
+                                : JSON.stringify(entry.details)}
                             </p>
                           )}
                         </div>
@@ -2604,7 +2958,9 @@ export default function AdminCP() {
                             {new Date(entry.created_at).toLocaleString()}
                           </p>
                           {entry.ip_address && (
-                            <p className="text-[10px] text-muted-foreground">IP: {entry.ip_address}</p>
+                            <p className="text-[10px] text-muted-foreground">
+                              IP: {entry.ip_address}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -2620,8 +2976,15 @@ export default function AdminCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="text-xl font-bold" data-testid="text-admin-achievements-title">Achievement Management</h2>
-                <p className="text-sm text-muted-foreground">Manage platform achievements and badges</p>
+                <h2
+                  className="text-xl font-bold"
+                  data-testid="text-admin-achievements-title"
+                >
+                  Achievement Management
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Manage platform achievements and badges
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2633,10 +2996,16 @@ export default function AdminCP() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm">{a.name}</p>
-                      <p className="text-xs text-muted-foreground">{a.description}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {a.description}
+                      </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="text-[10px]">{a.category}</Badge>
-                        <span className="text-[10px] text-muted-foreground">+{a.points} pts</span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {a.category}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground">
+                          +{a.points} pts
+                        </span>
                       </div>
                     </div>
                   </CardContent>

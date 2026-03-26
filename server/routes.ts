@@ -1,3 +1,6 @@
+import { generateSecret, generateURI, verify } from "otplib";
+import QRCode from "qrcode";
+import crypto from "crypto";
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -285,7 +288,7 @@ export async function registerRoutes(
               Reset Password
             </a>
             <p style="color: #71717a; font-size: 12px; margin-top: 32px;">
-              If you didn't request this, you can safely ignore this email.
+              If you didn't request this, contact support immediately.
             </p>
           </div>
         `,
@@ -338,8 +341,14 @@ export async function registerRoutes(
   });
 
   function sanitizeUser(user: any) {
-    const { password, passwordResetToken, passwordResetExpires, twoFactorSecret, twoFactorBackupCodes, ...safe } =
-      user;
+    const {
+      password,
+      passwordResetToken,
+      passwordResetExpires,
+      twoFactorSecret,
+      twoFactorBackupCodes,
+      ...safe
+    } = user;
     return safe;
   }
 
@@ -362,7 +371,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/users/:id", async (req, res) => {
+  app.get("/api/profile/:id", async (req, res) => {
     try {
       const user = await storage.getUser(req.params.id);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -951,7 +960,7 @@ export async function registerRoutes(
       });
       const warning = await storage.createWarning(data);
       await storage.createModerationLog({
-        action: "warning_issued",
+        action: "Warning Issued",
         actorId: user.id,
         targetId: data.userId,
         targetType: "user",
@@ -976,7 +985,7 @@ export async function registerRoutes(
       if (!warning)
         return res.status(404).json({ message: "Warning not found" });
       await storage.createModerationLog({
-        action: "warning_rescinded",
+        action: "Warning Rescinded",
         actorId: user.id,
         targetId: warning.userId,
         targetType: "user",
@@ -1012,7 +1021,7 @@ export async function registerRoutes(
           severity,
         });
         await storage.createModerationLog({
-          action: "warning_issued",
+          action: "Warning Issued",
           actorId: user.id,
           targetId: userId,
           targetType: "user",
@@ -1085,7 +1094,7 @@ export async function registerRoutes(
         const oldRank = targetUser?.userRank || "none";
         await storage.updateUserRank(userId, userRank);
         await storage.createModerationLog({
-          action: "rank_changed",
+          action: "Rank Changed",
           actorId: user.id,
           targetId: userId,
           targetType: "user",
@@ -1106,7 +1115,7 @@ export async function registerRoutes(
       const user = req.user as any;
       if (!isAdminUser(user))
         return res.status(403).json({ message: "Forbidden" });
-      const logs = await storage.getModerationLogs({ action: "rank_changed" });
+      const logs = await storage.getModerationLogs({ action: "Rank Changed" });
       const logsWithUsers = await Promise.all(
         logs.map(async (log: any) => {
           const actor = await storage.getUser(log.actorId);
@@ -1344,9 +1353,13 @@ export async function registerRoutes(
       bannerUpload.single("banner")(req, res, (err) => {
         if (err instanceof multer.MulterError) {
           if (err.code === "LIMIT_FILE_SIZE") {
-            return res.status(400).json({ message: "File too large. Maximum size is 10MB." });
+            return res
+              .status(400)
+              .json({ message: "File too large. Maximum size is 10MB." });
           }
-          return res.status(400).json({ message: `Upload error: ${err.message}` });
+          return res
+            .status(400)
+            .json({ message: `Upload error: ${err.message}` });
         }
         if (err) return res.status(400).json({ message: err.message });
         next();
@@ -1359,7 +1372,9 @@ export async function registerRoutes(
           return res.status(400).json({ message: "No image file provided" });
         }
         const bannerUrl = `/uploads/banners/${req.file.filename}`;
-        await storage.updateUser(userId, { profileBannerUrl: bannerUrl } as any);
+        await storage.updateUser(userId, {
+          profileBannerUrl: bannerUrl,
+        } as any);
         res.json({ message: "Banner uploaded", profileBannerUrl: bannerUrl });
       } catch (error: any) {
         res.status(500).json({ message: "Upload failed" });
@@ -1597,7 +1612,8 @@ export async function registerRoutes(
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
       const userRanks = [user.userRank, ...(user.additionalRanks || [])];
-      const hasOpsAccess = user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
+      const hasOpsAccess =
+        user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
       if (!hasOpsAccess) {
         return res
           .status(403)
@@ -1634,7 +1650,9 @@ export async function registerRoutes(
             const stripeProduct = await stripe.products.create({
               name: existingProduct.name,
               description: existingProduct.description || undefined,
-              images: existingProduct.imageUrl ? [existingProduct.imageUrl] : [],
+              images: existingProduct.imageUrl
+                ? [existingProduct.imageUrl]
+                : [],
               metadata: {
                 platform_product_id: existingProduct.id,
                 category: existingProduct.category || "",
@@ -1651,9 +1669,14 @@ export async function registerRoutes(
             });
             updates.stripeProductId = stripeProduct.id;
             updates.stripePriceId = stripePrice.id;
-            console.log(`✅ Stripe product created for "${existingProduct.name}": ${stripeProduct.id}, price: ${stripePrice.id}`);
+            console.log(
+              `✅ Stripe product created for "${existingProduct.name}": ${stripeProduct.id}, price: ${stripePrice.id}`,
+            );
           } catch (stripeErr: any) {
-            console.error(`⚠️ Failed to create Stripe product for "${existingProduct.name}":`, stripeErr.message);
+            console.error(
+              `⚠️ Failed to create Stripe product for "${existingProduct.name}":`,
+              stripeErr.message,
+            );
           }
         }
       }
@@ -1672,7 +1695,8 @@ export async function registerRoutes(
       const user = req.user as any;
       const opsRanks = ["Operations Manager", "Company Director"];
       const userRanks = [user.userRank, ...(user.additionalRanks || [])];
-      const hasOpsAccess = user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
+      const hasOpsAccess =
+        user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
       if (!hasOpsAccess) {
         return res
           .status(403)
@@ -1770,7 +1794,7 @@ export async function registerRoutes(
       });
       const ban = await storage.createBan(data);
       await storage.createModerationLog({
-        action: "ban_issued",
+        action: "Ban Issued",
         actorId: user.id,
         targetId: data.userId,
         targetType: "user",
@@ -1807,7 +1831,7 @@ export async function registerRoutes(
       const ban = await storage.deactivateBan(req.params.id);
       if (!ban) return res.status(404).json({ message: "Ban not found" });
       await storage.createModerationLog({
-        action: "ban_lifted",
+        action: "Ban Lifted",
         actorId: user.id,
         targetId: ban.userId,
         targetType: "user",
@@ -2133,10 +2157,10 @@ export async function registerRoutes(
       const updatedUser = await storage.getUser(req.params.id);
 
       await storage.createModerationLog({
-        action: "rank_changed",
+        action: "Rank Changed",
         actorId: user!.id,
         targetId: req.params.id,
-        targetType: "user",
+        targetType: user!.username,
         details: `Rank changed from "${oldRank || "none"}" to "${userRank}"`,
         metadata: JSON.stringify({ oldRank, newRank: userRank }),
       });
@@ -2230,7 +2254,10 @@ export async function registerRoutes(
 
       const priceId = await getVipPriceId(tierId);
       if (!priceId) {
-        return res.status(400).json({ message: "Invalid subscription tier. VIP products may not be configured yet." });
+        return res.status(400).json({
+          message:
+            "Invalid subscription tier. VIP products may not be configured yet.",
+        });
       }
 
       let customerId = user.stripeCustomerId;
@@ -2717,26 +2744,35 @@ export async function registerRoutes(
   app.get("/api/platform-status", async (_req, res) => {
     try {
       const siteSettings = await storage.getSiteSettings();
-      
+
       const services: Record<string, { status: string; label: string }> = {};
-      
+
       services.platform = { status: "operational", label: "Platform API" };
-      
+
       try {
         await db.execute(sql`SELECT 1`);
         services.database = { status: "operational", label: "Database" };
       } catch {
         services.database = { status: "offline", label: "Database" };
       }
-      
-      services.authentication = { status: "operational", label: "Authentication" };
+
+      services.authentication = {
+        status: "partial outage",
+        label: "Authentication",
+      };
       services.forums = { status: "operational", label: "Forums & Community" };
-      services.moderation = { status: "operational", label: "Moderation Systems" };
-      
+      services.moderation = {
+        status: "operational",
+        label: "Moderation Systems",
+      };
+
       try {
         const stripe = await getUncachableStripeClient();
         if (stripe) {
-          services.payments = { status: "operational", label: "Payments & Store" };
+          services.payments = {
+            status: "operational",
+            label: "Payments & Store",
+          };
         } else {
           services.payments = { status: "degraded", label: "Payments & Store" };
         }
@@ -2748,15 +2784,25 @@ export async function registerRoutes(
         services.platform = { status: "degraded", label: "Platform API" };
       }
 
-      const allOperational = Object.values(services).every(s => s.status === "operational");
+      const allOperational = Object.values(services).every(
+        (s) => s.status === "operational",
+      );
 
       res.json({
-        overall: allOperational ? "operational" : (siteSettings?.isOffline ? "maintenance" : "degraded"),
+        overall: allOperational
+          ? "operational"
+          : siteSettings?.isOffline
+            ? "maintenance"
+            : "degraded",
         services,
-        maintenance: siteSettings?.isOffline ? {
-          active: true,
-          message: siteSettings.offlineMessage || "The platform is currently undergoing maintenance.",
-        } : { active: false, message: null },
+        maintenance: siteSettings?.isOffline
+          ? {
+              active: true,
+              message:
+                siteSettings.offlineMessage ||
+                "The platform is currently undergoing maintenance.",
+            }
+          : { active: false, message: null },
         lastChecked: new Date().toISOString(),
       });
     } catch (error) {
@@ -2781,7 +2827,9 @@ export async function registerRoutes(
   const changelogBodySchema = z.object({
     title: z.string().min(1, "Title is required").max(255),
     content: z.string().min(1, "Content is required"),
-    category: z.enum(["Feature", "Improvement", "Bugfix", "Platform"]).default("Platform"),
+    category: z
+      .enum(["Feature", "Improvement", "Bugfix", "Platform"])
+      .default("Platform"),
     version: z.string().max(20).optional().nullable(),
     isPublished: z.boolean().default(true),
   });
@@ -2793,19 +2841,25 @@ export async function registerRoutes(
     }
     const parsed = changelogBodySchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ message: "Invalid input", errors: parsed.error.flatten().fieldErrors });
+      return res.status(400).json({
+        message: "Invalid input",
+        errors: parsed.error.flatten().fieldErrors,
+      });
     }
     try {
       const { title, content, category, version, isPublished } = parsed.data;
-      const [entry] = await db.insert(changelogEntries).values({
-        title,
-        content,
-        category,
-        version: version || null,
-        authorId: user.id,
-        isPublished,
-        publishedAt: new Date(),
-      }).returning();
+      const [entry] = await db
+        .insert(changelogEntries)
+        .values({
+          title,
+          content,
+          category,
+          version: version || null,
+          authorId: user.id,
+          isPublished,
+          publishedAt: new Date(),
+        })
+        .returning();
       res.json(entry);
     } catch (error) {
       res.status(500).json({ message: "Failed to create changelog entry" });
@@ -2818,7 +2872,9 @@ export async function registerRoutes(
       return res.status(403).json({ message: "Forbidden" });
     }
     try {
-      await db.delete(changelogEntries).where(eq(changelogEntries.id, req.params.id));
+      await db
+        .delete(changelogEntries)
+        .where(eq(changelogEntries.id, req.params.id));
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete changelog entry" });
@@ -2842,13 +2898,17 @@ export async function registerRoutes(
 
   app.post("/api/admin/faq", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       const parsed = insertFaqEntrySchema.parse(req.body);
       const [entry] = await db.insert(faqEntries).values(parsed).returning();
       res.json(entry);
     } catch (err: any) {
-      if (err?.name === "ZodError") return res.status(400).json({ message: "Invalid data", errors: err.errors });
+      if (err?.name === "ZodError")
+        return res
+          .status(400)
+          .json({ message: "Invalid data", errors: err.errors });
       console.error("Failed to create FAQ:", err);
       res.status(500).json({ message: "Failed to create FAQ entry" });
     }
@@ -2856,15 +2916,24 @@ export async function registerRoutes(
 
   app.put("/api/admin/faq/:id", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       const { question, answer, category, sortOrder, isPublished } = req.body;
       const [entry] = await db
         .update(faqEntries)
-        .set({ question, answer, category, sortOrder, isPublished, updatedAt: new Date() })
+        .set({
+          question,
+          answer,
+          category,
+          sortOrder,
+          isPublished,
+          updatedAt: new Date(),
+        })
         .where(eq(faqEntries.id, req.params.id))
         .returning();
-      if (!entry) return res.status(404).json({ message: "FAQ entry not found" });
+      if (!entry)
+        return res.status(404).json({ message: "FAQ entry not found" });
       res.json(entry);
     } catch (err) {
       console.error("Failed to update FAQ:", err);
@@ -2874,7 +2943,8 @@ export async function registerRoutes(
 
   app.delete("/api/admin/faq/:id", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       await db.delete(faqEntries).where(eq(faqEntries.id, req.params.id));
       res.json({ success: true });
@@ -2907,7 +2977,12 @@ export async function registerRoutes(
       const [result] = await db
         .select({ count: count() })
         .from(notifications)
-        .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)));
+        .where(
+          and(
+            eq(notifications.userId, user.id),
+            eq(notifications.isRead, false),
+          ),
+        );
       res.json({ count: result?.count || 0 });
     } catch (err) {
       console.error("Failed to fetch unread count:", err);
@@ -2921,9 +2996,15 @@ export async function registerRoutes(
       const [notif] = await db
         .update(notifications)
         .set({ isRead: true })
-        .where(and(eq(notifications.id, req.params.id), eq(notifications.userId, user.id)))
+        .where(
+          and(
+            eq(notifications.id, req.params.id),
+            eq(notifications.userId, user.id),
+          ),
+        )
         .returning();
-      if (!notif) return res.status(404).json({ message: "Notification not found" });
+      if (!notif)
+        return res.status(404).json({ message: "Notification not found" });
       res.json(notif);
     } catch (err) {
       console.error("Failed to mark notification read:", err);
@@ -2937,7 +3018,12 @@ export async function registerRoutes(
       await db
         .update(notifications)
         .set({ isRead: true })
-        .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)));
+        .where(
+          and(
+            eq(notifications.userId, user.id),
+            eq(notifications.isRead, false),
+          ),
+        );
       res.json({ success: true });
     } catch (err) {
       console.error("Failed to mark all read:", err);
@@ -2963,14 +3049,21 @@ export async function registerRoutes(
   // ---- Admin Analytics Endpoint ----
   app.get("/api/admin/analytics", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const todayStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+      );
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      const [totalUsersResult] = await db.select({ count: count() }).from(users);
+      const [totalUsersResult] = await db
+        .select({ count: count() })
+        .from(users);
       const [newTodayResult] = await db
         .select({ count: count() })
         .from(users)
@@ -2984,31 +3077,47 @@ export async function registerRoutes(
         .from(users)
         .where(gte(users.createdAt, thirtyDaysAgo));
 
-      const [totalThreadsResult] = await db.select({ count: count() }).from(forumThreads);
+      const [totalThreadsResult] = await db
+        .select({ count: count() })
+        .from(forumThreads);
 
       let totalReplies = 0;
       try {
-        const [repliesResult] = await db.select({ count: count() }).from(forumReplies);
+        const [repliesResult] = await db
+          .select({ count: count() })
+          .from(forumReplies);
         totalReplies = repliesResult?.count || 0;
-      } catch { totalReplies = 0; }
+      } catch {
+        totalReplies = 0;
+      }
 
       let totalProducts = 0;
       try {
-        const [productsResult] = await db.select({ count: count() }).from(products);
+        const [productsResult] = await db
+          .select({ count: count() })
+          .from(products);
         totalProducts = productsResult?.count || 0;
-      } catch { totalProducts = 0; }
+      } catch {
+        totalProducts = 0;
+      }
 
       let totalBans = 0;
       try {
         const [bansResult] = await db.select({ count: count() }).from(bans);
         totalBans = bansResult?.count || 0;
-      } catch { totalBans = 0; }
+      } catch {
+        totalBans = 0;
+      }
 
       let totalReports = 0;
       try {
-        const [reportsResult] = await db.select({ count: count() }).from(reports);
+        const [reportsResult] = await db
+          .select({ count: count() })
+          .from(reports);
         totalReports = reportsResult?.count || 0;
-      } catch { totalReports = 0; }
+      } catch {
+        totalReports = 0;
+      }
 
       const recentSignupsResult = await db.execute(sql`
         SELECT DATE(created_at) as date, COUNT(*)::int as count
@@ -3082,11 +3191,21 @@ export async function registerRoutes(
     try {
       const currentUserId = (req.user as any).id;
       const otherUserId = req.params.userId;
-      const messages = await db.select().from(directMessages)
-        .where(or(
-          and(eq(directMessages.senderId, currentUserId), eq(directMessages.receiverId, otherUserId)),
-          and(eq(directMessages.senderId, otherUserId), eq(directMessages.receiverId, currentUserId))
-        ))
+      const messages = await db
+        .select()
+        .from(directMessages)
+        .where(
+          or(
+            and(
+              eq(directMessages.senderId, currentUserId),
+              eq(directMessages.receiverId, otherUserId),
+            ),
+            and(
+              eq(directMessages.senderId, otherUserId),
+              eq(directMessages.receiverId, currentUserId),
+            ),
+          ),
+        )
         .orderBy(directMessages.createdAt);
 
       await db.execute(sql`
@@ -3104,13 +3223,19 @@ export async function registerRoutes(
     try {
       const senderId = (req.user as any).id;
       const { receiverId, content } = req.body;
-      if (!receiverId || !content) return res.status(400).json({ message: "Receiver and content required" });
+      if (!receiverId || !content)
+        return res
+          .status(400)
+          .json({ message: "Receiver and content required" });
 
-      const [msg] = await db.insert(directMessages).values({
-        senderId,
-        receiverId,
-        content,
-      }).returning();
+      const [msg] = await db
+        .insert(directMessages)
+        .values({
+          senderId,
+          receiverId,
+          content,
+        })
+        .returning();
 
       await db.insert(notifications).values({
         userId: receiverId,
@@ -3129,8 +3254,15 @@ export async function registerRoutes(
   app.get("/api/messages/unread-count", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const [result] = await db.select({ count: count() }).from(directMessages)
-        .where(and(eq(directMessages.receiverId, userId), eq(directMessages.isRead, false)));
+      const [result] = await db
+        .select({ count: count() })
+        .from(directMessages)
+        .where(
+          and(
+            eq(directMessages.receiverId, userId),
+            eq(directMessages.isRead, false),
+          ),
+        );
       res.json({ count: result?.count || 0 });
     } catch {
       res.json({ count: 0 });
@@ -3142,20 +3274,32 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const { targetType, targetId, reactionType } = req.body;
-      if (!targetType || !targetId) return res.status(400).json({ message: "Target required" });
+      if (!targetType || !targetId)
+        return res.status(400).json({ message: "Target required" });
 
-      const existing = await db.select().from(reactions)
-        .where(and(
-          eq(reactions.userId, userId),
-          eq(reactions.targetType, targetType),
-          eq(reactions.targetId, targetId),
-          eq(reactions.reactionType, reactionType || "like")
-        ));
+      const existing = await db
+        .select()
+        .from(reactions)
+        .where(
+          and(
+            eq(reactions.userId, userId),
+            eq(reactions.targetType, targetType),
+            eq(reactions.targetId, targetId),
+            eq(reactions.reactionType, reactionType || "like"),
+          ),
+        );
 
       if (existing.length > 0) {
         await db.delete(reactions).where(eq(reactions.id, existing[0].id));
-        const [countResult] = await db.select({ count: count() }).from(reactions)
-          .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+        const [countResult] = await db
+          .select({ count: count() })
+          .from(reactions)
+          .where(
+            and(
+              eq(reactions.targetType, targetType),
+              eq(reactions.targetId, targetId),
+            ),
+          );
         return res.json({ liked: false, count: countResult?.count || 0 });
       }
 
@@ -3166,8 +3310,15 @@ export async function registerRoutes(
         reactionType: reactionType || "like",
       });
 
-      const [countResult] = await db.select({ count: count() }).from(reactions)
-        .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+      const [countResult] = await db
+        .select({ count: count() })
+        .from(reactions)
+        .where(
+          and(
+            eq(reactions.targetType, targetType),
+            eq(reactions.targetId, targetId),
+          ),
+        );
       res.json({ liked: true, count: countResult?.count || 0 });
     } catch (err) {
       res.status(500).json({ message: "Failed to toggle reaction" });
@@ -3177,17 +3328,28 @@ export async function registerRoutes(
   app.get("/api/reactions/:targetType/:targetId", async (req, res) => {
     try {
       const { targetType, targetId } = req.params;
-      const [countResult] = await db.select({ count: count() }).from(reactions)
-        .where(and(eq(reactions.targetType, targetType), eq(reactions.targetId, targetId)));
+      const [countResult] = await db
+        .select({ count: count() })
+        .from(reactions)
+        .where(
+          and(
+            eq(reactions.targetType, targetType),
+            eq(reactions.targetId, targetId),
+          ),
+        );
       const userId = (req.user as any)?.id;
       let userReacted = false;
       if (userId) {
-        const existing = await db.select().from(reactions)
-          .where(and(
-            eq(reactions.userId, userId),
-            eq(reactions.targetType, targetType),
-            eq(reactions.targetId, targetId)
-          ));
+        const existing = await db
+          .select()
+          .from(reactions)
+          .where(
+            and(
+              eq(reactions.userId, userId),
+              eq(reactions.targetType, targetType),
+              eq(reactions.targetId, targetId),
+            ),
+          );
         userReacted = existing.length > 0;
       }
       res.json({ count: countResult?.count || 0, userReacted });
@@ -3199,7 +3361,10 @@ export async function registerRoutes(
   // ===== ACHIEVEMENTS =====
   app.get("/api/achievements", async (_req, res) => {
     try {
-      const achievements = await db.select().from(achievementDefinitions).orderBy(achievementDefinitions.category);
+      const achievements = await db
+        .select()
+        .from(achievementDefinitions)
+        .orderBy(achievementDefinitions.category);
       res.json(achievements);
     } catch {
       res.json([]);
@@ -3223,12 +3388,20 @@ export async function registerRoutes(
 
   app.post("/api/admin/achievements", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       const { name, description, icon, category, points } = req.body;
-      const [achievement] = await db.insert(achievementDefinitions).values({
-        name, description, icon: icon || "trophy", category: category || "general", points: points || 10,
-      }).returning();
+      const [achievement] = await db
+        .insert(achievementDefinitions)
+        .values({
+          name,
+          description,
+          icon: icon || "trophy",
+          category: category || "general",
+          points: points || 10,
+        })
+        .returning();
       res.json(achievement);
     } catch (err) {
       res.status(500).json({ message: "Failed to create achievement" });
@@ -3237,20 +3410,39 @@ export async function registerRoutes(
 
   app.post("/api/admin/achievements/grant", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
       const { userId, achievementId } = req.body;
-      const existing = await db.select().from(userAchievements)
-        .where(and(eq(userAchievements.userId, userId), eq(userAchievements.achievementId, achievementId)));
-      if (existing.length > 0) return res.status(400).json({ message: "Already earned" });
+      const existing = await db
+        .select()
+        .from(userAchievements)
+        .where(
+          and(
+            eq(userAchievements.userId, userId),
+            eq(userAchievements.achievementId, achievementId),
+          ),
+        );
+      if (existing.length > 0)
+        return res.status(400).json({ message: "Already earned" });
 
-      const [ua] = await db.insert(userAchievements).values({ userId, achievementId }).returning();
+      const [ua] = await db
+        .insert(userAchievements)
+        .values({ userId, achievementId })
+        .returning();
 
-      const [achDef] = await db.select().from(achievementDefinitions).where(eq(achievementDefinitions.id, achievementId));
+      const [achDef] = await db
+        .select()
+        .from(achievementDefinitions)
+        .where(eq(achievementDefinitions.id, achievementId));
       if (achDef) {
-        await db.execute(sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + ${achDef.points} WHERE id = ${userId}`);
+        await db.execute(
+          sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + ${achDef.points} WHERE id = ${userId}`,
+        );
         await db.insert(notifications).values({
-          userId, type: "achievement", title: "Achievement Unlocked!",
+          userId,
+          type: "achievement",
+          title: "Achievement Unlocked!",
           message: `You earned "${achDef.name}" (+${achDef.points} rep)`,
           link: `/profile`,
         });
@@ -3265,7 +3457,9 @@ export async function registerRoutes(
   app.get("/api/bookmarks", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const userBookmarks = await db.select().from(bookmarks)
+      const userBookmarks = await db
+        .select()
+        .from(bookmarks)
         .where(eq(bookmarks.userId, userId))
         .orderBy(desc(bookmarks.createdAt));
       res.json(userBookmarks);
@@ -3278,10 +3472,19 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const { targetType, targetId } = req.body;
-      if (!targetType || !targetId) return res.status(400).json({ message: "Target required" });
+      if (!targetType || !targetId)
+        return res.status(400).json({ message: "Target required" });
 
-      const existing = await db.select().from(bookmarks)
-        .where(and(eq(bookmarks.userId, userId), eq(bookmarks.targetType, targetType), eq(bookmarks.targetId, targetId)));
+      const existing = await db
+        .select()
+        .from(bookmarks)
+        .where(
+          and(
+            eq(bookmarks.userId, userId),
+            eq(bookmarks.targetType, targetType),
+            eq(bookmarks.targetId, targetId),
+          ),
+        );
 
       if (existing.length > 0) {
         await db.delete(bookmarks).where(eq(bookmarks.id, existing[0].id));
@@ -3299,12 +3502,19 @@ export async function registerRoutes(
   app.post("/api/forums/polls", requireAuth, async (req, res) => {
     try {
       const { threadId, question, options, allowMultiple, endsAt } = req.body;
-      if (!threadId || !question || !options) return res.status(400).json({ message: "Missing fields" });
+      if (!threadId || !question || !options)
+        return res.status(400).json({ message: "Missing fields" });
 
-      const [poll] = await db.insert(forumPolls).values({
-        threadId, question, options, allowMultiple: allowMultiple || false,
-        endsAt: endsAt ? new Date(endsAt) : null,
-      }).returning();
+      const [poll] = await db
+        .insert(forumPolls)
+        .values({
+          threadId,
+          question,
+          options,
+          allowMultiple: allowMultiple || false,
+          endsAt: endsAt ? new Date(endsAt) : null,
+        })
+        .returning();
       res.json(poll);
     } catch (err) {
       res.status(500).json({ message: "Failed to create poll" });
@@ -3313,7 +3523,9 @@ export async function registerRoutes(
 
   app.get("/api/forums/polls/:threadId", async (req, res) => {
     try {
-      const polls = await db.select().from(forumPolls)
+      const polls = await db
+        .select()
+        .from(forumPolls)
         .where(eq(forumPolls.threadId, req.params.threadId));
       res.json(polls[0] || null);
     } catch {
@@ -3327,7 +3539,10 @@ export async function registerRoutes(
       const { optionIndex } = req.body;
       const pollId = req.params.pollId;
 
-      const [poll] = await db.select().from(forumPolls).where(eq(forumPolls.id, pollId));
+      const [poll] = await db
+        .select()
+        .from(forumPolls)
+        .where(eq(forumPolls.id, pollId));
       if (!poll) return res.status(404).json({ message: "Poll not found" });
 
       if (poll.endsAt && new Date(poll.endsAt) < new Date()) {
@@ -3342,8 +3557,14 @@ export async function registerRoutes(
       if (!votes[optKey]) votes[optKey] = [];
       votes[optKey].push(userId);
 
-      await db.update(forumPolls).set({ votes }).where(eq(forumPolls.id, pollId));
-      const [updated] = await db.select().from(forumPolls).where(eq(forumPolls.id, pollId));
+      await db
+        .update(forumPolls)
+        .set({ votes })
+        .where(eq(forumPolls.id, pollId));
+      const [updated] = await db
+        .select()
+        .from(forumPolls)
+        .where(eq(forumPolls.id, pollId));
       res.json(updated);
     } catch (err) {
       res.status(500).json({ message: "Failed to vote" });
@@ -3361,10 +3582,20 @@ export async function registerRoutes(
       if (!code) {
         const crypto = await import("crypto");
         code = crypto.randomBytes(6).toString("hex");
-        await db.execute(sql`UPDATE users SET referral_code = ${code} WHERE id = ${userId}`);
+        await db.execute(
+          sql`UPDATE users SET referral_code = ${code} WHERE id = ${userId}`,
+        );
       }
-      const referralCount = await db.execute(sql`SELECT COUNT(*) as count FROM users WHERE referred_by = ${userId}`);
-      res.json({ code, referralCount: parseInt((referralCount as any).rows?.[0]?.count || "0", 10) });
+      const referralCount = await db.execute(
+        sql`SELECT COUNT(*) as count FROM users WHERE referred_by = ${userId}`,
+      );
+      res.json({
+        code,
+        referralCount: parseInt(
+          (referralCount as any).rows?.[0]?.count || "0",
+          10,
+        ),
+      });
     } catch (err) {
       res.status(500).json({ message: "Failed to get referral code" });
     }
@@ -3374,19 +3605,31 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).id;
       const { referralCode } = req.body;
-      if (!referralCode) return res.status(400).json({ message: "Missing referral code" });
+      if (!referralCode)
+        return res.status(400).json({ message: "Missing referral code" });
 
-      const currentUser = await db.execute(sql`SELECT referred_by FROM users WHERE id = ${userId}`);
+      const currentUser = await db.execute(
+        sql`SELECT referred_by FROM users WHERE id = ${userId}`,
+      );
       const current = (currentUser as any).rows?.[0];
-      if (current?.referred_by) return res.status(400).json({ message: "Referral already applied" });
+      if (current?.referred_by)
+        return res.status(400).json({ message: "Referral already applied" });
 
-      const referrerResult = await db.execute(sql`SELECT id FROM users WHERE referral_code = ${referralCode}`);
+      const referrerResult = await db.execute(
+        sql`SELECT id FROM users WHERE referral_code = ${referralCode}`,
+      );
       const referrer = (referrerResult as any).rows?.[0];
-      if (!referrer) return res.status(404).json({ message: "Invalid referral code" });
-      if (referrer.id === userId) return res.status(400).json({ message: "Cannot refer yourself" });
+      if (!referrer)
+        return res.status(404).json({ message: "Invalid referral code" });
+      if (referrer.id === userId)
+        return res.status(400).json({ message: "Cannot refer yourself" });
 
-      await db.execute(sql`UPDATE users SET referred_by = ${referrer.id} WHERE id = ${userId} AND referred_by IS NULL`);
-      await db.execute(sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + 10 WHERE id = ${referrer.id}`);
+      await db.execute(
+        sql`UPDATE users SET referred_by = ${referrer.id} WHERE id = ${userId} AND referred_by IS NULL`,
+      );
+      await db.execute(
+        sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + 10 WHERE id = ${referrer.id}`,
+      );
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ message: "Failed to apply referral" });
@@ -3396,17 +3639,25 @@ export async function registerRoutes(
   // ===== AUDIT LOG =====
   app.get("/api/admin/audit-log", requireAuth, async (req, res) => {
     const user = req.user as any;
-    if (!isAdminUser(user)) return res.status(403).json({ message: "Forbidden" });
+    if (!isAdminUser(user))
+      return res.status(403).json({ message: "Forbidden" });
     try {
-      const limitVal = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 200);
+      const limitVal = Math.min(
+        Math.max(parseInt(req.query.limit as string) || 50, 1),
+        200,
+      );
       const offsetVal = Math.max(parseInt(req.query.offset as string) || 0, 0);
       const actionFilter = req.query.action as string;
 
       let result;
       if (actionFilter) {
-        result = await db.execute(sql`SELECT * FROM audit_log WHERE action = ${actionFilter} ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`);
+        result = await db.execute(
+          sql`SELECT * FROM audit_log WHERE action = ${actionFilter} ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`,
+        );
       } else {
-        result = await db.execute(sql`SELECT * FROM audit_log ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`);
+        result = await db.execute(
+          sql`SELECT * FROM audit_log ORDER BY created_at DESC LIMIT ${limitVal} OFFSET ${offsetVal}`,
+        );
       }
       res.json((result as any).rows || []);
     } catch (err) {
@@ -3447,7 +3698,9 @@ export async function registerRoutes(
         return next();
       }
       if (entry.count >= maxRequests) {
-        return res.status(429).json({ message: "Too many requests. Please try again later." });
+        return res
+          .status(429)
+          .json({ message: "Too many requests. Please try again later." });
       }
       entry.count++;
       next();
@@ -3475,7 +3728,7 @@ export async function registerRoutes(
     let activeSessions = 0;
     try {
       const result = await db.execute(
-        sql`SELECT COUNT(*) as count FROM sessions WHERE sess::jsonb->'passport'->>'user' = ${user.id} AND expire > NOW()`
+        sql`SELECT COUNT(*) as count FROM sessions WHERE sess::jsonb->'passport'->>'user' = ${user.id} AND expire > NOW()`,
       );
       activeSessions = parseInt((result as any).rows?.[0]?.count || "1", 10);
     } catch {
@@ -3499,9 +3752,8 @@ export async function registerRoutes(
     if (!(req as any).isAuthenticated?.() || !req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     try {
-      const { authenticator } = await import("otplib");
-      const QRCode = await import("qrcode");
       const user = await storage.getUser((req.user as any).id);
       if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -3509,16 +3761,18 @@ export async function registerRoutes(
         return res.status(400).json({ message: "2FA is already enabled" });
       }
 
-      const secret = authenticator.generateSecret();
-      const otpauth = authenticator.keyuri(
-        user.email || user.username || "user",
-        "RIVET Studios",
-        secret
-      );
+      const secret = generateSecret();
+
+      const otpauth = generateURI({
+        issuer: "RIVET Studios",
+        label: user.email || user.username || "user",
+        secret,
+      });
+
       const qrCodeDataUrl = await QRCode.toDataURL(otpauth);
 
       await db.execute(
-        sql`UPDATE users SET two_factor_secret = ${secret} WHERE id = ${user.id}`
+        sql`UPDATE users SET two_factor_secret = ${secret} WHERE id = ${user.id}`,
       );
 
       res.json({ secret, qrCode: qrCodeDataUrl });
@@ -3532,8 +3786,8 @@ export async function registerRoutes(
     if (!(req as any).isAuthenticated?.() || !req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     try {
-      const { authenticator } = await import("otplib");
       const { token } = req.body;
       if (!token) return res.status(400).json({ message: "Token required" });
 
@@ -3543,16 +3797,17 @@ export async function registerRoutes(
       const secret = (user as any).twoFactorSecret;
       if (!secret) return res.status(400).json({ message: "2FA not set up" });
 
-      const isValid = authenticator.check(token, secret);
-      if (!isValid) return res.status(400).json({ message: "Invalid code" });
+      const result = await verify({ secret, token });
+      if (!result.valid) {
+        return res.status(400).json({ message: "Invalid code" });
+      }
 
-      const crypto = await import("crypto");
       const backupCodes = Array.from({ length: 8 }, () =>
-        crypto.randomBytes(4).toString("hex")
+        crypto.randomBytes(4).toString("hex"),
       );
 
       await db.execute(
-        sql`UPDATE users SET two_factor_enabled = true, two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+        sql`UPDATE users SET two_factor_enabled = true, two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`,
       );
 
       res.json({ success: true, backupCodes });
@@ -3566,8 +3821,8 @@ export async function registerRoutes(
     if (!(req as any).isAuthenticated?.() || !req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     try {
-      const { authenticator } = await import("otplib");
       const { token } = req.body;
       if (!token) return res.status(400).json({ message: "Token required" });
 
@@ -3579,22 +3834,27 @@ export async function registerRoutes(
       }
 
       const secret = (user as any).twoFactorSecret;
-      const isValid = authenticator.check(token, secret);
+      const result = await verify({ secret, token });
 
-      if (!isValid) {
-        const backupCodes = JSON.parse((user as any).twoFactorBackupCodes || "[]");
+      if (!result.valid) {
+        const backupCodes = JSON.parse(
+          (user as any).twoFactorBackupCodes || "[]",
+        );
         const codeIndex = backupCodes.indexOf(token);
+
         if (codeIndex === -1) {
           return res.status(400).json({ message: "Invalid code" });
         }
+
         backupCodes.splice(codeIndex, 1);
+
         await db.execute(
-          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`,
         );
       }
 
       await db.execute(
-        sql`UPDATE users SET two_factor_enabled = false, two_factor_secret = NULL, two_factor_backup_codes = NULL WHERE id = ${user.id}`
+        sql`UPDATE users SET two_factor_enabled = false, two_factor_secret = NULL, two_factor_backup_codes = NULL WHERE id = ${user.id}`,
       );
 
       res.json({ success: true });
@@ -3606,9 +3866,10 @@ export async function registerRoutes(
 
   app.post("/api/auth/2fa/validate", async (req, res) => {
     try {
-      const { authenticator } = await import("otplib");
       const { userId, token } = req.body;
-      if (!userId || !token) return res.status(400).json({ message: "User ID and token required" });
+      if (!userId || !token) {
+        return res.status(400).json({ message: "User ID and token required" });
+      }
 
       const user = await storage.getUser(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -3618,17 +3879,24 @@ export async function registerRoutes(
       }
 
       const secret = (user as any).twoFactorSecret;
-      const isValid = authenticator.check(token, secret);
+      const result = await verify({ secret, token });
 
-      if (isValid) return res.json({ success: true });
+      if (result.valid) {
+        return res.json({ success: true });
+      }
 
-      const backupCodes = JSON.parse((user as any).twoFactorBackupCodes || "[]");
+      const backupCodes = JSON.parse(
+        (user as any).twoFactorBackupCodes || "[]",
+      );
       const codeIndex = backupCodes.indexOf(token);
+
       if (codeIndex !== -1) {
         backupCodes.splice(codeIndex, 1);
+
         await db.execute(
-          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`
+          sql`UPDATE users SET two_factor_backup_codes = ${JSON.stringify(backupCodes)} WHERE id = ${user.id}`,
         );
+
         return res.json({ success: true });
       }
 

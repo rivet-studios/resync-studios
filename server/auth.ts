@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as DiscordStrategy } from "passport-discord";
 import { storage } from "./storage";
 import { updateDiscordNickname, syncUserFromDiscord } from "./discord-bot";
+import { sendSiteLog } from "./lib/discord-webhooks";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
@@ -101,6 +102,18 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
 
               // Sync nickname to Discord server
               await updateDiscordNickname(discordId, newUsername);
+              await sendSiteLog({
+                title: "User Login",
+                level: "success",
+                fields: [
+                  {
+                    name: "User",
+                    value: user.username || profile.username || "Unknown",
+                  },
+                  { name: "Discord ID", value: profile.id, inline: true },
+                  { name: "Email", value: email || "No email", inline: true },
+                ],
+              });
             }
           } else {
             user =
@@ -111,7 +124,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
               })) || user;
 
             syncUserFromDiscord(discordId).catch((err) =>
-              console.error("❌ Login sync failed:", err)
+              console.error("❌ Login sync failed:", err),
             );
           }
 

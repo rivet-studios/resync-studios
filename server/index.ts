@@ -1,3 +1,4 @@
+import { sendErrorLog } from "./lib/discord-webhooks";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { createServer } from "http";
@@ -9,6 +10,14 @@ import { initializeDiscordBot } from "./discord-bot";
 import { WebhookHandlers } from "./webhookHandlers";
 import fs from "fs";
 import path from "path";
+
+process.on("uncaughtException", async (err) => {
+  await sendErrorLog(err);
+});
+
+process.on("unhandledRejection", async (err) => {
+  await sendErrorLog(err);
+});
 
 console.log("🔐 ADMIN_USER_ID at startup:", process.env.ADMIN_USER_ID);
 
@@ -49,26 +58,26 @@ console.log("✅ Session store initialized with PostgreSQL");
 
 // ---- Stripe webhook route (MUST be before express.json()) ----
 app.post(
-  '/api/stripe/webhook',
-  express.raw({ type: 'application/json' }),
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
   async (req, res) => {
-    const signature = req.headers['stripe-signature'];
+    const signature = req.headers["stripe-signature"];
     if (!signature) {
-      return res.status(400).json({ error: 'Missing stripe-signature' });
+      return res.status(400).json({ error: "Missing stripe-signature" });
     }
     try {
       const sig = Array.isArray(signature) ? signature[0] : signature;
       if (!Buffer.isBuffer(req.body)) {
-        console.error('STRIPE WEBHOOK ERROR: req.body is not a Buffer');
-        return res.status(500).json({ error: 'Webhook processing error' });
+        console.error("STRIPE WEBHOOK ERROR: req.body is not a Buffer");
+        return res.status(500).json({ error: "Webhook processing error" });
       }
       await WebhookHandlers.processWebhook(req.body as Buffer, sig);
       res.status(200).json({ received: true });
     } catch (error: any) {
-      console.error('Webhook error:', error.message);
-      res.status(400).json({ error: 'Webhook processing error' });
+      console.error("Webhook error:", error.message);
+      res.status(400).json({ error: "Webhook processing error" });
     }
-  }
+  },
 );
 
 // ---- Middleware ----
@@ -98,9 +107,12 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads"), {
-  maxAge: "7d",
-}));
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "uploads"), {
+    maxAge: "7d",
+  }),
+);
 
 // Passport middleware
 app.use(passport.initialize());
@@ -189,39 +201,49 @@ httpServer.listen(port, host, () => {
     console.log("STEP: init stripe (non-blocking)");
     (async () => {
       try {
-        const { runMigrations } = await import('stripe-replit-sync');
-        const { getStripeSync } = await import('./stripeClient');
+        const { runMigrations } = await import("stripe-replit-sync");
+        const { getStripeSync } = await import("./stripeClient");
         const databaseUrl = process.env.DATABASE_URL;
         if (!databaseUrl) {
-          console.warn('⚠️ DATABASE_URL not set, skipping Stripe init');
+          console.warn("⚠️ DATABASE_URL not set, skipping Stripe init");
           return;
         }
         await runMigrations({ databaseUrl });
-        console.log('✅ Stripe schema ready');
+        console.log("✅ Stripe schema ready");
 
         const stripeSync = await getStripeSync();
 
-        const domains = process.env.REPLIT_DOMAINS?.split(',')[0] || process.env.REPLIT_DEV_DOMAIN;
+        const domains =
+          process.env.REPLIT_DOMAINS?.split(",")[0] ||
+          process.env.REPLIT_DEV_DOMAIN;
         if (domains) {
           const webhookBaseUrl = `https://${domains}`;
           try {
             const result = await stripeSync.findOrCreateManagedWebhook(
-              `${webhookBaseUrl}/api/stripe/webhook`
+              `${webhookBaseUrl}/api/stripe/webhook`,
             );
-            console.log(`✅ Stripe webhook configured: ${result?.webhook?.url || 'ready'}`);
+            console.log(
+              `✅ Stripe webhook configured: ${result?.webhook?.url || "ready"}`,
+            );
           } catch (webhookErr: any) {
-            console.warn('⚠️ Stripe webhook setup skipped:', webhookErr.message);
+            console.warn(
+              "⚠️ Stripe webhook setup skipped:",
+              webhookErr.message,
+            );
           }
         }
 
-        stripeSync.syncBackfill()
-          .then(() => console.log('✅ Stripe data synced'))
-          .catch((err: any) => console.error('⚠️ Stripe backfill error:', err.message));
+        stripeSync
+          .syncBackfill()
+          .then(() => console.log("✅ Stripe data synced"))
+          .catch((err: any) =>
+            console.error("⚠️ Stripe backfill error:", err.message),
+          );
 
-        const { initializeStripeProducts } = await import('./stripe-products');
+        const { initializeStripeProducts } = await import("./stripe-products");
         await initializeStripeProducts();
       } catch (error: any) {
-        console.error('⚠️ Stripe init failed (non-critical):', error.message);
+        console.error("⚠️ Stripe init failed (non-critical):", error.message);
       }
     })();
 
@@ -280,12 +302,15 @@ httpServer.listen(port, host, () => {
         const { announcements } = await import("@shared/schema");
         const { lte, eq, and } = await import("drizzle-orm");
         const now = new Date();
-        await db.update(announcements)
+        await db
+          .update(announcements)
           .set({ isPublished: true })
-          .where(and(
-            eq(announcements.isPublished, false),
-            lte(announcements.scheduledFor, now)
-          ));
+          .where(
+            and(
+              eq(announcements.isPublished, false),
+              lte(announcements.scheduledFor, now),
+            ),
+          );
       } catch {}
     }, 60000);
 

@@ -293,6 +293,7 @@ export const products = pgTable("products", {
   reviewNotes: text("review_notes"),
   stripeProductId: varchar("stripe_product_id"),
   stripePriceId: varchar("stripe_price_id"),
+  canPurchase: boolean("can_purchase").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -308,6 +309,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
   reviewNotes: true,
   stripeProductId: true,
   stripePriceId: true,
+  canPurchase: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -468,7 +470,9 @@ export const changelogEntries = pgTable("changelog_entries", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertChangelogEntrySchema = createInsertSchema(changelogEntries).omit({
+export const insertChangelogEntrySchema = createInsertSchema(
+  changelogEntries,
+).omit({
   id: true,
   createdAt: true,
 });
@@ -549,7 +553,9 @@ export const directMessages = pgTable("direct_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertDirectMessageSchema = createInsertSchema(directMessages).omit({
+export const insertDirectMessageSchema = createInsertSchema(
+  directMessages,
+).omit({
   id: true,
   isRead: true,
   createdAt: true,
@@ -595,7 +601,9 @@ export const userAchievements = pgTable("user_achievements", {
   earnedAt: timestamp("earned_at").defaultNow(),
 });
 
-export const insertAchievementDefinitionSchema = createInsertSchema(achievementDefinitions).omit({
+export const insertAchievementDefinitionSchema = createInsertSchema(
+  achievementDefinitions,
+).omit({
   id: true,
   createdAt: true,
 });
