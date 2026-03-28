@@ -30,13 +30,13 @@ const departments: Department[] = [
     color: "text-yellow-500",
     members: [
       {
-        name: "cxiqlne",
+        name: "Isaac",
         role: "Chief Executive Officer (CEO) & Founder",
         joinDate: "2018-Present",
       },
       {
-        name: "silentdirective.",
-        role: "Chief Operations Officer (COO) & Co Founder",
+        name: "silentdirective",
+        role: "Operations Manager & Co Founder",
         joinDate: "2024-Present",
       },
     ],
@@ -47,38 +47,37 @@ const departments: Department[] = [
     color: "text-blue-500",
     members: [
       {
-        name: "ArielOperations",
-        role: "Company Representative, Team Member",
+        name: "zxqne",
+        role: "Director of Platform Engineering",
         joinDate: "2024-Present",
       },
-    ],
-  },
-  {
-    name: "RS Staff Department Administration",
-    icon: Shield,
-    color: "text-red-500",
-    members: [
       {
-        name: "Vision",
-        role: "Staff Department Director",
-        joinDate: "2025-Present",
+        name: "eranovuh",
+        role: "Staff Director",
+        joinDate: "2026-Present",
       },
     ],
   },
   {
-    name: "RS Customer Relations",
+    name: "RS Customer Support",
     icon: Headphones,
     color: "text-green-500",
     members: [
       {
-        name: "silentdirective.",
-        role: "Partnership Relations",
+        name: "silentdirective",
+        role: "Customer Relations & Partnership Relations",
         joinDate: "2024-Present",
       },
       {
-        name: "cxiqlne",
-        role: "DMCA Relations",
+        name: "Isaac",
+        role: "Customer Relations & DMCA Relations",
         joinDate: "2018-Present",
+      },
+
+      {
+        name: "eranovuh",
+        role: "Customer Relations",
+        joinDate: "2026-Present",
       },
     ],
   },
@@ -88,22 +87,22 @@ const departments: Department[] = [
     color: "text-purple-500",
     members: [
       {
-        name: "itzcxiqlne",
+        name: "Isaac",
         role: "Gameplay Engineer & Creative Designer",
         joinDate: "2018-Present",
       },
       {
-        name: "silentdirective.",
+        name: "silentdirective",
         role: "Creative Designer",
         joinDate: "2024-Present",
       },
       {
-        name: "itzcxiqlne",
+        name: "Isaac",
         role: "Programmer",
         joinDate: "2018-Present",
       },
       {
-        name: "itzcxiqlne",
+        name: "Isaac",
         role: "Vehicle Engineer",
         joinDate: "2018-Present",
       },
@@ -137,13 +136,13 @@ const departments: Department[] = [
         role: "Team Member",
         joinDate: "2025",
         endDate: "2026",
-      }, 
-        {
-          name: "Reni",
-          role: "Gameplay Engineer",
-          joinDate: "2019",
-          endDate: "2026",
-        },
+      },
+      {
+        name: "Reni",
+        role: "Gameplay Engineer",
+        joinDate: "2019",
+        endDate: "2026",
+      },
       {
         name: "WolfGaming_2025",
         role: "Operations Manager",
@@ -155,6 +154,12 @@ const departments: Department[] = [
         role: "Team Member",
         joinDate: "2024",
         endDate: "2025",
+      },
+      {
+        name: "Vision",
+        role: "Staff Director",
+        joinDate: "2024",
+        endDate: "2026",
       },
     ],
   },
