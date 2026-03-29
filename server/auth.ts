@@ -55,21 +55,26 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
-          const discordId = profile.id;
-          const email = profile.email || `${profile.username}@discord.local`;
+          console.log("Discord auth started", {
+            id: profile?.id,
+            username: profile?.username,
+            email: profile?.email,
+          });
 
-          // Try to find existing user by Discord ID
+          const discordId = profile.id;
+          const email =
+            profile.email || `${profile.username || profile.id}@discord.local`;
+
           let user = await storage.getUserByDiscordId(discordId);
 
           if (!user) {
-            // Check if a user already exists with this email
             let existingUser = null;
+
             if (email && !email.endsWith("@discord.local")) {
               existingUser = await storage.getUserByEmail(email);
             }
 
             if (existingUser) {
-              // Link Discord to existing email account
               user =
                 (await storage.updateUser(existingUser.id, {
                   discordId,
@@ -78,10 +83,12 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                   discordLinkedAt: new Date(),
                 })) || existingUser;
             } else {
-              // Create new user with Discord info
-              const newUsername =
+              const baseUsername =
                 profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") ||
-                profile.id;
+                "user";
+
+              const newUsername = `${baseUsername}_${profile.id.slice(-6)}`;
+
               user = await storage.upsertUser({
                 id: undefined,
                 email,
@@ -100,9 +107,14 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                 vipTier: "none",
               });
 
-              // Sync nickname to Discord server
-              await updateDiscordNickname(discordId, newUsername);
-              await sendSiteLog({
+              updateDiscordNickname(discordId, newUsername).catch((err) =>
+                console.error(
+                  "❌ Failed to update Discord nickname after signup:",
+                  err,
+                ),
+              );
+
+              sendSiteLog({
                 title: "User Login",
                 level: "success",
                 fields: [
@@ -113,7 +125,9 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                   { name: "Discord ID", value: profile.id, inline: true },
                   { name: "Email", value: email || "No email", inline: true },
                 ],
-              });
+              }).catch((err) =>
+                console.error("❌ Failed to send site log after signup:", err),
+              );
             }
           } else {
             user =
@@ -128,9 +142,11 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
             );
           }
 
+          console.log("✅ Discord auth success for user:", user?.id);
           done(null, user as any);
         } catch (err) {
-          done(err);
+          console.error("❌ Discord auth verify failed:", err);
+          done(err as any);
         }
       },
     ),

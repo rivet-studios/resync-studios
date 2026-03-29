@@ -53,9 +53,9 @@ export default function UserProfile() {
   const [newNote, setNewNote] = useState("");
 
   const { data: profile, isLoading } = useQuery<User>({
-    queryKey: ["/api/users", userId],
+    queryKey: ["/api/profile", userId],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}`);
+      const res = await fetch(`/api/profile/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch user");
       return res.json();
     },
