@@ -56,6 +56,11 @@ const departments: Department[] = [
         role: "Staff Director",
         joinDate: "2026-Present",
       },
+      {
+        name: "Kryos",
+        role: "Operations Manager",
+        joinDate: "2026-Present",
+      },
     ],
   },
   {
@@ -122,12 +127,6 @@ const departments: Department[] = [
       {
         name: "Iceberg1038",
         role: "Staff Department Director",
-        joinDate: "2024",
-        endDate: "2026",
-      },
-      {
-        name: "Kryos",
-        role: "Operations Manager",
         joinDate: "2024",
         endDate: "2026",
       },

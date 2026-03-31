@@ -42,11 +42,9 @@ import StaffDirectory from "@/pages/staff-directory";
 import News from "@/pages/news";
 import Projects from "@/pages/projects";
 import Support from "@/pages/support";
-import VolunteerModeration from "@/pages/volunteer-moderation";
 import DMCA from "@/pages/dmca";
 import ProjectRosewoodrules from "@/pages/project-rosewood-rules";
 import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
-import LEOGuidelines from "@/pages/leo-guidelines";
 import CommunityRules from "@/pages/community-rules";
 import AboutRS from "@/pages/about-rs";
 import Rosewood from "@/pages/rosewood";
@@ -385,14 +383,12 @@ function Router() {
             <Route path="/news" component={News} />
             <Route path="/projects" component={Projects} />
             <Route path="/support" component={Support} />
-            <Route path="/volunteer" component={VolunteerModeration} />
             <Route path="/dmca" component={DMCA} />
             <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
             <Route
               path="/volunteer-agreement"
               component={VolunteerStaffAgreement}
             />
-            <Route path="/leo-guidelines" component={LEOGuidelines} />
             <Route path="/community-rules" component={CommunityRules} />
             <Route path="/about" component={AboutRS} />
             <Route path="/rosewood" component={Rosewood} />
