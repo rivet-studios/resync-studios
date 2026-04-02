@@ -9,23 +9,23 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Handshake, Shield, AlertTriangle } from "lucide-react";
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
-export default function VolunteerStaffAgreement() {
+export default function CommunityStaffAgreement() {
   return (
-    <PolicyWrapper slug="volunteer-staff-agreement">
+    <PolicyWrapper slug="community-staff-agreement">
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
           <Handshake className="w-3.5 h-3.5" />
-          Volunteer Agreement
+          Staff Agreement
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Volunteer Staff Agreement
+          Community Staff Agreement
         </h1>
         <p className="text-lg text-muted-foreground">
-          Terms and conditions for volunteer moderators and staff members
+          Terms and conditions for community moderators and staff members
         </p>
         <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: January 6, 2026
+          Last Updated: April 1, 2026
         </p>
       </div>
 
@@ -40,8 +40,8 @@ export default function VolunteerStaffAgreement() {
               <p className="text-muted-foreground text-sm">
                 Please read this agreement carefully. It contains important
                 information regarding your role, responsibilities, and the
-                nature of your relationship with Rivet Studios. By accepting an
-                invitation to become a Volunteer Staff member, you acknowledge
+                nature of your relationship with RIVET Studios. By accepting an
+                invitation to become a Community Staff member, you acknowledge
                 that you have read, understood, and unconditionally agree to be
                 bound by all terms and conditions contained herein.
               </p>
@@ -60,15 +60,15 @@ export default function VolunteerStaffAgreement() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                Strictly Voluntary Position
+                Community Position
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Your role as Volunteer Staff is a strictly voluntary, unpaid,
+              Your role as Community Staff is a strictly community, unpaid,
               at-will position. You are not an employee, independent contractor,
-              partner, or agent of Rivet Studios. You perform your duties for
+              partner, or agent of RIVET Studios. You perform your duties for
               personal civic, charitable, or humanitarian reasons, without
-              promise, expectation, or receipt of any compensation.
+              promise, expectation, or receipt of any compensation. You are <h2 className="font-bold">not</h2> working on behalf of RIVET Studios. You are working on behalf of the community, in a community-ran system.
             </CardContent>
           </Card>
 
@@ -92,7 +92,7 @@ export default function VolunteerStaffAgreement() {
               <CardTitle className="text-base">At-Will Termination</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              The relationship between you and Rivet Studios is entirely
+              The relationship between you and RIVET Studios is entirely
               "at-will." Either party may terminate this volunteer relationship
               at any time, for any reason or for no reason, with or without
               advance notice or explanation.
@@ -110,7 +110,7 @@ export default function VolunteerStaffAgreement() {
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground space-y-3">
             <p className="font-semibold text-foreground">
-              To become and remain a Volunteer Staff member, you must:
+              To become and remain a Community Staff member, you must:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-2">
               <li>
@@ -122,8 +122,8 @@ export default function VolunteerStaffAgreement() {
                 functional microphone in good working order
               </li>
               <li>
-                <strong>Account in Good Standing:</strong> Have an active Rivet
-                Studios user account with no history of significant violations
+                <strong>Account in Good Standing:</strong> Have an active RIVET
+                Studios user account with no history of significant violations (VTOS, Alt, AD, other significant violations)
               </li>
               <li>
                 <strong>Agree to Policies:</strong> Agree to and abide by this
@@ -148,12 +148,12 @@ export default function VolunteerStaffAgreement() {
           <Card>
             <CardContent className="p-6 text-sm text-muted-foreground space-y-2">
               <p className="font-semibold text-foreground">
-                As a Volunteer Staff member, you are a community role model.
+                As a Community Staff member, you are a community role model.
               </p>
               <p>Your responsibilities include:</p>
               <ul className="list-disc list-inside space-y-1 ml-2 mt-2">
                 <li>
-                  Actively and impartially enforcing Rivet Studios policies
+                  Actively and impartially enforcing RIVET Studios policies
                 </li>
                 <li>Promoting a welcoming and constructive atmosphere</li>
                 <li>
@@ -164,7 +164,7 @@ export default function VolunteerStaffAgreement() {
                   prejudice
                 </li>
                 <li>
-                  Represent the RS Trust & Safety Team with professionalism and
+                  Represent the Community Staff team with professionalism and
                   dignity at all times - This includes maintaining a
                   professional appearance, using appropriate language, and
                   avoiding any behavior that could be perceived as
@@ -212,7 +212,7 @@ export default function VolunteerStaffAgreement() {
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground space-y-3">
             <p>
-              All staff tools are the sole property of Rivet Studios, granted
+              All staff tools are the sole property of RIVET Studios, granted
               exclusively for performing your duties.
             </p>
             <p className="font-semibold text-foreground">
@@ -250,10 +250,10 @@ export default function VolunteerStaffAgreement() {
                 <li>Breaching confidentiality</li>
                 <li>Abusing staff tools</li>
                 <li>Unprofessional conduct</li>
-                <li>Failure to enforce rules</li>
+                <li>Failure to enforce rules fairly or at all </li>
                 <li>Violating Discord and/or ROBLOX Terms of Use</li>
                 <li>Unauthorised Use of Staff Tools</li>
-                <li>Violating Rivet Studios Terms and Conditions</li>
+                <li>Violating RIVET Studios policies, including this Agreement</li>
               </ul>
             </CardContent>
           </Card>
@@ -266,9 +266,9 @@ export default function VolunteerStaffAgreement() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               A violation of this Agreement will result in the immediate
-              termination of your Volunteer Staff privileges and may result in
-              permanent termination of your underlying Rivet Studios user
-              account, without right of appeal.
+              termination of your Community Staff privileges and may result in
+              permanent termination of your underlying RIVET Studios user
+              account only for severe violations, with/without right of appeal.
               <p className="mt-3 text-destructive font-semibold">
                 Any abuse of power is grounds for immediate removal.
               </p>
@@ -298,15 +298,16 @@ export default function VolunteerStaffAgreement() {
               <div className="space-y-2 mt-3">
                 <p className="font-semibold text-destructive">❌ Prohibited:</p>
                 <p className="pl-4">"Former Metro Interactive Administrator"</p>
-                <p className="pl-4">"Former Rivet Studios Administrator"</p>
+                <p className="pl-4">"Former RIVET Studios Administrator"</p>
                 <p className="pl-4">"Ex-Staff at Metro Interactive"</p>
-                <p className="pl-4">"Ex-Staff at Rivet Studios"</p>
+                <p className="pl-4">"Ex-Staff at RIVET Studios"</p>
               </div>
               <div className="space-y-2 mt-3">
                 <p className="font-semibold text-green-600">✓ Permitted:</p>
-                <p className="pl-4">"Former MI Volunteer Moderator"</p>
-                <p className="pl-4">"Former RS Volunteer Moderator"</p>
-                <p className="pl-4">"Former Project Foxtrot Volunteer"</p>
+                <p className="pl-4">"Former MI Community Moderator"</p>
+                <p className="pl-4">"Former RS Community Moderator"</p>
+                <p className="pl-4">"Former RS Community Staff"</p>
+                <p className="pl-4">"Former MI Community Staff"</p>
               </div>
               <p className="mt-3">
                 This policy protects our trademark and prevents public confusion
@@ -330,7 +331,7 @@ export default function VolunteerStaffAgreement() {
                 <li>
                   Making public claims for wages that you explicitly waived
                 </li>
-                <li>Spreading misinformation or defamatory statements</li>
+                <li>Spreading misinformation or defamatory statements (as per regulations of current Australian Law)</li>
                 <li>Inciting drama or unrest related to your departure</li>
               </ul>
             </CardContent>
@@ -344,7 +345,7 @@ export default function VolunteerStaffAgreement() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Engaging in prohibited post-service conduct is a material breach
-              resulting in immediate and permanent termination of your Rivet
+              resulting in immediate and permanent termination of your RIVET
               Studios user account and a permanent ban from all Services,
               without appeal.
             </CardContent>
@@ -361,10 +362,10 @@ export default function VolunteerStaffAgreement() {
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground">
             <p>
-              You perform your volunteer duties at your own risk. To the fullest
-              extent permitted by law, Rivet Studios shall not be liable for
+              You perform your commubity staff duties at your own risk. To the fullest
+              extent permitted by law, RIVET Studios shall not be liable for
               any claims, damages, or liabilities arising from your actions or
-              service as a Volunteer Staff member.
+              service as a Community Staff member.
             </p>
           </CardContent>
         </Card>
@@ -375,7 +376,7 @@ export default function VolunteerStaffAgreement() {
         <CardContent className="p-6 text-center space-y-3">
           <p className="text-lg font-semibold">Acknowledgment of Agreement</p>
           <p className="text-muted-foreground text-sm">
-            By accepting the role of Volunteer Staff, you signify your complete
+            By accepting the role of Community Staff, you signify your complete
             and unconditional agreement to be bound by all terms and conditions
             set forth herein. You understand this is not a contract of
             employment and does not create any legally enforceable rights to a

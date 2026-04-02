@@ -38,18 +38,17 @@ import Settings from "@/pages/settings";
 import Guidelines from "@/pages/guidelines";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
-import StaffDirectory from "@/pages/staff-directory";
-import News from "@/pages/news";
+import TeamDirectory from "@/pages/team-directory";
+import Announcements from "@/pages/announcements";
 import Projects from "@/pages/projects";
 import Support from "@/pages/support";
 import DMCA from "@/pages/dmca";
 import ProjectRosewoodrules from "@/pages/project-rosewood-rules";
-import VolunteerStaffAgreement from "@/pages/volunteer-staff-agreement";
+import CommunityStaffAgreement from "@/pages/community-staff-agreement";
 import CommunityRules from "@/pages/community-rules";
-import AboutRS from "@/pages/about-rs";
+import About from "@/pages/about";
 import Rosewood from "@/pages/rosewood";
 
-import Admin from "@/pages/admin";
 import ModCP from "@/pages/modcp";
 import AdminCP from "@/pages/admincp";
 
@@ -130,7 +129,7 @@ function SiteFooter() {
               <div className="col-span-2 md:col-span-1 space-y-6">
                 <div className="flex items-center gap-2.5">
                   <img
-                    src="/attached_assets/logo.svg"
+                    src="/attached_assets/rs.svg"
                     alt="RS"
                     className="w-6 h-6"
                   />
@@ -339,7 +338,7 @@ function Router() {
             <Route path="/forgot-password" component={ForgotPassword} />
             <Route path="/reset-password" component={ResetPassword} />
             <Route path="/blog" component={Blog} />
-            <Route path="/blog/:id" component={News} />
+            <Route path="/blog/:id" component={Announcements} />
             <Route path="/store" component={Store} />
             <Route path="/store/category/:category" component={StoreCategory} />
             <Route path="/store/product/:id" component={ProductDetail} />
@@ -362,12 +361,11 @@ function Router() {
             <Route path="/profile" component={UserProfile} />
             <Route path="/profile/:id" component={UserProfile} />
             <Route path="/settings" component={Settings} />
-            <Route path="/team" component={StaffDirectory} />
+            <Route path="/team" component={TeamDirectory} />
             <Route path="/search" component={UserSearch} />
             <Route path="/marketplace" component={Marketplace} />
             <Route path="/appeals" component={Appeals} />
             <Route path="/my-cases" component={MyCases} />
-            <Route path="/admin" component={Admin} />
             <Route path="/modcp/case/:type/:id">
               {canAccessModCP(user) ? <CaseDetail /> : <NotFound />}
             </Route>
@@ -380,17 +378,17 @@ function Router() {
             <Route path="/guidelines" component={Guidelines} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
-            <Route path="/news" component={News} />
+            <Route path="/announcements" component={Announcements} />
             <Route path="/projects" component={Projects} />
             <Route path="/support" component={Support} />
             <Route path="/dmca" component={DMCA} />
             <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
             <Route
-              path="/volunteer-agreement"
-              component={VolunteerStaffAgreement}
+              path="/staff-terms"
+              component={CommunityStaffAgreement}
             />
             <Route path="/community-rules" component={CommunityRules} />
-            <Route path="/about" component={AboutRS} />
+            <Route path="/about" component={About} />
             <Route path="/rosewood" component={Rosewood} />
             <Route path="/onboarding" component={Onboarding} />
             <Route path="/status" component={Status} />

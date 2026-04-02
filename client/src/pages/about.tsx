@@ -8,7 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Zap, Users, Target, Rocket } from "lucide-react";
 
-export default function AboutRS() {
+export default function About() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-4">

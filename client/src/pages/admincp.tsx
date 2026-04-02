@@ -376,8 +376,7 @@ export default function AdminCP() {
     "community-rules": "Community Rules",
     guidelines: "Guidelines",
     dmca: "DMCA Policy",
-    "leo-guidelines": "LEO Guidelines",
-    "volunteer-staff-agreement": "Volunteer Staff Agreement",
+    "volunteer-staff-agreement": "Community Staff Agreement",
     "project-rosewood-rules": "Project Rosewood Rules",
   };
 
