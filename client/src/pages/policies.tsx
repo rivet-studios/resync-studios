@@ -53,13 +53,6 @@ const policyLinks = [
     icon: Shield,
     href: "/dmca",
   },
-  {
-    title: "Project Rosewood Rules",
-    lastUpdated: "Last Updated: March 1st, 2026",
-    description: "Specific rules for Project Rosewood",
-    icon: AlertCircle,
-    href: "/project-rosewood-rules",
-  },
 ];
 
 export default function Policies() {

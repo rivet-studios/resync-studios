@@ -59,6 +59,7 @@ import {
   MessageSquare,
   Eye,
   ThumbsUp,
+  Heart,
   Clock,
   Lock,
   Pin,
@@ -72,7 +73,12 @@ import {
   PinOff,
   FolderInput,
   Shield,
+  Bookmark,
+  BookmarkCheck,
+  BarChart3,
+  Loader2,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { ReportDialog } from "@/components/report-dialog";
 import { formatDistanceToNow } from "date-fns";
 import type { ForumThread, ForumReply, User, ForumCategory } from "@shared/schema";
@@ -121,6 +127,54 @@ function RankUsername({ user, className = "" }: { user?: User | null; className?
     >
       {user.username}
     </span>
+  );
+}
+
+function ReplyLikeButton({ replyId }: { replyId: string }) {
+  const { user } = useAuth();
+  const { data } = useQuery<{ count: number; userReacted: boolean }>({
+    queryKey: ["/api/reactions/reply", replyId],
+    queryFn: async () => {
+      const res = await fetch(`/api/reactions/reply/${replyId}`, { credentials: "include" });
+      return res.json();
+    },
+  });
+
+  const { toast } = useToast();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/reactions", { targetType: "reply", targetId: replyId, reactionType: "like" });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reactions/reply", replyId] });
+    },
+    onError: () => {
+      toast({ title: "Failed to react", variant: "destructive" });
+    },
+  });
+
+  if (!user) {
+    return (
+      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+        <Heart className="w-3 h-3" />
+        {data?.count || 0}
+      </span>
+    );
+  }
+
+  return (
+    <Button
+      variant={data?.userReacted ? "default" : "ghost"}
+      size="sm"
+      className="gap-1 h-7 text-xs"
+      onClick={() => mutation.mutate()}
+      disabled={mutation.isPending}
+      data-testid={`button-like-reply-${replyId}`}
+    >
+      <Heart className={`w-3 h-3 ${data?.userReacted ? "fill-current" : ""}`} />
+      {data?.count || 0}
+    </Button>
   );
 }
 
@@ -255,6 +309,74 @@ export default function ForumThread() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to update reply.", variant: "destructive" });
+    },
+  });
+
+  const { data: threadReaction } = useQuery<{ count: number; userReacted: boolean }>({
+    queryKey: ["/api/reactions/thread", threadId],
+    queryFn: async () => {
+      const res = await fetch(`/api/reactions/thread/${threadId}`, { credentials: "include" });
+      return res.json();
+    },
+    enabled: !!threadId,
+  });
+
+  const { data: bookmarkStatus } = useQuery<any[]>({
+    queryKey: ["/api/bookmarks"],
+    enabled: !!user,
+  });
+
+  const isBookmarked = bookmarkStatus?.some(
+    (b: any) => b.targetType === "thread" && b.targetId === threadId
+  );
+
+  const { data: poll } = useQuery<any>({
+    queryKey: ["/api/forums/polls", threadId],
+    queryFn: async () => {
+      const res = await fetch(`/api/forums/polls/${threadId}`);
+      return res.json();
+    },
+    enabled: !!threadId,
+  });
+
+  const toggleReactionMutation = useMutation({
+    mutationFn: async ({ targetType, targetId }: { targetType: string; targetId: string }) => {
+      const res = await apiRequest("POST", "/api/reactions", { targetType, targetId, reactionType: "like" });
+      return res.json();
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reactions/" + variables.targetType, variables.targetId] });
+    },
+    onError: () => {
+      toast({ title: "Failed to react", variant: "destructive" });
+    },
+  });
+
+  const toggleBookmarkMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/bookmarks", { targetType: "thread", targetId: threadId });
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+      toast({ title: data.bookmarked ? "Bookmarked" : "Bookmark removed" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update bookmark", variant: "destructive" });
+    },
+  });
+
+  const votePollMutation = useMutation({
+    mutationFn: async ({ pollId, optionIndex }: { pollId: string; optionIndex: number }) => {
+      const res = await apiRequest("POST", `/api/forums/polls/${pollId}/vote`, { optionIndex });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/forums/polls", threadId] });
+      toast({ title: "Vote recorded" });
+    },
+    onError: () => {
+      toast({ title: "Failed to vote", variant: "destructive" });
     },
   });
 
@@ -437,36 +559,121 @@ export default function ForumThread() {
               </p>
             </div>
 
-            <div className="flex items-center justify-end mt-4 pt-3 border-t gap-2 flex-wrap">
-              {canEditThread && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-muted-foreground"
-                  asChild
-                  data-testid="button-edit-thread"
-                >
-                  <Link href={`/forums/thread/${threadId}/edit`}>
-                    <Pencil className="w-3.5 h-3.5" />
-                    Edit
-                  </Link>
-                </Button>
-              )}
-              {user && thread.author?.id !== user.id && (
-                <ReportDialog
-                  targetId={thread.id}
-                  targetType="thread"
-                  trigger={
-                    <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-thread">
-                      <Flag className="w-3.5 h-3.5" />
-                      Report
-                    </Button>
-                  }
-                />
-              )}
+            <div className="flex items-center justify-between mt-4 pt-3 border-t gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                {user && (
+                  <Button
+                    variant={threadReaction?.userReacted ? "default" : "ghost"}
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => toggleReactionMutation.mutate({ targetType: "thread", targetId: thread.id })}
+                    disabled={toggleReactionMutation.isPending}
+                    data-testid="button-like-thread"
+                  >
+                    <Heart className={`w-3.5 h-3.5 ${threadReaction?.userReacted ? "fill-current" : ""}`} />
+                    {threadReaction?.count || 0}
+                  </Button>
+                )}
+                {!user && (
+                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground px-2">
+                    <Heart className="w-3.5 h-3.5" />
+                    {threadReaction?.count || 0}
+                  </span>
+                )}
+                {user && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`gap-1.5 ${isBookmarked ? "text-primary" : "text-muted-foreground"}`}
+                    onClick={() => toggleBookmarkMutation.mutate()}
+                    disabled={toggleBookmarkMutation.isPending}
+                    data-testid="button-bookmark-thread"
+                  >
+                    {isBookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+                    {isBookmarked ? "Saved" : "Save"}
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {canEditThread && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-muted-foreground"
+                    asChild
+                    data-testid="button-edit-thread"
+                  >
+                    <Link href={`/forums/thread/${threadId}/edit`}>
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </Link>
+                  </Button>
+                )}
+                {user && thread.author?.id !== user.id && (
+                  <ReportDialog
+                    targetId={thread.id}
+                    targetType="thread"
+                    trigger={
+                      <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-report-thread">
+                        <Flag className="w-3.5 h-3.5" />
+                        Report
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        {poll && poll.id && (
+          <Card data-testid="card-poll">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-sm">Poll: {poll.question}</h3>
+              </div>
+              {poll.endsAt && new Date(poll.endsAt) < new Date() && (
+                <Badge variant="secondary" className="mb-3 text-xs">Poll ended</Badge>
+              )}
+              <div className="space-y-2">
+                {(poll.options || []).map((option: string, idx: number) => {
+                  const votes = (poll.votes as Record<string, string[]>) || {};
+                  const optionVotes = (votes[String(idx)] || []).length;
+                  const totalVotes = Object.values(votes).reduce((sum: number, arr: any) => sum + (arr?.length || 0), 0);
+                  const percentage = totalVotes > 0 ? Math.round((optionVotes / totalVotes) * 100) : 0;
+                  const userVoted = user && (votes[String(idx)] || []).includes(user.id);
+                  const pollEnded = poll.endsAt && new Date(poll.endsAt) < new Date();
+
+                  return (
+                    <button
+                      key={idx}
+                      className={`w-full text-left p-3 rounded-md border transition-colors ${
+                        userVoted ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                      } ${!user || pollEnded ? "cursor-default" : "cursor-pointer"}`}
+                      onClick={() => {
+                        if (user && !pollEnded) {
+                          votePollMutation.mutate({ pollId: poll.id, optionIndex: idx });
+                        }
+                      }}
+                      disabled={!user || !!pollEnded || votePollMutation.isPending}
+                      data-testid={`button-poll-option-${idx}`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium">{option}</span>
+                        <span className="text-xs text-muted-foreground">{percentage}% ({optionVotes})</span>
+                      </div>
+                      <Progress value={percentage} className="h-1.5" />
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {Object.values((poll.votes as Record<string, string[]>) || {}).reduce((sum: number, arr: any) => sum + (arr?.length || 0), 0)} total votes
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-2">
@@ -545,8 +752,10 @@ export default function ForumThread() {
                             </p>
                           )}
 
-                          {!isEditing && (canEditReply || canDeleteReply || (user && reply.author?.id !== user.id)) && (
-                            <div className="flex items-center justify-end mt-3 pt-2 border-t gap-2 flex-wrap">
+                          {!isEditing && (
+                            <div className="flex items-center justify-between mt-3 pt-2 border-t gap-2 flex-wrap">
+                              <ReplyLikeButton replyId={reply.id} />
+                              <div className="flex items-center gap-2">
                               {canEditReply && (
                                 <Button
                                   variant="ghost"
@@ -586,6 +795,7 @@ export default function ForumThread() {
                                   }
                                 />
                               )}
+                              </div>
                             </div>
                           )}
                         </div>

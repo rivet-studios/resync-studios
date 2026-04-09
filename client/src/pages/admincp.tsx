@@ -88,6 +88,7 @@ export default function AdminCP() {
   const [announcementContent, setAnnouncementContent] = useState("");
   const [announcementCategory, setAnnouncementCategory] = useState("General");
   const [announcementImageUrl, setAnnouncementImageUrl] = useState("");
+  const [announcementScheduledFor, setAnnouncementScheduledFor] = useState("");
   const [editingPolicy, setEditingPolicy] = useState<string | null>(null);
   const [policyTitle, setPolicyTitle] = useState("");
   const [policyContent, setPolicyContent] = useState("");
@@ -446,6 +447,7 @@ export default function AdminCP() {
       setAnnouncementContent("");
       setAnnouncementCategory("General");
       setAnnouncementImageUrl("");
+      setAnnouncementScheduledFor("");
     },
     onError: (e: any) => {
       toast({
@@ -2326,15 +2328,34 @@ export default function AdminCP() {
                     />
                   </div>
                 </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                    Schedule (optional)
+                  </label>
+                  <Input
+                    type="datetime-local"
+                    value={announcementScheduledFor}
+                    onChange={(e) => setAnnouncementScheduledFor(e.target.value)}
+                    className="max-w-xs"
+                    data-testid="input-announcement-schedule"
+                  />
+                  {announcementScheduledFor && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Will be published automatically at the scheduled time
+                    </p>
+                  )}
+                </div>
                 <Button
                   onClick={() => {
                     if (!announcementTitle || !announcementContent) return;
+                    const isScheduled = !!announcementScheduledFor;
                     createAnnouncementMutation.mutate({
                       title: announcementTitle,
                       content: announcementContent,
                       category: announcementCategory,
                       imageUrl: announcementImageUrl || undefined,
-                      isPublished: true,
+                      isPublished: !isScheduled,
+                      ...(isScheduled ? { scheduledFor: new Date(announcementScheduledFor).toISOString() } : {}),
                     });
                   }}
                   disabled={
@@ -2345,8 +2366,8 @@ export default function AdminCP() {
                   data-testid="button-create-announcement"
                 >
                   {createAnnouncementMutation.isPending
-                    ? "Publishing..."
-                    : "Publish Announcement"}
+                    ? (announcementScheduledFor ? "Scheduling..." : "Publishing...")
+                    : (announcementScheduledFor ? "Schedule Announcement" : "Publish Announcement")}
                 </Button>
               </CardContent>
             </Card>

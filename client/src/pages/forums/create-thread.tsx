@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { insertForumThreadSchema, type ForumCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -24,11 +25,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { BarChart3, Plus, X } from "lucide-react";
 
 export default function CreateThread() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  const [includePoll, setIncludePoll] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [pollAllowMultiple, setPollAllowMultiple] = useState(false);
 
   const { data: categories, isLoading: isLoadingCategories } = useQuery<ForumCategory[]>({
     queryKey: ["/api/forums/categories"],
@@ -53,10 +62,38 @@ export default function CreateThread() {
 
   const mutation = useMutation({
     mutationFn: async (values: any) => {
+      if (includePoll) {
+        const validOptions = pollOptions.filter(o => o.trim());
+        if (!pollQuestion.trim() || validOptions.length < 2) {
+          throw new Error("Poll requires a question and at least 2 options.");
+        }
+      }
+
       const res = await apiRequest("POST", "/api/forums/threads", values);
-      return res.json();
+      const thread = await res.json();
+
+      if (includePoll) {
+        try {
+          await apiRequest("POST", "/api/forums/polls", {
+            threadId: thread.id,
+            question: pollQuestion.trim(),
+            options: pollOptions.filter(o => o.trim()),
+            allowMultiple: pollAllowMultiple,
+          });
+        } catch {
+          toast({
+            title: "Thread created, but poll failed",
+            description: "Your discussion was posted but the poll could not be added.",
+            variant: "destructive",
+          });
+          setLocation(`/forums/thread/${thread.id}`);
+          return thread;
+        }
+      }
+
+      return thread;
     },
-    onSuccess: () => {
+    onSuccess: (_data, _vars, context) => {
       queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
       toast({
         title: "Success",
@@ -154,6 +191,83 @@ export default function CreateThread() {
                     </FormItem>
                   )}
                 />
+
+                <div className="space-y-4 border border-white/10 rounded-lg p-4 bg-white/[0.02]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-primary" />
+                      <Label className="text-white/70 font-medium">Add a Poll</Label>
+                    </div>
+                    <Switch
+                      checked={includePoll}
+                      onCheckedChange={setIncludePoll}
+                      data-testid="switch-include-poll"
+                    />
+                  </div>
+
+                  {includePoll && (
+                    <div className="space-y-3 pt-2">
+                      <Input
+                        placeholder="Poll question"
+                        value={pollQuestion}
+                        onChange={(e) => setPollQuestion(e.target.value)}
+                        className="border-white/10 bg-white/5 text-white placeholder:text-white/30"
+                        data-testid="input-poll-question"
+                      />
+                      <div className="space-y-2">
+                        {pollOptions.map((opt, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <Input
+                              placeholder={`Option ${idx + 1}`}
+                              value={opt}
+                              onChange={(e) => {
+                                const next = [...pollOptions];
+                                next[idx] = e.target.value;
+                                setPollOptions(next);
+                              }}
+                              className="border-white/10 bg-white/5 text-white placeholder:text-white/30"
+                              data-testid={`input-poll-option-${idx}`}
+                            />
+                            {pollOptions.length > 2 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                                className="text-white/40 shrink-0"
+                                data-testid={`button-remove-poll-option-${idx}`}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {pollOptions.length < 10 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setPollOptions([...pollOptions, ""])}
+                          className="text-white/50 gap-1.5"
+                          data-testid="button-add-poll-option"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Option
+                        </Button>
+                      )}
+                      <div className="flex items-center gap-2 pt-1">
+                        <Switch
+                          id="allow-multiple"
+                          checked={pollAllowMultiple}
+                          onCheckedChange={setPollAllowMultiple}
+                          data-testid="switch-allow-multiple"
+                        />
+                        <Label htmlFor="allow-multiple" className="text-white/50 text-sm">Allow multiple votes</Label>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex justify-end gap-3 pt-4">
                   <Button 

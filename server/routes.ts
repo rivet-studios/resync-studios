@@ -3501,9 +3501,16 @@ export async function registerRoutes(
   // ===== FORUM POLLS =====
   app.post("/api/forums/polls", requireAuth, async (req, res) => {
     try {
+      const userId = (req.user as any).id;
       const { threadId, question, options, allowMultiple, endsAt } = req.body;
       if (!threadId || !question || !options)
         return res.status(400).json({ message: "Missing fields" });
+
+      const [thread] = await db.select().from(forumThreads).where(eq(forumThreads.id, threadId)).limit(1);
+      if (!thread) return res.status(404).json({ message: "Thread not found" });
+      if (thread.authorId !== userId && !isAdminUser(req.user as any) && !isForumStaff(req.user as any)) {
+        return res.status(403).json({ message: "Only the thread author or staff can add a poll" });
+      }
 
       const [poll] = await db
         .insert(forumPolls)
