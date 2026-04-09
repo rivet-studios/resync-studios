@@ -918,9 +918,9 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="flex gap-8">
-        <nav className="w-48 flex-shrink-0">
-          <div className="sticky top-8 space-y-1">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+        <nav className="md:w-48 flex-shrink-0">
+          <div className="flex md:flex-col md:sticky md:top-8 gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
             {SETTINGS_TABS.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -928,7 +928,7 @@ export default function Settings() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     isActive
                       ? "bg-accent text-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
@@ -936,7 +936,7 @@ export default function Settings() {
                   data-testid={`settings-tab-${tab.id}`}
                 >
                   <Icon className="w-4 h-4" />
-                  {tab.label}
+                  <span className="hidden md:inline">{tab.label}</span>
                 </button>
               );
             })}
@@ -1008,7 +1008,7 @@ export default function Settings() {
                         <div className="flex items-center gap-2">
                           <Input
                             placeholder="Paste image link"
-                            className="w-64 text-sm"
+                            className="w-full sm:w-64 text-sm"
                             {...profileForm.register("profileImageUrl")}
                             data-testid="input-settings-profile-image"
                           />
@@ -1306,7 +1306,7 @@ export default function Settings() {
                   <CardDescription>Choose your preferred theme appearance</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {[
                       { value: "light" as const, label: "Light", icon: Sun },
                       { value: "dark" as const, label: "Dark", icon: Moon },
@@ -1383,7 +1383,7 @@ export default function Settings() {
                   <CardDescription>Adjust the text size across the platform</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {[
                       { value: "small", label: "Small" },
                       { value: "normal", label: "Normal" },

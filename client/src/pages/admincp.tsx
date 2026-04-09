@@ -55,6 +55,7 @@ import {
   Calendar,
   CheckSquare,
   Loader2,
+  Signal,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -148,6 +149,25 @@ export default function AdminCP() {
   const { data: allAchievements = [] } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!isAdmin && activeTab === "achievements",
+  });
+
+  const { data: serviceStatuses = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/service-statuses"],
+    enabled: !!isAdmin && activeTab === "status",
+  });
+
+  const updateServiceStatusMutation = useMutation({
+    mutationFn: async ({ key, status }: { key: string; status: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/service-statuses/${key}`, { status });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/service-statuses"] });
+      toast({ title: "Service status updated" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update status", variant: "destructive" });
+    },
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery<{
@@ -631,6 +651,7 @@ export default function AdminCP() {
     { id: "reports", label: "Reports", icon: AlertTriangle },
     { id: "audit-log", label: "Audit Log", icon: History },
     { id: "achievements", label: "Achievements", icon: Crown },
+    { id: "status", label: "Service Status", icon: Signal },
   ];
 
   const displayUsers = userSearch.length >= 2 ? searchResults : allUsers;
@@ -3028,6 +3049,59 @@ export default function AdminCP() {
                         </span>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
+
+        {activeTab === "status" && (
+          <>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="text-xl font-bold" data-testid="text-admin-status-title">
+                  Service Status Management
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Manually set the status of each platform service shown on the Status page
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {serviceStatuses.map((svc: any) => (
+                <Card key={svc.id} data-testid={`card-service-${svc.serviceKey}`}>
+                  <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full shrink-0 ${
+                        svc.status === "operational" ? "bg-green-500" :
+                        svc.status === "degraded" ? "bg-yellow-500" :
+                        svc.status === "partial outage" ? "bg-orange-500" :
+                        svc.status === "maintenance" ? "bg-blue-500" :
+                        "bg-red-500"
+                      }`} />
+                      <div>
+                        <p className="font-medium text-sm">{svc.label}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Key: {svc.serviceKey}
+                        </p>
+                      </div>
+                    </div>
+                    <Select
+                      value={svc.status}
+                      onValueChange={(val) => updateServiceStatusMutation.mutate({ key: svc.serviceKey, status: val })}
+                    >
+                      <SelectTrigger className="w-full sm:w-48" data-testid={`select-status-${svc.serviceKey}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="operational">Operational</SelectItem>
+                        <SelectItem value="degraded">Degraded</SelectItem>
+                        <SelectItem value="partial outage">Partial Outage</SelectItem>
+                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="offline">Offline</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </CardContent>
                 </Card>
               ))}

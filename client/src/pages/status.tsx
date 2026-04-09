@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface ServiceStatus {
-  status: "operational" | "degraded" | "offline";
+  status: "operational" | "degraded" | "partial outage" | "maintenance" | "offline";
   label: string;
 }
 
@@ -42,8 +42,11 @@ function StatusIcon({ status }: { status: string }) {
   if (status === "operational") {
     return <CheckCircle2 className="h-5 w-5 text-green-500" />;
   }
-  if (status === "degraded") {
+  if (status === "degraded" || status === "partial outage") {
     return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+  }
+  if (status === "maintenance") {
+    return <Wrench className="h-5 w-5 text-blue-500" />;
   }
   return <XCircle className="h-5 w-5 text-red-500" />;
 }
@@ -60,6 +63,13 @@ function StatusBadge({ status }: { status: string }) {
     return (
       <Badge variant="outline" className="border-yellow-500/30 text-yellow-500 bg-yellow-500/10" data-testid="badge-degraded">
         Degraded
+      </Badge>
+    );
+  }
+  if (status === "partial outage") {
+    return (
+      <Badge variant="outline" className="border-orange-500/30 text-orange-500 bg-orange-500/10" data-testid="badge-partial-outage">
+        Partial Outage
       </Badge>
     );
   }

@@ -43,6 +43,8 @@ import {
   forumPolls,
   bookmarks,
   auditLog,
+  productReviews,
+  serviceStatuses,
   type User,
 } from "@shared/schema";
 import { z } from "zod";
@@ -1644,7 +1646,11 @@ export async function registerRoutes(
       if (status === "approved") {
         updates.isCommunityProvided = true;
 
-        if (!existingProduct.stripeProductId) {
+        if (existingProduct.price === 0) {
+          updates.canPurchase = false;
+        }
+
+        if (!existingProduct.stripeProductId && existingProduct.price > 0) {
           try {
             const stripe = await getUncachableStripeClient();
             const stripeProduct = await stripe.products.create({
@@ -1717,6 +1723,109 @@ export async function registerRoutes(
       res.json(product);
     } catch (error) {
       res.status(500).json({ message: "Badge update failed" });
+    }
+  });
+
+  // ===== PRODUCT REVIEWS =====
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const reviews = await db
+        .select({
+          id: productReviews.id,
+          productId: productReviews.productId,
+          userId: productReviews.userId,
+          rating: productReviews.rating,
+          comment: productReviews.comment,
+          createdAt: productReviews.createdAt,
+          username: users.username,
+          profileImageUrl: users.profileImageUrl,
+        })
+        .from(productReviews)
+        .leftJoin(users, eq(productReviews.userId, users.id))
+        .where(eq(productReviews.productId, productId))
+        .orderBy(desc(productReviews.createdAt));
+      res.json(reviews);
+    } catch {
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.post("/api/products/:id/reviews", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const productId = req.params.id;
+      const { rating, comment } = req.body;
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Rating must be 1-5" });
+      }
+
+      const existing = await db
+        .select()
+        .from(productReviews)
+        .where(and(eq(productReviews.productId, productId), eq(productReviews.userId, userId)))
+        .limit(1);
+
+      if (existing.length > 0) {
+        const [updated] = await db
+          .update(productReviews)
+          .set({ rating, comment: comment || null, createdAt: new Date() })
+          .where(eq(productReviews.id, existing[0].id))
+          .returning();
+        return res.json(updated);
+      }
+
+      const [review] = await db
+        .insert(productReviews)
+        .values({ productId, userId, rating, comment: comment || null })
+        .returning();
+      res.json(review);
+    } catch {
+      res.status(500).json({ message: "Failed to submit review" });
+    }
+  });
+
+  app.delete("/api/products/:id/reviews", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const productId = req.params.id;
+      await db
+        .delete(productReviews)
+        .where(and(eq(productReviews.productId, productId), eq(productReviews.userId, userId)));
+      res.json({ deleted: true });
+    } catch {
+      res.status(500).json({ message: "Failed to delete review" });
+    }
+  });
+
+  // ===== SERVICE STATUS MANAGEMENT =====
+  app.get("/api/admin/service-statuses", requireAuth, async (req, res) => {
+    try {
+      if (!isAdminUser(req.user as any)) return res.status(403).json({ message: "Forbidden" });
+      const statuses = await db.select().from(serviceStatuses).orderBy(serviceStatuses.serviceKey);
+      res.json(statuses);
+    } catch {
+      res.status(500).json({ message: "Failed to fetch service statuses" });
+    }
+  });
+
+  app.patch("/api/admin/service-statuses/:key", requireAuth, async (req, res) => {
+    try {
+      if (!isAdminUser(req.user as any)) return res.status(403).json({ message: "Forbidden" });
+      const { status } = req.body;
+      const validStatuses = ["operational", "degraded", "partial outage", "offline", "maintenance"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      const [updated] = await db
+        .update(serviceStatuses)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(serviceStatuses.serviceKey, req.params.key))
+        .returning();
+      if (!updated) return res.status(404).json({ message: "Service not found" });
+      res.json(updated);
+    } catch {
+      res.status(500).json({ message: "Failed to update service status" });
     }
   });
 
@@ -2745,40 +2854,19 @@ export async function registerRoutes(
     try {
       const siteSettings = await storage.getSiteSettings();
 
+      const manualStatuses = await db.select().from(serviceStatuses);
       const services: Record<string, { status: string; label: string }> = {};
 
-      services.platform = { status: "operational", label: "Platform API" };
-
-      try {
-        await db.execute(sql`SELECT 1`);
-        services.database = { status: "operational", label: "Database" };
-      } catch {
-        services.database = { status: "offline", label: "Database" };
+      for (const svc of manualStatuses) {
+        services[svc.serviceKey] = { status: svc.status, label: svc.label };
       }
 
-      services.authentication = {
-        status: "partial outage",
-        label: "Authentication",
-      };
-      services.forums = { status: "operational", label: "Forums & Community" };
-      services.moderation = {
-        status: "operational",
-        label: "Moderation Systems",
-      };
-
-      try {
-        const stripe = await getUncachableStripeClient();
-        if (stripe) {
-          services.payments = {
-            status: "operational",
-            label: "Payments & Store",
-          };
-        } else {
-          services.payments = { status: "degraded", label: "Payments & Store" };
-        }
-      } catch {
-        services.payments = { status: "degraded", label: "Payments & Store" };
-      }
+      if (!services.platform) services.platform = { status: "operational", label: "Platform API" };
+      if (!services.database) services.database = { status: "operational", label: "Database" };
+      if (!services.authentication) services.authentication = { status: "operational", label: "Authentication" };
+      if (!services.forums) services.forums = { status: "operational", label: "Forums & Community" };
+      if (!services.moderation) services.moderation = { status: "operational", label: "Moderation Systems" };
+      if (!services.payments) services.payments = { status: "operational", label: "Payments & Store" };
 
       if (siteSettings?.isOffline) {
         services.platform = { status: "degraded", label: "Platform API" };

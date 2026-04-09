@@ -298,6 +298,34 @@ export const products = pgTable("products", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const productReviews = pgTable("product_reviews", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertProductReviewSchema = createInsertSchema(productReviews).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertProductReview = z.infer<typeof insertProductReviewSchema>;
+export type ProductReview = typeof productReviews.$inferSelect;
+
+export const serviceStatuses = pgTable("service_statuses", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  serviceKey: varchar("service_key").notNull().unique(),
+  label: varchar("label").notNull(),
+  status: varchar("status").notNull().default("operational"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   status: true,

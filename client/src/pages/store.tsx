@@ -108,7 +108,7 @@ function ProductCard({ product }: { product: ProductWithSubmitter }) {
             className="text-foreground font-semibold text-base"
             data-testid={`text-price-${product.id}`}
           >
-            ${(product.price / 100).toFixed(2)}
+            {product.price === 0 ? "Free" : `$${(product.price / 100).toFixed(2)}`}
           </p>
         </CardContent>
       </Card>
@@ -155,7 +155,7 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
           </h3>
           <div className="flex items-center justify-between gap-2">
             <p className="text-white/70 text-sm font-medium">
-              ${(product.price / 100).toFixed(2)}
+              {product.price === 0 ? "Free" : `$${(product.price / 100).toFixed(2)}`}
             </p>
             <span className="text-white/50 text-xs flex items-center gap-1">
               Shop now <ArrowRight className="w-3 h-3" />

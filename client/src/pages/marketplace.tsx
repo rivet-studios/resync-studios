@@ -67,8 +67,8 @@ const submitProductSchema = z.object({
     .string()
     .min(1, "Price is required")
     .refine(
-      (val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0,
-      "Price must be a positive number",
+      (val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0,
+      "Price must be 0 or more",
     ),
   category: z.string().min(1, "Category is required"),
   imageUrl: z.string().url("Must be a valid URL").or(z.literal("")),
