@@ -25,13 +25,13 @@ const rankEntries: Record<
   },
   "Operations Manager": {
     label: "Operations Manager",
-    color: "#EF4444",
+    color: "#ff0000",
     badgeUrl: null,
     formatted: true,
   },
   "Team Member": {
     label: "Team Member",
-    color: "#4B7DF7",
+    color: "#99aab5",
     badgeUrl: null,
     formatted: true,
   },
@@ -86,6 +86,18 @@ const rankEntries: Record<
   "Creative Designer": {
     label: "Creative Designer",
     color: "#ff3300",
+    badgeUrl: null,
+    formatted: true,
+  },
+  "Community Staff": {
+    label: "Community Staff",
+    color: "#99aab5",
+    badgeUrl: null,
+    formatted: true,
+  },
+  "RS Trust & Safety Team": {
+    label: "RS Trust & Safety Team",
+    color: "#ff0000",
     badgeUrl: null,
     formatted: true,
   },

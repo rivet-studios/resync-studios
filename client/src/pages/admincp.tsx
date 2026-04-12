@@ -160,11 +160,17 @@ export default function AdminCP() {
 
   const updateServiceStatusMutation = useMutation({
     mutationFn: async ({ key, status }: { key: string; status: string }) => {
-      const res = await apiRequest("PATCH", `/api/admin/service-statuses/${key}`, { status });
+      const res = await apiRequest(
+        "PATCH",
+        `/api/admin/service-statuses/${key}`,
+        { status },
+      );
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/service-statuses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/admin/service-statuses"],
+      });
       toast({ title: "Service status updated" });
     },
     onError: () => {
@@ -588,16 +594,32 @@ export default function AdminCP() {
   });
 
   const toggleVerifyMutation = useMutation({
-    mutationFn: async ({ userId, isVerified }: { userId: string; isVerified: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/admin/users/${userId}/verify`, { isVerified });
+    mutationFn: async ({
+      userId,
+      isVerified,
+    }: {
+      userId: string;
+      isVerified: boolean;
+    }) => {
+      const res = await apiRequest(
+        "PATCH",
+        `/api/admin/users/${userId}/verify`,
+        { isVerified },
+      );
       return res.json();
     },
     onSuccess: (_data, variables) => {
-      toast({ title: variables.isVerified ? "User verified" : "Verification removed" });
+      toast({
+        title: variables.isVerified ? "User verified" : "Verification removed",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update verification", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update verification",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -641,6 +663,8 @@ export default function AdminCP() {
     "Founders Edition VIP",
     "Lifetime",
     "Vehicle Tester",
+    "Community Staff",
+    "RS Trust & Safety Team",
     "Customer Relations",
     "Appeals Moderator",
     "Trial Moderator",
@@ -648,6 +672,7 @@ export default function AdminCP() {
     "Administrator",
     "Senior Administrator",
     "Developer",
+    "Creative Designer",
     "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
@@ -1561,7 +1586,10 @@ export default function AdminCP() {
                                   <div className="min-w-0">
                                     <div className="font-medium text-sm text-foreground truncate inline-flex items-center gap-1">
                                       {u.username || "No username"}
-                                      <VerifiedBadge isVerified={u.isVerified} size="sm" />
+                                      <VerifiedBadge
+                                        isVerified={u.isVerified}
+                                        size="sm"
+                                      />
                                     </div>
                                     <div className="text-xs text-muted-foreground truncate">
                                       {u.email}
@@ -1660,15 +1688,26 @@ export default function AdminCP() {
                                       <Button
                                         size="icon"
                                         variant="ghost"
-                                        title={u.isVerified ? "Unverify user" : "Verify user"}
+                                        title={
+                                          u.isVerified
+                                            ? "Unverify user"
+                                            : "Verify user"
+                                        }
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          toggleVerifyMutation.mutate({ userId: u.id, isVerified: !u.isVerified });
+                                          toggleVerifyMutation.mutate({
+                                            userId: u.id,
+                                            isVerified: !u.isVerified,
+                                          });
                                         }}
-                                        disabled={toggleVerifyMutation.isPending}
+                                        disabled={
+                                          toggleVerifyMutation.isPending
+                                        }
                                         data-testid={`button-inline-verify-${u.id}`}
                                       >
-                                        <BadgeCheck className={`w-3.5 h-3.5 ${u.isVerified ? "text-blue-400" : "text-muted-foreground"}`} />
+                                        <BadgeCheck
+                                          className={`w-3.5 h-3.5 ${u.isVerified ? "text-blue-400" : "text-muted-foreground"}`}
+                                        />
                                       </Button>
                                     </>
                                   )}
@@ -1806,10 +1845,15 @@ export default function AdminCP() {
                                     </Button>
                                     <Button
                                       size="sm"
-                                      variant={u.isVerified ? "destructive" : "outline"}
+                                      variant={
+                                        u.isVerified ? "destructive" : "outline"
+                                      }
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleVerifyMutation.mutate({ userId: u.id, isVerified: !u.isVerified });
+                                        toggleVerifyMutation.mutate({
+                                          userId: u.id,
+                                          isVerified: !u.isVerified,
+                                        });
                                       }}
                                       disabled={toggleVerifyMutation.isPending}
                                       data-testid={`button-verify-${u.id}`}
@@ -2398,7 +2442,9 @@ export default function AdminCP() {
                   <Input
                     type="datetime-local"
                     value={announcementScheduledFor}
-                    onChange={(e) => setAnnouncementScheduledFor(e.target.value)}
+                    onChange={(e) =>
+                      setAnnouncementScheduledFor(e.target.value)
+                    }
                     className="max-w-xs"
                     data-testid="input-announcement-schedule"
                   />
@@ -2418,7 +2464,13 @@ export default function AdminCP() {
                       category: announcementCategory,
                       imageUrl: announcementImageUrl || undefined,
                       isPublished: !isScheduled,
-                      ...(isScheduled ? { scheduledFor: new Date(announcementScheduledFor).toISOString() } : {}),
+                      ...(isScheduled
+                        ? {
+                            scheduledFor: new Date(
+                              announcementScheduledFor,
+                            ).toISOString(),
+                          }
+                        : {}),
                     });
                   }}
                   disabled={
@@ -2429,8 +2481,12 @@ export default function AdminCP() {
                   data-testid="button-create-announcement"
                 >
                   {createAnnouncementMutation.isPending
-                    ? (announcementScheduledFor ? "Scheduling..." : "Publishing...")
-                    : (announcementScheduledFor ? "Schedule Announcement" : "Publish Announcement")}
+                    ? announcementScheduledFor
+                      ? "Scheduling..."
+                      : "Publishing..."
+                    : announcementScheduledFor
+                      ? "Schedule Announcement"
+                      : "Publish Announcement"}
                 </Button>
               </CardContent>
             </Card>
@@ -3102,26 +3158,39 @@ export default function AdminCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="text-xl font-bold" data-testid="text-admin-status-title">
+                <h2
+                  className="text-xl font-bold"
+                  data-testid="text-admin-status-title"
+                >
                   Service Status Management
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Manually set the status of each platform service shown on the Status page
+                  Manually set the status of each platform service shown on the
+                  Status page
                 </p>
               </div>
             </div>
             <div className="space-y-3">
               {serviceStatuses.map((svc: any) => (
-                <Card key={svc.id} data-testid={`card-service-${svc.serviceKey}`}>
+                <Card
+                  key={svc.id}
+                  data-testid={`card-service-${svc.serviceKey}`}
+                >
                   <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full shrink-0 ${
-                        svc.status === "operational" ? "bg-green-500" :
-                        svc.status === "degraded" ? "bg-yellow-500" :
-                        svc.status === "partial outage" ? "bg-orange-500" :
-                        svc.status === "maintenance" ? "bg-blue-500" :
-                        "bg-red-500"
-                      }`} />
+                      <div
+                        className={`w-3 h-3 rounded-full shrink-0 ${
+                          svc.status === "operational"
+                            ? "bg-green-500"
+                            : svc.status === "degraded"
+                              ? "bg-yellow-500"
+                              : svc.status === "partial outage"
+                                ? "bg-orange-500"
+                                : svc.status === "maintenance"
+                                  ? "bg-blue-500"
+                                  : "bg-red-500"
+                        }`}
+                      />
                       <div>
                         <p className="font-medium text-sm">{svc.label}</p>
                         <p className="text-xs text-muted-foreground">
@@ -3131,15 +3200,25 @@ export default function AdminCP() {
                     </div>
                     <Select
                       value={svc.status}
-                      onValueChange={(val) => updateServiceStatusMutation.mutate({ key: svc.serviceKey, status: val })}
+                      onValueChange={(val) =>
+                        updateServiceStatusMutation.mutate({
+                          key: svc.serviceKey,
+                          status: val,
+                        })
+                      }
                     >
-                      <SelectTrigger className="w-full sm:w-48" data-testid={`select-status-${svc.serviceKey}`}>
+                      <SelectTrigger
+                        className="w-full sm:w-48"
+                        data-testid={`select-status-${svc.serviceKey}`}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="operational">Operational</SelectItem>
                         <SelectItem value="degraded">Degraded</SelectItem>
-                        <SelectItem value="partial outage">Partial Outage</SelectItem>
+                        <SelectItem value="partial outage">
+                          Partial Outage
+                        </SelectItem>
                         <SelectItem value="maintenance">Maintenance</SelectItem>
                         <SelectItem value="offline">Offline</SelectItem>
                       </SelectContent>

@@ -4,12 +4,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -85,23 +80,33 @@ export default function ModCP() {
   const [reportFilter, setReportFilter] = useState("all");
   const [appealFilter, setAppealFilter] = useState("all");
   const [forumSearchQuery, setForumSearchQuery] = useState("");
-  const [forumFilter, setForumFilter] = useState<"all" | "pinned" | "locked">("all");
+  const [forumFilter, setForumFilter] = useState<"all" | "pinned" | "locked">(
+    "all",
+  );
   const [moveThreadId, setMoveThreadId] = useState<string | null>(null);
   const [moveCategoryId, setMoveCategoryId] = useState("");
   const [warningUserId, setWarningUserId] = useState("");
   const [warningUsername, setWarningUsername] = useState("");
   const [warningReason, setWarningReason] = useState("");
-  const [warningSeverity, setWarningSeverity] = useState<"Verbal" | "Written" | "Final">("Verbal");
+  const [warningSeverity, setWarningSeverity] = useState<
+    "Verbal" | "Written" | "Final"
+  >("Verbal");
   const [warningSearchQuery, setWarningSearchQuery] = useState("");
   const [showWarningUserDropdown, setShowWarningUserDropdown] = useState(false);
-  const [warningFilter, setWarningFilter] = useState<"all" | "active" | "inactive">("all");
+  const [warningFilter, setWarningFilter] = useState<
+    "all" | "active" | "inactive"
+  >("all");
   const [auditActionFilter, setAuditActionFilter] = useState("All");
   const [auditActorFilter, setAuditActorFilter] = useState("");
   const [auditTargetFilter, setAuditTargetFilter] = useState("");
   const [massWarningUserIds, setMassWarningUserIds] = useState<string[]>([]);
-  const [massWarningUsernames, setMassWarningUsernames] = useState<Record<string, string>>({});
+  const [massWarningUsernames, setMassWarningUsernames] = useState<
+    Record<string, string>
+  >({});
   const [massWarningReason, setMassWarningReason] = useState("");
-  const [massWarningSeverity, setMassWarningSeverity] = useState<"Verbal" | "Written" | "Final">("Verbal");
+  const [massWarningSeverity, setMassWarningSeverity] = useState<
+    "Verbal" | "Written" | "Final"
+  >("Verbal");
   const [massWarningSearchQuery, setMassWarningSearchQuery] = useState("");
   const [showMassWarningDropdown, setShowMassWarningDropdown] = useState(false);
 
@@ -113,26 +118,33 @@ export default function ModCP() {
     if (userId && tab === "warnings") {
       setWarningUserId(userId);
       fetch(`/api/users/${userId}`, { credentials: "include" })
-        .then(r => r.json())
-        .then(u => { if (u?.username) setWarningUsername(u.username); })
+        .then((r) => r.json())
+        .then((u) => {
+          if (u?.username) setWarningUsername(u.username);
+        })
         .catch(() => {});
     }
     if (userId && tab === "bans") {
       setBanUserId(userId);
       fetch(`/api/users/${userId}`, { credentials: "include" })
-        .then(r => r.json())
-        .then(u => { if (u?.username) setBanUsername(u.username); })
+        .then((r) => r.json())
+        .then((u) => {
+          if (u?.username) setBanUsername(u.username);
+        })
         .catch(() => {});
     }
   }, []);
 
   const staffRanks = [
+    "Community Staff",
+    "RS Trust & Safety Team",
     "Appeals Moderator",
     "Trial Moderator",
     "Moderator",
     "Administrator",
     "Senior Administrator",
     "Developer",
+    "Creative Designer",
     "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
@@ -164,9 +176,12 @@ export default function ModCP() {
   const { data: searchResults = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/search-users", userSearchQuery],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/search-users?q=${encodeURIComponent(userSearchQuery)}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/admin/search-users?q=${encodeURIComponent(userSearchQuery)}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) throw new Error("Search failed");
       return res.json();
     },
@@ -181,16 +196,22 @@ export default function ModCP() {
   const { data: warningSearchResults = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/search-users", warningSearchQuery],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/search-users?q=${encodeURIComponent(warningSearchQuery)}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/admin/search-users?q=${encodeURIComponent(warningSearchQuery)}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) throw new Error("Search failed");
       return res.json();
     },
-    enabled: isMod && activeTab === "warnings" && warningSearchQuery.length >= 2,
+    enabled:
+      isMod && activeTab === "warnings" && warningSearchQuery.length >= 2,
   });
 
-  const { data: forumThreads = [], isLoading: threadsLoading } = useQuery<any[]>({
+  const { data: forumThreads = [], isLoading: threadsLoading } = useQuery<
+    any[]
+  >({
     queryKey: ["/api/forums/threads"],
     enabled: isMod && (activeTab === "forums" || activeTab === "dashboard"),
   });
@@ -200,26 +221,37 @@ export default function ModCP() {
     enabled: isMod && activeTab === "forums",
   });
 
-  const { data: moderationLogs = [], isLoading: logsLoading } = useQuery<any[]>({
-    queryKey: ["/api/moderation-logs"],
-    enabled: isMod && (activeTab === "audit" || activeTab === "dashboard"),
-  });
+  const { data: moderationLogs = [], isLoading: logsLoading } = useQuery<any[]>(
+    {
+      queryKey: ["/api/moderation-logs"],
+      enabled: isMod && (activeTab === "audit" || activeTab === "dashboard"),
+    },
+  );
 
-  const { data: escalations = [], isLoading: escalationsLoading } = useQuery<any[]>({
+  const { data: escalations = [], isLoading: escalationsLoading } = useQuery<
+    any[]
+  >({
     queryKey: ["/api/warnings/escalations"],
-    enabled: isMod && (activeTab === "escalations" || activeTab === "dashboard"),
+    enabled:
+      isMod && (activeTab === "escalations" || activeTab === "dashboard"),
   });
 
   const { data: massWarningSearchResults = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/search-users", massWarningSearchQuery],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/search-users?q=${encodeURIComponent(massWarningSearchQuery)}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/admin/search-users?q=${encodeURIComponent(massWarningSearchQuery)}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) throw new Error("Search failed");
       return res.json();
     },
-    enabled: isMod && activeTab === "mass-warning" && massWarningSearchQuery.length >= 2,
+    enabled:
+      isMod &&
+      activeTab === "mass-warning" &&
+      massWarningSearchQuery.length >= 2,
   });
 
   const massWarningMutation = useMutation({
@@ -228,9 +260,13 @@ export default function ModCP() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: `Mass warning issued to ${massWarningUserIds.length} users` });
+      toast({
+        title: `Mass warning issued to ${massWarningUserIds.length} users`,
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/warnings"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/warnings/escalations"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/warnings/escalations"],
+      });
       setMassWarningUserIds([]);
       setMassWarningUsernames({});
       setMassWarningReason("");
@@ -238,21 +274,43 @@ export default function ModCP() {
       setMassWarningSearchQuery("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to issue mass warning", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to issue mass warning",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const usersAtRisk = useMemo(() => {
-    const warningsByUser: Record<string, { count: number; username: string; userId: string; warnings: any[] }> = {};
-    warnings.filter((w: any) => w.isActive).forEach((w: any) => {
-      const uid = w.userId;
-      if (!warningsByUser[uid]) {
-        warningsByUser[uid] = { count: 0, username: w.user?.username || uid, userId: uid, warnings: [] };
+    const warningsByUser: Record<
+      string,
+      {
+        count: number;
+        username: string;
+        userId: string;
+        warnings: any[];
+        isVerified?: boolean;
       }
-      warningsByUser[uid].count++;
-      warningsByUser[uid].warnings.push(w);
-    });
-    return Object.values(warningsByUser).filter(u => u.count >= 2).sort((a, b) => b.count - a.count);
+    > = {};
+    warnings
+      .filter((w: any) => w.isActive)
+      .forEach((w: any) => {
+        const uid = w.userId;
+        if (!warningsByUser[uid]) {
+          warningsByUser[uid] = {
+            count: 0,
+            username: w.user?.username || uid,
+            userId: uid,
+            warnings: [],
+          };
+        }
+        warningsByUser[uid].count++;
+        warningsByUser[uid].warnings.push(w);
+      });
+    return Object.values(warningsByUser)
+      .filter((u) => u.count >= 2)
+      .sort((a, b) => b.count - a.count);
   }, [warnings]);
 
   const reportPriority = useMemo(() => {
@@ -280,7 +338,9 @@ export default function ModCP() {
       items.push({ type: "appeal", date: appeal.createdAt, data: appeal });
     });
 
-    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    items.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
     return items.slice(0, 15);
   }, [activeBans, reports, pendingAppeals]);
 
@@ -295,9 +355,15 @@ export default function ModCP() {
   }, [pendingAppeals, appealFilter]);
 
   const activeBanCount = activeBans.filter((b: any) => b.isActive).length;
-  const openReportsCount = reports.filter((r: any) => r.status === "pending").length;
-  const pendingAppealsCount = pendingAppeals.filter((a: any) => a.status === "pending").length;
-  const resolvedReportsCount = reports.filter((r: any) => r.status !== "pending").length;
+  const openReportsCount = reports.filter(
+    (r: any) => r.status === "pending",
+  ).length;
+  const pendingAppealsCount = pendingAppeals.filter(
+    (a: any) => a.status === "pending",
+  ).length;
+  const resolvedReportsCount = reports.filter(
+    (r: any) => r.status !== "pending",
+  ).length;
   const activeWarningsCount = warnings.filter((w: any) => w.isActive).length;
 
   const createBanMutation = useMutation({
@@ -315,7 +381,11 @@ export default function ModCP() {
       setUserSearchQuery("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to issue ban", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to issue ban",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -329,13 +399,20 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/bans"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to lift ban", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to lift ban",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const updateReportMutation = useMutation({
     mutationFn: async ({ id, status, moderatorNotes }: any) => {
-      const res = await apiRequest("PATCH", `/api/reports/${id}`, { status, moderatorNotes });
+      const res = await apiRequest("PATCH", `/api/reports/${id}`, {
+        status,
+        moderatorNotes,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -343,13 +420,20 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update report", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update report",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const updateAppealMutation = useMutation({
     mutationFn: async ({ id, status, reviewNotes }: any) => {
-      const res = await apiRequest("PATCH", `/api/appeals/${id}`, { status, reviewNotes });
+      const res = await apiRequest("PATCH", `/api/appeals/${id}`, {
+        status,
+        reviewNotes,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -358,13 +442,19 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/bans"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update appeal", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update appeal",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const togglePinMutation = useMutation({
     mutationFn: async ({ id, isPinned }: { id: string; isPinned: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { isPinned });
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, {
+        isPinned,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -372,13 +462,19 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update thread", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update thread",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const toggleLockMutation = useMutation({
     mutationFn: async ({ id, isLocked }: { id: string; isLocked: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { isLocked });
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, {
+        isLocked,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -386,7 +482,11 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to update thread", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to update thread",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -400,13 +500,25 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/forums/threads"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to delete thread", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to delete thread",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const moveThreadMutation = useMutation({
-    mutationFn: async ({ id, categoryId }: { id: string; categoryId: string }) => {
-      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, { categoryId });
+    mutationFn: async ({
+      id,
+      categoryId,
+    }: {
+      id: string;
+      categoryId: string;
+    }) => {
+      const res = await apiRequest("PATCH", `/api/forums/threads/${id}`, {
+        categoryId,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -416,7 +528,11 @@ export default function ModCP() {
       setMoveCategoryId("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to move thread", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to move thread",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -435,13 +551,19 @@ export default function ModCP() {
       setWarningSearchQuery("");
     },
     onError: (e: any) => {
-      toast({ title: "Failed to issue warning", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to issue warning",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const deactivateWarningMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiRequest("PATCH", `/api/warnings/${id}`, { isActive: false });
+      const res = await apiRequest("PATCH", `/api/warnings/${id}`, {
+        isActive: false,
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -449,33 +571,41 @@ export default function ModCP() {
       queryClient.invalidateQueries({ queryKey: ["/api/warnings"] });
     },
     onError: (e: any) => {
-      toast({ title: "Failed to deactivate warning", description: e.message, variant: "destructive" });
+      toast({
+        title: "Failed to deactivate warning",
+        description: e.message,
+        variant: "destructive",
+      });
     },
   });
 
   const filteredWarnings = useMemo(() => {
     if (warningFilter === "all") return warnings;
-    if (warningFilter === "active") return warnings.filter((w: any) => w.isActive);
+    if (warningFilter === "active")
+      return warnings.filter((w: any) => w.isActive);
     return warnings.filter((w: any) => !w.isActive);
   }, [warnings, warningFilter]);
 
   const filteredForumThreads = useMemo(() => {
     let threads = forumThreads;
-    if (forumFilter === "pinned") threads = threads.filter((t: any) => t.isPinned);
-    if (forumFilter === "locked") threads = threads.filter((t: any) => t.isLocked);
+    if (forumFilter === "pinned")
+      threads = threads.filter((t: any) => t.isPinned);
+    if (forumFilter === "locked")
+      threads = threads.filter((t: any) => t.isLocked);
     if (forumSearchQuery.trim()) {
       const q = forumSearchQuery.toLowerCase();
-      threads = threads.filter((t: any) =>
-        t.title?.toLowerCase().includes(q) ||
-        t.author?.username?.toLowerCase().includes(q)
+      threads = threads.filter(
+        (t: any) =>
+          t.title?.toLowerCase().includes(q) ||
+          t.author?.username?.toLowerCase().includes(q),
       );
     }
     return threads;
   }, [forumThreads, forumFilter, forumSearchQuery]);
 
   const forumReports = useMemo(() => {
-    return reports.filter((r: any) =>
-      r.targetType === "thread" || r.targetType === "reply"
+    return reports.filter(
+      (r: any) => r.targetType === "thread" || r.targetType === "reply",
     );
   }, [reports]);
 
@@ -486,14 +616,19 @@ export default function ModCP() {
     }
     if (auditActorFilter.trim()) {
       const q = auditActorFilter.toLowerCase();
-      logs = logs.filter((l: any) =>
-        l.actor?.username?.toLowerCase().includes(q) || l.actorId?.toLowerCase().includes(q)
+      logs = logs.filter(
+        (l: any) =>
+          l.actor?.username?.toLowerCase().includes(q) ||
+          l.actorId?.toLowerCase().includes(q),
       );
     }
     if (auditTargetFilter.trim()) {
       const q = auditTargetFilter.toLowerCase();
-      logs = logs.filter((l: any) =>
-        l.target?.username?.toLowerCase().includes(q) || l.targetId?.toLowerCase().includes(q) || l.targetType?.toLowerCase().includes(q)
+      logs = logs.filter(
+        (l: any) =>
+          l.target?.username?.toLowerCase().includes(q) ||
+          l.targetId?.toLowerCase().includes(q) ||
+          l.targetType?.toLowerCase().includes(q),
       );
     }
     return logs;
@@ -536,14 +671,22 @@ export default function ModCP() {
 
   function getDurationLabel(duration: string): string {
     switch (duration) {
-      case "1day": return "1 Day";
-      case "3days": return "3 Days";
-      case "7days": return "7 Days";
-      case "14days": return "14 Days";
-      case "30days": return "30 Days";
-      case "90days": return "90 Days";
-      case "permanent": return "Permanent";
-      default: return duration;
+      case "1day":
+        return "1 Day";
+      case "3days":
+        return "3 Days";
+      case "7days":
+        return "7 Days";
+      case "14days":
+        return "14 Days";
+      case "30days":
+        return "30 Days";
+      case "90days":
+        return "90 Days";
+      case "permanent":
+        return "Permanent";
+      default:
+        return duration;
     }
   }
 
@@ -598,9 +741,15 @@ export default function ModCP() {
             <div className="flex flex-col items-center gap-4 text-center">
               <AlertTriangle className="w-12 h-12 text-destructive" />
               <div>
-                <h2 className="font-semibold text-xl uppercase tracking-tight" data-testid="text-access-denied">Access Denied</h2>
+                <h2
+                  className="font-semibold text-xl uppercase tracking-tight"
+                  data-testid="text-access-denied"
+                >
+                  Access Denied
+                </h2>
                 <p className="text-muted-foreground text-sm mt-2">
-                  You do not have permission to access the Moderator Control Panel.
+                  You do not have permission to access the Moderator Control
+                  Panel.
                 </p>
               </div>
             </div>
@@ -611,37 +760,96 @@ export default function ModCP() {
   }
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: undefined },
-    { id: "bans", label: "Ban Management", icon: Ban, count: activeBanCount || undefined },
-    { id: "reports", label: "Reports", icon: FileText, count: openReportsCount || undefined },
-    { id: "appeals", label: "Appeals", icon: Scale, count: pendingAppealsCount || undefined },
-    { id: "warnings", label: "Warnings", icon: TriangleAlert, count: activeWarningsCount || undefined },
-    { id: "mass-warning", label: "Mass Warning", icon: Users, count: undefined },
-    { id: "escalations", label: "Escalation Tracker", icon: Zap, count: escalations.length || undefined },
-    { id: "forums", label: "Forum Moderation", icon: MessageSquareText, count: forumReports.filter((r: any) => r.status === "pending").length || undefined },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      count: undefined,
+    },
+    {
+      id: "bans",
+      label: "Ban Management",
+      icon: Ban,
+      count: activeBanCount || undefined,
+    },
+    {
+      id: "reports",
+      label: "Reports",
+      icon: FileText,
+      count: openReportsCount || undefined,
+    },
+    {
+      id: "appeals",
+      label: "Appeals",
+      icon: Scale,
+      count: pendingAppealsCount || undefined,
+    },
+    {
+      id: "warnings",
+      label: "Warnings",
+      icon: TriangleAlert,
+      count: activeWarningsCount || undefined,
+    },
+    {
+      id: "mass-warning",
+      label: "Mass Warning",
+      icon: Users,
+      count: undefined,
+    },
+    {
+      id: "escalations",
+      label: "Escalation Tracker",
+      icon: Zap,
+      count: escalations.length || undefined,
+    },
+    {
+      id: "forums",
+      label: "Forum Moderation",
+      icon: MessageSquareText,
+      count:
+        forumReports.filter((r: any) => r.status === "pending").length ||
+        undefined,
+    },
     { id: "audit", label: "Audit Log", icon: ClipboardList, count: undefined },
   ];
 
   function getActivityIcon(type: string) {
     switch (type) {
-      case "ban": return <Ban className="w-4 h-4 text-red-400" />;
-      case "report": return <FileText className="w-4 h-4 text-yellow-400" />;
-      case "appeal": return <Scale className="w-4 h-4 text-blue-400" />;
-      default: return <History className="w-4 h-4 text-muted-foreground" />;
+      case "ban":
+        return <Ban className="w-4 h-4 text-red-400" />;
+      case "report":
+        return <FileText className="w-4 h-4 text-yellow-400" />;
+      case "appeal":
+        return <Scale className="w-4 h-4 text-blue-400" />;
+      default:
+        return <History className="w-4 h-4 text-muted-foreground" />;
     }
   }
 
   function getAuditIcon(action: string) {
     const lower = action.toLowerCase();
-    if (lower.includes("ban") && lower.includes("lift")) return <Unlock className="w-4 h-4 text-green-400" />;
+    if (lower.includes("ban") && lower.includes("lift"))
+      return <Unlock className="w-4 h-4 text-green-400" />;
     if (lower.includes("ban")) return <Ban className="w-4 h-4 text-red-400" />;
-    if (lower.includes("report")) return <FileText className="w-4 h-4 text-yellow-400" />;
-    if (lower.includes("appeal") && lower.includes("approve")) return <CheckCircle className="w-4 h-4 text-green-400" />;
-    if (lower.includes("appeal") && lower.includes("deny")) return <XCircle className="w-4 h-4 text-red-400" />;
-    if (lower.includes("appeal")) return <Scale className="w-4 h-4 text-blue-400" />;
-    if (lower.includes("warn")) return <AlertTriangle className="w-4 h-4 text-orange-400" />;
-    if (lower.includes("pin") || lower.includes("lock") || lower.includes("thread") || lower.includes("forum")) return <MessageSquareText className="w-4 h-4 text-purple-400" />;
-    if (lower.includes("delete") || lower.includes("remove")) return <Trash2 className="w-4 h-4 text-red-400" />;
+    if (lower.includes("report"))
+      return <FileText className="w-4 h-4 text-yellow-400" />;
+    if (lower.includes("appeal") && lower.includes("approve"))
+      return <CheckCircle className="w-4 h-4 text-green-400" />;
+    if (lower.includes("appeal") && lower.includes("deny"))
+      return <XCircle className="w-4 h-4 text-red-400" />;
+    if (lower.includes("appeal"))
+      return <Scale className="w-4 h-4 text-blue-400" />;
+    if (lower.includes("warn"))
+      return <AlertTriangle className="w-4 h-4 text-orange-400" />;
+    if (
+      lower.includes("pin") ||
+      lower.includes("lock") ||
+      lower.includes("thread") ||
+      lower.includes("forum")
+    )
+      return <MessageSquareText className="w-4 h-4 text-purple-400" />;
+    if (lower.includes("delete") || lower.includes("remove"))
+      return <Trash2 className="w-4 h-4 text-red-400" />;
     return <ClipboardList className="w-4 h-4 text-muted-foreground" />;
   }
 
@@ -666,8 +874,12 @@ export default function ModCP() {
             <Shield className="w-4 h-4 text-background" />
           </div>
           <div>
-            <span className="font-semibold text-sm tracking-tight uppercase block">ModCP</span>
-            <span className="text-[10px] text-muted-foreground">{user?.username}</span>
+            <span className="font-semibold text-sm tracking-tight uppercase block">
+              ModCP
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {user?.username}
+            </span>
           </div>
         </div>
 
@@ -685,7 +897,10 @@ export default function ModCP() {
             <item.icon className="w-4 h-4 shrink-0" />
             <span className="hidden md:inline flex-1">{item.label}</span>
             {item.count !== undefined && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 hidden md:inline-flex">
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-1.5 py-0 hidden md:inline-flex"
+              >
                 {item.count}
               </Badge>
             )}
@@ -697,61 +912,112 @@ export default function ModCP() {
         {activeTab === "dashboard" && (
           <>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-modcp-title">Moderator Dashboard</h1>
-              <p className="text-sm text-muted-foreground mt-1">Overview of moderation activity and pending items.</p>
+              <h1
+                className="text-2xl font-semibold tracking-tight"
+                data-testid="text-modcp-title"
+              >
+                Moderator Dashboard
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Overview of moderation activity and pending items.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("bans")}>
+              <Card
+                className="hover-elevate cursor-pointer"
+                onClick={() => setActiveTab("bans")}
+              >
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Bans</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Bans
+                  </CardTitle>
                   <Ban className="w-4 h-4 text-red-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-active-bans-count">{activeBanCount || "0"}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-active-bans-count"
+                  >
+                    {activeBanCount || "0"}
+                  </div>
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs text-muted-foreground">{activeBans.length} total bans</span>
+                    <span className="text-xs text-muted-foreground">
+                      {activeBans.length} total bans
+                    </span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("reports")}>
+              <Card
+                className="hover-elevate cursor-pointer"
+                onClick={() => setActiveTab("reports")}
+              >
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Reports</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Open Reports
+                  </CardTitle>
                   <FileText className="w-4 h-4 text-yellow-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-open-reports-count">{openReportsCount || "0"}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-open-reports-count"
+                  >
+                    {openReportsCount || "0"}
+                  </div>
                   <div className="flex items-center gap-1 mt-1">
                     <TrendingUp className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{resolvedReportsCount} resolved</span>
+                    <span className="text-xs text-muted-foreground">
+                      {resolvedReportsCount} resolved
+                    </span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover-elevate cursor-pointer" onClick={() => setActiveTab("appeals")}>
+              <Card
+                className="hover-elevate cursor-pointer"
+                onClick={() => setActiveTab("appeals")}
+              >
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Appeals</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Pending Appeals
+                  </CardTitle>
                   <Scale className="w-4 h-4 text-blue-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-pending-appeals-count">{pendingAppealsCount || "0"}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-pending-appeals-count"
+                  >
+                    {pendingAppealsCount || "0"}
+                  </div>
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs text-muted-foreground">{pendingAppeals.length} total appeals</span>
+                    <span className="text-xs text-muted-foreground">
+                      {pendingAppeals.length} total appeals
+                    </span>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mod Since</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Mod Since
+                  </CardTitle>
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-lg font-semibold">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
+                  <div className="text-lg font-semibold">
+                    {user?.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "—"}
+                  </div>
                   <div className="flex items-center gap-1 mt-1">
                     <User className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{user?.userRank}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {user?.userRank}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -763,21 +1029,37 @@ export default function ModCP() {
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium">Items requiring attention</p>
+                      <p className="text-sm font-medium">
+                        Items requiring attention
+                      </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {openReportsCount > 0 && `${openReportsCount} pending report${openReportsCount !== 1 ? "s" : ""}`}
-                        {openReportsCount > 0 && pendingAppealsCount > 0 && " and "}
-                        {pendingAppealsCount > 0 && `${pendingAppealsCount} pending appeal${pendingAppealsCount !== 1 ? "s" : ""}`}
+                        {openReportsCount > 0 &&
+                          `${openReportsCount} pending report${openReportsCount !== 1 ? "s" : ""}`}
+                        {openReportsCount > 0 &&
+                          pendingAppealsCount > 0 &&
+                          " and "}
+                        {pendingAppealsCount > 0 &&
+                          `${pendingAppealsCount} pending appeal${pendingAppealsCount !== 1 ? "s" : ""}`}
                       </p>
                     </div>
                     <div className="flex gap-2">
                       {openReportsCount > 0 && (
-                        <Button size="sm" variant="outline" onClick={() => setActiveTab("reports")} data-testid="button-go-reports">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setActiveTab("reports")}
+                          data-testid="button-go-reports"
+                        >
                           Reports <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                       )}
                       {pendingAppealsCount > 0 && (
-                        <Button size="sm" variant="outline" onClick={() => setActiveTab("appeals")} data-testid="button-go-appeals">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setActiveTab("appeals")}
+                          data-testid="button-go-appeals"
+                        >
                           Appeals <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                       )}
@@ -799,7 +1081,9 @@ export default function ModCP() {
                 {activityFeed.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12">
                     <History className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                    <p className="text-sm text-muted-foreground">No recent activity</p>
+                    <p className="text-sm text-muted-foreground">
+                      No recent activity
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-1">
@@ -813,14 +1097,28 @@ export default function ModCP() {
                           {getActivityIcon(item.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm truncate">{getActivityLabel(item)}</p>
-                          <p className="text-[11px] text-muted-foreground">{getRelativeTime(item.date)}</p>
+                          <p className="text-sm truncate">
+                            {getActivityLabel(item)}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {getRelativeTime(item.date)}
+                          </p>
                         </div>
-                        <Badge variant="outline" className={getStatusBadgeClasses(
-                          item.type === "ban" ? (item.data.isActive ? "pending" : "dismissed") :
-                          item.data.status || "pending"
-                        )}>
-                          {item.type === "ban" ? (item.data.isActive ? "Active" : "Lifted") : item.data.status}
+                        <Badge
+                          variant="outline"
+                          className={getStatusBadgeClasses(
+                            item.type === "ban"
+                              ? item.data.isActive
+                                ? "pending"
+                                : "dismissed"
+                              : item.data.status || "pending",
+                          )}
+                        >
+                          {item.type === "ban"
+                            ? item.data.isActive
+                              ? "Active"
+                              : "Lifted"
+                            : item.data.status}
                         </Badge>
                       </div>
                     ))}
@@ -830,7 +1128,10 @@ export default function ModCP() {
             </Card>
 
             {usersAtRisk.length > 0 && (
-              <Card className="border-orange-500/20" data-testid="card-users-at-risk">
+              <Card
+                className="border-orange-500/20"
+                data-testid="card-users-at-risk"
+              >
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                   <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 text-orange-400" />
@@ -839,7 +1140,10 @@ export default function ModCP() {
                   <Badge variant="secondary">{usersAtRisk.length}</Badge>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground mb-3">Users with 2 or more active warnings that may require escalation.</p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Users with 2 or more active warnings that may require
+                    escalation.
+                  </p>
                   <div className="space-y-2">
                     {usersAtRisk.map((u) => (
                       <div
@@ -852,16 +1156,24 @@ export default function ModCP() {
                             <User className="w-4 h-4 text-orange-400" />
                           </div>
                           <div className="min-w-0">
-                            <span className="font-semibold text-sm inline-flex items-center gap-1">{u.username}<VerifiedBadge isVerified={u.isVerified} size="sm" /></span>
+                            <span className="font-semibold text-sm inline-flex items-center gap-1">
+                              {u.username}
+                              <VerifiedBadge
+                                isVerified={u.isVerified}
+                                size="sm"
+                              />
+                            </span>
                             <div className="flex items-center gap-2 flex-wrap mt-0.5">
                               {u.warnings.map((w: any) => (
                                 <Badge
                                   key={w.id}
                                   variant="outline"
                                   className={`text-[10px] ${
-                                    w.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
-                                    w.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
-                                    "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                    w.severity === "Final"
+                                      ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                      : w.severity === "Written"
+                                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                        : "bg-blue-500/20 text-blue-400 border-blue-500/30"
                                   }`}
                                 >
                                   {w.severity}
@@ -871,7 +1183,10 @@ export default function ModCP() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <Badge variant="secondary" className={`text-[10px] ${u.count >= 3 ? "bg-red-500/20 text-red-400" : "bg-orange-500/20 text-orange-400"}`}>
+                          <Badge
+                            variant="secondary"
+                            className={`text-[10px] ${u.count >= 3 ? "bg-red-500/20 text-red-400" : "bg-orange-500/20 text-orange-400"}`}
+                          >
                             {u.count} warnings
                           </Badge>
                           {u.count >= 3 && (
@@ -881,7 +1196,9 @@ export default function ModCP() {
                               onClick={() => {
                                 setBanUserId(u.userId);
                                 setBanUsername(u.username);
-                                setBanReason(`Accumulated ${u.count} active warnings`);
+                                setBanReason(
+                                  `Accumulated ${u.count} active warnings`,
+                                );
                                 setActiveTab("bans");
                               }}
                               data-testid={`button-escalate-ban-${u.userId}`}
@@ -914,8 +1231,15 @@ export default function ModCP() {
         {activeTab === "bans" && (
           <>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-bans-title">Ban Management</h1>
-              <p className="text-sm text-muted-foreground mt-1">Issue and manage user bans.</p>
+              <h1
+                className="text-2xl font-semibold tracking-tight"
+                data-testid="text-bans-title"
+              >
+                Ban Management
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Issue and manage user bans.
+              </p>
             </div>
 
             <Card>
@@ -926,7 +1250,9 @@ export default function ModCP() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="relative">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Search User</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
+                    Search User
+                  </label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -965,62 +1291,87 @@ export default function ModCP() {
                       </Button>
                     </div>
                   )}
-                  {showUserDropdown && userSearchQuery.length >= 2 && searchResults.length > 0 && !banUserId && (
-                    <Card className="absolute z-10 w-full mt-1 max-h-48 overflow-y-auto">
-                      <CardContent className="p-1">
-                        {searchResults.map((u: any) => (
-                          <button
-                            key={u.id}
-                            onClick={() => {
-                              setBanUserId(u.id);
-                              setBanUsername(u.username || u.email);
-                              setUserSearchQuery(u.username || u.email);
-                              setShowUserDropdown(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-sm rounded-md hover-elevate flex items-center gap-3"
-                            data-testid={`option-user-${u.id}`}
-                          >
-                            <div className="w-6 h-6 rounded-md bg-muted flex items-center justify-center">
-                              <User className="w-3 h-3 text-muted-foreground" />
-                            </div>
-                            <span className="font-medium">{u.username || "—"}</span>
-                            <span className="text-muted-foreground text-xs">{u.email}</span>
-                          </button>
-                        ))}
-                      </CardContent>
-                    </Card>
-                  )}
-                  {showUserDropdown && userSearchQuery.length >= 2 && searchResults.length === 0 && !banUserId && (
-                    <Card className="absolute z-10 w-full mt-1">
-                      <CardContent className="p-4">
-                        <p className="text-xs text-muted-foreground text-center">No users found</p>
-                      </CardContent>
-                    </Card>
-                  )}
+                  {showUserDropdown &&
+                    userSearchQuery.length >= 2 &&
+                    searchResults.length > 0 &&
+                    !banUserId && (
+                      <Card className="absolute z-10 w-full mt-1 max-h-48 overflow-y-auto">
+                        <CardContent className="p-1">
+                          {searchResults.map((u: any) => (
+                            <button
+                              key={u.id}
+                              onClick={() => {
+                                setBanUserId(u.id);
+                                setBanUsername(u.username || u.email);
+                                setUserSearchQuery(u.username || u.email);
+                                setShowUserDropdown(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm rounded-md hover-elevate flex items-center gap-3"
+                              data-testid={`option-user-${u.id}`}
+                            >
+                              <div className="w-6 h-6 rounded-md bg-muted flex items-center justify-center">
+                                <User className="w-3 h-3 text-muted-foreground" />
+                              </div>
+                              <span className="font-medium">
+                                {u.username || "—"}
+                              </span>
+                              <span className="text-muted-foreground text-xs">
+                                {u.email}
+                              </span>
+                            </button>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    )}
+                  {showUserDropdown &&
+                    userSearchQuery.length >= 2 &&
+                    searchResults.length === 0 &&
+                    !banUserId && (
+                      <Card className="absolute z-10 w-full mt-1">
+                        <CardContent className="p-4">
+                          <p className="text-xs text-muted-foreground text-center">
+                            No users found
+                          </p>
+                        </CardContent>
+                      </Card>
+                    )}
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Reason Template</label>
-                  <Select
-                    value=""
-                    onValueChange={(v) => setBanReason(v)}
-                  >
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
+                    Reason Template
+                  </label>
+                  <Select value="" onValueChange={(v) => setBanReason(v)}>
                     <SelectTrigger data-testid="select-ban-reason-template">
                       <SelectValue placeholder="Select a common reason..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Harassment or bullying of other community members">Harassment</SelectItem>
-                      <SelectItem value="Spamming or flooding channels with unwanted content">Spam</SelectItem>
-                      <SelectItem value="Violation of Terms of Service">TOS Violation</SelectItem>
-                      <SelectItem value="Posting inappropriate, offensive, or NSFW content">Inappropriate Content</SelectItem>
-                      <SelectItem value="Use of cheats, exploits, or unauthorized modifications">Cheating / Exploiting</SelectItem>
-                      <SelectItem value="Impersonating staff or other community members">Impersonation</SelectItem>
+                      <SelectItem value="Harassment or bullying of other community members">
+                        Harassment
+                      </SelectItem>
+                      <SelectItem value="Spamming or flooding channels with unwanted content">
+                        Spam
+                      </SelectItem>
+                      <SelectItem value="Violation of Terms of Service">
+                        TOS Violation
+                      </SelectItem>
+                      <SelectItem value="Posting inappropriate, offensive, or NSFW content">
+                        Inappropriate Content
+                      </SelectItem>
+                      <SelectItem value="Use of cheats, exploits, or unauthorized modifications">
+                        Cheating / Exploiting
+                      </SelectItem>
+                      <SelectItem value="Impersonating staff or other community members">
+                        Impersonation
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Reason</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
+                    Reason
+                  </label>
                   <Textarea
                     value={banReason}
                     onChange={(e) => setBanReason(e.target.value)}
@@ -1031,7 +1382,9 @@ export default function ModCP() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Duration</label>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
+                    Duration
+                  </label>
                   <Select value={banDuration} onValueChange={setBanDuration}>
                     <SelectTrigger data-testid="select-ban-duration">
                       <SelectValue />
@@ -1048,21 +1401,32 @@ export default function ModCP() {
                   </Select>
                   <p className="text-[11px] text-muted-foreground mt-1">
                     Selected: {getDurationLabel(banDuration)}
-                    {banDuration !== "permanent" && ` — Expires ${new Date(Date.now() + (
-                      banDuration === "1day" ? 86400000 :
-                      banDuration === "3days" ? 259200000 :
-                      banDuration === "7days" ? 604800000 :
-                      banDuration === "14days" ? 1209600000 :
-                      banDuration === "30days" ? 2592000000 :
-                      banDuration === "90days" ? 7776000000 : 0
-                    )).toLocaleDateString()}`}
+                    {banDuration !== "permanent" &&
+                      ` — Expires ${new Date(
+                        Date.now() +
+                          (banDuration === "1day"
+                            ? 86400000
+                            : banDuration === "3days"
+                              ? 259200000
+                              : banDuration === "7days"
+                                ? 604800000
+                                : banDuration === "14days"
+                                  ? 1209600000
+                                  : banDuration === "30days"
+                                    ? 2592000000
+                                    : banDuration === "90days"
+                                      ? 7776000000
+                                      : 0),
+                      ).toLocaleDateString()}`}
                   </p>
                 </div>
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
-                      disabled={!banUserId || !banReason || createBanMutation.isPending}
+                      disabled={
+                        !banUserId || !banReason || createBanMutation.isPending
+                      }
                       variant="destructive"
                       data-testid="button-issue-ban"
                     >
@@ -1074,8 +1438,10 @@ export default function ModCP() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Confirm Ban</AlertDialogTitle>
                       <AlertDialogDescription>
-                        You are about to ban <strong>{banUsername}</strong> for <strong>{getDurationLabel(banDuration)}</strong>.
-                        <br />Reason: {banReason}
+                        You are about to ban <strong>{banUsername}</strong> for{" "}
+                        <strong>{getDurationLabel(banDuration)}</strong>.
+                        <br />
+                        Reason: {banReason}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -1103,7 +1469,9 @@ export default function ModCP() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2">
-                <CardTitle className="text-sm font-semibold uppercase tracking-tight">Active Bans</CardTitle>
+                <CardTitle className="text-sm font-semibold uppercase tracking-tight">
+                  Active Bans
+                </CardTitle>
                 <Badge variant="secondary">{activeBanCount}</Badge>
               </CardHeader>
               <CardContent>
@@ -1111,73 +1479,102 @@ export default function ModCP() {
                   {activeBans.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <Shield className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                      <p className="text-sm text-muted-foreground">No active bans</p>
+                      <p className="text-sm text-muted-foreground">
+                        No active bans
+                      </p>
                     </div>
                   ) : (
-                    activeBans.filter((b: any) => b.isActive).map((ban: any) => (
-                      <div key={ban.id} className="flex items-start justify-between gap-4 rounded-md border border-border p-4" data-testid={`row-ban-${ban.id}`}>
-                        <div className="flex gap-3 flex-1 min-w-0">
-                          <div className="w-8 h-8 rounded-md bg-red-500/10 flex items-center justify-center shrink-0">
-                            <Ban className="w-4 h-4 text-red-400" />
-                          </div>
-                          <div className="flex-1 min-w-0 space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-sm inline-flex items-center gap-1">{ban.user?.username || ban.userId}<VerifiedBadge isVerified={ban.user?.isVerified} size="sm" /></span>
-                              <Badge variant="outline" className={ban.isPermanent ? "border-red-500/30 text-red-400" : "border-yellow-500/30 text-yellow-400"}>
-                                {ban.isPermanent ? "Permanent" : "Temporary"}
-                              </Badge>
+                    activeBans
+                      .filter((b: any) => b.isActive)
+                      .map((ban: any) => (
+                        <div
+                          key={ban.id}
+                          className="flex items-start justify-between gap-4 rounded-md border border-border p-4"
+                          data-testid={`row-ban-${ban.id}`}
+                        >
+                          <div className="flex gap-3 flex-1 min-w-0">
+                            <div className="w-8 h-8 rounded-md bg-red-500/10 flex items-center justify-center shrink-0">
+                              <Ban className="w-4 h-4 text-red-400" />
                             </div>
-                            <p className="text-xs text-muted-foreground">{ban.reason}</p>
-                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
-                              <span className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
-                                {ban.bannedByUser?.username || ban.bannedBy}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {getRelativeTime(ban.createdAt)}
-                              </span>
-                              {ban.expiresAt && !ban.isPermanent && (
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  Expires: {new Date(ban.expiresAt).toLocaleDateString()}
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-semibold text-sm inline-flex items-center gap-1">
+                                  {ban.user?.username || ban.userId}
+                                  <VerifiedBadge
+                                    isVerified={ban.user?.isVerified}
+                                    size="sm"
+                                  />
                                 </span>
-                              )}
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    ban.isPermanent
+                                      ? "border-red-500/30 text-red-400"
+                                      : "border-yellow-500/30 text-yellow-400"
+                                  }
+                                >
+                                  {ban.isPermanent ? "Permanent" : "Temporary"}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {ban.reason}
+                              </p>
+                              <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
+                                <span className="flex items-center gap-1">
+                                  <User className="w-3 h-3" />
+                                  {ban.bannedByUser?.username || ban.bannedBy}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {getRelativeTime(ban.createdAt)}
+                                </span>
+                                {ban.expiresAt && !ban.isPermanent && (
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    Expires:{" "}
+                                    {new Date(
+                                      ban.expiresAt,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              disabled={liftBanMutation.isPending}
-                              data-testid={`button-lift-ban-${ban.id}`}
-                            >
-                              Lift Ban
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Lift Ban</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to lift the ban on <strong>{ban.user?.username || ban.userId}</strong>?
-                                This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => liftBanMutation.mutate(ban.id)}
-                                data-testid={`button-confirm-lift-ban-${ban.id}`}
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={liftBanMutation.isPending}
+                                data-testid={`button-lift-ban-${ban.id}`}
                               >
                                 Lift Ban
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    ))
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Lift Ban</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to lift the ban on{" "}
+                                  <strong>
+                                    {ban.user?.username || ban.userId}
+                                  </strong>
+                                  ? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => liftBanMutation.mutate(ban.id)}
+                                  data-testid={`button-confirm-lift-ban-${ban.id}`}
+                                >
+                                  Lift Ban
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      ))
                   )}
                 </div>
               </CardContent>
@@ -1189,13 +1586,27 @@ export default function ModCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-reports-title">Reports</h1>
-                <p className="text-sm text-muted-foreground mt-1">{filteredReports.length} report{filteredReports.length !== 1 ? "s" : ""} {reportFilter !== "All" ? `with status "${reportFilter}"` : "total"}</p>
+                <h1
+                  className="text-2xl font-semibold tracking-tight"
+                  data-testid="text-reports-title"
+                >
+                  Reports
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {filteredReports.length} report
+                  {filteredReports.length !== 1 ? "s" : ""}{" "}
+                  {reportFilter !== "All"
+                    ? `with status "${reportFilter}"`
+                    : "total"}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={reportFilter} onValueChange={setReportFilter}>
-                  <SelectTrigger className="w-[160px]" data-testid="select-report-filter">
+                  <SelectTrigger
+                    className="w-[160px]"
+                    data-testid="select-report-filter"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1216,14 +1627,20 @@ export default function ModCP() {
                     <div className="flex flex-col items-center justify-center">
                       <FileText className="w-10 h-10 text-muted-foreground/30 mb-3" />
                       <p className="text-sm text-muted-foreground">
-                        No reports{reportFilter !== "All" ? ` with status "${reportFilter}"` : " to review"}
+                        No reports
+                        {reportFilter !== "All"
+                          ? ` with status "${reportFilter}"`
+                          : " to review"}
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               ) : (
                 filteredReports.map((report: any) => (
-                  <Card key={report.id} data-testid={`card-report-${report.id}`}>
+                  <Card
+                    key={report.id}
+                    data-testid={`card-report-${report.id}`}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0 mt-0.5">
@@ -1232,41 +1649,77 @@ export default function ModCP() {
                         <div className="flex-1 min-w-0 space-y-2">
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <Badge variant="outline" className={getStatusBadgeClasses(report.status)}>
+                              <Badge
+                                variant="outline"
+                                className={getStatusBadgeClasses(report.status)}
+                              >
                                 {report.status}
                               </Badge>
                               {(reportPriority[report.targetId] || 0) > 1 && (
-                                <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px]" data-testid={`badge-priority-${report.id}`}>
-                                  <AlertTriangle className="w-2.5 h-2.5 mr-0.5" /> High Priority
+                                <Badge
+                                  variant="outline"
+                                  className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px]"
+                                  data-testid={`badge-priority-${report.id}`}
+                                >
+                                  <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />{" "}
+                                  High Priority
                                 </Badge>
                               )}
                               {report.targetType === "user" && (
-                                <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[10px]">
+                                <Badge
+                                  variant="outline"
+                                  className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[10px]"
+                                >
                                   User Report
                                 </Badge>
                               )}
-                              <span className="text-xs text-muted-foreground">{report.targetType}</span>
-                              <span className="text-[11px] text-muted-foreground">{getRelativeTime(report.createdAt)}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {report.targetType}
+                              </span>
+                              <span className="text-[11px] text-muted-foreground">
+                                {getRelativeTime(report.createdAt)}
+                              </span>
                             </div>
                             <Link href={`/modcp/case/report/${report.id}`}>
-                              <Button size="sm" variant="ghost" data-testid={`link-view-report-${report.id}`}>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                data-testid={`link-view-report-${report.id}`}
+                              >
                                 <Eye className="w-3 h-3 mr-1" /> View Case
                               </Button>
                             </Link>
                           </div>
 
                           <p className="font-medium text-sm">{report.reason}</p>
-                          {report.details && <p className="text-xs text-muted-foreground">{report.details}</p>}
+                          {report.details && (
+                            <p className="text-xs text-muted-foreground">
+                              {report.details}
+                            </p>
+                          )}
 
                           <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
-                            <span>Target: <span className="font-mono">{report.targetId}</span></span>
-                            <span>Reporter: <span className="font-mono">{report.reporterId}</span></span>
+                            <span>
+                              Target:{" "}
+                              <span className="font-mono">
+                                {report.targetId}
+                              </span>
+                            </span>
+                            <span>
+                              Reporter:{" "}
+                              <span className="font-mono">
+                                {report.reporterId}
+                              </span>
+                            </span>
                           </div>
 
                           {report.moderatorNotes && (
                             <div className="bg-muted rounded-md p-3">
                               <p className="text-xs text-muted-foreground">
-                                <span className="font-semibold">Mod Notes:</span> {report.moderatorNotes}
+                                <span className="font-semibold">
+                                  Mod Notes:
+                                </span>{" "}
+                                {report.moderatorNotes}
                               </p>
                             </div>
                           )}
@@ -1276,22 +1729,40 @@ export default function ModCP() {
                               <Input
                                 placeholder="Moderator notes..."
                                 value={reportNotes[report.id] || ""}
-                                onChange={(e) => setReportNotes((prev) => ({ ...prev, [report.id]: e.target.value }))}
+                                onChange={(e) =>
+                                  setReportNotes((prev) => ({
+                                    ...prev,
+                                    [report.id]: e.target.value,
+                                  }))
+                                }
                                 className="text-xs flex-1"
                                 data-testid={`input-report-notes-${report.id}`}
                               />
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "reviewed", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() =>
+                                  updateReportMutation.mutate({
+                                    id: report.id,
+                                    status: "reviewed",
+                                    moderatorNotes: reportNotes[report.id],
+                                  })
+                                }
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-review-report-${report.id}`}
                               >
-                                <CheckCircle className="w-3 h-3 mr-1" /> In Review
+                                <CheckCircle className="w-3 h-3 mr-1" /> In
+                                Review
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "action_taken", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() =>
+                                  updateReportMutation.mutate({
+                                    id: report.id,
+                                    status: "action_taken",
+                                    moderatorNotes: reportNotes[report.id],
+                                  })
+                                }
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-action-report-${report.id}`}
                               >
@@ -1300,7 +1771,13 @@ export default function ModCP() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateReportMutation.mutate({ id: report.id, status: "dismissed", moderatorNotes: reportNotes[report.id] })}
+                                onClick={() =>
+                                  updateReportMutation.mutate({
+                                    id: report.id,
+                                    status: "dismissed",
+                                    moderatorNotes: reportNotes[report.id],
+                                  })
+                                }
                                 disabled={updateReportMutation.isPending}
                                 data-testid={`button-dismiss-report-${report.id}`}
                               >
@@ -1322,13 +1799,27 @@ export default function ModCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-appeals-title">Appeals Queue</h1>
-                <p className="text-sm text-muted-foreground mt-1">{filteredAppeals.length} appeal{filteredAppeals.length !== 1 ? "s" : ""} {appealFilter !== "All" ? `with status "${appealFilter}"` : "total"}</p>
+                <h1
+                  className="text-2xl font-semibold tracking-tight"
+                  data-testid="text-appeals-title"
+                >
+                  Appeals Queue
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {filteredAppeals.length} appeal
+                  {filteredAppeals.length !== 1 ? "s" : ""}{" "}
+                  {appealFilter !== "All"
+                    ? `with status "${appealFilter}"`
+                    : "total"}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={appealFilter} onValueChange={setAppealFilter}>
-                  <SelectTrigger className="w-[160px]" data-testid="select-appeal-filter">
+                  <SelectTrigger
+                    className="w-[160px]"
+                    data-testid="select-appeal-filter"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1348,14 +1839,20 @@ export default function ModCP() {
                     <div className="flex flex-col items-center justify-center">
                       <Scale className="w-10 h-10 text-muted-foreground/30 mb-3" />
                       <p className="text-sm text-muted-foreground">
-                        No appeals{appealFilter !== "All" ? ` with status "${appealFilter}"` : " to review"}
+                        No appeals
+                        {appealFilter !== "All"
+                          ? ` with status "${appealFilter}"`
+                          : " to review"}
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               ) : (
                 filteredAppeals.map((appeal: any) => (
-                  <Card key={appeal.id} data-testid={`card-appeal-${appeal.id}`}>
+                  <Card
+                    key={appeal.id}
+                    data-testid={`card-appeal-${appeal.id}`}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-md bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
@@ -1364,22 +1861,39 @@ export default function ModCP() {
                         <div className="flex-1 min-w-0 space-y-2">
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <Badge variant="outline" className={getStatusBadgeClasses(appeal.status)}>
+                              <Badge
+                                variant="outline"
+                                className={getStatusBadgeClasses(appeal.status)}
+                              >
                                 {appeal.status}
                               </Badge>
-                              <span className="font-semibold text-sm inline-flex items-center gap-1">{appeal.user?.username || appeal.userId}<VerifiedBadge isVerified={appeal.user?.isVerified} size="sm" /></span>
+                              <span className="font-semibold text-sm inline-flex items-center gap-1">
+                                {appeal.user?.username || appeal.userId}
+                                <VerifiedBadge
+                                  isVerified={appeal.user?.isVerified}
+                                  size="sm"
+                                />
+                              </span>
                               {appeal.user?.email && (
-                                <span className="text-xs text-muted-foreground">{appeal.user.email}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {appeal.user.email}
+                                </span>
                               )}
                             </div>
                             <Link href={`/modcp/case/appeal/${appeal.id}`}>
-                              <Button size="sm" variant="ghost" data-testid={`link-view-appeal-${appeal.id}`}>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                data-testid={`link-view-appeal-${appeal.id}`}
+                              >
                                 <Eye className="w-3 h-3 mr-1" /> View Case
                               </Button>
                             </Link>
                           </div>
 
-                          <p className="text-sm text-muted-foreground">{appeal.reason}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {appeal.reason}
+                          </p>
 
                           <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
                             <span className="flex items-center gap-1">
@@ -1387,14 +1901,22 @@ export default function ModCP() {
                               {getRelativeTime(appeal.createdAt)}
                             </span>
                             {appeal.banId && (
-                              <span>Ban ID: <span className="font-mono">{appeal.banId}</span></span>
+                              <span>
+                                Ban ID:{" "}
+                                <span className="font-mono">
+                                  {appeal.banId}
+                                </span>
+                              </span>
                             )}
                           </div>
 
                           {appeal.reviewNotes && (
                             <div className="bg-muted rounded-md p-3">
                               <p className="text-xs text-muted-foreground">
-                                <span className="font-semibold">Review Notes:</span> {appeal.reviewNotes}
+                                <span className="font-semibold">
+                                  Review Notes:
+                                </span>{" "}
+                                {appeal.reviewNotes}
                               </p>
                             </div>
                           )}
@@ -1404,7 +1926,12 @@ export default function ModCP() {
                               <Input
                                 placeholder="Review notes..."
                                 value={appealNotes[appeal.id] || ""}
-                                onChange={(e) => setAppealNotes((prev) => ({ ...prev, [appeal.id]: e.target.value }))}
+                                onChange={(e) =>
+                                  setAppealNotes((prev) => ({
+                                    ...prev,
+                                    [appeal.id]: e.target.value,
+                                  }))
+                                }
                                 className="text-xs flex-1"
                                 data-testid={`input-appeal-notes-${appeal.id}`}
                               />
@@ -1414,20 +1941,36 @@ export default function ModCP() {
                                     size="sm"
                                     data-testid={`button-approve-appeal-${appeal.id}`}
                                   >
-                                    <CheckCircle className="w-3 h-3 mr-1" /> Approve
+                                    <CheckCircle className="w-3 h-3 mr-1" />{" "}
+                                    Approve
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Approve Appeal</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Approve Appeal
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Approving this appeal will lift the associated ban for <strong>{appeal.user?.username || appeal.userId}</strong>. Are you sure?
+                                      Approving this appeal will lift the
+                                      associated ban for{" "}
+                                      <strong>
+                                        {appeal.user?.username || appeal.userId}
+                                      </strong>
+                                      . Are you sure?
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "approved", reviewNotes: appealNotes[appeal.id] })}
+                                      onClick={() =>
+                                        updateAppealMutation.mutate({
+                                          id: appeal.id,
+                                          status: "approved",
+                                          reviewNotes: appealNotes[appeal.id],
+                                        })
+                                      }
                                       data-testid={`button-confirm-approve-${appeal.id}`}
                                     >
                                       Approve
@@ -1447,15 +1990,29 @@ export default function ModCP() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Deny Appeal</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Deny Appeal
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      This will deny the appeal from <strong>{appeal.user?.username || appeal.userId}</strong>. Their ban will remain active.
+                                      This will deny the appeal from{" "}
+                                      <strong>
+                                        {appeal.user?.username || appeal.userId}
+                                      </strong>
+                                      . Their ban will remain active.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => updateAppealMutation.mutate({ id: appeal.id, status: "denied", reviewNotes: appealNotes[appeal.id] })}
+                                      onClick={() =>
+                                        updateAppealMutation.mutate({
+                                          id: appeal.id,
+                                          status: "denied",
+                                          reviewNotes: appealNotes[appeal.id],
+                                        })
+                                      }
                                       data-testid={`button-confirm-deny-${appeal.id}`}
                                     >
                                       Deny
@@ -1478,8 +2035,15 @@ export default function ModCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-warnings-title">Warning Management</h1>
-                <p className="text-sm text-muted-foreground mt-1">Issue and manage user warnings.</p>
+                <h1
+                  className="text-2xl font-semibold tracking-tight"
+                  data-testid="text-warnings-title"
+                >
+                  Warning Management
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Issue and manage user warnings.
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -1519,21 +2083,42 @@ export default function ModCP() {
               <CardContent>
                 <div className="flex items-center gap-2 flex-wrap">
                   {[
-                    { label: "Verbal Warning", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-                    { label: "Written Warning", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-                    { label: "Final Warning", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-                    { label: "Ban", color: "bg-red-600/20 text-red-500 border-red-600/30" },
+                    {
+                      label: "Verbal Warning",
+                      color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+                    },
+                    {
+                      label: "Written Warning",
+                      color:
+                        "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+                    },
+                    {
+                      label: "Final Warning",
+                      color: "bg-red-500/20 text-red-400 border-red-500/30",
+                    },
+                    {
+                      label: "Ban",
+                      color: "bg-red-600/20 text-red-500 border-red-600/30",
+                    },
                   ].map((step, i) => (
                     <div key={step.label} className="flex items-center gap-2">
-                      <Badge variant="outline" className={step.color} data-testid={`badge-escalation-${i}`}>
+                      <Badge
+                        variant="outline"
+                        className={step.color}
+                        data-testid={`badge-escalation-${i}`}
+                      >
                         {step.label}
                       </Badge>
-                      {i < 3 && <ArrowRight className="w-3 h-3 text-muted-foreground" />}
+                      {i < 3 && (
+                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                      )}
                     </div>
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Users progress through this escalation path. After a Final Warning, the next step is a ban. Users with 3+ active warnings are flagged for ban escalation.
+                  Users progress through this escalation path. After a Final
+                  Warning, the next step is a ban. Users with 3+ active warnings
+                  are flagged for ban escalation.
                 </p>
               </CardContent>
             </Card>
@@ -1563,32 +2148,48 @@ export default function ModCP() {
                       data-testid="input-warning-user-search"
                     />
                   </div>
-                  {showWarningUserDropdown && warningSearchResults.length > 0 && !warningUserId && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
-                      {warningSearchResults.map((u: any) => (
-                        <button
-                          key={u.id}
-                          onClick={() => {
-                            setWarningUserId(u.id);
-                            setWarningUsername(u.username || u.email);
-                            setWarningSearchQuery("");
-                            setShowWarningUserDropdown(false);
-                          }}
-                          className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
-                          data-testid={`button-select-warning-user-${u.id}`}
-                        >
-                          <User className="w-3 h-3 text-muted-foreground" />
-                          <span className="font-medium">{u.username || u.email}</span>
-                          {u.userRank && <span className="text-xs text-muted-foreground ml-auto">{u.userRank}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {showWarningUserDropdown &&
+                    warningSearchResults.length > 0 &&
+                    !warningUserId && (
+                      <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
+                        {warningSearchResults.map((u: any) => (
+                          <button
+                            key={u.id}
+                            onClick={() => {
+                              setWarningUserId(u.id);
+                              setWarningUsername(u.username || u.email);
+                              setWarningSearchQuery("");
+                              setShowWarningUserDropdown(false);
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
+                            data-testid={`button-select-warning-user-${u.id}`}
+                          >
+                            <User className="w-3 h-3 text-muted-foreground" />
+                            <span className="font-medium">
+                              {u.username || u.email}
+                            </span>
+                            {u.userRank && (
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {u.userRank}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
-                  <Select value={warningSeverity} onValueChange={(v) => setWarningSeverity(v as "Verbal" | "Written" | "Final")}>
-                    <SelectTrigger className="w-[160px]" data-testid="select-warning-severity">
+                  <Select
+                    value={warningSeverity}
+                    onValueChange={(v) =>
+                      setWarningSeverity(v as "Verbal" | "Written" | "Final")
+                    }
+                  >
+                    <SelectTrigger
+                      className="w-[160px]"
+                      data-testid="select-warning-severity"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1609,7 +2210,11 @@ export default function ModCP() {
 
                 <div className="flex justify-end">
                   <Button
-                    disabled={!warningUserId || !warningReason.trim() || createWarningMutation.isPending}
+                    disabled={
+                      !warningUserId ||
+                      !warningReason.trim() ||
+                      createWarningMutation.isPending
+                    }
                     onClick={() => {
                       createWarningMutation.mutate({
                         userId: warningUserId,
@@ -1621,7 +2226,9 @@ export default function ModCP() {
                     data-testid="button-issue-warning"
                   >
                     <TriangleAlert className="w-4 h-4 mr-1" />
-                    {createWarningMutation.isPending ? "Issuing..." : "Issue Warning"}
+                    {createWarningMutation.isPending
+                      ? "Issuing..."
+                      : "Issue Warning"}
                   </Button>
                 </div>
               </CardContent>
@@ -1646,7 +2253,9 @@ export default function ModCP() {
                   <div className="flex flex-col items-center justify-center py-12">
                     <TriangleAlert className="w-10 h-10 text-muted-foreground/30 mb-3" />
                     <p className="text-sm text-muted-foreground">
-                      {warningFilter !== "all" ? `No ${warningFilter} warnings` : "No warnings issued yet"}
+                      {warningFilter !== "all"
+                        ? `No ${warningFilter} warnings`
+                        : "No warnings issued yet"}
                     </p>
                   </div>
                 ) : (
@@ -1657,46 +2266,77 @@ export default function ModCP() {
                         className={`flex items-start gap-3 rounded-md p-3 ${warning.isActive ? "bg-muted/50" : "bg-muted/20 opacity-60"}`}
                         data-testid={`row-warning-${warning.id}`}
                       >
-                        <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
-                          warning.severity === "Final" ? "bg-red-500/10" :
-                          warning.severity === "Written" ? "bg-yellow-500/10" :
-                          "bg-blue-500/10"
-                        }`}>
-                          <TriangleAlert className={`w-4 h-4 ${
-                            warning.severity === "Final" ? "text-red-400" :
-                            warning.severity === "Written" ? "text-yellow-400" :
-                            "text-blue-400"
-                          }`} />
+                        <div
+                          className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
+                            warning.severity === "Final"
+                              ? "bg-red-500/10"
+                              : warning.severity === "Written"
+                                ? "bg-yellow-500/10"
+                                : "bg-blue-500/10"
+                          }`}
+                        >
+                          <TriangleAlert
+                            className={`w-4 h-4 ${
+                              warning.severity === "Final"
+                                ? "text-red-400"
+                                : warning.severity === "Written"
+                                  ? "text-yellow-400"
+                                  : "text-blue-400"
+                            }`}
+                          />
                         </div>
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Badge
                               variant="outline"
                               className={
-                                warning.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
-                                warning.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
-                                "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                warning.severity === "Final"
+                                  ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                  : warning.severity === "Written"
+                                    ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                    : "bg-blue-500/20 text-blue-400 border-blue-500/30"
                               }
                             >
                               {warning.severity}
                             </Badge>
-                            <span className="font-semibold text-sm inline-flex items-center gap-1">{warning.user?.username || warning.userId}<VerifiedBadge isVerified={warning.user?.isVerified} size="sm" /></span>
+                            <span className="font-semibold text-sm inline-flex items-center gap-1">
+                              {warning.user?.username || warning.userId}
+                              <VerifiedBadge
+                                isVerified={warning.user?.isVerified}
+                                size="sm"
+                              />
+                            </span>
                             {!warning.isActive && (
-                              <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px]"
+                              >
+                                Inactive
+                              </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{warning.reason}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {warning.reason}
+                          </p>
                           <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              {warning.createdAt ? getRelativeTime(warning.createdAt) : ""}
+                              {warning.createdAt
+                                ? getRelativeTime(warning.createdAt)
+                                : ""}
                             </span>
                             <span className="flex items-center gap-1">
                               <User className="w-3 h-3" />
-                              Issued by: {warning.issuer?.username || warning.issuedBy}
+                              Issued by:{" "}
+                              {warning.issuer?.username || warning.issuedBy}
                             </span>
                             {warning.expiresAt && (
-                              <span>Expires: {new Date(warning.expiresAt).toLocaleDateString()}</span>
+                              <span>
+                                Expires:{" "}
+                                {new Date(
+                                  warning.expiresAt,
+                                ).toLocaleDateString()}
+                              </span>
                             )}
                           </div>
                         </div>
@@ -1713,15 +2353,24 @@ export default function ModCP() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Rescind Warning</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Rescind Warning
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to deactivate this {warning.severity.toLowerCase()} warning for <strong>{warning.user?.username || warning.userId}</strong>?
+                                  Are you sure you want to deactivate this{" "}
+                                  {warning.severity.toLowerCase()} warning for{" "}
+                                  <strong>
+                                    {warning.user?.username || warning.userId}
+                                  </strong>
+                                  ?
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => deactivateWarningMutation.mutate(warning.id)}
+                                  onClick={() =>
+                                    deactivateWarningMutation.mutate(warning.id)
+                                  }
                                   data-testid={`button-confirm-deactivate-warning-${warning.id}`}
                                 >
                                   Rescind Warning
@@ -1741,8 +2390,15 @@ export default function ModCP() {
         {activeTab === "mass-warning" && (
           <>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-mass-warning-title">Mass Warning</h1>
-              <p className="text-sm text-muted-foreground mt-1">Issue the same warning to multiple users at once.</p>
+              <h1
+                className="text-2xl font-semibold tracking-tight"
+                data-testid="text-mass-warning-title"
+              >
+                Mass Warning
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Issue the same warning to multiple users at once.
+              </p>
             </div>
 
             <Card>
@@ -1767,40 +2423,61 @@ export default function ModCP() {
                       data-testid="input-mass-warning-search"
                     />
                   </div>
-                  {showMassWarningDropdown && massWarningSearchResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
-                      {massWarningSearchResults
-                        .filter((u: any) => !massWarningUserIds.includes(u.id))
-                        .map((u: any) => (
-                          <button
-                            key={u.id}
-                            onClick={() => {
-                              setMassWarningUserIds((prev) => [...prev, u.id]);
-                              setMassWarningUsernames((prev) => ({ ...prev, [u.id]: u.username || u.email }));
-                              setMassWarningSearchQuery("");
-                              setShowMassWarningDropdown(false);
-                            }}
-                            className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
-                            data-testid={`button-add-mass-user-${u.id}`}
-                          >
-                            <UserPlus className="w-3 h-3 text-muted-foreground" />
-                            <span className="font-medium">{u.username || u.email}</span>
-                            {u.userRank && <span className="text-xs text-muted-foreground ml-auto">{u.userRank}</span>}
-                          </button>
-                        ))}
-                    </div>
-                  )}
+                  {showMassWarningDropdown &&
+                    massWarningSearchResults.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 z-50 mt-1 border border-border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
+                        {massWarningSearchResults
+                          .filter(
+                            (u: any) => !massWarningUserIds.includes(u.id),
+                          )
+                          .map((u: any) => (
+                            <button
+                              key={u.id}
+                              onClick={() => {
+                                setMassWarningUserIds((prev) => [
+                                  ...prev,
+                                  u.id,
+                                ]);
+                                setMassWarningUsernames((prev) => ({
+                                  ...prev,
+                                  [u.id]: u.username || u.email,
+                                }));
+                                setMassWarningSearchQuery("");
+                                setShowMassWarningDropdown(false);
+                              }}
+                              className="flex items-center gap-2 px-3 py-2 w-full text-left text-sm hover-elevate"
+                              data-testid={`button-add-mass-user-${u.id}`}
+                            >
+                              <UserPlus className="w-3 h-3 text-muted-foreground" />
+                              <span className="font-medium">
+                                {u.username || u.email}
+                              </span>
+                              {u.userRank && (
+                                <span className="text-xs text-muted-foreground ml-auto">
+                                  {u.userRank}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                      </div>
+                    )}
                 </div>
 
                 {massWarningUserIds.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {massWarningUserIds.map((uid) => (
-                      <Badge key={uid} variant="secondary" className="flex items-center gap-1">
+                      <Badge
+                        key={uid}
+                        variant="secondary"
+                        className="flex items-center gap-1"
+                      >
                         <User className="w-3 h-3" />
                         {massWarningUsernames[uid] || uid}
                         <button
                           onClick={() => {
-                            setMassWarningUserIds((prev) => prev.filter((id) => id !== uid));
+                            setMassWarningUserIds((prev) =>
+                              prev.filter((id) => id !== uid),
+                            );
                             setMassWarningUsernames((prev) => {
                               const next = { ...prev };
                               delete next[uid];
@@ -1818,8 +2495,18 @@ export default function ModCP() {
                 )}
 
                 <div className="flex items-center gap-3 flex-wrap">
-                  <Select value={massWarningSeverity} onValueChange={(v) => setMassWarningSeverity(v as "Verbal" | "Written" | "Final")}>
-                    <SelectTrigger className="w-[160px]" data-testid="select-mass-warning-severity">
+                  <Select
+                    value={massWarningSeverity}
+                    onValueChange={(v) =>
+                      setMassWarningSeverity(
+                        v as "Verbal" | "Written" | "Final",
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      className="w-[160px]"
+                      data-testid="select-mass-warning-severity"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1842,19 +2529,31 @@ export default function ModCP() {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        disabled={massWarningUserIds.length === 0 || !massWarningReason.trim() || massWarningMutation.isPending}
+                        disabled={
+                          massWarningUserIds.length === 0 ||
+                          !massWarningReason.trim() ||
+                          massWarningMutation.isPending
+                        }
                         data-testid="button-issue-mass-warning"
                       >
                         <TriangleAlert className="w-4 h-4 mr-1" />
-                        {massWarningMutation.isPending ? "Issuing..." : `Issue Warning to ${massWarningUserIds.length} User${massWarningUserIds.length !== 1 ? "s" : ""}`}
+                        {massWarningMutation.isPending
+                          ? "Issuing..."
+                          : `Issue Warning to ${massWarningUserIds.length} User${massWarningUserIds.length !== 1 ? "s" : ""}`}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Mass Warning</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Confirm Mass Warning
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          You are about to issue a <strong>{massWarningSeverity}</strong> warning to <strong>{massWarningUserIds.length}</strong> user{massWarningUserIds.length !== 1 ? "s" : ""}.
-                          <br />Reason: {massWarningReason}
+                          You are about to issue a{" "}
+                          <strong>{massWarningSeverity}</strong> warning to{" "}
+                          <strong>{massWarningUserIds.length}</strong> user
+                          {massWarningUserIds.length !== 1 ? "s" : ""}.
+                          <br />
+                          Reason: {massWarningReason}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -1883,8 +2582,16 @@ export default function ModCP() {
         {activeTab === "escalations" && (
           <>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-escalations-title">Escalation Tracker</h1>
-              <p className="text-sm text-muted-foreground mt-1">Users with multiple active warnings. Users with 3+ warnings are flagged for potential ban.</p>
+              <h1
+                className="text-2xl font-semibold tracking-tight"
+                data-testid="text-escalations-title"
+              >
+                Escalation Tracker
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Users with multiple active warnings. Users with 3+ warnings are
+                flagged for potential ban.
+              </p>
             </div>
 
             {escalationsLoading ? (
@@ -1898,7 +2605,9 @@ export default function ModCP() {
                 <CardContent className="py-12">
                   <div className="flex flex-col items-center justify-center">
                     <Zap className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                    <p className="text-sm text-muted-foreground">No users with multiple active warnings</p>
+                    <p className="text-sm text-muted-foreground">
+                      No users with multiple active warnings
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -1913,7 +2622,9 @@ export default function ModCP() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${esc.suggestBan ? "bg-red-500/10" : "bg-yellow-500/10"}`}>
+                          <div
+                            className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${esc.suggestBan ? "bg-red-500/10" : "bg-yellow-500/10"}`}
+                          >
                             {esc.suggestBan ? (
                               <Ban className="w-5 h-5 text-red-400" />
                             ) : (
@@ -1922,32 +2633,48 @@ export default function ModCP() {
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-sm inline-flex items-center gap-1">{esc.username}<VerifiedBadge isVerified={esc.isVerified} size="sm" /></span>
-                              <Badge variant="outline" className="text-[10px]">{esc.userRank}</Badge>
+                              <span className="font-semibold text-sm inline-flex items-center gap-1">
+                                {esc.username}
+                                <VerifiedBadge
+                                  isVerified={esc.isVerified}
+                                  size="sm"
+                                />
+                              </span>
+                              <Badge variant="outline" className="text-[10px]">
+                                {esc.userRank}
+                              </Badge>
                               <Badge
                                 variant="outline"
-                                className={esc.suggestBan
-                                  ? "bg-red-500/20 text-red-400 border-red-500/30"
-                                  : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                className={
+                                  esc.suggestBan
+                                    ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                    : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                                 }
                               >
-                                {esc.warningCount} active warning{esc.warningCount !== 1 ? "s" : ""}
+                                {esc.warningCount} active warning
+                                {esc.warningCount !== 1 ? "s" : ""}
                               </Badge>
                             </div>
                             {esc.suggestBan && (
                               <p className="text-xs text-red-400 font-medium flex items-center gap-1">
-                                <Zap className="w-3 h-3" /> Ban recommended - 3+ active warnings
+                                <Zap className="w-3 h-3" /> Ban recommended - 3+
+                                active warnings
                               </p>
                             )}
                             <div className="space-y-1 mt-2">
                               {esc.warnings.map((w: any, i: number) => (
-                                <div key={w.id || i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <div
+                                  key={w.id || i}
+                                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                                >
                                   <Badge
                                     variant="outline"
                                     className={`text-[10px] ${
-                                      w.severity === "Final" ? "bg-red-500/20 text-red-400 border-red-500/30" :
-                                      w.severity === "Written" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
-                                      "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                      w.severity === "Final"
+                                        ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                        : w.severity === "Written"
+                                          ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                          : "bg-blue-500/20 text-blue-400 border-blue-500/30"
                                     }`}
                                   >
                                     {w.severity}
@@ -1999,85 +2726,144 @@ export default function ModCP() {
         {activeTab === "forums" && (
           <>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-forums-title">Forum Moderation</h1>
-              <p className="text-sm text-muted-foreground mt-1">Manage forum threads, review reported content, and moderate discussions.</p>
+              <h1
+                className="text-2xl font-semibold tracking-tight"
+                data-testid="text-forums-title"
+              >
+                Forum Moderation
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage forum threads, review reported content, and moderate
+                discussions.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Threads</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Total Threads
+                  </CardTitle>
                   <MessageSquareText className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-total-threads">{forumThreads.length}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-total-threads"
+                  >
+                    {forumThreads.length}
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pinned Threads</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Pinned Threads
+                  </CardTitle>
                   <Pin className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-pinned-threads">{forumThreads.filter((t: any) => t.isPinned).length}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-pinned-threads"
+                  >
+                    {forumThreads.filter((t: any) => t.isPinned).length}
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Locked Threads</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Locked Threads
+                  </CardTitle>
                   <Lock className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold" data-testid="text-locked-threads">{forumThreads.filter((t: any) => t.isLocked).length}</div>
+                  <div
+                    className="text-3xl font-bold"
+                    data-testid="text-locked-threads"
+                  >
+                    {forumThreads.filter((t: any) => t.isLocked).length}
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
-            {forumReports.filter((r: any) => r.status === "pending").length > 0 && (
+            {forumReports.filter((r: any) => r.status === "pending").length >
+              0 && (
               <Card className="border-yellow-500/20">
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                   <CardTitle className="text-sm font-semibold uppercase tracking-tight flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-400" />
                     Reported Forum Content
                   </CardTitle>
-                  <Badge variant="secondary">{forumReports.filter((r: any) => r.status === "pending").length} pending</Badge>
+                  <Badge variant="secondary">
+                    {
+                      forumReports.filter((r: any) => r.status === "pending")
+                        .length
+                    }{" "}
+                    pending
+                  </Badge>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {forumReports.filter((r: any) => r.status === "pending").map((report: any) => (
-                    <div
-                      key={report.id}
-                      className="flex items-center gap-3 p-3 rounded-md bg-muted/50"
-                      data-testid={`row-forum-report-${report.id}`}
-                    >
-                      <div className="w-8 h-8 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0">
-                        <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                  {forumReports
+                    .filter((r: any) => r.status === "pending")
+                    .map((report: any) => (
+                      <div
+                        key={report.id}
+                        className="flex items-center gap-3 p-3 rounded-md bg-muted/50"
+                        data-testid={`row-forum-report-${report.id}`}
+                      >
+                        <div className="w-8 h-8 rounded-md bg-yellow-500/10 flex items-center justify-center shrink-0">
+                          <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {report.reason}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {report.targetType === "thread"
+                              ? "Thread"
+                              : "Reply"}{" "}
+                            &middot;{" "}
+                            {report.createdAt
+                              ? getRelativeTime(report.createdAt)
+                              : ""}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              updateReportMutation.mutate({
+                                id: report.id,
+                                status: "action_taken",
+                                moderatorNotes: "",
+                              })
+                            }
+                            data-testid={`button-action-report-${report.id}`}
+                          >
+                            <CheckCircle className="w-3 h-3 mr-1" /> Action
+                            Taken
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() =>
+                              updateReportMutation.mutate({
+                                id: report.id,
+                                status: "dismissed",
+                                moderatorNotes: "",
+                              })
+                            }
+                            data-testid={`button-dismiss-report-${report.id}`}
+                          >
+                            <XCircle className="w-3 h-3 mr-1" /> Dismiss
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{report.reason}</p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {report.targetType === "thread" ? "Thread" : "Reply"} &middot; {report.createdAt ? getRelativeTime(report.createdAt) : ""}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "action_taken", moderatorNotes: "" })}
-                          data-testid={`button-action-report-${report.id}`}
-                        >
-                          <CheckCircle className="w-3 h-3 mr-1" /> Action Taken
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => updateReportMutation.mutate({ id: report.id, status: "dismissed", moderatorNotes: "" })}
-                          data-testid={`button-dismiss-report-${report.id}`}
-                        >
-                          <XCircle className="w-3 h-3 mr-1" /> Dismiss
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </CardContent>
               </Card>
             )}
@@ -2139,7 +2925,9 @@ export default function ModCP() {
                   <div className="flex flex-col items-center justify-center py-12">
                     <MessageSquareText className="w-10 h-10 text-muted-foreground/30 mb-3" />
                     <p className="text-sm text-muted-foreground">
-                      {forumSearchQuery || forumFilter !== "all" ? "No threads match your filters" : "No forum threads found"}
+                      {forumSearchQuery || forumFilter !== "all"
+                        ? "No threads match your filters"
+                        : "No forum threads found"}
                     </p>
                   </div>
                 ) : (
@@ -2153,49 +2941,83 @@ export default function ModCP() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Link href={`/forums/thread/${thread.id}`}>
-                              <span className="text-sm font-medium hover:underline cursor-pointer" data-testid={`link-thread-${thread.id}`}>
+                              <span
+                                className="text-sm font-medium hover:underline cursor-pointer"
+                                data-testid={`link-thread-${thread.id}`}
+                              >
                                 {thread.title}
                               </span>
                             </Link>
                             {thread.isPinned && (
-                              <Badge variant="secondary" className="text-[10px]">
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px]"
+                              >
                                 <Pin className="w-2.5 h-2.5 mr-0.5" /> Pinned
                               </Badge>
                             )}
                             {thread.isLocked && (
-                              <Badge variant="secondary" className="text-[10px]">
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px]"
+                              >
                                 <Lock className="w-2.5 h-2.5 mr-0.5" /> Locked
                               </Badge>
                             )}
                           </div>
                           <p className="text-[11px] text-muted-foreground mt-0.5">
-                            by {thread.author?.username || "Unknown"} &middot; {thread.category?.name || "Uncategorized"} &middot; {thread.replyCount || 0} replies &middot; {thread.createdAt ? getRelativeTime(thread.createdAt) : ""}
+                            by {thread.author?.username || "Unknown"} &middot;{" "}
+                            {thread.category?.name || "Uncategorized"} &middot;{" "}
+                            {thread.replyCount || 0} replies &middot;{" "}
+                            {thread.createdAt
+                              ? getRelativeTime(thread.createdAt)
+                              : ""}
                           </p>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => togglePinMutation.mutate({ id: thread.id, isPinned: !thread.isPinned })}
+                            onClick={() =>
+                              togglePinMutation.mutate({
+                                id: thread.id,
+                                isPinned: !thread.isPinned,
+                              })
+                            }
                             title={thread.isPinned ? "Unpin" : "Pin"}
                             data-testid={`button-pin-thread-${thread.id}`}
                           >
-                            {thread.isPinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+                            {thread.isPinned ? (
+                              <PinOff className="w-4 h-4" />
+                            ) : (
+                              <Pin className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => toggleLockMutation.mutate({ id: thread.id, isLocked: !thread.isLocked })}
+                            onClick={() =>
+                              toggleLockMutation.mutate({
+                                id: thread.id,
+                                isLocked: !thread.isLocked,
+                              })
+                            }
                             title={thread.isLocked ? "Unlock" : "Lock"}
                             data-testid={`button-lock-thread-${thread.id}`}
                           >
-                            {thread.isLocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                            {thread.isLocked ? (
+                              <Unlock className="w-4 h-4" />
+                            ) : (
+                              <Lock className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              setMoveThreadId(moveThreadId === thread.id ? null : thread.id);
+                              setMoveThreadId(
+                                moveThreadId === thread.id ? null : thread.id,
+                              );
                               setMoveCategoryId("");
                             }}
                             title="Move to category"
@@ -2216,15 +3038,21 @@ export default function ModCP() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Thread</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Delete Thread
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete &ldquo;{thread.title}&rdquo;? This action cannot be undone.
+                                  Are you sure you want to delete &ldquo;
+                                  {thread.title}&rdquo;? This action cannot be
+                                  undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => deleteThreadMutation.mutate(thread.id)}
+                                  onClick={() =>
+                                    deleteThreadMutation.mutate(thread.id)
+                                  }
                                   data-testid={`button-confirm-delete-thread-${thread.id}`}
                                 >
                                   Delete
@@ -2235,22 +3063,39 @@ export default function ModCP() {
                         </div>
                         {moveThreadId === thread.id && (
                           <div className="flex items-center gap-2 ml-2">
-                            <Select value={moveCategoryId} onValueChange={setMoveCategoryId}>
-                              <SelectTrigger className="w-[180px]" data-testid={`select-move-category-${thread.id}`}>
+                            <Select
+                              value={moveCategoryId}
+                              onValueChange={setMoveCategoryId}
+                            >
+                              <SelectTrigger
+                                className="w-[180px]"
+                                data-testid={`select-move-category-${thread.id}`}
+                              >
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                               <SelectContent>
                                 {forumCategories
-                                  .filter((c: any) => c.id !== thread.categoryId)
+                                  .filter(
+                                    (c: any) => c.id !== thread.categoryId,
+                                  )
                                   .map((c: any) => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                    <SelectItem key={c.id} value={c.id}>
+                                      {c.name}
+                                    </SelectItem>
                                   ))}
                               </SelectContent>
                             </Select>
                             <Button
                               size="sm"
-                              disabled={!moveCategoryId || moveThreadMutation.isPending}
-                              onClick={() => moveThreadMutation.mutate({ id: thread.id, categoryId: moveCategoryId })}
+                              disabled={
+                                !moveCategoryId || moveThreadMutation.isPending
+                              }
+                              onClick={() =>
+                                moveThreadMutation.mutate({
+                                  id: thread.id,
+                                  categoryId: moveCategoryId,
+                                })
+                              }
                               data-testid={`button-confirm-move-${thread.id}`}
                             >
                               Move
@@ -2269,9 +3114,20 @@ export default function ModCP() {
           <>
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight" data-testid="text-audit-title">Audit Log</h1>
+                <h1
+                  className="text-2xl font-semibold tracking-tight"
+                  data-testid="text-audit-title"
+                >
+                  Audit Log
+                </h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {filteredLogs.length} entr{filteredLogs.length !== 1 ? "ies" : "y"} {auditActionFilter !== "All" || auditActorFilter || auditTargetFilter ? "(filtered)" : "total"}
+                  {filteredLogs.length} entr
+                  {filteredLogs.length !== 1 ? "ies" : "y"}{" "}
+                  {auditActionFilter !== "All" ||
+                  auditActorFilter ||
+                  auditTargetFilter
+                    ? "(filtered)"
+                    : "total"}
                 </p>
               </div>
             </div>
@@ -2281,14 +3137,22 @@ export default function ModCP() {
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <Select value={auditActionFilter} onValueChange={setAuditActionFilter}>
-                      <SelectTrigger className="w-[180px]" data-testid="select-audit-action-filter">
+                    <Select
+                      value={auditActionFilter}
+                      onValueChange={setAuditActionFilter}
+                    >
+                      <SelectTrigger
+                        className="w-[180px]"
+                        data-testid="select-audit-action-filter"
+                      >
                         <SelectValue placeholder="Action type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="All">All Actions</SelectItem>
                         {auditActionTypes.map((action) => (
-                          <SelectItem key={action} value={action}>{action}</SelectItem>
+                          <SelectItem key={action} value={action}>
+                            {action}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -2313,7 +3177,9 @@ export default function ModCP() {
                       data-testid="input-audit-target-filter"
                     />
                   </div>
-                  {(auditActionFilter !== "All" || auditActorFilter || auditTargetFilter) && (
+                  {(auditActionFilter !== "All" ||
+                    auditActorFilter ||
+                    auditTargetFilter) && (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -2350,7 +3216,9 @@ export default function ModCP() {
                   <div className="flex flex-col items-center justify-center py-12">
                     <ClipboardList className="w-10 h-10 text-muted-foreground/30 mb-3" />
                     <p className="text-sm text-muted-foreground">
-                      {auditActionFilter !== "All" || auditActorFilter || auditTargetFilter
+                      {auditActionFilter !== "All" ||
+                      auditActorFilter ||
+                      auditTargetFilter
                         ? "No log entries match your filters"
                         : "No moderation activity recorded yet"}
                     </p>
@@ -2368,7 +3236,9 @@ export default function ModCP() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {log.action}
+                            </Badge>
                             <span className="text-sm font-medium">
                               {log.actor?.username || log.actorId}
                             </span>
@@ -2381,15 +3251,21 @@ export default function ModCP() {
                               </>
                             )}
                             {log.targetType && (
-                              <span className="text-[11px] text-muted-foreground">({log.targetType})</span>
+                              <span className="text-[11px] text-muted-foreground">
+                                ({log.targetType})
+                              </span>
                             )}
                           </div>
                           {log.details && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{log.details}</p>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              {log.details}
+                            </p>
                           )}
                           <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
                             <Clock className="w-3 h-3" />
-                            {log.createdAt ? getRelativeTime(log.createdAt) : "Unknown"}
+                            {log.createdAt
+                              ? getRelativeTime(log.createdAt)
+                              : "Unknown"}
                           </span>
                         </div>
                       </div>
