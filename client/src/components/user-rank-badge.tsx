@@ -43,7 +43,7 @@ const rankEntries: Record<
   },
   "Staff Department Director": {
     label: "Staff Department Director",
-    color: "#A855F7",
+    color: "#ff00c0",
     badgeUrl: null,
     formatted: true,
   },
@@ -55,13 +55,13 @@ const rankEntries: Record<
   },
   "Senior Administrator": {
     label: "Community Senior Administrator",
-    color: "#EF4444",
+    color: "#ff0000",
     badgeUrl: null,
     formatted: true,
   },
   Administrator: {
     label: "Community Administrator",
-    color: "#EF4444",
+    color: "#ff0000",
     badgeUrl: null,
     formatted: true,
   },

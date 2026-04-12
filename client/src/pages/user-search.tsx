@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { Search, User as UserIcon } from "lucide-react";
 import type { User } from "@shared/schema";
 import { UserRankBadge } from "@/components/user-rank-badge";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 export default function UserSearch() {
   const [search, setSearch] = useState("");
@@ -72,8 +73,9 @@ export default function UserSearch() {
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold truncate">
+                      <span className="font-bold truncate inline-flex items-center gap-1">
                         {user.username}
+                        <VerifiedBadge isVerified={user.isVerified} size="sm" />
                       </span>
                       {user.isModerator && (
                         <Badge variant="secondary" className="text-[10px] h-4">
