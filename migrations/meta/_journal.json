@@ -8,6 +8,13 @@
       "when": 1764647703729,
       "tag": "0000_grey_gamma_corps",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764647703730,
+      "tag": "0001_add_is_verified",
+      "breakpoints": true
     }
   ]
 }

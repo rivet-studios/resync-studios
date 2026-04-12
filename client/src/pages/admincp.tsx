@@ -56,6 +56,7 @@ import {
   CheckSquare,
   Loader2,
   Signal,
+  BadgeCheck,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -1655,6 +1656,19 @@ export default function AdminCP() {
                                         data-testid={`button-edit-rank-${u.id}`}
                                       >
                                         <Edit3 className="w-3.5 h-3.5" />
+                                      </Button>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        title={u.isVerified ? "Unverify user" : "Verify user"}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleVerifyMutation.mutate({ userId: u.id, isVerified: !u.isVerified });
+                                        }}
+                                        disabled={toggleVerifyMutation.isPending}
+                                        data-testid={`button-inline-verify-${u.id}`}
+                                      >
+                                        <BadgeCheck className={`w-3.5 h-3.5 ${u.isVerified ? "text-blue-400" : "text-muted-foreground"}`} />
                                       </Button>
                                     </>
                                   )}

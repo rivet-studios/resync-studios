@@ -82,7 +82,7 @@ const rankEntries: Record<
     color: "#2bff00",
     badgeUrl: null,
     formatted: true,
-    },
+  },
   "Creative Designer": {
     label: "Creative Designer",
     color: "#ff3300",
@@ -229,7 +229,9 @@ export function getUsernameColor(
   const gradientClass = getVipGradientClass(vipTier);
   if (gradientClass) return { className: gradientClass };
 
-  const primaryConfig = primaryRank ? rankConfig[primaryRank as keyof typeof rankConfig] : null;
+  const primaryConfig = primaryRank
+    ? rankConfig[primaryRank as keyof typeof rankConfig]
+    : null;
   if (primaryConfig?.color && primaryRank !== "Active Members") {
     return { color: primaryConfig.color };
   }
@@ -251,7 +253,11 @@ export function FormattedUsername({
   vipTier,
   additionalRanks,
   isVerified,
-}: UserRankBadgeProps & { vipTier?: string | null; additionalRanks?: string[] | null; isVerified?: boolean }) {
+}: UserRankBadgeProps & {
+  vipTier?: string | null;
+  additionalRanks?: string[] | null;
+  isVerified?: boolean;
+}) {
   const styling = getUsernameColor(vipTier, rank, additionalRanks);
 
   if (!username) {
