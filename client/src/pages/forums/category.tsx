@@ -12,6 +12,7 @@ import {
 import type { ForumCategory, ForumThread, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 export default function ForumCategoryPage() {
   const { id } = useParams<{ id: string }>();
@@ -89,8 +90,9 @@ export default function ForumCategoryPage() {
                   <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-sm text-white/30">
                     <span className="flex items-center gap-1.5">
                       Started by{" "}
-                      <span className="font-semibold text-white/50">
+                      <span className="font-semibold text-white/50 inline-flex items-center gap-1">
                         {thread.author?.username || "Unknown"}
+                        <VerifiedBadge isVerified={(thread.author as any)?.isVerified} size="sm" />
                       </span>
                     </span>
                     <span className="flex items-center gap-1">

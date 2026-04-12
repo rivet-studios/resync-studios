@@ -80,6 +80,7 @@ import {
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { ReportDialog } from "@/components/report-dialog";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { formatDistanceToNow } from "date-fns";
 import type { ForumThread, ForumReply, User, ForumCategory } from "@shared/schema";
 
@@ -116,16 +117,19 @@ function RankUsername({ user, className = "" }: { user?: User | null; className?
   const rc = rankConfig[(user as any)?.userRank || ""];
   const isGradient = rc?.isGradient;
   return (
-    <span
-      className={`font-semibold ${className}`}
-      style={isGradient ? {
-        color: "transparent",
-        backgroundImage: rc.gradient,
-        WebkitBackgroundClip: "text",
-        backgroundClip: "text",
-      } : rc?.color ? { color: rc.color } : undefined}
-    >
-      {user.username}
+    <span className={`inline-flex items-center gap-1 ${className}`}>
+      <span
+        className="font-semibold"
+        style={isGradient ? {
+          color: "transparent",
+          backgroundImage: rc.gradient,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+        } : rc?.color ? { color: rc.color } : undefined}
+      >
+        {user.username}
+      </span>
+      <VerifiedBadge isVerified={(user as any).isVerified} size="sm" />
     </span>
   );
 }

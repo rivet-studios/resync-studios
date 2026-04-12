@@ -33,6 +33,7 @@ import { Link } from "wouter";
 import { formatDistanceToNow, format } from "date-fns";
 import { VipBadge } from "@/components/vip-badge";
 import { rankConfig, getUsernameColor } from "@/components/user-rank-badge";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -303,11 +304,12 @@ export default function UserProfile() {
             <div className="flex-1 text-center md:text-left space-y-3">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                 <h1
-                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${usernameStyle.className || ""}`}
+                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${usernameStyle.className || ""} inline-flex items-center gap-2`}
                   style={usernameStyle.color ? { color: usernameStyle.color } : undefined}
                   data-testid="text-username"
                 >
                   {profile.username}
+                  <VerifiedBadge isVerified={(profile as any).isVerified} size="lg" />
                 </h1>
                 {profile.vipTier && profile.vipTier !== "none" && (
                   <VipBadge tier={profile.vipTier as any} size="lg" />

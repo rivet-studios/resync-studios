@@ -125,6 +125,8 @@ export const users = pgTable("users", {
   isModerator: boolean("is_moderator").default(false),
   // Admin Dashboard
   isAdmin: boolean("is_admin").default(false),
+  // Verified Checkmark
+  isVerified: boolean("is_verified").default(false),
   // Date of Birth
   dateOfBirth: varchar("date_of_birth"),
   // Password Reset

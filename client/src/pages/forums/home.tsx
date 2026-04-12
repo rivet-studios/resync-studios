@@ -18,6 +18,7 @@ import type { ForumCategory, ForumThread, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { rankConfig } from "@/components/user-rank-badge";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 interface CategoryWithGroup extends ForumCategory {
   group: string | null;
@@ -63,16 +64,19 @@ export default function ForumHome() {
     const rc = rankConfig[(author as any)?.userRank || ""];
     const isGradient = rc?.isGradient;
     return (
-      <span
-        className={isGradient ? "font-semibold" : "text-foreground/70 font-medium"}
-        style={isGradient ? {
-          color: "transparent",
-          backgroundImage: rc.gradient,
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-        } : rc?.color ? { color: rc.color } : undefined}
-      >
-        {author.username}
+      <span className="inline-flex items-center gap-1">
+        <span
+          className={isGradient ? "font-semibold" : "text-foreground/70 font-medium"}
+          style={isGradient ? {
+            color: "transparent",
+            backgroundImage: rc.gradient,
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+          } : rc?.color ? { color: rc.color } : undefined}
+        >
+          {author.username}
+        </span>
+        <VerifiedBadge isVerified={(author as any).isVerified} size="sm" />
       </span>
     );
   };

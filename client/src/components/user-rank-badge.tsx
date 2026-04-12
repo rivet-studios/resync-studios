@@ -54,13 +54,13 @@ const rankEntries: Record<
     formatted: true,
   },
   "Senior Administrator": {
-    label: "Senior Administrator",
+    label: "Community Senior Administrator",
     color: "#EF4444",
     badgeUrl: null,
     formatted: true,
   },
   Administrator: {
-    label: "Administrator",
+    label: "Community Administrator",
     color: "#EF4444",
     badgeUrl: null,
     formatted: true,
@@ -72,7 +72,7 @@ const rankEntries: Record<
     formatted: true,
   },
   Moderator: {
-    label: "Moderator",
+    label: "Community Moderator",
     color: "#0D9488",
     badgeUrl: null,
     formatted: true,
@@ -244,7 +244,8 @@ export function FormattedUsername({
   className = "",
   vipTier,
   additionalRanks,
-}: UserRankBadgeProps & { vipTier?: string | null; additionalRanks?: string[] | null }) {
+  isVerified,
+}: UserRankBadgeProps & { vipTier?: string | null; additionalRanks?: string[] | null; isVerified?: boolean }) {
   const styling = getUsernameColor(vipTier, rank, additionalRanks);
 
   if (!username) {
@@ -272,6 +273,9 @@ export function FormattedUsername({
       >
         {username}
       </span>
+      {isVerified && <VerifiedBadge isVerified size="md" />}
     </div>
   );
 }
+
+import { VerifiedBadge } from "./verified-badge";

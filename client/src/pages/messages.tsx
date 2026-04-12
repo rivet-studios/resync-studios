@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MessageSquare, Send, Search, ArrowLeft, Loader2 } from "lucide-react";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { useSearch } from "wouter";
 
 export default function Messages() {
@@ -116,7 +117,10 @@ export default function Messages() {
                     <AvatarImage src={u.profileImageUrl} />
                     <AvatarFallback>{(u.username || "?")[0]}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium truncate">{u.username}</span>
+                  <span className="text-sm font-medium truncate inline-flex items-center gap-1">
+                    {u.username}
+                    <VerifiedBadge isVerified={u.isVerified} size="sm" />
+                  </span>
                 </button>
               ))
             ) : convsLoading ? (
@@ -165,8 +169,9 @@ export default function Messages() {
                     <AvatarImage src={selectedUserInfo?.profileImageUrl} />
                     <AvatarFallback>{(selectedUserInfo?.username || "?")[0]}</AvatarFallback>
                   </Avatar>
-                  <CardTitle className="text-sm" data-testid="text-chat-username">
+                  <CardTitle className="text-sm inline-flex items-center gap-1.5" data-testid="text-chat-username">
                     {selectedUserInfo?.username || "Loading..."}
+                    <VerifiedBadge isVerified={selectedUserInfo?.isVerified} size="sm" />
                   </CardTitle>
                 </div>
               </CardHeader>

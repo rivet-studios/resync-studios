@@ -2292,6 +2292,38 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/admin/users/:id/verify", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.user as any).id);
+      if (!user || !isAdminUser(user)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { isVerified } = req.body;
+      if (typeof isVerified !== "boolean") {
+        return res.status(400).json({ message: "isVerified must be a boolean" });
+      }
+      const targetUser = await storage.getUser(req.params.id);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      await storage.updateUser(req.params.id, { isVerified });
+      const updatedUser = await storage.getUser(req.params.id);
+
+      await db.insert(auditLog).values({
+        userId: user.id,
+        action: isVerified ? "user_verified" : "user_unverified",
+        targetId: req.params.id,
+        targetType: "user",
+        details: JSON.stringify({ username: updatedUser?.username, isVerified }),
+        ipAddress: req.ip || null,
+      });
+
+      res.json(sanitizeUser(updatedUser));
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update verification status" });
+    }
+  });
+
   app.get("/api/payments/my", requireAuth, async (req, res) => {
     try {
       const payments = await storage.getUserPayments((req.user as any).id);

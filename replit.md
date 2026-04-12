@@ -49,6 +49,7 @@ Key features and technical implementations include:
 - **Admin Audit Log**: Filterable system event log for administrators.
 - **Enhanced Dashboard**: User dashboards displaying reputation, achievements, and content counts.
 - **Navigation**: Community section included in both sidebar and header for logged-in users.
+- **Verified Checkmark System**: Admin-only user verification (similar to Roblox). `isVerified` boolean on users table. `VerifiedBadge` component renders blue checkmark image inline next to usernames across profile, forums, messages, and admin panels. AdminCP quick-view has Verify/Unverify button. Backend: `PATCH /api/admin/users/:id/verify` (admin-only, audit logged).
 
 ## External Dependencies
 - **Discord**: Used for authentication, bidirectional role/rank synchronization, and nickname/avatar syncing via a Discord bot.

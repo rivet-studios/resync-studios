@@ -68,6 +68,7 @@ import {
   Zap,
   UserPlus,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 export default function ModCP() {
   const { user, isLoading: authLoading } = useAuth();

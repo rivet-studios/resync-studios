@@ -58,6 +58,7 @@ import {
   Signal,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 interface AdminStats {
   totalUsers: number;
@@ -582,6 +583,20 @@ export default function AdminCP() {
         description: e.message,
         variant: "destructive",
       });
+    },
+  });
+
+  const toggleVerifyMutation = useMutation({
+    mutationFn: async ({ userId, isVerified }: { userId: string; isVerified: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/users/${userId}/verify`, { isVerified });
+      return res.json();
+    },
+    onSuccess: (_data, variables) => {
+      toast({ title: variables.isVerified ? "User verified" : "Verification removed" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to update verification", description: e.message, variant: "destructive" });
     },
   });
 
@@ -1543,8 +1558,9 @@ export default function AdminCP() {
                                     {(u.username || u.email || "?")[0]}
                                   </div>
                                   <div className="min-w-0">
-                                    <div className="font-medium text-sm text-foreground truncate">
+                                    <div className="font-medium text-sm text-foreground truncate inline-flex items-center gap-1">
                                       {u.username || "No username"}
+                                      <VerifiedBadge isVerified={u.isVerified} size="sm" />
                                     </div>
                                     <div className="text-xs text-muted-foreground truncate">
                                       {u.email}
@@ -1773,6 +1789,18 @@ export default function AdminCP() {
                                       >
                                         View Warnings
                                       </a>
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant={u.isVerified ? "destructive" : "outline"}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleVerifyMutation.mutate({ userId: u.id, isVerified: !u.isVerified });
+                                      }}
+                                      disabled={toggleVerifyMutation.isPending}
+                                      data-testid={`button-verify-${u.id}`}
+                                    >
+                                      {u.isVerified ? "Unverify" : "Verify"}
                                     </Button>
                                   </div>
                                 </div>
