@@ -852,7 +852,7 @@ export default function ModCP() {
                             <User className="w-4 h-4 text-orange-400" />
                           </div>
                           <div className="min-w-0">
-                            <span className="font-semibold text-sm">{u.username}</span>
+                            <span className="font-semibold text-sm inline-flex items-center gap-1">{u.username}<VerifiedBadge isVerified={u.isVerified} size="sm" /></span>
                             <div className="flex items-center gap-2 flex-wrap mt-0.5">
                               {u.warnings.map((w: any) => (
                                 <Badge
@@ -1122,7 +1122,7 @@ export default function ModCP() {
                           </div>
                           <div className="flex-1 min-w-0 space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-sm">{ban.user?.username || ban.userId}</span>
+                              <span className="font-semibold text-sm inline-flex items-center gap-1">{ban.user?.username || ban.userId}<VerifiedBadge isVerified={ban.user?.isVerified} size="sm" /></span>
                               <Badge variant="outline" className={ban.isPermanent ? "border-red-500/30 text-red-400" : "border-yellow-500/30 text-yellow-400"}>
                                 {ban.isPermanent ? "Permanent" : "Temporary"}
                               </Badge>
@@ -1367,7 +1367,7 @@ export default function ModCP() {
                               <Badge variant="outline" className={getStatusBadgeClasses(appeal.status)}>
                                 {appeal.status}
                               </Badge>
-                              <span className="font-semibold text-sm">{appeal.user?.username || appeal.userId}</span>
+                              <span className="font-semibold text-sm inline-flex items-center gap-1">{appeal.user?.username || appeal.userId}<VerifiedBadge isVerified={appeal.user?.isVerified} size="sm" /></span>
                               {appeal.user?.email && (
                                 <span className="text-xs text-muted-foreground">{appeal.user.email}</span>
                               )}
@@ -1680,7 +1680,7 @@ export default function ModCP() {
                             >
                               {warning.severity}
                             </Badge>
-                            <span className="font-semibold text-sm">{warning.user?.username || warning.userId}</span>
+                            <span className="font-semibold text-sm inline-flex items-center gap-1">{warning.user?.username || warning.userId}<VerifiedBadge isVerified={warning.user?.isVerified} size="sm" /></span>
                             {!warning.isActive && (
                               <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                             )}
@@ -1922,7 +1922,7 @@ export default function ModCP() {
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-sm">{esc.username}</span>
+                              <span className="font-semibold text-sm inline-flex items-center gap-1">{esc.username}<VerifiedBadge isVerified={esc.isVerified} size="sm" /></span>
                               <Badge variant="outline" className="text-[10px]">{esc.userRank}</Badge>
                               <Badge
                                 variant="outline"

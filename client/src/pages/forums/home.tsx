@@ -76,7 +76,7 @@ export default function ForumHome() {
         >
           {author.username}
         </span>
-        <VerifiedBadge isVerified={(author as any).isVerified} size="sm" />
+        <VerifiedBadge isVerified={author?.isVerified} size="sm" />
       </span>
     );
   };

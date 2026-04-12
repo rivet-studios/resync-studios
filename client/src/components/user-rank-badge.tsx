@@ -78,8 +78,14 @@ const rankEntries: Record<
     formatted: true,
   },
   Developer: {
-    label: "Developer",
-    color: "#6B7280",
+    label: "Gameplay Engineer",
+    color: "#2bff00",
+    badgeUrl: null,
+    formatted: true,
+    },
+  "Creative Designer": {
+    label: "Creative Designer",
+    color: "#ff3300",
     badgeUrl: null,
     formatted: true,
   },

@@ -92,7 +92,7 @@ export default function ForumCategoryPage() {
                       Started by{" "}
                       <span className="font-semibold text-white/50 inline-flex items-center gap-1">
                         {thread.author?.username || "Unknown"}
-                        <VerifiedBadge isVerified={(thread.author as any)?.isVerified} size="sm" />
+                        <VerifiedBadge isVerified={thread.author?.isVerified} size="sm" />
                       </span>
                     </span>
                     <span className="flex items-center gap-1">
