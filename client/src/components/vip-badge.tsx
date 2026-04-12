@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 const VIP_BADGE_IMAGE_URL = "https://replit.com/cdn-cgi/image/quality=80,metadata=copyright,format=auto/https://d3mh6akavj90a9.cloudfront.net/groups/01KBHCHB6WEB3HC7Z0Z66NWPHA.png";
 
 type VipTier = "none" | "bronze" | "sapphire" | "diamond" | "founders";
-// sapphire is deprecated
 
 interface VipBadgeProps {
   tier: VipTier;
