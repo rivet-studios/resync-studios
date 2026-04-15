@@ -13,32 +13,19 @@ const RS_PROJECTS = [
     name: "Los Angeles, California: Reimagined",
     projectManager: "Project Manager: cxiqlne",
     game: "ROBLOX",
-    status: "active",
+    status: "discontinued",
     location: "Los Angeles, CA",
     notes:
-      "Los Angeles, California: Reimagined™ is a temporary placeholder for Catalina™ until we're ready for release.",
-  },
-  {
-    name: "Project Sundown",
-    projectManager: "Project Manager: silentdirective.",
-    game: "ROBLOX",
-    status: "active",
-    location: "Los Angeles County, CA",
-    notes:
-      "Project Sundown is one of our pre-released roleplay games based on the real-world location Sandy Shores, located in the county of Los Angeles, California",
-    banner:
-      "https://media.discordapp.net/attachments/1428251062078410845/1463818518255374398/RS-DOJ.png?ex=698cebfb&is=698b9a7b&hm=2ef2ac080089ec3671ca5b74d61439a9c66f9f318037e65d4a113f90801b3e17&=&format=webp&quality=lossless&width=1500&height=309",
+      "Los Angeles, California: Reimagined™ was discontinued for the release of Rosewood.",
   },
   {
     name: "Project Rosewood",
     projectManager: "Project Manager: cxiqlne, silentdirective.",
     game: "ROBLOX",
     status: "development",
-    location: "Rosewod County California",
+    location: "Rosewod County, California",
     notes:
       "Project Rosewood is our main flagship roleplay game based on the real-world location Rosewood County, California. Rosewood is expected to release within the next few months.",
-    banner:
-      "https://media.discordapp.net/attachments/1428251062078410845/1463818773894266969/RS-CATALINA_1.png?ex=698cec38&is=698b9ab8&hm=20e3fd2980c732cf50cc36e7386d09e284fde4b2f201fea574801933d34f22d6&=&format=webp&quality=lossless&width=1500&height=309",
   },
   {
     name: "Fort Loredo: Reimagined",
@@ -52,10 +39,9 @@ const RS_PROJECTS = [
   {
     name: "Project Sydney",
     projectManager: "Project Manager: cxiqlne, Reni, silentdirective.",
-    notes:
-      "Project Sydney is currently paused while we shift our main focus on our flagship, Project Catalina",
+    notes: "Notes: None were provided",
     game: "ROBLOX",
-    status: "development",
+    status: "discontinued",
     location: "Victoria, AU",
   },
 ];
@@ -83,88 +69,33 @@ export default function Projects() {
         </p>
       </div>
 
-      {/* Featured Projects with Banners */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Shield className="w-6 h-6 text-primary" />
-          Featured Projects
-        </h2>
-        <div className="grid gap-6">
-          {RS_PROJECTS.filter((p) => p.banner).map((project) => (
-            <Card
-              key={project.name}
-              className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 group rounded-2xl"
-            >
-              <div className="aspect-[1692/348] w-full relative overflow-hidden bg-slate-100">
-                <img
-                  src={project.banner}
-                  alt={project.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-6">
-                  <div className="text-gray space-y-1">
-                    <p className="text-white/80 text-sm font-medium">
-                      {project.location} • {project.game}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <CardContent className="p-6 bg-card">
-                <div className="flex flex-wrap gap-4 items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold">
-                      {project.projectManager}
-                    </p>
-                    <p className="text-xs text-muted-foreground font-medium mb-3">
-                      {project.notes}
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {project.game}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
       <div className="grid md:grid-cols-2 gap-8">
         {/* Active Projects (Non-Banner) */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Active Projects</h2>
           <div className="grid gap-4">
-            {activeProjects
-              .filter((p) => !p.banner)
-              .map((project) => (
-                <Card key={project.name} className="hover-elevate rounded-2xl">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <CardTitle className="text-lg">
-                          {project.name}
-                        </CardTitle>
-                        <CardDescription>{project.location}</CardDescription>
-                      </div>
-                      <Badge>{project.game}</Badge>
+            {activeProjects.map((project) => (
+              <Card key={project.name} className="hover-elevate rounded-2xl">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <CardTitle className="text-lg">{project.name}</CardTitle>
+                      <CardDescription>{project.location}</CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground font-medium mb-3">
-                      {project.projectManager}
-                    </p>
-                    <p className="text-xs text-muted-foreground font-medium mb-3">
-                      {project.notes}
-                    </p>
-                    <Badge variant="default">Active</Badge>
-                  </CardContent>
-                </Card>
-              ))}
-            {activeProjects.filter((p) => !p.banner).length === 0 && (
-              <p className="text-sm text-muted-foreground italic">
-                All active projects featured above.
-              </p>
-            )}
+                    <Badge>{project.game}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground font-medium mb-3">
+                    {project.projectManager}
+                  </p>
+                  <p className="text-xs text-muted-foreground font-medium mb-3">
+                    {project.notes}
+                  </p>
+                  <Badge variant="default">Active</Badge>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
 
@@ -172,36 +103,32 @@ export default function Projects() {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Coming Soon</h2>
           <div className="grid gap-4">
-            {devProjects
-              .filter((p) => !p.banner)
-              .map((project) => (
-                <Card
-                  key={project.name}
-                  className="hover-elevate opacity-90 rounded-2xl"
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <CardTitle className="text-lg">
-                          {project.name}
-                        </CardTitle>
-                        <CardDescription>{project.location}</CardDescription>
-                      </div>
-                      <Badge variant="secondary">{project.game}</Badge>
+            {devProjects.map((project) => (
+              <Card
+                key={project.name}
+                className="hover-elevate opacity-90 rounded-2xl"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <CardTitle className="text-lg">{project.name}</CardTitle>
+                      <CardDescription>{project.location}</CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground font-medium mb-3">
-                      {project.projectManager}
-                    </p>
-                    <p className="text-xs text-muted-foreground font-medium mb-3">
-                      {project.notes}
-                    </p>
+                    <Badge variant="secondary">{project.game}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground font-medium mb-3">
+                    {project.projectManager}
+                  </p>
+                  <p className="text-xs text-muted-foreground font-medium mb-3">
+                    {project.notes}
+                  </p>
 
-                    <Badge variant="outline">Coming Soon</Badge>
-                  </CardContent>
-                </Card>
-              ))}
+                  <Badge variant="outline">Coming Soon</Badge>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
