@@ -20,89 +20,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const FAQ_ITEMS = [
-  {
-    category: "Account",
-    question: "How do I reset my password?",
-    answer:
-      "Contact support to request a password reset. We may need to verify ownership of the account before proceeding.",
-  },
-  {
-    category: "Account",
-    question: "How do I link my Discord account?",
-    answer:
-      "Go to Settings > Integrations and click 'Link Discord'. You'll be guided through the Discord authorization process.",
-  },
-  {
-    category: "Account",
-    question: "How do I link my Roblox account?",
-    answer:
-      "Go to Settings > Integrations and click 'Link Roblox'. Enter your Roblox username and follow the steps. Contact our support team if you cannot complete the roblox integration process.",
-  },
-  {
-    category: "Billing & Subscriptions",
-    question: "What are the VIP tiers?",
-    answer:
-      "We offer Bronze ($10.99), Diamond ($19.99), Founders Edition ($35.99), and Founders Edition Lifetime ($64.99) tiers with varying benefits.",
-  },
-  {
-    category: "Billing & Subscriptions",
-    question: "When does my VIP subscription renew?",
-    answer:
-      "VIP subscriptions renew monthly on the same date you purchased. You'll receive an email notification before renewal.",
-  },
-  {
-    category: "Billing & Subscriptions",
-    question: "Can I upgrade or downgrade my VIP tier?",
-    answer:
-      "Yes! You can contact support to request a VIP tier upgrade or downgrade at anytime.",
-  },
-  {
-    category: "Projects",
-    question: "What is Project Rosewood?",
-    answer:
-      "Project Rosewood is one of our flagship ROBLOX projects featuring immersive roleplay experiences and community gameplay. The game is currently under active development.",
-  },
-  {
-    category: "Reports",
-    question: "How do I report a player or content?",
-    answer:
-      "In order to report a player or content, navigate to the users' profile a click the flag icon",
-  },
-  {
-    category: "Appeals",
-    question: "How do I appeal an in-game ban or moderation action?",
-    answer:
-      "In order to appeal a ban or moderation action, you must submit an appeal via the appeals forum with your case details.",
-  },
-  {
-    category: "Appeals",
-    question: "How do I appeal a ban on my account?",
-    answer:
-      "Account bans cannot be appealed via our forums. Visit the My Appeals center at resyncstudios.com/appeals to submit one.",
-  },
-  {
-    category: "DMCA",
-    question: "Rivet Studios filed a DMCA takedown on my asset! What do I do?",
-    answer:
-      "If you believe a DMCA takedown notice has been issued falsely by our team, please email silentdirective@resyncstudios.com with the DMCA takedown notice information and proof of ownership of the asset.",
-  },
-  {
-    category: "Partnership",
-    question: "How do I apply for a partnership?",
-    answer:
-      "Please email the CEO at cxiqlne@resyncstudios.com with your information.",
-  },
-];
-
 // Support page migrated to Freshdesk redirect
 export default function Support() {
-  const categories = Array.from(
-    new Set(FAQ_ITEMS.map((item) => item.category)),
-  );
-  const [activeCategory, setActiveCategory] = useState("Account");
-  const filtered = FAQ_ITEMS.filter((item) => item.category === activeCategory);
-
   return (
     <div className="max-w-5xl mx-auto space-y-8 py-8 px-4">
       <div className="text-center space-y-2">
@@ -150,37 +69,6 @@ export default function Support() {
         </Card>
       </div>
 
-      {/* FAQ Section */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
-
-        <div className="flex gap-2 flex-wrap">
-          {categories.map((cat) => (
-            <Button
-              key={cat}
-              variant={activeCategory === cat ? "default" : "outline"}
-              onClick={() => setActiveCategory(cat)}
-              size="sm"
-            >
-              {cat}
-            </Button>
-          ))}
-        </div>
-
-        <div className="space-y-3">
-          {filtered.map((item, idx) => (
-            <Card key={idx}>
-              <CardHeader>
-                <CardTitle className="text-base">{item.question}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{item.answer}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
       {/* Contact Form Placeholder Redirect */}
       <Card>
         <CardHeader>
@@ -197,7 +85,7 @@ export default function Support() {
           <div className="max-w-md">
             <h3 className="text-xl font-bold mb-2">Visit our Support Portal</h3>
             <p className="text-muted-foreground mb-6">
-              We've moved our support ticketing system to Freshdesk to provide
+              We've moved our support ticketing system to Intercom to provide
               you with a more efficient and streamlined experience.
             </p>
             <Button size="lg" className="w-full sm:w-auto px-8" asChild>
@@ -223,12 +111,7 @@ export default function Support() {
                   <strong>NEVER</strong> ask for sensitive information like
                   passwords or credit card numbers. If you receive such a
                   request, report it immediately to the Staff Director at
-                  vision@resyncstudios.com{" "}
-                </p>
-                <p>
-                  We have moved our support portal to
-                  https://support.resyncstudios.com. Click the button above to
-                  visit the new support portal.
+                  eran@resyncstudios.com{" "}
                 </p>
               </div>
             </div>
