@@ -1,3 +1,5 @@
+import { VerifiedBadge } from "./verified-badge";
+
 const rankEntries: Record<
   string,
   {
@@ -302,4 +304,3 @@ export function FormattedUsername({
   );
 }
 
-import { VerifiedBadge } from "./verified-badge";
