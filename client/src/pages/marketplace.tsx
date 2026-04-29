@@ -77,7 +77,7 @@ const submitProductSchema = z.object({
 type SubmitProductForm = z.infer<typeof submitProductSchema>;
 
 const CATEGORIES = [
-  "Rosewood Aircrafts",
+  "Rosewood Vehicle Addons",
   "Rosewood Civilian Vehicles",
   "Rosewood LEO Vehicles",
   "Rosewood EMS Vehicles",
