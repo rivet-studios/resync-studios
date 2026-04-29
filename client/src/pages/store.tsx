@@ -13,8 +13,10 @@ import {
   ArrowRight,
   ShoppingBag,
   Tag,
+  Folder,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
+import { CATEGORY_TREE, type CategoryNode } from "@/lib/store-categories";
 
 interface ProductWithSubmitter extends Product {
   submitter: { id: string; username: string; userRank: string } | null;
@@ -167,28 +169,23 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
   );
 }
 
-const CATEGORIES = [
-  {
-    name: "Rosewood Vehicle Addons",
-    description: "Vehicle Inserts",
-    icon: Tag,
-  },
-  {
-    name: "Rosewood LEO Vehicles",
-    description: "Custom vehicle inserts for Law Enforcement",
-    icon: ShoppingBag,
-  },
-  {
-    name: "Rosewood Civilian Vehicles",
-    description: "Custom vehicle inserts for civilian",
-    icon: Package,
-  },
-  {
-    name: "Addons",
-    description: "Miscellaneous products",
-    icon: Sparkles,
-  },
-];
+const CATEGORY_ICONS: Record<string, typeof Tag> = {
+  "Rosewood Vehicle Addons": Tag,
+  Addons: Sparkles,
+};
+
+function getCategoryProductCount(
+  cat: CategoryNode,
+  products: ProductWithSubmitter[],
+): number {
+  let count = products.filter((p) => p.category === cat.name).length;
+  if (cat.children) {
+    for (const child of cat.children) {
+      count += products.filter((p) => p.category === child).length;
+    }
+  }
+  return count;
+}
 
 export default function Store() {
   const { data: products = [], isLoading } = useQuery<ProductWithSubmitter[]>({
@@ -224,33 +221,39 @@ export default function Store() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {CATEGORIES.map((cat) => {
-              const count = products.filter(
-                (p) => p.category === cat.name,
-              ).length;
-              const IconComponent = cat.icon;
+            {CATEGORY_TREE.map((cat) => {
+              const count = getCategoryProductCount(cat, products);
+              const IconComponent = CATEGORY_ICONS[cat.name] ?? Folder;
+              const hasChildren = !!cat.children?.length;
               return (
                 <Link href={`/store/category/${encodeURIComponent(cat.name)}`} key={cat.name}>
-                <Card
-                  className="cursor-pointer hover-elevate overflow-visible"
-                  data-testid={`card-category-${cat.name}`}
-                >
-                  <CardContent className="p-4 flex flex-col justify-between aspect-[3/2]">
-                    <div className="flex items-center justify-center w-9 h-9 rounded-md bg-muted">
-                      <IconComponent className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm leading-tight">
-                        {cat.name}
-                      </h3>
-                      {count > 0 && (
+                  <Card
+                    className="cursor-pointer hover-elevate overflow-visible"
+                    data-testid={`card-category-${cat.name}`}
+                  >
+                    <CardContent className="p-4 flex flex-col justify-between aspect-[3/2]">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-center w-9 h-9 rounded-md bg-muted">
+                          <IconComponent className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        {hasChildren && (
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground text-sm leading-tight">
+                          {cat.name}
+                        </h3>
                         <p className="text-muted-foreground text-xs mt-0.5">
-                          {count} {count === 1 ? "product" : "products"}
+                          {hasChildren
+                            ? `${cat.children!.length} subcategories`
+                            : count > 0
+                              ? `${count} ${count === 1 ? "product" : "products"}`
+                              : cat.description}
                         </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </Link>
               );
             })}
