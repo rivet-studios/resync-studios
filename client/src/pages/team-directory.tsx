@@ -47,17 +47,12 @@ const departments: Department[] = [
     color: "text-blue-500",
     members: [
       {
-        name: "zxqne",
-        role: "Director of Platform Engineering",
-        joinDate: "2024-Present",
-      },
-      {
         name: "eranovuh",
         role: "Staff Director",
         joinDate: "2026-Present",
       },
       {
-        name: "Kryos",
+        name: "jst_basix",
         role: "Operations Manager",
         joinDate: "2026-Present",
       },
@@ -70,12 +65,12 @@ const departments: Department[] = [
     members: [
       {
         name: "silentdirective",
-        role: "Customer Relations & Partnership Relations",
+        role: "Customer Relations & Partnership Support",
         joinDate: "2024-Present",
       },
       {
         name: "Isaac",
-        role: "Customer Relations & DMCA Relations",
+        role: "Customer Relations Lead",
         joinDate: "2018-Present",
       },
 
@@ -235,15 +230,22 @@ export default function StaffDirectory() {
             Interested in joining RIVET Studios? Check out our career
             opportunities. We're always looking for talented individuals to help
             grow our community.
-            <CardDescription className="text-xs"></CardDescription> To become a
-            team member at RS, please contact us at or apply for a volunteer
-            staff position
+            <CardDescription className="text-xs"></CardDescription> To become a community volunteer, you can apply for the Community Staff program
             <a
               href=" https://rivetstudios.fillout.com/apply"
               className="text-primary hover:underline"
             >
               here
             </a>
+
+              <CardDescription className="text-xs"></CardDescription>
+              If you are interested in joining Corporate, check out our
+              <a
+    href="https://x.com/rivetstudiosau/jobs"
+                className="text-primary hover:underline"
+                >
+              Twitter page.
+              </a>
           </p>
         </CardContent>
       </Card>

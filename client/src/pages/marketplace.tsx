@@ -77,9 +77,11 @@ const submitProductSchema = z.object({
 type SubmitProductForm = z.infer<typeof submitProductSchema>;
 
 const CATEGORIES = [
-  "Rosewood Vehicle Addons",
+  "Rosewood Aircrafts",
   "Rosewood Civilian Vehicles",
   "Rosewood LEO Vehicles",
+  "Rosewood EMS Vehicles",
+  "Rosewood Fire Vehicles",
   "Addons",
 ];
 
@@ -182,7 +184,7 @@ export default function Marketplace() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
-  const opsRanks = ["Operations Manager", "Company Director"];
+  const opsRanks = ["Operations Manager", "Company Director", "Gameplay Engineer", "Creative Designer", "Developer"];
   const isOpsManager =
     user?.isAdmin ||
     opsRanks.includes(user?.userRank || "") ||
@@ -526,8 +528,8 @@ export default function Marketplace() {
                             <FormControl>
                               <Input
                                 type="number"
-                                step="0.01"
-                                min="0.01"
+                                step="0.00"
+                                min="0.00"
                                 placeholder="9.99"
                                 {...field}
                                 data-testid="input-product-price"
