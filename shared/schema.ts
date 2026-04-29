@@ -674,6 +674,19 @@ export const insertBookmarkSchema = createInsertSchema(bookmarks).omit({
   createdAt: true,
 });
 
+// Staff Page Config
+export const staffPageConfig = pgTable("staff_page_config", {
+  id: varchar("id").primaryKey().default("default"),
+  title: varchar("title").notNull().default("Community Staff"),
+  subtitle: varchar("subtitle"),
+  introText: text("intro_text"),
+  visibleRanks: text("visible_ranks").array(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertStaffPageConfigSchema = createInsertSchema(staffPageConfig).omit({ updatedAt: true });
+export type StaffPageConfig = typeof staffPageConfig.$inferSelect;
+
 // Audit Log (enhanced admin audit trail)
 export const auditLog = pgTable("audit_log", {
   id: varchar("id")
