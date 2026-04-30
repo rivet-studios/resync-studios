@@ -1,128 +1,54 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import {
-  Shield,
-  FileText,
-  AlertCircle,
-  Eye,
-  Scale,
-  Users,
-  ExternalLink,
-} from "lucide-react";
+import { Folder, FileText, ChevronRight } from "lucide-react";
 
-const policyLinks = [
-  {
-    title: "Privacy Policy",
-    lastUpdated: "Last Updated: January 8th, 2026",
-    description: "Learn how we collect and protect your personal information",
-    icon: Eye,
-    href: "/privacy",
-  },
-  {
-    title: "Terms of Service",
-    lastUpdated: "Last Updated: March 1st, 2026",
-    description: "Our terms and conditions for using RIVET Studios",
-    icon: Scale,
-    href: "/terms",
-  },
-  {
-    title: "Community Rules",
-    lastUpdated: "Last Updated: January 8th, 2026",
-    description: "Community guidelines and code of conduct",
-    icon: Users,
-    href: "/community-rules",
-  },
-  {
-    title: "Guidelines",
-    lastUpdated: "Last Updated: January 8th, 2026",
-    description: "General platform guidelines and best practices",
-    icon: FileText,
-    href: "/guidelines",
-  },
-  {
-    title: "DMCA Policy",
-    lastUpdated: "Last Updated: January 23rd, 2026",
-    description: "Digital Millennium Copyright Act policy",
-    icon: Shield,
-    href: "/dmca",
-  },
+const RECENT_POLICIES = [
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Subscription Services Agreement", href: "/subscription-agreement" },
 ];
 
 export default function Policies() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Policies & Guidelines</h1>
-        <p className="text-lg text-muted-foreground">
-          Important information about RIVET Studios™ policies, guidelines, and
-          legal documents
-        </p>
+    <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="space-y-1 mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Policies</h1>
+        <p className="text-muted-foreground">Browse our policies, terms of service, and legal documents</p>
       </div>
 
-      {/* Policies Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {policyLinks.map((policy) => {
-          const Icon = policy.icon;
-          return (
-            <Card
-              key={policy.href}
-              className="flex flex-col hover:border-primary/50 transition-colors"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    asChild
-                    className="h-8 w-8"
-                    data-testid={`link-${policy.href}`}
+      <div className="max-w-lg">
+        <div className="rounded-xl border border-border bg-card p-5">
+          <Link href="/policies/legal" className="flex items-center gap-4 mb-5 group" data-testid="link-legal-policies">
+            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center shrink-0">
+              <Folder className="w-6 h-6 text-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-foreground group-hover:underline">Legal &amp; Policies</p>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
+                <FileText className="w-3.5 h-3.5" />
+                <span>5 policies</span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+          </Link>
+
+          <div className="border-t border-border pt-4">
+            <p className="text-sm font-medium text-foreground mb-3">Recent Policies</p>
+            <ul className="space-y-2">
+              {RECENT_POLICIES.map((p) => (
+                <li key={p.href}>
+                  <Link
+                    href={p.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    data-testid={`link-policy-${p.href.replace("/", "")}`}
                   >
-                    <Link href={policy.href}>
-                      <ExternalLink className="w-4 h-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <CardTitle className="text-lg mt-2">{policy.title}</CardTitle>
-                <CardDescription className="text-xs">
-                  {policy.lastUpdated}
-                </CardDescription>
-                <CardDescription>{policy.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="mt-auto">
-                <Button className="w-full" asChild>
-                  <Link href={policy.href}>Read Full Policy</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+                    {p.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-
-      {/* Additional Information */}
-      <Card className="bg-card border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-lg">Questions?</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            If you have any questions about our policies or guidelines, please
-            don't hesitate to contact our support team.
-          </p>
-          <Button asChild>
-            <Link href="/support">Contact Support</Link>
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

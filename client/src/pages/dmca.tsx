@@ -1,328 +1,70 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Shield, Mail, FileText } from "lucide-react";
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
 export default function DMCAPolicy() {
   return (
-    <PolicyWrapper slug="dmca">
-    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
-      <div className="text-center space-y-2">
-        <Badge variant="outline" className="mx-auto gap-2">
-          <Shield className="w-3.5 h-3.5" />
-          Intellectual Property
-        </Badge>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          DMCA Policy
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Understanding DMCA claims and content takedowns
-        </p>
-      </div>
+    <PolicyWrapper slug="dmca" title="DMCA Policy" effectiveDate="4/11/2026" version={1}>
+      <h2>DMCA Policy — RIVET Studios™</h2>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
 
-      <Card className="border-destructive/30 bg-destructive/5">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-destructive mt-1 shrink-0" />
-            <div>
-              <p className="font-semibold mb-2 text-destructive">
-                What This Policy Covers
-              </p>
-              <p className="text-muted-foreground text-sm">
-                If your game was taken down due to a DMCA claim by Rivet
-                Studios, it means we identified content that potentially
-                infringes on intellectual property owned by us or one of our
-                affiliated clients.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <p>This Digital Millennium Copyright Act ("DMCA") Policy explains how RIVET Studios™ ("Company," "We," "Us," or "Our") handles claims of copyright infringement and responds to takedown notices in connection with our websites, platforms, games, and related services (collectively, the "Service"). We respect intellectual property rights and expect all users of the Service to do the same.</p>
 
-      {/* Common Reasons for Takedowns */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          Common Reasons for DMCA Takedowns
-        </h2>
+      <h2>1. Reporting Copyright Infringement</h2>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Use of Rivet Studios Assets
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>
-                One of the most common reasons for takedown is the use of assets
-                that belong to Rivet Studios. This includes:
-              </p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>3D models and textures</li>
-                <li>UI elements and graphics</li>
-                <li>Scripts and code</li>
-                <li>Sound effects and music</li>
-                <li>Any content originally created for our projects</li>
-              </ul>
-              <p className="mt-2">
-                If any of these assets were used without permission, the game
-                may have been flagged for removal by Rivet Studios' Copyright
-                Team.
-              </p>
-            </CardContent>
-          </Card>
+      <h3>1.1 Who Can File a DMCA Notice</h3>
+      <p>If You are a copyright owner or are authorized to act on behalf of a copyright owner, and You believe that content on the Service infringes upon Your copyright, You may submit a DMCA takedown notice to Our designated copyright agent as described in Section 3.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Use of Affiliated Client Content
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <p>
-                Rivet Studios works with other game developers to protect their
-                intellectual property. If your game includes assets, scripts, or
-                concepts from one of our affiliate clients without
-                authorization, it may be subject to takedown.
-              </p>
-              <p className="mt-3">
-                We actively protect the intellectual property rights of our
-                affiliated partners and clients.
-              </p>
-            </CardContent>
-          </Card>
+      <h3>1.2 Requirements for a Valid DMCA Notice</h3>
+      <p>To be considered valid, Your DMCA takedown notice must include all of the following elements as required by 17 U.S.C. § 512(c)(3):</p>
+      <ol>
+        <li>A physical or electronic signature of the copyright owner or a person authorized to act on behalf of the copyright owner;</li>
+        <li>Identification of the copyrighted work claimed to have been infringed, or, if multiple copyrighted works are covered by a single notification, a representative list of such works;</li>
+        <li>Identification of the material that is claimed to be infringing or to be the subject of infringing activity, and information reasonably sufficient to permit the Company to locate the material;</li>
+        <li>Information reasonably sufficient to permit the Company to contact You, such as an address, telephone number, and email address;</li>
+        <li>A statement that You have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law;</li>
+        <li>A statement, made under penalty of perjury, that the information in the notification is accurate, and that You are the copyright owner or are authorized to act on behalf of the copyright owner.</li>
+      </ol>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Similarity to Existing Projects
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <p>
-                In some cases, a game may be taken down due to its similarity to
-                one of our projects. Even if no direct assets are used, if the
-                gameplay mechanics, branding, or overall experience are
-                substantially similar to protected content, the game may be
-                flagged.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h3>1.3 Consequences of False Claims</h3>
+      <p>Be aware that under 17 U.S.C. § 512(f), any person who knowingly materially misrepresents that material is infringing may be subject to liability for damages, including costs and attorneys' fees. Submit DMCA notices only if You have a good faith belief that the identified content is infringing.</p>
 
-      {/* Appeal Process */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          If You Believe a Takedown Was Incorrect
-        </h2>
+      <h2>2. Counter-Notice Procedure</h2>
 
-        <Card className="border-blue-500/30 bg-blue-500/5">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">
-              Filing a Counter-Notification
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-3">
-            <p>
-              If you believe your game was taken down by mistake, you have
-              options:
-            </p>
-            <div className="space-y-3 mt-4">
-              <div>
-                <p className="font-semibold text-foreground mb-1">
-                  Through Roblox DMCA Process
-                </p>
-                <p>
-                  You can submit a counter-notification through Roblox's
-                  official DMCA process.
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold text-foreground mb-1">
-                  Direct Contact with Rivet Studios
-                </p>
-                <p>
-                  Contact our Copyright Team at{" "}
-                  <span className="font-mono text-primary">
-                    dmca@resyncstudios.com
-                  </span>{" "}
-                  or by opening a DMCA support ticket with details about:
-                </p>
-                <ul className="list-disc list-inside space-y-1 ml-2 mt-2">
-                  <li>Your game details</li>
-                  <li>Why you believe the takedown was incorrect</li>
-                  <li>
-                    Proof that you own the disputed assets or have permission to
-                    use them
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <h3>2.1 Right to File a Counter-Notice</h3>
+      <p>If You believe that material You posted was removed or access to it was disabled as a result of a mistake or misidentification, You may file a counter-notice with Our designated copyright agent as described in Section 3. A counter-notice must include all of the following elements as required by 17 U.S.C. § 512(g)(3):</p>
+      <ol>
+        <li>Your physical or electronic signature;</li>
+        <li>Identification of the material that has been removed or to which access has been disabled and the location at which the material appeared before it was removed or access to it was disabled;</li>
+        <li>A statement under penalty of perjury that You have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled;</li>
+        <li>Your name, address, and telephone number, and a statement that You consent to the jurisdiction of Federal District Court for the judicial district in which Your address is located, or if Your address is outside of the United States, for any judicial district in which the Company may be found, and that You will accept service of process from the person who provided the original DMCA notice or an agent of such person.</li>
+      </ol>
 
-        <Card className="border-orange-500/30 bg-orange-500/5">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base text-orange-600">
-              Important Legal Warning
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            <p>
-              Filing a false counter-notification can have serious legal
-              consequences. Only proceed if you are certain that:
-            </p>
-            <ul className="list-disc list-inside space-y-1 ml-2 mt-3">
-              <li>The takedown was made in error</li>
-              <li>You own all disputed assets, OR</li>
-              <li>
-                You have documented permission from the copyright holder to use
-                the content
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <h3>2.2 Restoration of Content</h3>
+      <p>Upon receipt of a valid counter-notice, the Company will promptly provide the original complaining party with a copy of the counter-notice and will inform that party that it will restore the removed material or cease disabling access to it in not less than ten (10), nor more than fourteen (14), business days, unless the copyright owner files a court action seeking an order to restrain You from engaging in infringing activity and provides the Company with notice of that action.</p>
 
-      {/* What We Protect */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          What Rivet Studios Protects
-        </h2>
+      <h2>3. Designated Copyright Agent</h2>
+      <p>All DMCA takedown notices and counter-notices should be sent to Our designated copyright agent. You may contact Our copyright agent at:</p>
+      <p><strong>RIVET Studios™ — Copyright Agent</strong><br />Email: <strong>support@rivetstudios.com</strong><br />Subject Line: DMCA Notice</p>
+      <p>We strongly recommend submitting DMCA notices via email, as this ensures the fastest possible response. Only notices that comply with the requirements of 17 U.S.C. § 512 will be processed.</p>
 
-        <Card>
-          <CardContent className="p-6 space-y-3 text-sm text-muted-foreground">
-            <p>
-              Rivet Studios actively protects intellectual property in the
-              following categories:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-2">
-              <li>Original game code and systems</li>
-              <li>3D models, textures, and visual assets</li>
-              <li>Audio files, music, and sound effects</li>
-              <li>UI design and user interface elements</li>
-              <li>Game mechanics and systems design</li>
-              <li>Brand identity and trademarks</li>
-              <li>Content created for affiliated partners</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <h2>4. Repeat Infringer Policy</h2>
+      <p>In accordance with the DMCA and other applicable law, the Company has adopted a policy of terminating, in appropriate circumstances and at the Company's sole discretion, the accounts of users who are deemed to be repeat infringers. The Company may also at its sole discretion limit access to the Service and/or terminate the Accounts of any users who infringe any intellectual property rights of others, whether or not there is any repeat infringement.</p>
 
-      {/* How to Avoid Takedowns */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          How to Avoid DMCA Issues
-        </h2>
+      <h2>5. Intellectual Property Rights of RIVET Studios™</h2>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardContent className="p-6 space-y-2 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">
-                ✓ Create Original Content
-              </p>
-              <p>
-                Develop your own unique assets, code, and game mechanics rather
-                than reusing existing content without permission.
-              </p>
-            </CardContent>
-          </Card>
+      <h3>5.1 Company-Owned Content</h3>
+      <p>All content owned or created by RIVET Studios™, including but not limited to game assets, code, artwork, music, video, logos, trademarks, character designs, platform features, and any other materials associated with the Service, is protected by applicable intellectual property law. Unauthorized reproduction, distribution, modification, or use of any Company-owned content is strictly prohibited and may constitute copyright infringement, trademark infringement, or other violations of applicable law.</p>
 
-          <Card>
-            <CardContent className="p-6 space-y-2 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">
-                ✓ Obtain Proper Licensing
-              </p>
-              <p>
-                If you want to use existing content, ensure you have explicit
-                written permission from the copyright holder.
-              </p>
-            </CardContent>
-          </Card>
+      <h3>5.2 Enforcement</h3>
+      <p>RIVET Studios™ actively monitors for and enforces against unauthorized use of its intellectual property. If You become aware of any unauthorized use of Company-owned content, please report it to support@rivetstudios.com so that We may take appropriate action.</p>
 
-          <Card>
-            <CardContent className="p-6 space-y-2 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">
-                ✓ Use Licensed Resources
-              </p>
-              <p>
-                Utilize assets from legitimate sources with proper licensing
-                agreements (royalty-free, creative commons, etc.).
-              </p>
-            </CardContent>
-          </Card>
+      <h3>5.3 DMCA Claims Against Users</h3>
+      <p>If Your content on the Service is subject to a valid DMCA claim by RIVET Studios™, the content will be removed without prior notice. You will receive notification of the takedown to the email address on file with Your Account. You may file a counter-notice as described in Section 2 if You believe the takedown was in error. Repeated or willful infringement of RIVET Studios™ intellectual property will result in permanent Account termination without refund.</p>
 
-          <Card>
-            <CardContent className="p-6 space-y-2 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">
-                ✓ Properly Attribute Content
-              </p>
-              <p>
-                When required, always properly credit and attribute the creators
-                of any content you use with permission.
-              </p>
-            </CardContent>
-          </Card>
+      <h2>6. No Legal Advice</h2>
+      <p>Nothing in this DMCA Policy constitutes legal advice. If You have questions about Your legal rights or obligations under copyright law or the DMCA, We strongly encourage You to consult with a qualified attorney.</p>
 
-          <Card>
-            <CardContent className="p-6 space-y-2 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">
-                ✓ Document Your Ownership
-              </p>
-              <p>
-                Keep records of all your original work, source files, and any
-                licenses or permissions you have for external content.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Contact Info */}
-      <Card className="bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
-        <CardContent className="p-6 space-y-4">
-          <div className="flex items-start gap-3">
-            <Mail className="w-6 h-6 text-primary mt-1 shrink-0" />
-            <div>
-              <p className="font-semibold mb-2">Get in Touch</p>
-              <p className="text-muted-foreground text-sm mb-3">
-                If you have questions about our DMCA policy or need assistance:
-              </p>
-              <p className="text-sm">
-                <span className="font-semibold">Email:</span>{" "}
-                <span className="font-mono">dmca@resyncstudios.com</span>
-              </p>
-              <p className="text-sm mt-2">
-                <span className="font-semibold">Ticket Contact:</span> Visit the
-                support portal and open a ticket with your inquiry
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Footer */}
-      <Card className="border-border/50">
-        <CardContent className="p-6 text-center text-sm text-muted-foreground">
-          <p className="font-semibold text-foreground mb-2">
-            Protecting Our Community
-          </p>
-          <p>
-            Rivet Studios is committed to protecting intellectual property
-            rights and maintaining a fair environment for all creators. For more
-            details on our intellectual property policies, please review our
-            comprehensive legal documentation.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+      <h2>7. Contact Information</h2>
+      <p>For general questions about this DMCA Policy (other than DMCA notices and counter-notices), please contact Us at: <strong>support@rivetstudios.com</strong></p>
     </PolicyWrapper>
   );
 }

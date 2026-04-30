@@ -1,497 +1,149 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, FileText, Zap, Scale } from "lucide-react";
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
 export default function TermsOfService() {
   return (
-    <PolicyWrapper slug="terms">
-    <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
-      <div className="text-center space-y-2">
-        <Badge variant="outline" className="mx-auto gap-2">
-          <Scale className="w-3.5 h-3.5" />
-          Legal Agreement
-        </Badge>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Terms and Conditions
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Please read these terms carefully before using our services
-        </p>
-        <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: March 1, 2026
-        </p>
-      </div>
+    <PolicyWrapper slug="terms" title="Terms & Conditions" effectiveDate="4/11/2026" version={9}>
+      <h2>Terms and Conditions — RIVET Studios™</h2>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
 
-      <Card className="border-destructive/30 bg-destructive/5">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-destructive mt-1 shrink-0" />
-            <div>
-              <p className="font-semibold mb-2 text-destructive">
-                Binding Legal Agreement
-              </p>
-              <p className="text-muted-foreground text-sm">
-                By creating an account, accessing, or using Rivet Studios
-                services in any manner, you affirm that you have read,
-                understood, and unconditionally agree to be legally bound by all
-                terms and conditions contained herein. If you do not agree, you
-                are prohibited from using these services.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <p>IMPORTANT — PLEASE READ CAREFULLY. These Terms and Conditions ("Terms") constitute a legally binding agreement between You and RIVET Studios™. By accessing, downloading, installing, or using any Service, You acknowledge that You have read, understood, and agree to be bound by these Terms in their entirety. If You do not agree, You must immediately cease all use of the Service.</p>
 
-      {/* Section 1: Your Relationship */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Zap className="w-6 h-6 text-primary" />
-          <h2 className="font-display text-2xl font-bold">
-            1. Your Relationship With Us
-          </h2>
-        </div>
+      <p>THESE TERMS CONTAIN A MANDATORY BINDING ARBITRATION CLAUSE, A CLASS ACTION WAIVER, A JURY TRIAL WAIVER, AND LIMITATIONS ON LIABILITY. THESE PROVISIONS AFFECT YOUR LEGAL RIGHTS. PLEASE REVIEW SECTIONS 12, 13, AND 14 CAREFULLY.</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">The Services</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Welcome to Rivet Studios. The Services are intended for your
-              personal, non-commercial entertainment. We may change, modify,
-              update, suspend, or discontinue features at any time, without
-              notice and without liability.
-            </CardContent>
-          </Card>
+      <h2>1. Definitions</h2>
+      <p>Throughout these Terms, the following capitalized terms have the meanings set forth below. These definitions apply whether the terms appear in singular or plural form.</p>
+      <p><strong>"Account"</strong> means the unique user account created by or for You to access and use the Service, including all associated data, preferences, Digital Purchases, and activity history.</p>
+      <p><strong>"Company," "We," "Us," or "Our"</strong> refers to RIVET Studios™ and its operators.</p>
+      <p><strong>"Content"</strong> means any text, graphics, images, audio, video, data, information, feedback, suggestions, or other materials submitted, uploaded, posted, displayed, or otherwise transmitted by You through the Service.</p>
+      <p><strong>"Digital Purchases"</strong> means all virtual items, in-game currency, tokens, skins, characters, subscriptions, premium features, downloadable content ("DLC"), and any other digital goods, services, or content purchased, earned, or otherwise obtained through the Service.</p>
+      <p><strong>"Intellectual Property"</strong> means all patents, trademarks, service marks, trade dress, copyrights, trade secrets, know-how, proprietary technology, source code, object code, game engines, artwork, music, sound effects, storylines, character designs, UI/UX designs, databases, algorithms, and any other intellectual property rights owned by or licensed to the Company.</p>
+      <p><strong>"Service"</strong> means all websites, games, applications, platforms, forums, APIs, developer tools, social media channels, and any other products or services operated, published, or provided by RIVET Studios™, whether accessed through desktop, mobile, console, browser, or any other means.</p>
+      <p><strong>"Third-Party Services"</strong> means any external websites, platforms, payment processors, authentication providers, social media networks, or other services not owned or controlled by the Company.</p>
+      <p><strong>"You" or "Your"</strong> means the individual person, or the legal entity on whose behalf an individual is acting, who accesses or uses the Service.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Equipment and Costs</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You are solely responsible for providing all equipment, software,
-              and internet access necessary to use the Services. You are
-              responsible for all fees charged by third parties (ISP, mobile
-              carriers, etc.) in connection with your use.
-            </CardContent>
-          </Card>
+      <h2>2. Eligibility and Account Registration</h2>
+      <h3>2.1 Age Requirements</h3>
+      <p>You represent and warrant that You are at least eighteen (18) years of age, or the age of legal majority in Your jurisdiction, whichever is greater. Individuals between the ages of thirteen (13) and seventeen (17) may use the Service only with verified, affirmative parental or legal guardian consent. Under no circumstances may any individual under the age of thirteen (13) use the Service. The Company reserves the right to request proof of age or parental consent at any time and to terminate any Account where such proof is not provided.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Service Availability</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Access to the Services is not guaranteed to be continuous or
-              uninterrupted. Services may be unavailable for maintenance or
-              reasons beyond our reasonable control. We will have no liability
-              for any inability to access the Services.
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h3>2.2 Account Creation and Security</h3>
+      <p>You are solely responsible for maintaining the confidentiality of Your Account credentials, including Your username, password, and any linked authentication methods. You agree to immediately notify Us at support@rivetstudios.com of any unauthorized access to or use of Your Account. The Company shall not be liable for any loss, damage, or liability arising from Your failure to secure Your Account. All activity occurring under Your Account is Your sole responsibility, whether or not authorized by You.</p>
 
-      {/* Section 2: Your Account */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          2. Your Account With Us
-        </h2>
+      <h3>2.3 One Account Per Person; No Account Sharing</h3>
+      <p>Unless expressly authorized in writing by the Company, You may maintain only one (1) Account. Creating multiple accounts to circumvent bans, exploit promotions, manipulate rankings, or for any other purpose is strictly prohibited and constitutes grounds for immediate termination of all associated Accounts. You may not share, lend, or allow any other person to access or use Your Account. If the Company detects Account sharing, it reserves the right to terminate all involved Accounts without notice or refund.</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Account Creation and Eligibility
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>By creating an account, you represent and warrant that:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>All information you submit is truthful and accurate</li>
-                <li>You are at least 13 years of age</li>
-                <li>Your use does not violate any applicable law</li>
-              </ul>
-            </CardContent>
-          </Card>
+      <h3>2.4 Account Accuracy</h3>
+      <p>You agree to provide accurate, current, and complete information during registration and to keep such information updated. Providing false, misleading, or outdated information is a material breach of these Terms.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Account Security</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You are responsible for maintaining password confidentiality. You
-              are prohibited from sharing, selling, or transferring your
-              account. You are solely responsible for all activities under your
-              account and must notify us immediately of any unauthorized use.
-            </CardContent>
-          </Card>
+      <h2>3. Grant of License; Restrictions</h2>
+      <h3>3.1 Limited License</h3>
+      <p>Subject to Your compliance with these Terms, the Company grants You a limited, personal, non-exclusive, non-transferable, non-sublicensable, fully revocable license to access and use the Service solely for Your personal, non-commercial entertainment purposes. This license does not convey any ownership interest in the Service, any Digital Purchases, or any Intellectual Property.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Account Suspension and Termination
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>
-                <strong>By Operator (For Cause):</strong> We may suspend or
-                terminate your account without notice if we determine you have
-                breached this Agreement or engaged in prohibited conduct.
-              </p>
-              <p>
-                <strong>By Operator (For Convenience):</strong> We may terminate
-                your account for any reason. You will receive a prorated refund
-                for unused subscription fees.
-              </p>
-              <p>
-                <strong>By You:</strong> You may terminate your account anytime.
-                Termination will not entitle you to refunds.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h3>3.2 Ownership</h3>
+      <p>You expressly acknowledge and agree that You do not own Your Account, any Digital Purchases, virtual currency, items, characters, progress, or any other data associated with the Service. All such elements are and remain the exclusive property of the Company. The Company may modify, suspend, limit, or revoke any aspect of the Service, including Digital Purchases, at any time, for any reason or no reason, without prior notice, refund, or liability.</p>
 
-      {/* Section 3: License & IP */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          3. End User License & Intellectual Property
-        </h2>
+      <h3>3.2A Virtual Currency and Items — No Real-World Value</h3>
+      <p>Any virtual currency, tokens, credits, points, or similar items obtained through the Service (whether purchased or earned) have no real-world monetary value, are not redeemable for cash, and do not constitute stored value, electronic money, or any form of currency or property under any applicable law. The Company may modify exchange rates, values, availability, or functionality of virtual currency at any time without notice or liability. Upon Account termination for any reason, all virtual currency and items are forfeited without refund or compensation.</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Ownership</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              All content, software, images, text, graphics, logos, trademarks,
-              and intellectual property rights are owned or licensed by Rivet
-              Studios. Use of any content not expressly permitted by this
-              Agreement is strictly prohibited.
-            </CardContent>
-          </Card>
+      <h3>3.3 Prohibited Conduct</h3>
+      <p>You agree not to, and shall not permit or encourage any third party to:</p>
+      <ol type="a">
+        <li>Copy, modify, adapt, translate, reverse engineer, decompile, disassemble, or create derivative works based on the Service or any part thereof;</li>
+        <li>Use cheats, hacks, bots, automation software, exploits, mods (except where expressly permitted), or any unauthorized third-party software that interacts with or modifies the Service;</li>
+        <li>Sell, trade, transfer, license, gift, or otherwise dispose of Your Account or any Digital Purchases for real-world money or value, whether through third-party marketplaces, auctions, or otherwise, unless expressly authorized by the Company in writing;</li>
+        <li>Use the Service for any commercial purpose, including advertising, solicitation, data mining, or harvesting of user information;</li>
+        <li>Interfere with, disrupt, or impose an unreasonable burden on the Service's infrastructure, servers, networks, or other users' enjoyment of the Service;</li>
+        <li>Exploit bugs, glitches, or design errors in the Service, whether known or unknown. You agree to report any such issues to the Company promptly;</li>
+        <li>Impersonate any person or entity, or misrepresent Your identity, affiliation, or authority;</li>
+        <li>Use the Service to transmit viruses, malware, spyware, or any other malicious or harmful code;</li>
+        <li>Engage in harassment, threats, hate speech, bullying, doxxing, swatting, or any conduct that is abusive, discriminatory, defamatory, obscene, or otherwise objectionable;</li>
+        <li>Circumvent, disable, or interfere with any security, access control, digital rights management, or other protective features of the Service;</li>
+        <li>Access or attempt to access the Service through any means not intentionally made available or provided by the Company;</li>
+        <li>Use virtual private networks (VPNs), proxy servers, IP masking tools, or any other technology to circumvent geographic restrictions, evade bans or suspensions, disguise Your identity or location, or bypass any access control measures implemented by the Company;</li>
+        <li>Conduct or publish any benchmarking, performance testing, competitive analysis, or similar evaluations of the Service without the Company's prior written consent;</li>
+        <li>Scrape, crawl, spider, index, or use any automated means to access, collect, or store data from the Service;</li>
+        <li>Facilitate, encourage, or assist any third party in engaging in any of the above prohibited activities.</li>
+      </ol>
+      <p>Violation of any of these restrictions constitutes a material breach of these Terms and may result in immediate Account termination, forfeiture of all Digital Purchases, and pursuit of any available legal remedies.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Limited License</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              The Services are licensed, not sold. Subject to compliance with
-              this Agreement, we grant you a limited, non-exclusive,
-              non-transferable license to use the software for personal,
-              non-commercial entertainment purposes only.
-            </CardContent>
-          </Card>
+      <h2>4. Payments, Digital Purchases, and Refund Policy</h2>
+      <h3>4.1 Strict No-Refund Policy</h3>
+      <p>ALL DIGITAL PURCHASES ARE FINAL, NON-REFUNDABLE, AND NON-EXCHANGEABLE. This applies to all purchases without exception, including but not limited to: accidental purchases, buyer's remorse, dissatisfaction with the Service, loss of access due to violations of these Terms, Account termination (whether voluntary or involuntary), technical issues, changes to the Service, discontinuation of content, or any other reason.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">License Restrictions</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>You shall not:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2 text-xs">
-                <li>Use the Services for commercial purposes</li>
-                <li>
-                  Reverse-engineer, decompile, or disassemble the software
-                </li>
-                <li>
-                  Use unauthorized third-party software (cheats, bots, hacks,
-                  mods)
-                </li>
-                <li>Scrape, collect, or mine data from the Services</li>
-                <li>Remove or alter copyright or proprietary notices</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h3>4.2 Immediate Delivery and Consent to Performance</h3>
+      <p>All Digital Purchases are delivered and made accessible to Your Account immediately upon completion of the transaction. By clicking "Buy," "Purchase," "Confirm," "Pay," or any similar transactional button, or by otherwise completing a purchase, You:</p>
+      <ol type="a">
+        <li>Expressly request and consent to the immediate delivery and performance of the Digital Purchase;</li>
+        <li>Acknowledge that the Digital Purchase is fully delivered and consumed at the moment it is credited to or accessible in Your Account;</li>
+        <li>Acknowledge that You have received the full benefit of the Digital Purchase upon delivery.</li>
+      </ol>
 
-      {/* Section 4: Virtual Goods */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          4. Virtual Goods & Game Economy
-        </h2>
+      <h3>4.3 Waiver of Withdrawal Rights</h3>
+      <p><strong>Non-EU/UK Users:</strong> By completing a purchase and consenting to immediate performance as described above, You explicitly acknowledge and agree that You forfeit and waive any right of withdrawal, cancellation, cooling-off period, or refund that may otherwise be available under applicable law, to the maximum extent permitted.</p>
+      <p><strong>EU/UK Users:</strong> A separate EU/UK-Specific Withdrawal Waiver process applies in accordance with Article 16(m) of Directive 2011/83/EU (Consumer Rights Directive) and equivalent UK legislation. During checkout, You will be required to provide explicit, affirmative consent via a dedicated, active opt-in mechanism confirming: (i) Your express request for immediate performance; and (ii) Your acknowledgment that You lose Your right of withdrawal upon delivery. Purchases will not proceed without this affirmative consent.</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Nature of Virtual Goods
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Virtual Goods have no real-world monetary value, are not personal
-              property, and cannot be redeemed for real money. Price and
-              availability are subject to change without notice.
-            </CardContent>
-          </Card>
+      <h3>4.4 Pricing and Currency</h3>
+      <p>All prices are displayed in the applicable currency at the time of purchase and are inclusive of applicable taxes unless otherwise stated. The Company reserves the right to change prices for Digital Purchases at any time without prior notice. Price changes do not affect previously completed transactions.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Limited License to Virtual Goods
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Your purchase grants only a limited, non-transferable, personal,
-              revocable license to use Virtual Goods within the Services. You
-              have no ownership or property interest. This license terminates
-              upon account termination.
-            </CardContent>
-          </Card>
+      <h3>4.5 Payment Processing</h3>
+      <p>Payments are processed through Stripe and other authorized third-party payment processors. The Company is not responsible for errors, delays, or unauthorized charges arising from the payment processor's systems. You agree to comply with all terms and conditions imposed by Your chosen payment processor.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Prohibition on Unsanctioned Transfers
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Any attempt to sell, trade, gift, or transfer Virtual Goods
-              outside official mechanisms is prohibited and may result in
-              account termination.
-            </CardContent>
-          </Card>
+      <h3>4.6 Chargeback and Dispute Policy</h3>
+      <p>Initiating a chargeback, payment dispute, reversal, or claim through Your bank, credit card issuer, payment processor, or any third party — without first contacting Our support team at support@rivetstudios.com and allowing a minimum of fifteen (15) business days to investigate and resolve the issue — constitutes a material breach of these Terms and may be treated as fraud. Consequences of unauthorized chargebacks include immediate Account termination, cost recovery, evidence submission to payment processors, and pursuit of all available legal remedies.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Operator's Right to Manage
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              We reserve the right to manage, regulate, modify, re-price, or
-              eliminate any Virtual Goods at any time without notice or
-              liability.
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h2>5. User Content</h2>
+      <p>You retain ownership of Content You submit or post through the Service. By submitting Content, You grant the Company a worldwide, perpetual, irrevocable, royalty-free, non-exclusive, sublicensable license to use, reproduce, modify, adapt, publish, translate, distribute, and display such Content in connection with the Service. You represent and warrant that You own or have the necessary rights to grant this license and that Your Content does not violate any third-party rights or applicable law.</p>
+      <p>The Company reserves the right to remove any Content at any time, for any reason, without notice or liability. The Company does not endorse, guarantee the accuracy of, or assume responsibility for any user-submitted Content.</p>
 
-      {/* Section 5: User Content */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          5. User-Generated Content & Feedback
-        </h2>
+      <h2>6. Intellectual Property</h2>
+      <p>The Service and all of its components, including but not limited to software, code, text, graphics, images, logos, icons, audio clips, video, user interface designs, and the selection and arrangement thereof, are the exclusive property of the Company or its licensors and are protected by applicable intellectual property laws. All rights not expressly granted herein are reserved by the Company.</p>
+      <p>You may not reproduce, distribute, display, sell, lease, transmit, create derivative works from, translate, modify, reverse-engineer, disassemble, decompile, or otherwise exploit any portion of the Service without the express written permission of the Company.</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Responsibility for Your Content
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You are solely responsible for any content you create or upload.
-              You represent and warrant that your content does not infringe
-              third-party rights, is not illegal, and does not violate our Code
-              of Conduct.
-            </CardContent>
-          </Card>
+      <h2>7. Privacy</h2>
+      <p>Your use of the Service is also governed by Our Privacy Policy, which is incorporated into these Terms by reference. By using the Service, You consent to the collection, use, and sharing of Your information as described in the Privacy Policy. If You do not agree with the Privacy Policy, You must immediately cease all use of the Service.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                License Grant to Rivet Studios
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              By submitting content, you grant us a perpetual, irrevocable,
-              worldwide, royalty-free license to use, reproduce, modify, and
-              commercially exploit your content in any media without
-              compensation. This license survives account termination.
-            </CardContent>
-          </Card>
+      <h2>8. Third-Party Services and Links</h2>
+      <p>The Service may contain links to or integrations with Third-Party Services. These are provided solely for Your convenience. The Company does not endorse, control, or assume any responsibility for Third-Party Services, their content, privacy practices, or terms. Your use of Third-Party Services is at Your sole risk and is governed by the applicable third-party terms. The Company disclaims all liability in connection with Third-Party Services.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Feedback</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Any suggestions, ideas, or feedback you provide becomes our sole
-              and exclusive property.
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h2>9. Disclaimers</h2>
+      <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COMPANY EXPRESSLY DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, RELIABILITY, COMPLETENESS, TIMELINESS, SECURITY, AND AVAILABILITY.</p>
+      <p>THE COMPANY DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, FREE OF VIRUSES OR HARMFUL COMPONENTS, OR THAT DEFECTS WILL BE CORRECTED. NO ORAL OR WRITTEN INFORMATION OR ADVICE GIVEN BY THE COMPANY OR ANY AUTHORIZED REPRESENTATIVE CREATES A WARRANTY NOT EXPRESSLY STATED IN THESE TERMS.</p>
 
-      {/* Section 6: Financial Terms */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          6. Financial Terms & Subscriptions
-        </h2>
+      <h2>10. Limitation of Liability</h2>
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, REVENUE, DATA, GOODWILL, BUSINESS OPPORTUNITIES, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH THESE TERMS OR THE SERVICE, EVEN IF THE COMPANY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+      <p>THE COMPANY'S TOTAL CUMULATIVE LIABILITY TO YOU FOR ALL CLAIMS ARISING OUT OF OR RELATED TO THESE TERMS OR THE SERVICE SHALL NOT EXCEED THE GREATER OF (A) THE TOTAL AMOUNTS PAID BY YOU TO THE COMPANY IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM, OR (B) ONE HUNDRED DOLLARS ($100.00 USD).</p>
 
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Payment Authorization</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You authorize us and our payment processors to charge your payment
-              method for all fees you incur. You are responsible for all charges
-              under your account.
-            </CardContent>
-          </Card>
+      <h2>11. Indemnification</h2>
+      <p>You agree to indemnify, defend, and hold harmless the Company and its officers, directors, employees, contractors, agents, licensors, and successors from and against any and all claims, demands, damages, judgments, losses, liabilities, costs, and expenses (including reasonable attorneys' fees and legal costs) arising out of or related to: (a) Your use of or inability to use the Service; (b) Your violation of these Terms; (c) Your violation of any applicable law or regulation; (d) Your violation of any third-party rights, including intellectual property rights or privacy rights; or (e) Your Content.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Subscriptions and Auto-Renewal
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              If you purchase a recurring subscription, you authorize us to
-              charge your payment method automatically at the start of each
-              billing period. YOUR SUBSCRIPTION WILL AUTOMATICALLY RENEW until
-              you cancel. You may cancel anytime through your account settings.
-            </CardContent>
-          </Card>
+      <h2>12. Dispute Resolution; Binding Arbitration</h2>
+      <p>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</p>
+      <p>Any dispute, controversy, or claim arising out of or relating to these Terms or the Service (a "Dispute") shall be finally resolved by binding individual arbitration, and not in a court of law. The arbitration shall be conducted on an individual basis and not as a class, collective, or representative action. The arbitrator's decision shall be final and binding.</p>
+      <p>Before initiating arbitration, You must first contact Us at support@rivetstudios.com and attempt to resolve the Dispute informally for a period of thirty (30) days. If the Dispute is not resolved informally, either party may initiate arbitration.</p>
 
-          <Card className="border-orange-500/30 bg-orange-500/5">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Refund Policy</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              ALL PAYMENTS ARE FINAL AND NON-REFUNDABLE, except as expressly
-              provided in this Agreement or required by law. No refunds for
-              account termination for cause.
-            </CardContent>
-          </Card>
+      <h2>13. Class Action Waiver</h2>
+      <p>YOU AND THE COMPANY AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, CONSOLIDATED, OR REPRESENTATIVE PROCEEDING. The arbitrator may not consolidate more than one person's claims and may not otherwise preside over any form of representative or class proceeding.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Improper Chargebacks</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Do not initiate chargebacks except for legitimate fraud. Improper
-              chargebacks are a material breach. You agree to pay liquidated
-              damages of $50 AUD per improper chargeback.
-            </CardContent>
-          </Card>
+      <h2>14. Governing Law</h2>
+      <p>These Terms shall be governed by and construed in accordance with applicable law, without regard to conflict of law principles. Any disputes not subject to arbitration shall be resolved exclusively in the appropriate courts, and You consent to the personal jurisdiction of such courts.</p>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Taxes</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You are responsible for all applicable sales, use, or other
-              governmental taxes associated with your purchases.
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <h2>15. General Provisions</h2>
+      <h3>15.1 Entire Agreement</h3>
+      <p>These Terms, together with the Privacy Policy, Subscription Services Agreement, Acceptable Use Policy, and any other policies or agreements incorporated by reference, constitute the entire agreement between You and the Company with respect to the Service and supersede all prior agreements.</p>
 
-      {/* Section 7: Code of Conduct */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          7. Code of Conduct & Enforcement
-        </h2>
+      <h3>15.2 Severability</h3>
+      <p>If any provision of these Terms is found to be invalid, illegal, or unenforceable, that provision shall be modified to the minimum extent necessary to make it enforceable, and the remaining provisions shall continue in full force and effect.</p>
 
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            <p>
-              Your use is conditioned on compliance with our Code of Conduct,
-              which prohibits:
-            </p>
-            <ul className="list-disc list-inside space-y-1 mt-3 ml-2">
-              <li>Harassment, abuse, hate speech, and impersonation</li>
-              <li>Cheating and exploitation of bugs</li>
-              <li>Illegal activity and service disruption</li>
-            </ul>
-            <p className="mt-4">
-              We reserve the right to investigate and take appropriate
-              disciplinary action, including warnings, temporary suspensions, or
-              permanent account termination, in our sole discretion.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <h3>15.3 Waiver</h3>
+      <p>The Company's failure to enforce any right or provision of these Terms shall not constitute a waiver of that right or provision.</p>
 
-      {/* Section 8: Liability & Disclaimers */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          8. Disclaimers & Liability
-        </h2>
+      <h3>15.4 Assignment</h3>
+      <p>You may not assign or transfer any of Your rights or obligations under these Terms without the Company's prior written consent. The Company may freely assign its rights and obligations under these Terms.</p>
 
-        <div className="grid gap-4">
-          <Card className="border-destructive/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base text-destructive">
-                Disclaimer of Warranties
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              THE SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS.
-              WE EXPRESSLY DISCLAIM ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, OR
-              STATUTORY, INCLUDING MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-              PURPOSE.
-            </CardContent>
-          </Card>
+      <h3>15.5 Updates to Terms</h3>
+      <p>The Company reserves the right to modify these Terms at any time. We will notify You of material changes by updating the "Last Updated" date at the top of this document and, where appropriate, by sending an email notification. Your continued use of the Service after any changes constitutes Your acceptance of the revised Terms.</p>
 
-          <Card className="border-destructive/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base text-destructive">
-                Limitation of Liability
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              WE ARE NOT LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE,
-              OR CONSEQUENTIAL DAMAGES. OUR TOTAL LIABILITY IS LIMITED TO THE
-              GREATER OF: (A) TOTAL AMOUNT PAID BY YOU IN 6 MONTHS, OR (B) $100
-              AUD.
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Indemnification</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              You agree to defend, indemnify, and hold harmless Rivet Studios
-              from any claims, liabilities, and expenses (including attorneys'
-              fees) arising from your use or breach of this Agreement.
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Section 9: Dispute Resolution */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl font-bold">
-          9. Dispute Resolution
-        </h2>
-
-        <Card className="border-blue-500/30 bg-blue-500/5">
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            <p>
-              Any dispute arising from or related to these Terms shall be
-              resolved through binding arbitration on an individual basis,
-              except for claims within small claims court jurisdiction. YOU
-              WAIVE YOUR RIGHT TO A JURY TRIAL AND YOUR RIGHT TO PARTICIPATE IN
-              CLASS ACTION LITIGATION.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Closing */}
-      <Card className="bg-gradient-to-r from-primary/10 to-chart-3/10 border-primary/20">
-        <CardContent className="p-6 text-center">
-          <p className="text-lg font-semibold mb-2">Agreement</p>
-          <p className="text-muted-foreground">
-            By using Rivet Studios services, you acknowledge that you have read,
-            understood, and agree to be bound by these Terms and Conditions and
-            our Privacy Policy.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+      <h3>15.6 Contact Information</h3>
+      <p>If You have any questions about these Terms, please contact Us at: <strong>support@rivetstudios.com</strong></p>
     </PolicyWrapper>
   );
 }

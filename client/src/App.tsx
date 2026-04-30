@@ -58,6 +58,9 @@ import StoreCategory from "@/pages/store-category";
 import ProductDetail from "@/pages/product";
 import CaseDetail from "@/pages/case-detail";
 import Policies from "@/pages/policies";
+import LegalPolicies from "@/pages/policies-legal";
+import SubscriptionAgreement from "@/pages/subscription-agreement";
+import EUWithdrawal from "@/pages/eu-withdrawal";
 import UserSearch from "@/pages/user-search";
 
 import Marketplace from "@/pages/marketplace";
@@ -344,7 +347,10 @@ function Router() {
             <Route path="/store/product/:id" component={ProductDetail} />
             <Route path="/store/subscriptions" component={Subscriptions} />
 
+            <Route path="/policies/legal" component={LegalPolicies} />
             <Route path="/policies" component={Policies} />
+            <Route path="/subscription-agreement" component={SubscriptionAgreement} />
+            <Route path="/eu-withdrawal" component={EUWithdrawal} />
             <Route path="/forums" component={ForumHome} />
             <Route path="/forums/category/:id" component={ForumCategory} />
             <Route path="/forums/thread/:id/edit" component={EditThread} />
