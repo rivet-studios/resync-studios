@@ -4,7 +4,7 @@ export default function TermsOfService() {
   return (
     <PolicyWrapper slug="terms" title="Terms & Conditions" effectiveDate="4/11/2026" version={9}>
       <h2>Terms and Conditions — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <p><strong>Effective Date: April 17, 2018 · Last Updated: April 30, 2026</strong></p>
 
       <p>IMPORTANT — PLEASE READ CAREFULLY. These Terms and Conditions ("Terms") constitute a legally binding agreement between You and RIVET Studios™. By accessing, downloading, installing, or using any Service, You acknowledge that You have read, understood, and agree to be bound by these Terms in their entirety. If You do not agree, You must immediately cease all use of the Service.</p>
 
@@ -23,10 +23,10 @@ export default function TermsOfService() {
 
       <h2>2. Eligibility and Account Registration</h2>
       <h3>2.1 Age Requirements</h3>
-      <p>You represent and warrant that You are at least eighteen (18) years of age, or the age of legal majority in Your jurisdiction, whichever is greater. Individuals between the ages of thirteen (13) and seventeen (17) may use the Service only with verified, affirmative parental or legal guardian consent. Under no circumstances may any individual under the age of thirteen (13) use the Service. The Company reserves the right to request proof of age or parental consent at any time and to terminate any Account where such proof is not provided.</p>
+      <p>You represent and warrant that You are at least thirteen (13) years of age, or the age of legal majority in Your jurisdiction, whichever is greater. Individuals between the ages of thirteen (13) and fifteen (15) may use the Service only with verified, affirmative parental or legal guardian consent. Individuals at or above the age of sixteen (16) may use the Service without parental or legal guardian consent. Under no circumstances may any individual under the age of thirteen (13) use the Service. The Company reserves the right to request proof of age or parental consent at any time and to terminate any Account where such proof is not provided.</p>
 
       <h3>2.2 Account Creation and Security</h3>
-      <p>You are solely responsible for maintaining the confidentiality of Your Account credentials, including Your username, password, and any linked authentication methods. You agree to immediately notify Us at support@rivetstudios.com of any unauthorized access to or use of Your Account. The Company shall not be liable for any loss, damage, or liability arising from Your failure to secure Your Account. All activity occurring under Your Account is Your sole responsibility, whether or not authorized by You.</p>
+      <p>You are solely responsible for maintaining the confidentiality of Your Account credentials, including Your username, password, and any linked authentication methods. You agree to immediately notify Us at support@resyncstudios.com of any unauthorized access to or use of Your Account. The Company shall not be liable for any loss, damage, or liability arising from Your failure to secure Your Account. All activity occurring under Your Account is Your sole responsibility, whether or not authorized by You.</p>
 
       <h3>2.3 One Account Per Person; No Account Sharing</h3>
       <p>Unless expressly authorized in writing by the Company, You may maintain only one (1) Account. Creating multiple accounts to circumvent bans, exploit promotions, manipulate rankings, or for any other purpose is strictly prohibited and constitutes grounds for immediate termination of all associated Accounts. You may not share, lend, or allow any other person to access or use Your Account. If the Company detects Account sharing, it reserves the right to terminate all involved Accounts without notice or refund.</p>
@@ -88,7 +88,7 @@ export default function TermsOfService() {
       <p>Payments are processed through Stripe and other authorized third-party payment processors. The Company is not responsible for errors, delays, or unauthorized charges arising from the payment processor's systems. You agree to comply with all terms and conditions imposed by Your chosen payment processor.</p>
 
       <h3>4.6 Chargeback and Dispute Policy</h3>
-      <p>Initiating a chargeback, payment dispute, reversal, or claim through Your bank, credit card issuer, payment processor, or any third party — without first contacting Our support team at support@rivetstudios.com and allowing a minimum of fifteen (15) business days to investigate and resolve the issue — constitutes a material breach of these Terms and may be treated as fraud. Consequences of unauthorized chargebacks include immediate Account termination, cost recovery, evidence submission to payment processors, and pursuit of all available legal remedies.</p>
+      <p>Initiating a chargeback, payment dispute, reversal, or claim through Your bank, credit card issuer, payment processor, or any third party — without first contacting Our support team at support@resyncstudios.com and allowing a minimum of fifteen (15) business days to investigate and resolve the issue — constitutes a material breach of these Terms and may be treated as fraud. Consequences of unauthorized chargebacks include immediate Account termination, cost recovery, evidence submission to payment processors, and pursuit of all available legal remedies.</p>
 
       <h2>5. User Content</h2>
       <p>You retain ownership of Content You submit or post through the Service. By submitting Content, You grant the Company a worldwide, perpetual, irrevocable, royalty-free, non-exclusive, sublicensable license to use, reproduce, modify, adapt, publish, translate, distribute, and display such Content in connection with the Service. You represent and warrant that You own or have the necessary rights to grant this license and that Your Content does not violate any third-party rights or applicable law.</p>
@@ -118,7 +118,7 @@ export default function TermsOfService() {
       <h2>12. Dispute Resolution; Binding Arbitration</h2>
       <p>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</p>
       <p>Any dispute, controversy, or claim arising out of or relating to these Terms or the Service (a "Dispute") shall be finally resolved by binding individual arbitration, and not in a court of law. The arbitration shall be conducted on an individual basis and not as a class, collective, or representative action. The arbitrator's decision shall be final and binding.</p>
-      <p>Before initiating arbitration, You must first contact Us at support@rivetstudios.com and attempt to resolve the Dispute informally for a period of thirty (30) days. If the Dispute is not resolved informally, either party may initiate arbitration.</p>
+      <p>Before initiating arbitration, You must first contact Us at support@resyncstudios.com and attempt to resolve the Dispute informally for a period of thirty (30) days. If the Dispute is not resolved informally, either party may initiate arbitration.</p>
 
       <h2>13. Class Action Waiver</h2>
       <p>YOU AND THE COMPANY AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, CONSOLIDATED, OR REPRESENTATIVE PROCEEDING. The arbitrator may not consolidate more than one person's claims and may not otherwise preside over any form of representative or class proceeding.</p>
@@ -143,7 +143,7 @@ export default function TermsOfService() {
       <p>The Company reserves the right to modify these Terms at any time. We will notify You of material changes by updating the "Last Updated" date at the top of this document and, where appropriate, by sending an email notification. Your continued use of the Service after any changes constitutes Your acceptance of the revised Terms.</p>
 
       <h3>15.6 Contact Information</h3>
-      <p>If You have any questions about these Terms, please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>If You have any questions about these Terms, please contact Us at: <strong>support@resyncstudios.com</strong></p>
     </PolicyWrapper>
   );
 }

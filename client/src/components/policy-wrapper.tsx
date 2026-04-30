@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { PolicyDocument } from "@/components/policy-document";
+import { MarkdownContent } from "@/components/markdown-content";
 
 interface PolicyWrapperProps {
   slug: string;
@@ -28,16 +29,15 @@ export function PolicyWrapper({ slug, title, effectiveDate, version, children }:
       month: "numeric",
       day: "numeric",
     });
+
     if (title) {
       return (
         <PolicyDocument title={policy.title} effectiveDate={dbEffective} version="—">
-          <div
-            dangerouslySetInnerHTML={{ __html: policy.content }}
-            data-testid="policy-content"
-          />
+          <MarkdownContent content={policy.content} data-testid="policy-content" />
         </PolicyDocument>
       );
     }
+
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
         <div className="text-center space-y-2">
@@ -46,11 +46,7 @@ export function PolicyWrapper({ slug, title, effectiveDate, version, children }:
             Last Updated: {new Date(policy.updatedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
           </p>
         </div>
-        <div
-          className="prose prose-sm dark:prose-invert max-w-none [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:text-muted-foreground [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_li]:text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_strong]:text-foreground"
-          dangerouslySetInnerHTML={{ __html: policy.content }}
-          data-testid="policy-content"
-        />
+        <MarkdownContent content={policy.content} data-testid="policy-content" />
       </div>
     );
   }

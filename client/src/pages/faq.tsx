@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { MarkdownContent } from "@/components/markdown-content";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -238,7 +239,7 @@ export default function FAQ() {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent data-testid={`faq-answer-${entry.id}`}>
-                      <p className="text-muted-foreground whitespace-pre-wrap">{entry.answer}</p>
+                      <MarkdownContent content={entry.answer} className="pt-1" />
                     </AccordionContent>
                   </AccordionItem>
                 ))}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { MarkdownContent } from "@/components/markdown-content";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -557,10 +558,8 @@ export default function ForumThread() {
               </div>
             </div>
 
-            <div className="mt-4 pl-0 sm:pl-14">
-              <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words" data-testid="text-thread-content">
-                {thread.content}
-              </p>
+            <div className="mt-4 pl-0 sm:pl-14" data-testid="text-thread-content">
+              <MarkdownContent content={thread.content} />
             </div>
 
             <div className="flex items-center justify-between mt-4 pt-3 border-t gap-2 flex-wrap">
@@ -751,9 +750,9 @@ export default function ForumThread() {
                               </div>
                             </div>
                           ) : (
-                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words mt-2" data-testid={`text-reply-content-${reply.id}`}>
-                              {reply.content}
-                            </p>
+                            <div className="mt-2" data-testid={`text-reply-content-${reply.id}`}>
+                              <MarkdownContent content={reply.content} />
+                            </div>
                           )}
 
                           {!isEditing && (

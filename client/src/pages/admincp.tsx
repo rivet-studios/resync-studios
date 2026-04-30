@@ -60,6 +60,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { VerifiedBadge } from "@/components/verified-badge";
+import { MarkdownContent } from "@/components/markdown-content";
 
 interface AdminStats {
   totalUsers: number;
@@ -95,6 +96,7 @@ export default function AdminCP() {
   const [editingPolicy, setEditingPolicy] = useState<string | null>(null);
   const [policyTitle, setPolicyTitle] = useState("");
   const [policyContent, setPolicyContent] = useState("");
+  const [policyPreview, setPolicyPreview] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryGroup, setNewCategoryGroup] = useState("");
@@ -400,14 +402,19 @@ export default function AdminCP() {
   }, [allUsers]);
 
   const policySlugMap: Record<string, string> = {
+    terms: "Terms & Conditions",
     privacy: "Privacy Policy",
-    terms: "Terms of Service",
-    "community-rules": "Community Rules",
-    guidelines: "Guidelines",
+    "subscription-agreement": "Subscription Services Agreement",
+    guidelines: "Acceptable Use Policy (AUP) & Community Guidelines",
+    "eu-withdrawal": "EU/UK Consumer Withdrawal Rights Waiver Policy",
     dmca: "DMCA Policy",
-    "volunteer-staff-agreement": "Community Staff Agreement",
+    "community-rules": "Community Rules",
     "project-rosewood-rules": "Project Rosewood Rules",
+    "volunteer-staff-agreement": "Community Staff Agreement",
   };
+
+  const defaultPolicyTemplate = (label: string) =>
+    `# ${label}\n\n**Effective Date:** [Date]\n\n## 1. Introduction\n\n[Write your policy introduction here.]\n\n## 2. [Section Title]\n\n[Write section content here.]\n\n## 3. [Section Title]\n\n[Write section content here.]\n\n---\n\n*For questions, contact support@rivetstudios.com*\n`;
 
   const savePolicyMutation = useMutation({
     mutationFn: async ({
@@ -2567,10 +2574,21 @@ export default function AdminCP() {
 
             {editingPolicy ? (
               <Card data-testid="card-policy-editor">
-                <CardHeader>
-                  <CardTitle className="text-sm font-semibold">
-                    Editing: {policySlugMap[editingPolicy] || editingPolicy}
-                  </CardTitle>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <CardTitle className="text-sm font-semibold">
+                      Editing: {policySlugMap[editingPolicy] || editingPolicy}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Edit</span>
+                      <Switch
+                        checked={policyPreview}
+                        onCheckedChange={setPolicyPreview}
+                        data-testid="toggle-policy-preview"
+                      />
+                      <span className="text-xs text-muted-foreground">Preview</span>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -2586,15 +2604,52 @@ export default function AdminCP() {
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                      Content (HTML)
+                      Content (Markdown)
                     </label>
-                    <Textarea
-                      value={policyContent}
-                      onChange={(e) => setPolicyContent(e.target.value)}
-                      className="min-h-[400px] font-mono text-sm"
-                      placeholder="Policy content in HTML format..."
-                      data-testid="input-policy-content"
-                    />
+                    {policyPreview ? (
+                      <div className="min-h-[400px] rounded-md border border-input bg-muted/20 p-4 overflow-auto">
+                        {policyContent ? (
+                          <MarkdownContent content={policyContent} />
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic">Nothing to preview yet.</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {[
+                            { label: "B", action: "**bold**", title: "Bold" },
+                            { label: "I", action: "*italic*", title: "Italic" },
+                            { label: "H2", action: "\n## Heading\n", title: "Heading 2" },
+                            { label: "H3", action: "\n### Heading\n", title: "Heading 3" },
+                            { label: "—", action: "\n---\n", title: "Divider" },
+                            { label: "• List", action: "\n- Item\n- Item\n", title: "Bullet list" },
+                            { label: "1. List", action: "\n1. Item\n2. Item\n", title: "Numbered list" },
+                            { label: "Link", action: "[text](url)", title: "Hyperlink" },
+                          ].map(({ label, action, title }) => (
+                            <button
+                              key={title}
+                              type="button"
+                              title={title}
+                              className="px-2 py-1 text-xs font-mono rounded border border-border hover:bg-muted transition-colors text-foreground"
+                              onClick={() => setPolicyContent((c) => c + action)}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        <Textarea
+                          value={policyContent}
+                          onChange={(e) => setPolicyContent(e.target.value)}
+                          className="min-h-[400px] font-mono text-sm resize-y"
+                          placeholder={`Write policy content in Markdown...\n\n## Section 1\n\nYour text here.\n\n## Section 2\n\nMore text here.`}
+                          data-testid="input-policy-content"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Supports Markdown: **bold**, *italic*, ## headings, - lists, [links](url), etc. Toggle Preview to see the result.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-3 flex-wrap">
                     <Button
@@ -2612,9 +2667,7 @@ export default function AdminCP() {
                       }
                       data-testid="button-save-policy"
                     >
-                      {savePolicyMutation.isPending
-                        ? "Saving..."
-                        : "Save Policy"}
+                      {savePolicyMutation.isPending ? "Saving..." : "Save Policy"}
                     </Button>
                     <Button
                       variant="outline"
@@ -2622,6 +2675,7 @@ export default function AdminCP() {
                         setEditingPolicy(null);
                         setPolicyTitle("");
                         setPolicyContent("");
+                        setPolicyPreview(false);
                       }}
                       data-testid="button-cancel-policy"
                     >
@@ -2649,7 +2703,7 @@ export default function AdminCP() {
                               <p className="text-xs text-muted-foreground">
                                 {existing
                                   ? `Last updated: ${new Date(existing.updatedAt).toLocaleDateString()}`
-                                  : "Using default content"}
+                                  : "Using default static content"}
                               </p>
                             </div>
                           </div>
@@ -2669,7 +2723,8 @@ export default function AdminCP() {
                               onClick={() => {
                                 setEditingPolicy(slug);
                                 setPolicyTitle(existing?.title || label);
-                                setPolicyContent(existing?.content || "");
+                                setPolicyContent(existing?.content || defaultPolicyTemplate(label));
+                                setPolicyPreview(false);
                               }}
                               data-testid={`button-edit-policy-${slug}`}
                             >

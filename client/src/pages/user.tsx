@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "wouter";
+import { MarkdownContent } from "@/components/markdown-content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -483,10 +484,7 @@ export default function UserProfile() {
         <CardContent className="pb-6">
           <div className="text-sm text-muted-foreground leading-relaxed">
             {profile.signature ? (
-              <div
-                className="prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: profile.signature }}
-              />
+              <MarkdownContent content={profile.signature} />
             ) : (
               <div className="space-y-0.5">
                 <p className="font-medium text-foreground">
