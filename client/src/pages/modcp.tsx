@@ -303,6 +303,7 @@ export default function ModCP() {
             username: w.user?.username || uid,
             userId: uid,
             warnings: [],
+            isVerified: w.user?.isVerified ?? false,
           };
         }
         warningsByUser[uid].count++;
