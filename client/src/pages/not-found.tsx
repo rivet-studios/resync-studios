@@ -14,7 +14,7 @@ export default function NotFound() {
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            Contact us at support@resyncstudios.com if you believe this is an
+            Contact us at support@rivetstudiosus.com if you believe this is an
             error.
           </p>
         </CardContent>

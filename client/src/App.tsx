@@ -92,9 +92,9 @@ const ADMIN_RANKS = [
 const MOD_RANKS = [
   "Appeals Moderator",
   "Trial Moderator",
-  "Moderator",
-  "Administrator",
-  "Senior Administrator",
+  "Community Moderator",
+  "Community Admin",
+  "Community Senior Admin",
   ...ADMIN_RANKS,
 ];
 
@@ -145,7 +145,7 @@ function SiteFooter() {
                 <div className="space-y-2 text-sm text-muted-foreground font-medium">
                   <p className="flex items-center gap-2">
                     {" "}
-                    support@resyncstudios.com
+                    support@rivetstudiosus.com
                   </p>
                   <p className="flex items-center gap-2">
                     101 Duke Street, Sunshine, VIC, 3020, Australia
@@ -224,7 +224,7 @@ function SiteFooter() {
                   </li>
                   <li>
                     <Link
-                      href="https://support.resyncstudios.com"
+                      href="https://support.rivetstudiosus.com"
                       className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                     >
                       Support

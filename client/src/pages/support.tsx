@@ -90,7 +90,7 @@ export default function Support() {
             </p>
             <Button size="lg" className="w-full sm:w-auto px-8" asChild>
               <a
-                href="https://support.resyncstudios.com"
+                href="https://support.rivetstudiosus.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -111,7 +111,7 @@ export default function Support() {
                   <strong>NEVER</strong> ask for sensitive information like
                   passwords or credit card numbers. If you receive such a
                   request, report it immediately to the Staff Director at
-                  eran@resyncstudios.com{" "}
+                  chase@rivetstudiosus.com{" "}
                 </p>
               </div>
             </div>

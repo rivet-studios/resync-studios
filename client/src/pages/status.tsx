@@ -191,8 +191,8 @@ export default function Status() {
             <p>Status updates every 30 seconds automatically.</p>
             <p className="mt-1">
               For urgent issues, please contact{" "}
-              <a href="mailto:support@resyncstudios.com" className="underline hover:opacity-80">
-                support@resyncstudios.com
+              <a href="mailto:support@rivetstudiosus.com" className="underline hover:opacity-80">
+                support@rivetstudiosus.com
               </a>
             </p>
           </div>

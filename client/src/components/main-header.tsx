@@ -116,7 +116,7 @@ export function MainHeader() {
               </Link>
 
               <a
-                href="https://support.resyncstudios.com"
+                href="https://support.rivetstudiosus.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -206,10 +206,11 @@ export function MainHeader() {
                     [
                       "Appeals Moderator",
                       "Trial Moderator",
-                      "Moderator",
-                      "Administrator",
-                      "Senior Administrator",
-                      "Developer",
+                      "Community Moderator",
+                      "Community Admin",
+                      "Communitu Senior Admin",
+                      "Gameplay Engineer",
+                      "Creative Designer",
                       "Staff Internal Affairs",
                       "Team Member",
                       "Staff Department Director",

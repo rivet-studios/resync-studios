@@ -10,7 +10,7 @@ const CALLBACK_URL =
   process.env.DISCORD_CALLBACK_URL ||
   (process.env.REPL_SLUG && process.env.REPL_OWNER
     ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`
-    : "https://resyncstudios.com/api/auth/discord/callback");
+    : "https://rivetstudiosus.com/api/auth/discord/callback");
 
 console.log(`🔐 Discord OAuth Callback URL: ${CALLBACK_URL}`);
 

@@ -184,7 +184,7 @@ export async function registerRoutes(
         isAdmin,
         isModerator,
         additionalRanks: isStaffEmail
-          ? ["Team Member", "Staff Internal Affairs", "Developer"]
+          ? ["Team Member", "Staff Internal Affairs"]
           : [],
       } as any);
 
@@ -223,8 +223,6 @@ export async function registerRoutes(
         const currentAdditional = user.additionalRanks || [];
         if (!currentAdditional.includes("Staff Internal Affairs"))
           currentAdditional.push("Staff Internal Affairs");
-        if (!currentAdditional.includes("Developer"))
-          currentAdditional.push("Developer");
         await storage.updateUserAdditionalRanks(user.id, currentAdditional);
       }
 
@@ -270,14 +268,14 @@ export async function registerRoutes(
 
       const baseUrl =
         process.env.NODE_ENV === "production"
-          ? "https://resyncstudios.com"
+          ? "https://rivetstudiosus.com"
           : process.env.REPLIT_DEV_DOMAIN
             ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-            : "https://resyncstudios.com";
+            : "https://rivetstudiosus.com";
       const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
       await resend.emails.send({
-        from: "RIVET Studios <support@resyncstudios.com>",
+        from: "RIVET Studios <support@rivetstudiosus.com>",
         to: email,
         subject: "Password Reset Request",
         html: `
@@ -418,9 +416,9 @@ export async function registerRoutes(
         "Operations Manager",
         "Company Director",
         "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
       ];
       const isStaff =
         user.isAdmin ||
@@ -647,10 +645,11 @@ export async function registerRoutes(
 
   const forumStaffRanks = [
     "Trial Moderator",
-    "Moderator",
-    "Administrator",
-    "Senior Administrator",
-    "Developer",
+    "Community Moderator",
+    "Community Admin",
+    "Community Senior Admin",
+    "Gameplay Engineer",
+    "Creative Designer",
     "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
@@ -784,7 +783,8 @@ export async function registerRoutes(
 
   function isAdminUser(user: any): boolean {
     const adminRanks = [
-      "Developer",
+      "Gameplay Engineer",
+      "Creative Designer",
       "Staff Internal Affairs",
       "Team Member",
       "Staff Department Director",
@@ -1619,7 +1619,7 @@ export async function registerRoutes(
       if (!hasOpsAccess) {
         return res
           .status(403)
-          .json({ message: "Only Operations Managers can review products" });
+          .json({ message: "Only Corporate can review products" });
       }
       let { status, reviewNotes } = req.body;
       const statusMap: Record<string, string> = {
@@ -1706,7 +1706,7 @@ export async function registerRoutes(
       if (!hasOpsAccess) {
         return res
           .status(403)
-          .json({ message: "Only Operations Managers can assign badges" });
+          .json({ message: "Restricted: Only Corporate can assign product badges" });
       }
       const { isFeatured, isLimitedEdition, isVerified, isCommunityProvided } =
         req.body;
@@ -1834,11 +1834,12 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Appeals Moderator",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -1879,11 +1880,12 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Appeals Moderator",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -1919,11 +1921,12 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Appeals Moderator",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -1958,11 +1961,11 @@ export async function registerRoutes(
       const user = req.user as any;
       const staffRanks = [
         "Appeals Moderator",
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -2028,11 +2031,11 @@ export async function registerRoutes(
       const user = req.user as any;
       const staffRanks = [
         "Appeals Moderator",
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -2085,11 +2088,12 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Trial Moderator",
-        "Moderator",
-        "Administrator",
-        "Senior Administrator",
-        "Developer",
+        "Appeals Moderator",
+        "Community Moderator",
+        "Community Admin",
+        "Community Senior Admin",
+        "Creative Designer",
+        "Gameplay Engineer",
         "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
@@ -2765,7 +2769,7 @@ export async function registerRoutes(
       );
       if (existingUser && existingUser.id !== (req.user as any).id) {
         return res.status(409).json({
-          message: "This Roblox account is already linked to another user.",
+          message: "This Roblox account is already linked to another user. Contact support to have it removed",
         });
       }
 
@@ -2839,7 +2843,7 @@ export async function registerRoutes(
       );
       if (existingUser && existingUser.id !== userId) {
         return res.status(409).json({
-          message: "This Roblox account is already linked to another user.",
+          message: "This Roblox account is already linked to another user. Contact support to have it removed",
         });
       }
 
