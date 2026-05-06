@@ -79,6 +79,17 @@ import AchievementsPage from "@/pages/achievements";
 import ReferralsPage from "@/pages/referrals";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
+import React from 'react';
+import Intercom from '@intercom/messenger-js-sdk';
+
+export default function Component() {
+  Intercom({
+    app_id: 'an81ghfo',
+    user_id: user.id,
+    name: user.name,
+    email: user.email, 
+    created_at: user.createdAt, 
+    ];
 
 const ADMIN_RANKS = [
   "Developer",
