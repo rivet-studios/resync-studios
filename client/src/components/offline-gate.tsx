@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { Hammer } from "lucide-react";
+import { HardHat } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 
 
@@ -36,7 +36,7 @@ export function OfflineGate({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-[#050505] flex items-center justify-center px-6" data-testid="offline-page">
         <div className="max-w-lg w-full text-center space-y-6">
           <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto">
-            <Hammer className="w-10 h-10 text-white/20" />
+            <HardHat className="w-10 h-10 text-yellow/20" />
           </div>
           <h1 className="text-3xl font-semibold text-white tracking-tight">
             {siteStatus?.offlineTitle || "We’re making things more awesome!"}

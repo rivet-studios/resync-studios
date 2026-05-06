@@ -3261,7 +3261,11 @@ export default function AdminCP() {
                               ? "bg-yellow-500"
                               : svc.status === "partial outage"
                                 ? "bg-orange-500"
-                                : svc.status === "maintenance"
+                                : 
+                          svc.status === "major outage"
+                          ? "bg-red-500"
+                          :
+                                 svc.status === "maintenance"
                                   ? "bg-blue-500"
                                   : "bg-red-500"
                         }`}

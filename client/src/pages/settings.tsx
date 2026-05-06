@@ -1287,29 +1287,25 @@ export default function Settings() {
                           <span className="text-xs text-muted-foreground">
                             or
                           </span>
-                          <UploadButton
-                            endpoint="avatarUploader"
-                            onClientUploadComplete={(res) => {
-                              if (res && res.length > 0) {
-                                profileForm.setValue(
-                                  "profileImageUrl",
-                                  res[0].url,
-                                );
-                                toast({
-                                  title: "Avatar uploaded to cloud!",
-                                  description:
-                                    "Save your changes to update your profile.",
-                                });
-                              }
-                            
-                            onUploadError={(error: Error) => {
-                              toast({
-                                title: "Upload failed",
-                                description: error.message,
-                                variant: "destructive",
-                              });
-                            }}
-                          />
+                              <UploadButton
+                                endpoint="avatarUploader"
+                                    onClientUploadComplete={(res) => {
+                                      if (res && res.length > 0) {
+                                        profileForm.setValue("profileImageUrl", res[0].url);
+                                    toast({ 
+                                      title: "Avatar uploaded to cloud!", 
+                                      description: "Save your changes to update your profile." 
+                                    });
+                                  }
+                                }}
+                                onUploadError={(error: Error) => {
+                                  toast({ 
+                                    title: "Upload failed", 
+                                    description: error.message, 
+                                    variant: "destructive" 
+                                  });
+                                }}
+                              />
                         </div>
                         <p className="text-xs text-muted-foreground">
                           JPG, PNG, GIF, WebP up to 5MB
