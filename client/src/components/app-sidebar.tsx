@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import {
   Home,
@@ -65,9 +66,9 @@ const ADMIN_RANKS = [
 const MOD_RANKS = [
   "Appeals Moderator",
   "Trial Moderator",
-  "Moderator",
-  "Administrator",
-  "Senior Administrator",
+  "Community Moderator",
+  "Community Admin",
+  "Community Senior Admin",
   ...ADMIN_RANKS,
 ];
 
@@ -101,7 +102,7 @@ const storeItems = [
 
 const supportItems = [
   { title: "Policies", url: "/policies", icon: FileText },
-  { title: "Support", url: "/support", icon: HelpCircle },
+  { title: "Support", url: "https://support.rivetstudiosus.com", icon: HelpCircle },
   { title: "FAQ", url: "/faq", icon: HelpCircle },
   { title: "Status", url: "/status", icon: Activity },
   { title: "Changelog", url: "/changelog", icon: ScrollText },
@@ -289,7 +290,7 @@ export function AppSidebar() {
           <>
             <SidebarSeparator />
             <SidebarGroup>
-              <SidebarGroupLabel>Staff</SidebarGroupLabel>
+              <SidebarGroupLabel>Staff Resources</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {showModCP && (
@@ -301,7 +302,7 @@ export function AppSidebar() {
                       >
                         <Link href="/modcp">
                           <Shield className="w-4 h-4" />
-                          <span>ModCP</span>
+                          <span>Moderator Panel</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -315,7 +316,7 @@ export function AppSidebar() {
                       >
                         <Link href="/admincp">
                           <BarChart3 className="w-4 h-4" />
-                          <span>AdminCP</span>
+                          <span>Website Management</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -360,6 +361,7 @@ export function AppSidebar() {
                     <ChevronUp className="w-4 h-4" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
+                <DropdownMenuPortal>
                 <DropdownMenuContent side="top" align="start" className="w-56 z-[100]">
                   <DropdownMenuItem asChild>
                     <Link href={`/profile/${user.id}`} className="cursor-pointer">
@@ -414,6 +416,7 @@ export function AppSidebar() {
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
+               </DropdownMenuPortal>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>

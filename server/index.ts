@@ -10,6 +10,8 @@ import { initializeDiscordBot } from "./discord-bot";
 import { WebhookHandlers } from "./webhookHandlers";
 import fs from "fs";
 import path from "path";
+import { createRouteHandler } from "uploadthing/express";
+import { uploadRouter } from "./uploadthing";
 
 process.on("uncaughtException", async (err) => {
   await sendErrorLog(err);
@@ -23,6 +25,14 @@ console.log("🔐 ADMIN_USER_ID at startup:", process.env.ADMIN_USER_ID);
 
 const app = express();
 const httpServer = createServer(app);
+app.set("trust proxy", 1);
+// UploadThing Route for handling file uploads to the cloud
+app.use(
+  "/api/uploadthing",
+  createRouteHandler({
+    router: uploadRouter,
+  })
+);
 
 declare module "http" {
   interface IncomingMessage {

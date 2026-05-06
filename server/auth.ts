@@ -24,24 +24,26 @@ if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   );
 }
 
-    // Passport user serialization
-    passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
-      done(null, user.id);
-    });
-
-    passport.deserializeUser(async (id: string, done: (err: any, user?: any) => void) => {
-      try {
-        const user = await storage.getUser(id);
-        if (!user) {
-          return done(null, false);
-        }
-    // Convert nulls to undefined to match User type if necessary,
-    // but usually casting is enough for passport
-    done(null, user as any);
-  } catch (err) {
-    done(err);
-  }
+// Passport user serialization
+passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
+  done(null, user.id);
 });
+
+passport.deserializeUser(
+  async (id: string, done: (err: any, user?: any) => void) => {
+    try {
+      const user = await storage.getUser(id);
+      if (!user) {
+        return done(null, false);
+      }
+      // Convert nulls to undefined to match User type if necessary,
+      // but usually casting is enough for passport
+      done(null, user as any);
+    } catch (err) {
+      done(err);
+    }
+  },
+);
 
 // Discord Strategy
 if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
@@ -53,7 +55,12 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
         callbackURL: CALLBACK_URL,
         scope: ["identify", "email", "guilds"],
       },
-      async (_accessToken, _refreshToken, profile, done) => {
+      async (
+        _accessToken: string,
+        _refreshToken: string,
+        profile: any,
+        done: (err: any, user?: any) => void,
+      ) => {
         try {
           console.log("Discord auth started", {
             id: profile?.id,
