@@ -968,7 +968,7 @@ export default function Settings() {
                           className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                           <Camera className="w-5 h-5 text-white" />
-                        
+                        </label>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
