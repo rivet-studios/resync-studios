@@ -43,6 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UploadButton } from "@uploadthing/react";
+import "@uploadthing/react/styles.css";
 import {
   User,
   Link as LinkIcon,
@@ -62,7 +64,6 @@ import {
   Crown,
   ShoppingBag,
   Loader2,
-  Upload,
   Camera,
   PanelLeft,
   PanelTop,
@@ -822,7 +823,7 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Account deleted", description: "Your account has been permanently deleted." });
+      toast({ title: "Account deleted", description: "Your account has been permanently deleted" });
       queryClient.clear();
       navigate("/");
     },
@@ -967,42 +968,7 @@ export default function Settings() {
                           className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                           <Camera className="w-5 h-5 text-white" />
-                        </label>
-                        <input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/jpeg,image/png,image/gif,image/webp"
-                          className="hidden"
-                          data-testid="input-avatar-upload"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            if (file.size > 5 * 1024 * 1024) {
-                              toast({ title: "File too large", description: "Max file size is 5MB", variant: "destructive" });
-                              return;
-                            }
-                            const formData = new FormData();
-                            formData.append("avatar", file);
-                            try {
-                              const res = await fetch("/api/users/profile/avatar", {
-                                method: "POST",
-                                body: formData,
-                                credentials: "include",
-                              });
-                              const data = await res.json();
-                              if (res.ok) {
-                                profileForm.setValue("profileImageUrl", data.profileImageUrl);
-                                queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-                                toast({ title: "Avatar updated" });
-                              } else {
-                                toast({ title: "Upload failed", description: data.message, variant: "destructive" });
-                              }
-                            } catch {
-                              toast({ title: "Upload failed", description: "Please try again", variant: "destructive" });
-                            }
-                            e.target.value = "";
-                          }}
-                        />
+                        
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -1013,16 +979,25 @@ export default function Settings() {
                             data-testid="input-settings-profile-image"
                           />
                           <span className="text-xs text-muted-foreground">or</span>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => document.getElementById("avatar-upload")?.click()}
-                            data-testid="button-upload-avatar"
-                          >
-                            <Upload className="w-3.5 h-3.5 mr-1.5" />
-                            Upload
-                          </Button>
+                          <UploadButton
+                            endpoint="avatarUploader"
+                            onClientUploadComplete={(res) => {
+                              if (res && res.length > 0) {
+                                profileForm.setValue("profileImageUrl", res[0].url);
+                                toast({ 
+                                  title: "Avatar uploaded to cloud!", 
+                                  description: "Save your changes to update your profile." 
+                                });
+                              }
+                            }}
+                            onUploadError={(error: Error) => {
+                              toast({ 
+                                title: "Upload failed", 
+                                description: error.message, 
+                                variant: "destructive" 
+                              });
+                            }}
+                          />
                         </div>
                         <p className="text-xs text-muted-foreground">JPG, PNG, GIF, WebP up to 5MB</p>
                       </div>
@@ -1124,7 +1099,7 @@ export default function Settings() {
                       <Label htmlFor="signature">Signature</Label>
                       <Textarea
                         id="signature"
-                        placeholder="Write your forum signature..."
+                        placeholder="Write your signature..."
                         className="resize-vertical min-h-[80px]"
                         rows={3}
                         {...profileForm.register("signature")}
@@ -1250,6 +1225,13 @@ export default function Settings() {
                     <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-red-400">
                       Please proceed with caution, this cannot be undone.
+                    </p> 
+                  </div>
+
+                     <div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                    <WarningTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-orange-400">
+                      Note from developers: We are currently in the process of creating a restricted cloud storage for deleted data and accounts to prevent unauthorized account deletion.
                     </p>
                   </div>
 
