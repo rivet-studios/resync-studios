@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, useLocation, Redirect, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -79,17 +80,8 @@ import AchievementsPage from "@/pages/achievements";
 import ReferralsPage from "@/pages/referrals";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
-import React from 'react';
 import Intercom from '@intercom/messenger-js-sdk';
-
-export default function Component() {
-  Intercom({
-    app_id: 'an81ghfo',
-    user_id: user.id,
-    name: user.name,
-    email: user.email, 
-    created_at: user.createdAt, 
-    ];
+      
 
 const ADMIN_RANKS = [
   "Developer",
@@ -325,8 +317,23 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   return <SidebarLayout>{children}</SidebarLayout>;
 }
 
-function Router() {
-  const { isLoading, user } = useAuth();
+  function Router() {
+    const { isLoading, user } = useAuth();
+    // This watches the "user" variable. When someone logs in, it loads Intercom.
+    useEffect(() => {
+      if (user) {
+        Intercom({
+          app_id: 'an81ghfo',
+          user_id: user.id,
+          name: user.username,
+          // 1. Fallback to undefined if email is null
+          email: user.email || undefined, 
+          // 2. Convert Date to Unix timestamp (seconds) if it exists, otherwise undefined
+          created_at: user.createdAt ? Math.floor(user.createdAt.getTime() / 1000) : undefined,
+        });
+      }
+    }, [user]);
+
 
   if (isLoading) {
     return (
