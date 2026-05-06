@@ -325,11 +325,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         Intercom({
           app_id: 'an81ghfo',
           user_id: user.id,
-          name: user.username,
-          // 1. Fallback to undefined if email is null
+          username: user.username, 
           email: user.email || undefined, 
-          // 2. Convert Date to Unix timestamp (seconds) if it exists, otherwise undefined
-          created_at: user.createdAt ? Math.floor(user.createdAt.getTime() / 1000) : undefined,
+          // We add new Date() here to turn the string back into a Date object
+          created_at: user.createdAt ? Math.floor(new Date(user.createdAt).getTime() / 1000) : undefined,
         });
       }
     }, [user]);
