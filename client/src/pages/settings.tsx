@@ -84,9 +84,13 @@ const profileSchema = z.object({
     .optional(),
   profileImageUrl: z
     .string()
-    .refine((val) => val === "" || val.startsWith("/uploads/") || /^https?:\/\//.test(val), {
-      message: "Must be a valid URL or uploaded image path",
-    })
+    .refine(
+      (val) =>
+        val === "" || val.startsWith("/uploads/") || /^https?:\/\//.test(val),
+      {
+        message: "Must be a valid URL or uploaded image path",
+      },
+    )
     .optional(),
   signature: z
     .string()
@@ -97,14 +101,16 @@ const profileSchema = z.object({
 
 type ProfileForm = z.infer<typeof profileSchema>;
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your new password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type PasswordForm = z.infer<typeof passwordSchema>;
 
@@ -120,7 +126,9 @@ const SETTINGS_TABS = [
   { id: "payments", label: "Payment Methods", icon: CreditCard },
 ];
 
-function formatConnectedDate(dateStr: string | Date | null | undefined): string {
+function formatConnectedDate(
+  dateStr: string | Date | null | undefined,
+): string {
   if (!dateStr) return "";
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return "";
@@ -142,12 +150,17 @@ const VIP_TIER_LABELS: Record<string, { label: string; color: string }> = {
   none: { label: "Free", color: "text-muted-foreground" },
   "Bronze VIP": { label: "Bronze VIP", color: "text-amber-500" },
   "Diamond VIP": { label: "Diamond VIP", color: "text-cyan-400" },
-  "Founders Edition VIP": { label: "Founders Edition VIP", color: "text-purple-400" },
-  "Lifetime": { label: "Lifetime", color: "text-yellow-400" },
+  "Founders Edition VIP": {
+    label: "Founders Edition VIP",
+    color: "text-purple-400",
+  },
+  Lifetime: { label: "Lifetime", color: "text-yellow-400" },
 };
 
 function BillingTab({ user, toast }: { user: any; toast: any }) {
-  const { data: subscription, isLoading: subLoading } = useQuery<{ subscription: any }>({
+  const { data: subscription, isLoading: subLoading } = useQuery<{
+    subscription: any;
+  }>({
     queryKey: ["/api/stripe/subscription"],
   });
 
@@ -160,7 +173,12 @@ function BillingTab({ user, toast }: { user: any; toast: any }) {
       if (data.url) window.location.href = data.url;
     },
     onError: () => {
-      toast({ title: "Error", description: "Unable to open billing portal. You may not have a Stripe account yet.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description:
+          "Unable to open billing portal. You may not have a Stripe account yet.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -171,8 +189,12 @@ function BillingTab({ user, toast }: { user: any; toast: any }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-billing-title">Billing</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage your subscription and billing</p>
+        <h2 className="text-lg font-semibold" data-testid="text-billing-title">
+          Billing
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage your subscription and billing
+        </p>
       </div>
 
       <Card>
@@ -194,11 +216,16 @@ function BillingTab({ user, toast }: { user: any; toast: any }) {
           ) : (
             <>
               <div className="flex items-center gap-3">
-                <span className={`text-xl font-bold ${tierInfo.color}`} data-testid="text-current-tier">
+                <span
+                  className={`text-xl font-bold ${tierInfo.color}`}
+                  data-testid="text-current-tier"
+                >
                   {tierInfo.label}
                 </span>
                 {tierKey !== "none" && (
-                  <Badge variant="secondary" data-testid="badge-tier-active">Active</Badge>
+                  <Badge variant="secondary" data-testid="badge-tier-active">
+                    Active
+                  </Badge>
                 )}
               </div>
               {sub ? (
@@ -208,16 +235,30 @@ function BillingTab({ user, toast }: { user: any; toast: any }) {
                   </p>
                   {sub.current_period_end && (
                     <p data-testid="text-sub-renews">
-                      {sub.status === "active" ? "Renews" : "Expires"}: {new Date(sub.current_period_end * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                      {sub.status === "active" ? "Renews" : "Expires"}:{" "}
+                      {new Date(
+                        sub.current_period_end * 1000,
+                      ).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </p>
                   )}
                 </div>
               ) : tierKey === "none" ? (
-                <p className="text-sm text-muted-foreground" data-testid="text-no-subscription">
-                  You don't have an active subscription. Visit the store to upgrade.
+                <p
+                  className="text-sm text-muted-foreground"
+                  data-testid="text-no-subscription"
+                >
+                  You don't have an active subscription. Visit the store to
+                  upgrade.
                 </p>
               ) : (
-                <p className="text-sm text-muted-foreground" data-testid="text-manually-assigned">
+                <p
+                  className="text-sm text-muted-foreground"
+                  data-testid="text-manually-assigned"
+                >
                   Your VIP tier was manually assigned by an administrator.
                 </p>
               )}
@@ -239,7 +280,11 @@ function BillingTab({ user, toast }: { user: any; toast: any }) {
                   </Button>
                 )}
                 {tierKey === "none" && (
-                  <Button variant="default" asChild data-testid="link-upgrade-plan">
+                  <Button
+                    variant="default"
+                    asChild
+                    data-testid="link-upgrade-plan"
+                  >
                     <Link href="/store">
                       <ShoppingBag className="w-4 h-4 mr-2" />
                       Browse Plans
@@ -263,8 +308,12 @@ function OrdersTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-orders-title">Orders</h2>
-        <p className="text-sm text-muted-foreground mt-1">View your payment and order history</p>
+        <h2 className="text-lg font-semibold" data-testid="text-orders-title">
+          Orders
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          View your payment and order history
+        </p>
       </div>
 
       <Card>
@@ -278,8 +327,15 @@ function OrdersTab() {
           ) : !payments || payments.length === 0 ? (
             <div className="py-12 text-center">
               <Package className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-muted-foreground" data-testid="text-no-orders">No orders on file</p>
-              <Button variant="outline" className="mt-4" asChild data-testid="link-browse-store">
+              <p className="text-muted-foreground" data-testid="text-no-orders">
+                No orders on file
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                asChild
+                data-testid="link-browse-store"
+              >
                 <Link href="/store">Browse Store</Link>
               </Button>
             </div>
@@ -295,21 +351,33 @@ function OrdersTab() {
               </TableHeader>
               <TableBody>
                 {payments.map((payment) => (
-                  <TableRow key={payment.id} data-testid={`row-order-${payment.id}`}>
+                  <TableRow
+                    key={payment.id}
+                    data-testid={`row-order-${payment.id}`}
+                  >
                     <TableCell className="text-sm">
                       {payment.createdAt
-                        ? new Date(payment.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                        ? new Date(payment.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )
                         : "N/A"}
                     </TableCell>
                     <TableCell className="text-sm">
                       {payment.tierId || "Payment"}
                     </TableCell>
                     <TableCell className="text-sm font-medium">
-                      ${(payment.amount / 100).toFixed(2)} {payment.currency?.toUpperCase()}
+                      ${(payment.amount / 100).toFixed(2)}{" "}
+                      {payment.currency?.toUpperCase()}
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={payment.status === "succeeded" || payment.status === "completed" ? "default" : "secondary"}
+                        variant={
+                          payment.status === "succeeded" ||
+                          payment.status === "completed"
+                            ? "default"
+                            : "secondary"
+                        }
                         data-testid={`badge-order-status-${payment.id}`}
                       >
                         {payment.status}
@@ -336,15 +404,27 @@ function PaymentMethodsTab({ user, toast }: { user: any; toast: any }) {
       if (data.url) window.location.href = data.url;
     },
     onError: () => {
-      toast({ title: "Error", description: "Unable to open billing portal. You may not have a Stripe account yet.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description:
+          "Unable to open billing portal. You may not have a Stripe account yet.",
+        variant: "destructive",
+      });
     },
   });
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-payment-methods-title">Payment Methods</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage your saved payment methods</p>
+        <h2
+          className="text-lg font-semibold"
+          data-testid="text-payment-methods-title"
+        >
+          Payment Methods
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage your saved payment methods
+        </p>
       </div>
 
       <Card>
@@ -360,8 +440,12 @@ function PaymentMethodsTab({ user, toast }: { user: any; toast: any }) {
         <CardContent className="space-y-4">
           {user?.stripeCustomerId ? (
             <>
-              <p className="text-sm text-muted-foreground" data-testid="text-stripe-connected">
-                Your account is linked to Stripe. Use the button below to add, remove, or update your payment methods.
+              <p
+                className="text-sm text-muted-foreground"
+                data-testid="text-stripe-connected"
+              >
+                Your account is linked to Stripe. Use the button below to add,
+                remove, or update your payment methods.
               </p>
               <Button
                 variant="outline"
@@ -379,8 +463,12 @@ function PaymentMethodsTab({ user, toast }: { user: any; toast: any }) {
             </>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground" data-testid="text-no-stripe">
-                No payment methods on file. Payment methods will be created when you make your first purchase.
+              <p
+                className="text-sm text-muted-foreground"
+                data-testid="text-no-stripe"
+              >
+                No payment methods on file. Payment methods will be created when
+                you make your first purchase.
               </p>
               <Button variant="default" asChild data-testid="link-visit-store">
                 <Link href="/store">
@@ -404,8 +492,15 @@ function DownloadsTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-downloads-title">Downloads</h2>
-        <p className="text-sm text-muted-foreground mt-1">Your purchased and owned products</p>
+        <h2
+          className="text-lg font-semibold"
+          data-testid="text-downloads-title"
+        >
+          Downloads
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Your purchased and owned products
+        </p>
       </div>
 
       <Card>
@@ -418,28 +513,58 @@ function DownloadsTab() {
           ) : !products || products.length === 0 ? (
             <div className="py-12 text-center">
               <Download className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-muted-foreground" data-testid="text-no-downloads">No downloads available</p>
-              <p className="text-xs text-muted-foreground mt-1">Products you purchase or submit will appear here</p>
-              <Button variant="outline" className="mt-4" asChild data-testid="link-browse-marketplace">
+              <p
+                className="text-muted-foreground"
+                data-testid="text-no-downloads"
+              >
+                No downloads available
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Products you purchase or submit will appear here
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                asChild
+                data-testid="link-browse-marketplace"
+              >
                 <Link href="/store">Browse Store</Link>
               </Button>
             </div>
           ) : (
             <div className="divide-y">
               {products.map((product) => (
-                <div key={product.id} className="flex items-center gap-4 p-4" data-testid={`row-download-${product.id}`}>
+                <div
+                  key={product.id}
+                  className="flex items-center gap-4 p-4"
+                  data-testid={`row-download-${product.id}`}
+                >
                   <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <Package className="w-5 h-5 text-muted-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate" data-testid={`text-product-name-${product.id}`}>{product.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{product.category || "Uncategorized"}</p>
+                    <p
+                      className="font-medium text-sm truncate"
+                      data-testid={`text-product-name-${product.id}`}
+                    >
+                      {product.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {product.category || "Uncategorized"}
+                    </p>
                   </div>
-                  <Badge variant="secondary" data-testid={`badge-product-status-${product.id}`}>
+                  <Badge
+                    variant="secondary"
+                    data-testid={`badge-product-status-${product.id}`}
+                  >
                     {product.status}
                   </Badge>
                 </div>
@@ -456,8 +581,15 @@ function DiscountsTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-discounts-title">Discounts</h2>
-        <p className="text-sm text-muted-foreground mt-1">Your available discount codes and promotions</p>
+        <h2
+          className="text-lg font-semibold"
+          data-testid="text-discounts-title"
+        >
+          Discounts
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Your available discount codes and promotions
+        </p>
       </div>
 
       <Card>
@@ -471,8 +603,15 @@ function DiscountsTab() {
         <CardContent>
           <div className="py-8 text-center">
             <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-            <p className="text-muted-foreground font-medium" data-testid="text-no-discounts">No active promotions</p>
-            <p className="text-xs text-muted-foreground mt-1">Check back later for special offers and discount codes</p>
+            <p
+              className="text-muted-foreground font-medium"
+              data-testid="text-no-discounts"
+            >
+              No active promotions
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Check back later for special offers and discount codes
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -482,7 +621,9 @@ function DiscountsTab() {
 
 function SecurityTab() {
   const { toast } = useToast();
-  const [setupStep, setSetupStep] = useState<"idle" | "scanning" | "verifying" | "complete">("idle");
+  const [setupStep, setSetupStep] = useState<
+    "idle" | "scanning" | "verifying" | "complete"
+  >("idle");
   const [qrCode, setQrCode] = useState("");
   const [secret, setSecret] = useState("");
   const [verifyCode, setVerifyCode] = useState("");
@@ -510,39 +651,61 @@ function SecurityTab() {
       setSetupStep("scanning");
     },
     onError: (err: any) => {
-      toast({ title: "Error", description: err.message || "Failed to start 2FA setup", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: err.message || "Failed to start 2FA setup",
+        variant: "destructive",
+      });
     },
   });
 
   const verifyMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/auth/2fa/verify", { token: verifyCode });
+      const res = await apiRequest("POST", "/api/auth/2fa/verify", {
+        token: verifyCode,
+      });
       return res.json();
     },
     onSuccess: (data: any) => {
       setBackupCodes(data.backupCodes || []);
       setSetupStep("complete");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/security-info"] });
-      toast({ title: "2FA Enabled", description: "Two-factor authentication has been enabled." });
+      toast({
+        title: "2FA Enabled",
+        description: "Two-factor authentication has been enabled.",
+      });
     },
     onError: (err: any) => {
-      toast({ title: "Invalid Code", description: err.message || "The code you entered is incorrect.", variant: "destructive" });
+      toast({
+        title: "Invalid Code",
+        description: err.message || "The code you entered is incorrect.",
+        variant: "destructive",
+      });
     },
   });
 
   const disableMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/auth/2fa/disable", { token: disableCode });
+      const res = await apiRequest("POST", "/api/auth/2fa/disable", {
+        token: disableCode,
+      });
       return res.json();
     },
     onSuccess: () => {
       setDisableCode("");
       setSetupStep("idle");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/security-info"] });
-      toast({ title: "2FA Disabled", description: "Two-factor authentication has been disabled." });
+      toast({
+        title: "2FA Disabled",
+        description: "Two-factor authentication has been disabled.",
+      });
     },
     onError: (err: any) => {
-      toast({ title: "Error", description: err.message || "Failed to disable 2FA", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: err.message || "Failed to disable 2FA",
+        variant: "destructive",
+      });
     },
   });
 
@@ -550,7 +713,10 @@ function SecurityTab() {
     navigator.clipboard.writeText(backupCodes.join("\n"));
     setCopiedBackup(true);
     setTimeout(() => setCopiedBackup(false), 2000);
-    toast({ title: "Copied", description: "Backup codes copied to clipboard." });
+    toast({
+      title: "Copied",
+      description: "Backup codes copied to clipboard.",
+    });
   };
 
   if (isLoading) {
@@ -565,8 +731,12 @@ function SecurityTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" data-testid="text-security-title">Security</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage your account security settings</p>
+        <h2 className="text-lg font-semibold" data-testid="text-security-title">
+          Security
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage your account security settings
+        </p>
       </div>
 
       <Card>
@@ -576,7 +746,8 @@ function SecurityTab() {
             Two-Factor Authentication (2FA)
           </CardTitle>
           <CardDescription>
-            Add an extra layer of security to your account using an authenticator app
+            Add an extra layer of security to your account using an
+            authenticator app
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -584,11 +755,14 @@ function SecurityTab() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-green-500 font-medium">2FA is enabled</span>
+                <span className="text-green-500 font-medium">
+                  2FA is enabled
+                </span>
               </div>
               <div className="border-t pt-4 space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Enter a code from your authenticator app or a backup code to disable 2FA:
+                  Enter a code from your authenticator app or a backup code to
+                  disable 2FA:
                 </p>
                 <div className="flex gap-2">
                   <Input
@@ -604,7 +778,11 @@ function SecurityTab() {
                     disabled={!disableCode || disableMutation.isPending}
                     data-testid="button-disable-2fa"
                   >
-                    {disableMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Disable"}
+                    {disableMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Disable"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -612,7 +790,8 @@ function SecurityTab() {
           ) : setupStep === "idle" ? (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Use an authenticator app like Google Authenticator, Authy, or 1Password to generate one-time codes.
+                Use an authenticator app like Google Authenticator, Authy, or
+                1Password to generate one-time codes.
               </p>
               <Button
                 onClick={() => setupMutation.mutate()}
@@ -634,34 +813,60 @@ function SecurityTab() {
                 Open your authenticator app and scan this QR code:
               </p>
               <div className="flex justify-center py-4 bg-white rounded-lg">
-                <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" data-testid="img-2fa-qr" />
+                <img
+                  src={qrCode}
+                  alt="2FA QR Code"
+                  className="w-48 h-48"
+                  data-testid="img-2fa-qr"
+                />
               </div>
               <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">Or enter this key manually:</p>
-                <code className="block text-xs bg-muted p-2 rounded font-mono break-all" data-testid="text-2fa-secret">
+                <p className="text-xs text-muted-foreground">
+                  Or enter this key manually:
+                </p>
+                <code
+                  className="block text-xs bg-muted p-2 rounded font-mono break-all"
+                  data-testid="text-2fa-secret"
+                >
                   {secret}
                 </code>
               </div>
               <div className="border-t pt-4 space-y-3">
-                <p className="text-sm font-medium">Step 2: Enter the code from your app</p>
+                <p className="text-sm font-medium">
+                  Step 2: Enter the code from your app
+                </p>
                 <div className="flex gap-2">
                   <Input
                     placeholder="6-digit code"
                     value={verifyCode}
-                    onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={(e) =>
+                      setVerifyCode(
+                        e.target.value.replace(/\D/g, "").slice(0, 6),
+                      )
+                    }
                     maxLength={6}
                     data-testid="input-verify-2fa"
                   />
                   <Button
                     onClick={() => verifyMutation.mutate()}
-                    disabled={verifyCode.length !== 6 || verifyMutation.isPending}
+                    disabled={
+                      verifyCode.length !== 6 || verifyMutation.isPending
+                    }
                     data-testid="button-verify-2fa"
                   >
-                    {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                    {verifyMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Verify"
+                    )}
                   </Button>
                 </div>
               </div>
-              <Button variant="ghost" onClick={() => setSetupStep("idle")} data-testid="button-cancel-2fa">
+              <Button
+                variant="ghost"
+                onClick={() => setSetupStep("idle")}
+                data-testid="button-cancel-2fa"
+              >
                 Cancel
               </Button>
             </div>
@@ -669,32 +874,52 @@ function SecurityTab() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-green-500 font-medium">2FA has been enabled successfully</span>
+                <span className="text-green-500 font-medium">
+                  2FA has been enabled successfully
+                </span>
               </div>
               <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-3">
                 <p className="text-sm font-semibold text-destructive">
                   Save your backup codes
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Store these codes somewhere safe. You can use them to access your account if you lose your authenticator device.
-                  Each code can only be used once.
+                  Store these codes somewhere safe. You can use them to access
+                  your account if you lose your authenticator device. Each code
+                  can only be used once.
                 </p>
                 <div className="grid grid-cols-2 gap-2 bg-muted rounded-md p-3">
                   {backupCodes.map((code, i) => (
-                    <code key={i} className="text-xs font-mono" data-testid={`text-backup-code-${i}`}>
+                    <code
+                      key={i}
+                      className="text-xs font-mono"
+                      data-testid={`text-backup-code-${i}`}
+                    >
                       {code}
                     </code>
                   ))}
                 </div>
-                <Button variant="outline" size="sm" onClick={copyBackupCodes} data-testid="button-copy-backup-codes">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyBackupCodes}
+                  data-testid="button-copy-backup-codes"
+                >
                   {copiedBackup ? (
-                    <><CheckCircle className="w-4 h-4 mr-2" /> Copied</>
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" /> Copied
+                    </>
                   ) : (
-                    <><Copy className="w-4 h-4 mr-2" /> Copy Codes</>
+                    <>
+                      <Copy className="w-4 h-4 mr-2" /> Copy Codes
+                    </>
                   )}
                 </Button>
               </div>
-              <Button variant="ghost" onClick={() => setSetupStep("idle")} data-testid="button-done-2fa">
+              <Button
+                variant="ghost"
+                onClick={() => setSetupStep("idle")}
+                data-testid="button-done-2fa"
+              >
                 Done
               </Button>
             </div>
@@ -713,19 +938,30 @@ function SecurityTab() {
           <div className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm">Password</span>
-              <Badge variant={securityInfo?.hasPassword ? "default" : "secondary"} data-testid="badge-password-status">
+              <Badge
+                variant={securityInfo?.hasPassword ? "default" : "secondary"}
+                data-testid="badge-password-status"
+              >
                 {securityInfo?.hasPassword ? "Set" : "Not Set"}
               </Badge>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm">Discord Linked</span>
-              <Badge variant={securityInfo?.hasDiscord ? "default" : "secondary"} data-testid="badge-discord-status">
+              <Badge
+                variant={securityInfo?.hasDiscord ? "default" : "secondary"}
+                data-testid="badge-discord-status"
+              >
                 {securityInfo?.hasDiscord ? "Linked" : "Not Linked"}
               </Badge>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm">Two-Factor Auth</span>
-              <Badge variant={securityInfo?.twoFactorEnabled ? "default" : "secondary"} data-testid="badge-2fa-status">
+              <Badge
+                variant={
+                  securityInfo?.twoFactorEnabled ? "default" : "secondary"
+                }
+                data-testid="badge-2fa-status"
+              >
                 {securityInfo?.twoFactorEnabled ? "Enabled" : "Disabled"}
               </Badge>
             </div>
@@ -792,27 +1028,46 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Profile saved", description: "Your profile has been updated." });
+      toast({
+        title: "Profile saved",
+        description: "Your profile has been updated.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update profile.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update profile.",
+        variant: "destructive",
+      });
     },
   });
 
   const changePasswordMutation = useMutation({
-    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
-      const response = await apiRequest("POST", "/api/users/change-password", data);
+    mutationFn: async (data: {
+      currentPassword: string;
+      newPassword: string;
+    }) => {
+      const response = await apiRequest(
+        "POST",
+        "/api/users/change-password",
+        data,
+      );
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Password updated", description: "Your password has been changed." });
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed.",
+      });
       passwordForm.reset();
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error?.message || "Failed to change password. Make sure your current password is correct.",
+        description:
+          error?.message ||
+          "Failed to change password. Make sure your current password is correct.",
         variant: "destructive",
       });
     },
@@ -824,12 +1079,19 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Account deleted", description: "Your account has been permanently deleted" });
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted",
+      });
       queryClient.clear();
       navigate("/");
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete account. Please contact support.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to delete account. Please contact support.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -839,22 +1101,39 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Accounts synced", description: "Your linked accounts have been re-synced." });
+      toast({
+        title: "Accounts synced",
+        description: "Your linked accounts have been re-synced.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Sync complete", description: "Account data has been refreshed." });
+      toast({
+        title: "Sync complete",
+        description: "Account data has been refreshed.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
   });
 
-  const [robloxLinkStep, setRobloxLinkStep] = useState<"idle" | "username" | "verify">("idle");
+  const [robloxLinkStep, setRobloxLinkStep] = useState<
+    "idle" | "username" | "verify"
+  >("idle");
   const [robloxUsernameInput, setRobloxUsernameInput] = useState("");
-  const [robloxVerification, setRobloxVerification] = useState<{ robloxId: number; verificationCode: string; robloxUsername: string; robloxDisplayName: string } | null>(null);
+  const [robloxVerification, setRobloxVerification] = useState<{
+    robloxId: number;
+    verificationCode: string;
+    robloxUsername: string;
+    robloxDisplayName: string;
+  } | null>(null);
 
   const startRobloxVerification = useMutation({
     mutationFn: async (username: string) => {
-      const response = await apiRequest("POST", "/api/roblox/start-verification", { robloxUsername: username });
+      const response = await apiRequest(
+        "POST",
+        "/api/roblox/start-verification",
+        { robloxUsername: username },
+      );
       return response.json();
     },
     onSuccess: (data: any) => {
@@ -862,7 +1141,11 @@ export default function Settings() {
       setRobloxLinkStep("verify");
     },
     onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -876,14 +1159,21 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Roblox Linked", description: "Your Roblox account has been successfully linked!" });
+      toast({
+        title: "Roblox Linked",
+        description: "Your Roblox account has been successfully linked!",
+      });
       setRobloxLinkStep("idle");
       setRobloxVerification(null);
       setRobloxUsernameInput("");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: Error) => {
-      toast({ title: "Verification Failed", description: error.message, variant: "destructive" });
+      toast({
+        title: "Verification Failed",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -893,11 +1183,18 @@ export default function Settings() {
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Roblox Unlinked", description: "Your Roblox account has been unlinked." });
+      toast({
+        title: "Roblox Unlinked",
+        description: "Your Roblox account has been unlinked.",
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to unlink Roblox account.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to unlink Roblox account.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -951,7 +1248,9 @@ export default function Settings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Profile information</CardTitle>
-                  <CardDescription>Update your username and email address</CardDescription>
+                  <CardDescription>
+                    Update your username and email address
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between">
@@ -959,10 +1258,16 @@ export default function Settings() {
                       <div className="relative group">
                         <Avatar className="w-16 h-16">
                           <AvatarImage
-                            src={profileForm.watch("profileImageUrl") || user?.profileImageUrl || undefined}
+                            src={
+                              profileForm.watch("profileImageUrl") ||
+                              user?.profileImageUrl ||
+                              undefined
+                            }
                             className="object-cover"
                           />
-                          <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
+                          <AvatarFallback className="text-lg">
+                            {getInitials()}
+                          </AvatarFallback>
                         </Avatar>
                         <label
                           htmlFor="avatar-upload"
@@ -979,32 +1284,43 @@ export default function Settings() {
                             {...profileForm.register("profileImageUrl")}
                             data-testid="input-settings-profile-image"
                           />
-                          <span className="text-xs text-muted-foreground">or</span>
+                          <span className="text-xs text-muted-foreground">
+                            or
+                          </span>
                           <UploadButton
                             endpoint="avatarUploader"
                             onClientUploadComplete={(res) => {
                               if (res && res.length > 0) {
-                                profileForm.setValue("profileImageUrl", res[0].url);
-                                toast({ 
-                                  title: "Avatar uploaded to cloud!", 
-                                  description: "Save your changes to update your profile." 
+                                profileForm.setValue(
+                                  "profileImageUrl",
+                                  res[0].url,
+                                );
+                                toast({
+                                  title: "Avatar uploaded to cloud!",
+                                  description:
+                                    "Save your changes to update your profile.",
                                 });
                               }
-                            }}
+                            
                             onUploadError={(error: Error) => {
-                              toast({ 
-                                title: "Upload failed", 
-                                description: error.message, 
-                                variant: "destructive" 
+                              toast({
+                                title: "Upload failed",
+                                description: error.message,
+                                variant: "destructive",
                               });
                             }}
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">JPG, PNG, GIF, WebP up to 5MB</p>
+                        <p className="text-xs text-muted-foreground">
+                          JPG, PNG, GIF, WebP up to 5MB
+                        </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/profile/${user?.id || ""}`} data-testid="link-view-profile">
+                      <Link
+                        href={`/profile/${user?.id || ""}`}
+                        data-testid="link-view-profile"
+                      >
                         <ExternalLink className="w-3.5 h-3.5 mr-2" />
                         View Profile
                       </Link>
@@ -1012,11 +1328,20 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Profile Banner</label>
-                    <p className="text-xs text-muted-foreground">Upload a cover image for your profile (JPG, PNG, GIF, WebP up to 10MB)</p>
+                    <label className="text-sm font-medium">
+                      Profile Banner
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      Upload a cover image for your profile (JPG, PNG, GIF, WebP
+                      up to 10MB)
+                    </p>
                     {(user as any)?.profileBannerUrl && (
                       <div className="h-24 w-full rounded-md overflow-hidden border border-border">
-                        <img src={(user as any).profileBannerUrl} alt="Current banner" className="w-full h-full object-cover" />
+                        <img
+                          src={(user as any).profileBannerUrl}
+                          alt="Current banner"
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -1030,26 +1355,43 @@ export default function Settings() {
                           const file = e.target.files?.[0];
                           if (!file) return;
                           if (file.size > 10 * 1024 * 1024) {
-                            toast({ title: "File too large", description: "Max file size is 10MB", variant: "destructive" });
+                            toast({
+                              title: "File too large",
+                              description: "Max file size is 10MB",
+                              variant: "destructive",
+                            });
                             return;
                           }
                           const formData = new FormData();
                           formData.append("banner", file);
                           try {
-                            const res = await fetch("/api/users/profile/banner", {
-                              method: "POST",
-                              body: formData,
-                              credentials: "include",
-                            });
+                            const res = await fetch(
+                              "/api/users/profile/banner",
+                              {
+                                method: "POST",
+                                body: formData,
+                                credentials: "include",
+                              },
+                            );
                             const data = await res.json();
                             if (res.ok) {
-                              queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+                              queryClient.invalidateQueries({
+                                queryKey: ["/api/auth/user"],
+                              });
                               toast({ title: "Banner updated" });
                             } else {
-                              toast({ title: "Upload failed", description: data.message, variant: "destructive" });
+                              toast({
+                                title: "Upload failed",
+                                description: data.message,
+                                variant: "destructive",
+                              });
                             }
                           } catch {
-                            toast({ title: "Upload failed", description: "Please try again", variant: "destructive" });
+                            toast({
+                              title: "Upload failed",
+                              description: "Please try again",
+                              variant: "destructive",
+                            });
                           }
                           e.target.value = "";
                         }}
@@ -1058,7 +1400,9 @@ export default function Settings() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => document.getElementById("banner-upload")?.click()}
+                        onClick={() =>
+                          document.getElementById("banner-upload")?.click()
+                        }
                         data-testid="button-upload-banner"
                       >
                         <Upload className="w-3.5 h-3.5 mr-1.5" />
@@ -1068,7 +1412,9 @@ export default function Settings() {
                   </div>
 
                   <form
-                    onSubmit={profileForm.handleSubmit((data) => updateProfileMutation.mutate(data))}
+                    onSubmit={profileForm.handleSubmit((data) =>
+                      updateProfileMutation.mutate(data),
+                    )}
                     className="space-y-5"
                   >
                     <div className="space-y-2">
@@ -1081,7 +1427,8 @@ export default function Settings() {
                       />
                       {user?.discordId && (
                         <p className="text-xs text-muted-foreground">
-                          Your username is synced from Discord and cannot be changed here.
+                          Your username is synced from Discord and cannot be
+                          changed here.
                         </p>
                       )}
                     </div>
@@ -1107,13 +1454,16 @@ export default function Settings() {
                         data-testid="input-settings-signature"
                       />
                       <p className="text-xs text-muted-foreground">
-                        This signature will appear under your posts in forums. Keep it concise and professional.
+                        This signature will appear under your posts in forums.
+                        Keep it concise and professional.
                       </p>
                     </div>
 
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium">Custom fields</h4>
-                      <p className="text-xs text-muted-foreground">Additional profile information</p>
+                      <p className="text-xs text-muted-foreground">
+                        Additional profile information
+                      </p>
                     </div>
 
                     <div className="space-y-2">
@@ -1135,7 +1485,9 @@ export default function Settings() {
                       disabled={updateProfileMutation.isPending}
                       data-testid="button-save-profile"
                     >
-                      {updateProfileMutation.isPending ? "Saving..." : "Save profile"}
+                      {updateProfileMutation.isPending
+                        ? "Saving..."
+                        : "Save profile"}
                     </Button>
                   </form>
                 </CardContent>
@@ -1147,7 +1499,9 @@ export default function Settings() {
                     <Lock className="w-4 h-4" />
                     Change password
                   </CardTitle>
-                  <CardDescription>Update your password to keep your account secure</CardDescription>
+                  <CardDescription>
+                    Update your password to keep your account secure
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form
@@ -1155,7 +1509,7 @@ export default function Settings() {
                       changePasswordMutation.mutate({
                         currentPassword: data.currentPassword,
                         newPassword: data.newPassword,
-                      })
+                      }),
                     )}
                     className="space-y-4"
                   >
@@ -1170,7 +1524,12 @@ export default function Settings() {
                         data-testid="input-current-password"
                       />
                       {passwordForm.formState.errors.currentPassword && (
-                        <p className="text-xs text-red-500">{passwordForm.formState.errors.currentPassword.message}</p>
+                        <p className="text-xs text-red-500">
+                          {
+                            passwordForm.formState.errors.currentPassword
+                              .message
+                          }
+                        </p>
                       )}
                     </div>
 
@@ -1184,12 +1543,16 @@ export default function Settings() {
                         data-testid="input-new-password"
                       />
                       {passwordForm.formState.errors.newPassword && (
-                        <p className="text-xs text-red-500">{passwordForm.formState.errors.newPassword.message}</p>
+                        <p className="text-xs text-red-500">
+                          {passwordForm.formState.errors.newPassword.message}
+                        </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm new password</Label>
+                      <Label htmlFor="confirmPassword">
+                        Confirm new password
+                      </Label>
                       <Input
                         id="confirmPassword"
                         type="password"
@@ -1198,7 +1561,12 @@ export default function Settings() {
                         data-testid="input-confirm-password"
                       />
                       {passwordForm.formState.errors.confirmPassword && (
-                        <p className="text-xs text-red-500">{passwordForm.formState.errors.confirmPassword.message}</p>
+                        <p className="text-xs text-red-500">
+                          {
+                            passwordForm.formState.errors.confirmPassword
+                              .message
+                          }
+                        </p>
                       )}
                     </div>
 
@@ -1207,7 +1575,9 @@ export default function Settings() {
                       disabled={changePasswordMutation.isPending}
                       data-testid="button-update-password"
                     >
-                      {changePasswordMutation.isPending ? "Updating..." : "Update password"}
+                      {changePasswordMutation.isPending
+                        ? "Updating..."
+                        : "Update password"}
                     </Button>
                   </form>
                 </CardContent>
@@ -1219,20 +1589,24 @@ export default function Settings() {
                     <Trash2 className="w-4 h-4 text-red-500" />
                     Delete account
                   </CardTitle>
-                  <CardDescription>Delete your account and all of its resources</CardDescription>
+                  <CardDescription>
+                    Delete your account and all of its resources
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
                     <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-red-400">
                       Please proceed with caution, this cannot be undone.
-                    </p> 
+                    </p>
                   </div>
 
-                     <div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                    <WarningTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                    <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-orange-400">
-                      Note from developers: We are currently in the process of creating a restricted cloud storage for deleted data and accounts to prevent unauthorized account deletion.
+                      Note from developers: We are currently in the process of
+                      creating a restricted cloud storage for deleted data and
+                      accounts to prevent unauthorized account deletion.
                     </p>
                   </div>
 
@@ -1244,7 +1618,9 @@ export default function Settings() {
                         data-testid="button-delete-account"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        {deleteAccountMutation.isPending ? "Deleting..." : "Delete account"}
+                        {deleteAccountMutation.isPending
+                          ? "Deleting..."
+                          : "Delete account"}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -1254,11 +1630,15 @@ export default function Settings() {
                           Are you absolutely sure?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This will permanently delete your account and all of your data including posts, linked accounts, and subscriptions. This action cannot be undone.
+                          This will permanently delete your account and all of
+                          your data including posts, linked accounts, and
+                          subscriptions. This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel data-testid="button-cancel-delete">
+                          Cancel
+                        </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => deleteAccountMutation.mutate()}
                           className="bg-red-600 hover:bg-red-700"
@@ -1286,14 +1666,20 @@ export default function Settings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Theme</CardTitle>
-                  <CardDescription>Choose your preferred theme appearance</CardDescription>
+                  <CardDescription>
+                    Choose your preferred theme appearance
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {[
                       { value: "light" as const, label: "Light", icon: Sun },
                       { value: "dark" as const, label: "Dark", icon: Moon },
-                      { value: "system" as const, label: "System", icon: Monitor },
+                      {
+                        value: "system" as const,
+                        label: "System",
+                        icon: Monitor,
+                      },
                     ].map((option) => {
                       const Icon = option.icon;
                       const isSelected = theme === option.value;
@@ -1308,8 +1694,12 @@ export default function Settings() {
                           }`}
                           data-testid={`button-theme-${option.value}`}
                         >
-                          <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                          <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          <Icon
+                            className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          />
+                          <span
+                            className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          >
                             {option.label}
                           </span>
                         </button>
@@ -1322,13 +1712,23 @@ export default function Settings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Navigation Style</CardTitle>
-                  <CardDescription>Choose between a sidebar or header navigation</CardDescription>
+                  <CardDescription>
+                    Choose between a sidebar or header navigation
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { value: "sidebar" as const, label: "Sidebar", icon: PanelLeft },
-                      { value: "header" as const, label: "Header", icon: PanelTop },
+                      {
+                        value: "sidebar" as const,
+                        label: "Sidebar",
+                        icon: PanelLeft,
+                      },
+                      {
+                        value: "header" as const,
+                        label: "Header",
+                        icon: PanelTop,
+                      },
                     ].map((option) => {
                       const Icon = option.icon;
                       const isSelected = navLayout === option.value;
@@ -1349,8 +1749,12 @@ export default function Settings() {
                           }`}
                           data-testid={`button-nav-${option.value}`}
                         >
-                          <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                          <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          <Icon
+                            className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          />
+                          <span
+                            className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          >
                             {option.label}
                           </span>
                         </button>
@@ -1363,7 +1767,9 @@ export default function Settings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Font Size</CardTitle>
-                  <CardDescription>Adjust the text size across the platform</CardDescription>
+                  <CardDescription>
+                    Adjust the text size across the platform
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -1378,11 +1784,20 @@ export default function Settings() {
                           key={option.value}
                           onClick={() => {
                             setFontSize(option.value);
-                            localStorage.setItem("resync-font-size", option.value);
+                            localStorage.setItem(
+                              "resync-font-size",
+                              option.value,
+                            );
                             const root = document.documentElement;
-                            root.classList.remove("text-sm", "text-base", "text-lg");
-                            if (option.value === "small") root.style.fontSize = "14px";
-                            else if (option.value === "large") root.style.fontSize = "18px";
+                            root.classList.remove(
+                              "text-sm",
+                              "text-base",
+                              "text-lg",
+                            );
+                            if (option.value === "small")
+                              root.style.fontSize = "14px";
+                            else if (option.value === "large")
+                              root.style.fontSize = "18px";
                             else root.style.fontSize = "16px";
                             toast({
                               title: "Font size updated",
@@ -1396,10 +1811,14 @@ export default function Settings() {
                           }`}
                           data-testid={`button-font-${option.value}`}
                         >
-                          <span className={`font-medium ${option.value === "small" ? "text-xs" : option.value === "large" ? "text-lg" : "text-sm"} ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          <span
+                            className={`font-medium ${option.value === "small" ? "text-xs" : option.value === "large" ? "text-lg" : "text-sm"} ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          >
                             Aa
                           </span>
-                          <span className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                          <span
+                            className={`text-sm font-medium ${isSelected ? "text-primary" : "text-muted-foreground"}`}
+                          >
                             {option.label}
                           </span>
                         </button>
@@ -1412,27 +1831,42 @@ export default function Settings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Accessibility</CardTitle>
-                  <CardDescription>Motion and animation preferences</CardDescription>
+                  <CardDescription>
+                    Motion and animation preferences
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium">Reduce motion</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Disable animations and transitions</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Disable animations and transitions
+                      </p>
                     </div>
                     <button
                       onClick={() => {
                         const newVal = !reduceMotion;
                         setReduceMotion(newVal);
-                        localStorage.setItem("resync-reduce-motion", String(newVal));
+                        localStorage.setItem(
+                          "resync-reduce-motion",
+                          String(newVal),
+                        );
                         if (newVal) {
-                          document.documentElement.classList.add("reduce-motion");
+                          document.documentElement.classList.add(
+                            "reduce-motion",
+                          );
                         } else {
-                          document.documentElement.classList.remove("reduce-motion");
+                          document.documentElement.classList.remove(
+                            "reduce-motion",
+                          );
                         }
                         toast({
-                          title: newVal ? "Reduced motion enabled" : "Reduced motion disabled",
-                          description: newVal ? "Animations have been minimized." : "Animations have been restored.",
+                          title: newVal
+                            ? "Reduced motion enabled"
+                            : "Reduced motion disabled",
+                          description: newVal
+                            ? "Animations have been minimized."
+                            : "Animations have been restored.",
                         });
                       }}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
@@ -1458,7 +1892,8 @@ export default function Settings() {
                 <div>
                   <h2 className="text-lg font-semibold">Integrations</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Connect your accounts for enhanced features and authentication
+                    Connect your accounts for enhanced features and
+                    authentication
                   </p>
                 </div>
                 <Button
@@ -1467,7 +1902,9 @@ export default function Settings() {
                   disabled={syncAccountsMutation.isPending}
                   data-testid="button-sync-accounts"
                 >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${syncAccountsMutation.isPending ? "animate-spin" : ""}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 mr-2 ${syncAccountsMutation.isPending ? "animate-spin" : ""}`}
+                  />
                   Sync Accounts
                 </Button>
               </div>
@@ -1486,11 +1923,18 @@ export default function Settings() {
                             {user.robloxDisplayName || user.robloxUsername}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Linked {user.robloxLinkedAt ? new Date(user.robloxLinkedAt).toLocaleDateString() : ""}
+                            Linked{" "}
+                            {user.robloxLinkedAt
+                              ? new Date(
+                                  user.robloxLinkedAt,
+                                ).toLocaleDateString()
+                              : ""}
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-muted-foreground">Not connected</p>
+                        <p className="text-sm text-muted-foreground">
+                          Not connected
+                        </p>
                       )}
                     </div>
                     {user?.robloxId ? (
@@ -1517,23 +1961,41 @@ export default function Settings() {
 
                   {robloxLinkStep === "username" && (
                     <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-3">
-                      <p className="text-sm text-muted-foreground">Enter your Roblox username to begin linking:</p>
+                      <p className="text-sm text-muted-foreground">
+                        Enter your Roblox username to begin linking:
+                      </p>
                       <div className="flex gap-2">
                         <Input
                           placeholder="Roblox username"
                           value={robloxUsernameInput}
-                          onChange={(e) => setRobloxUsernameInput(e.target.value)}
+                          onChange={(e) =>
+                            setRobloxUsernameInput(e.target.value)
+                          }
                           className="flex-1"
                           data-testid="input-roblox-username"
                         />
                         <Button
-                          onClick={() => startRobloxVerification.mutate(robloxUsernameInput)}
-                          disabled={!robloxUsernameInput.trim() || startRobloxVerification.isPending}
+                          onClick={() =>
+                            startRobloxVerification.mutate(robloxUsernameInput)
+                          }
+                          disabled={
+                            !robloxUsernameInput.trim() ||
+                            startRobloxVerification.isPending
+                          }
                           data-testid="button-roblox-lookup"
                         >
-                          {startRobloxVerification.isPending ? "Looking up..." : "Next"}
+                          {startRobloxVerification.isPending
+                            ? "Looking up..."
+                            : "Next"}
                         </Button>
-                        <Button variant="ghost" onClick={() => { setRobloxLinkStep("idle"); setRobloxUsernameInput(""); }} data-testid="button-roblox-cancel">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setRobloxLinkStep("idle");
+                            setRobloxUsernameInput("");
+                          }}
+                          data-testid="button-roblox-cancel"
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -1543,19 +2005,34 @@ export default function Settings() {
                   {robloxLinkStep === "verify" && robloxVerification && (
                     <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-4">
                       <div>
-                        <p className="text-sm font-medium">Verifying: {robloxVerification.robloxDisplayName} ({robloxVerification.robloxUsername})</p>
+                        <p className="text-sm font-medium">
+                          Verifying: {robloxVerification.robloxDisplayName} (
+                          {robloxVerification.robloxUsername})
+                        </p>
                         <p className="text-sm text-muted-foreground mt-2">
-                          To verify you own this Roblox account, add the following code to your Roblox profile description:
+                          To verify you own this Roblox account, add the
+                          following code to your Roblox profile description:
                         </p>
                       </div>
                       <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary border border-border">
-                        <code className="text-sm font-mono text-white flex-1" data-testid="text-verification-code">{robloxVerification.verificationCode}</code>
+                        <code
+                          className="text-sm font-mono text-white flex-1"
+                          data-testid="text-verification-code"
+                        >
+                          {robloxVerification.verificationCode}
+                        </code>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            navigator.clipboard.writeText(robloxVerification.verificationCode);
-                            toast({ title: "Copied!", description: "Verification code copied to clipboard." });
+                            navigator.clipboard.writeText(
+                              robloxVerification.verificationCode,
+                            );
+                            toast({
+                              title: "Copied!",
+                              description:
+                                "Verification code copied to clipboard.",
+                            });
                           }}
                           data-testid="button-copy-code"
                         >
@@ -1563,7 +2040,8 @@ export default function Settings() {
                         </Button>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Go to your Roblox profile settings, paste the code in your "About" section, save, then click Verify below.
+                        Go to your Roblox profile settings, paste the code in
+                        your "About" section, save, then click Verify below.
                       </p>
                       <div className="flex gap-2">
                         <Button
@@ -1573,7 +2051,14 @@ export default function Settings() {
                         >
                           {verifyRoblox.isPending ? "Verifying..." : "Verify"}
                         </Button>
-                        <Button variant="ghost" onClick={() => { setRobloxLinkStep("idle"); setRobloxVerification(null); }} data-testid="button-roblox-cancel-verify">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setRobloxLinkStep("idle");
+                            setRobloxVerification(null);
+                          }}
+                          data-testid="button-roblox-cancel-verify"
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -1603,7 +2088,9 @@ export default function Settings() {
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-muted-foreground">Not connected</p>
+                        <p className="text-sm text-muted-foreground">
+                          Not connected
+                        </p>
                       )}
                     </div>
                   </div>
@@ -1620,7 +2107,9 @@ export default function Settings() {
 
           {activeTab === "orders" && <OrdersTab />}
 
-          {activeTab === "payments" && <PaymentMethodsTab user={user} toast={toast} />}
+          {activeTab === "payments" && (
+            <PaymentMethodsTab user={user} toast={toast} />
+          )}
 
           {activeTab === "security" && <SecurityTab />}
         </div>
