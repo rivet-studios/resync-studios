@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { WifiOff } from "lucide-react";
+import ReactMarkdown from 'react-markdown'; // Use the same one you use for forums
+
 
 const ADMIN_RANKS = [
   "Company Director",
   "Operations Manager",
   "Staff Department Director",
-  "Developer",
+  "Gameplay Engineer",
+  "Creative Designer",
   "Staff Internal Affairs",
   "Team Member",
 ];
@@ -23,7 +26,7 @@ function canBypassOffline(user: any): boolean {
 export function OfflineGate({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
-  const { data: siteStatus } = useQuery<{ isOffline: boolean; offlineMessage: string | null }>({
+    const { data: siteStatus } = useQuery<{ isOffline: boolean; offlineMessage: string | null; offlineTitle: string | null }>({
     queryKey: ["/api/site-status"],
     refetchInterval: 30000,
   });
@@ -36,15 +39,17 @@ export function OfflineGate({ children }: { children: React.ReactNode }) {
             <WifiOff className="w-10 h-10 text-white/20" />
           </div>
           <h1 className="text-3xl font-semibold text-white tracking-tight">
-            Site Maintenance
+            {siteStatus?.offlineTitle || "We’re making things more awesome!"}
           </h1>
-          <p className="text-white/50 text-base leading-relaxed">
-            {siteStatus.offlineMessage || "RIVET Studios is currently undergoing maintenance. We'll be back shortly."}
-          </p>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs text-white/20">
-              RIVET Studios™ — We'll be back soon
-            </p>
+            <div className="text-white/50 text-base leading-relaxed prose prose-invert mx-auto">
+              <ReactMarkdown>
+                {siteStatus.offlineMessage || "RIVET Studios is currently offline for some quick upgrades. We’re polishing the gears and tightening the bolts to make sure everything runs perfectly."}
+              </ReactMarkdown>
+              <div className="pt-4 border-t border-white/5">
+                <p className="text-xs text-white/20">
+                RIVET Studios™ — We'll be back soon
+                </p>
+              </div>
           </div>
         </div>
       </div>

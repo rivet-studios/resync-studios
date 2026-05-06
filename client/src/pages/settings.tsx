@@ -68,6 +68,7 @@ import {
   PanelLeft,
   PanelTop,
   Shield,
+  Upload,
   Smartphone,
   Copy,
   CheckCircle,

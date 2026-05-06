@@ -288,7 +288,7 @@ export async function registerRoutes(
               Reset Password
             </a>
             <p style="color: #71717a; font-size: 12px; margin-top: 32px;">
-              If you didn't request this, contact support immediately.
+              If you didn't request this, you can safely ignore this email.
             </p>
           </div>
         `,
@@ -2172,10 +2172,11 @@ export async function registerRoutes(
       if (!user || !isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
-      const { isOffline, offlineMessage } = req.body;
+      const { isOffline, offlineMessage, offlineTitle } = req.body;
       const settings = await storage.updateSiteSettings({
         isOffline,
         offlineMessage,
+        offlineTitle,
       });
       res.json(settings);
     } catch (error) {
@@ -2198,9 +2199,10 @@ export async function registerRoutes(
       res.json({
         isOffline: settings.isOffline ?? false,
         offlineMessage: settings.offlineMessage,
+        offlineTitle: settings.offlineTitle,
       });
     } catch (error) {
-      res.json({ isOffline: false, offlineMessage: null });
+      res.json({ isOffline: false, offlineMessage: null, offlineTitle: null });
     }
   });
 

@@ -228,6 +228,7 @@ export const siteSettings = pgTable("site_settings", {
     .default(sql`gen_random_uuid()`),
   isOffline: boolean("is_offline").default(false),
   offlineMessage: text("offline_message"),
+  offlineTitle: text("offline_title")
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

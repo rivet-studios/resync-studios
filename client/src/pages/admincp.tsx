@@ -217,6 +217,8 @@ export default function AdminCP() {
 
   const [offlineMessage, setOfflineMessage] = useState("");
   const [offlineMessageDirty, setOfflineMessageDirty] = useState(false);
+  const [offlineTitle, setOfflineTitle] = useState("");
+  const [offlineTitleDirty, setOfflineTitleDirty] = useState(false);
 
   const { data: siteSettings } = useQuery<any>({
     queryKey: ["/api/admin/site-settings"],
@@ -414,7 +416,7 @@ export default function AdminCP() {
   };
 
   const defaultPolicyTemplate = (label: string) =>
-    `# ${label}\n\n**Effective Date:** [Date]\n\n## 1. Introduction\n\n[Write your policy introduction here.]\n\n## 2. [Section Title]\n\n[Write section content here.]\n\n## 3. [Section Title]\n\n[Write section content here.]\n\n---\n\n*For questions, contact support@rivetstudios.com*\n`;
+    `# ${label}\n\n**Effective Date:** [Date]\n\n## 1. Introduction\n\n[Write your policy introduction here.]\n\n## 2. [Section Title]\n\n[Write section content here.]\n\n## 3. [Section Title]\n\n[Write section content here.]\n\n---\n\n*For questions, contact support@rivetstudiosus.com*\n`;
 
   const savePolicyMutation = useMutation({
     mutationFn: async ({
@@ -670,15 +672,13 @@ export default function AdminCP() {
     "Founders Edition VIP",
     "Lifetime",
     "Vehicle Tester",
-    "Community Staff",
-    "RS Trust & Safety Team",
     "Customer Relations",
     "Appeals Moderator",
     "Trial Moderator",
-    "Moderator",
-    "Administrator",
-    "Senior Administrator",
-    "Developer",
+    "Community Moderator",
+    "Community Admin",
+    "Community Senior Admin",
+    "Gameplay Engineer",
     "Creative Designer",
     "Staff Internal Affairs",
     "Team Member",
@@ -1731,7 +1731,7 @@ export default function AdminCP() {
                                         Rank
                                       </p>
                                       <p className="text-sm font-medium text-foreground">
-                                        {quickViewUser.userRank || "Member"}
+                                        {quickViewUser.userRank || "Active Members"}
                                       </p>
                                     </div>
                                     <div>
@@ -1927,6 +1927,19 @@ export default function AdminCP() {
                   />
                 </div>
                 <div>
+                  <div className="mb-4">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
+                      Offline Title
+                    </label>
+                    <Input 
+                      value={offlineTitleDirty ? offlineTitle : siteSettings?.offlineTitle || ""}
+                      onChange={(e) => {
+                        setOfflineTitle(e.target.value);
+                        setOfflineTitleDirty(true);
+                      }}
+                      placeholder="e.g., We're making things more awesome!"
+                    />
+                  </div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
                     Offline Message
                   </label>
@@ -1943,19 +1956,26 @@ export default function AdminCP() {
                     placeholder="Message shown when site is offline..."
                     data-testid="textarea-offline-message"
                   />
-                  {offlineMessageDirty && (
-                    <Button
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        updateSiteSettingsMutation.mutate({ offlineMessage });
-                        setOfflineMessageDirty(false);
-                      }}
-                      disabled={updateSiteSettingsMutation.isPending}
-                      data-testid="button-save-offline-message"
-                    >
-                      Save Message
-                    </Button>
+            {(offlineMessageDirty || offlineTitleDirty) && (
+              <Button
+                size="sm"
+                className="mt-2"
+                onClick={() => {
+                  // Send both to the database, ensuring we use the updated one or fall back to the existing one
+                  updateSiteSettingsMutation.mutate({ 
+                    offlineMessage: offlineMessageDirty ? offlineMessage : siteSettings?.offlineMessage,
+                    offlineTitle: offlineTitleDirty ? offlineTitle : siteSettings?.offlineTitle
+                  });
+
+                  // Reset both dirty states so the button hides again
+                  setOfflineMessageDirty(false);
+                  setOfflineTitleDirty(false);
+                }}
+                disabled={updateSiteSettingsMutation.isPending}
+                data-testid="button-save-offline-settings"
+              >
+                Save Changes
+              </Button>
                   )}
                 </div>
               </CardContent>

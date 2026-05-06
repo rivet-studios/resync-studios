@@ -474,7 +474,8 @@ export class DatabaseStorage implements IStorage {
       .insert(siteSettings)
       .values({
         isOffline: true,
-        offlineMessage: "We're offline right now. Please check back later.",
+        offlineMessage: "RIVET Studios is currently offline for some quick upgrades. We’re polishing the gears and tightening the bolts to make sure everything runs perfectly.",
+        offlineTitle: "We're making things more awesome"
       })
       .returning();
     return newSettings;
