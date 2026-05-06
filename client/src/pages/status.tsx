@@ -18,12 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface ServiceStatus {
-  status: "operational" | "degraded" | "partial outage" | "maintenance" | "offline";
+  status: "operational" | "degraded" | "partial outage" | "major outage" | "maintenance" | "offline";
   label: string;
 }
 
 interface PlatformStatus {
-  overall: "operational" | "degraded" | "maintenance";
+  overall: "operational" | "degraded" | "major outage" | "maintenance" | "offline";
   services: Record<string, ServiceStatus>;
   maintenance: { active: boolean; message: string | null };
   lastChecked: string;
@@ -42,8 +42,14 @@ function StatusIcon({ status }: { status: string }) {
   if (status === "operational") {
     return <CheckCircle2 className="h-5 w-5 text-green-500" />;
   }
-  if (status === "degraded" || status === "partial outage") {
+  if (status === "degraded") {
     return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+  }
+    if (status === "partial outage") {
+      return <AlertTriangle className="h-5 w-5 text-orange-500" />;
+  }
+    if (status === "major outage") {
+      return <AlertTriangle className="h-5 w-5 text-red-500" />;
   }
   if (status === "maintenance") {
     return <Wrench className="h-5 w-5 text-blue-500" />;
