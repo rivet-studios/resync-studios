@@ -24,17 +24,17 @@ if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   );
 }
 
-// Passport user serialization
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
+    // Passport user serialization
+    passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
+      done(null, user.id);
+    });
 
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await storage.getUser(id);
-    if (!user) {
-      return done(null, false);
-    }
+    passport.deserializeUser(async (id: string, done: (err: any, user?: any) => void) => {
+      try {
+        const user = await storage.getUser(id);
+        if (!user) {
+          return done(null, false);
+        }
     // Convert nulls to undefined to match User type if necessary,
     // but usually casting is enough for passport
     done(null, user as any);
