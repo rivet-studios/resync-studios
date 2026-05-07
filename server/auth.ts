@@ -6,8 +6,8 @@ import { sendSiteLog } from "./lib/discord-webhooks";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const CALLBACK_URL = process.env.NODE_ENV === 'production'
-  ? "https://rivetstudiosus.com/api/auth/discord/callback"
+const CALLBACK_URL = process.env.NODE_ENV === 'production' 
+  ? "https://rivetstudiosus.com/api/auth/discord/callback" 
   : `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`;
 
 console.log(`🔐 Discord OAuth Callback URL: ${CALLBACK_URL}`);
