@@ -13,73 +13,61 @@ const rankEntries: Record<
 > = {
   Lifetime: {
     label: "Lifetime",
-    color: "#F59E0B",
+    color: "#181860",
     badgeUrl: null,
     formatted: true,
     isGradient: true,
-    gradient: "linear-gradient(to right, #FFBF00, #00BFFF)",
+    gradient: "linear-gradient(135deg, #FDD819 10%, #E80505 100%)",
   },
   "Company Director": {
     label: "Company Director",
-    color: "#4B7DF7",
+    color: "#184878", //4B7DF7 
     badgeUrl: null,
     formatted: true,
   },
   "Operations Manager": {
     label: "Operations Manager",
-    color: "#ff0000",
+    color: "#901818",
     badgeUrl: null,
     formatted: true,
   },
   "Team Member": {
     label: "Team Member",
-    color: "#99aab5",
-    badgeUrl: null,
-    formatted: true,
-  },
-  "Staff Internal Affairs": {
-    label: "Staff Internal Affairs",
-    color: "#6B7280",
+    color: "#778899",
     badgeUrl: null,
     formatted: true,
   },
   "Staff Department Director": {
     label: "Staff Department Director",
-    color: "#ff00c0",
+    color: "#DC143C",
     badgeUrl: null,
     formatted: true,
   },
   "Appeals Moderator": {
     label: "Appeals Moderator",
-    color: "#06B6D4",
+    color: "#484878", //a2b9f1
     badgeUrl: null,
     formatted: true,
   },
-  "Senior Administrator": {
+  "Community Senior Admin": {
     label: "Community Senior Administrator",
-    color: "#ff0000",
+    color: "#CD5C5C",
     badgeUrl: null,
     formatted: true,
   },
-  Administrator: {
+  "Community Admin": {
     label: "Community Administrator",
-    color: "#ff0000",
+    color: "#781818",
     badgeUrl: null,
     formatted: true,
   },
-  "Trial Moderator": {
-    label: "Trial Moderator",
-    color: "#0D9488",
-    badgeUrl: null,
-    formatted: true,
-  },
-  Moderator: {
+  "Community Moderator": {
     label: "Community Moderator",
-    color: "#0D9488",
+    color: "#AFFFCF", // 304848 , 304860
     badgeUrl: null,
     formatted: true,
   },
-  Developer: {
+  "Gameplay Engineer": {
     label: "Gameplay Engineer",
     color: "#2bff00",
     badgeUrl: null,
@@ -87,25 +75,13 @@ const rankEntries: Record<
   },
   "Creative Designer": {
     label: "Creative Designer",
-    color: "#ff3300",
-    badgeUrl: null,
-    formatted: true,
-  },
-  "Community Staff": {
-    label: "Community Staff",
-    color: "#99aab5",
-    badgeUrl: null,
-    formatted: true,
-  },
-  "RS Trust & Safety Team": {
-    label: "RS Trust & Safety Team",
-    color: "#ff0000",
+    color: "#FF4500",
     badgeUrl: null,
     formatted: true,
   },
   "Customer Relations": {
     label: "Customer Relations",
-    color: "#6B7280",
+    color: "#604830",
     badgeUrl: null,
     formatted: true,
   },
@@ -127,7 +103,7 @@ const rankEntries: Record<
   },
   "Founders Edition VIP": {
     label: "Founders Edition VIP",
-    color: "#FFBF00",
+    color: "#C04860",
     badgeUrl: null,
     formatted: true,
     isGradient: true,
@@ -135,13 +111,13 @@ const rankEntries: Record<
   },
   "Trusted Member": {
     label: "Trusted Member",
-    color: "#10B981",
+    color: "#FF69B4",
     badgeUrl: null,
     formatted: true,
   },
   "Active Members": {
     label: "Active Members",
-    color: "#3B82F6",
+    color: "#778899",
     badgeUrl: null,
     formatted: true,
   },
@@ -159,7 +135,7 @@ const rankEntries: Record<
   },
   Banned: {
     label: "Banned",
-    color: "#EF4444",
+    color: "#2F4F4F",
     badgeUrl: null,
     formatted: true,
   },

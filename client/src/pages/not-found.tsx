@@ -14,8 +14,7 @@ export default function NotFound() {
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            Contact us at support@rivetstudiosus.com if you believe this is an
-            error.
+            Oh no! The page you're looking for was brought back to the workshop. The requested page could not be found.
           </p>
         </CardContent>
       </Card>

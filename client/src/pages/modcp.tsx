@@ -136,16 +136,11 @@ export default function ModCP() {
   }, []);
 
   const staffRanks = [
-    "Community Staff",
-    "RS Trust & Safety Team",
-    "Appeals Moderator",
-    "Trial Moderator",
-    "Moderator",
-    "Administrator",
-    "Senior Administrator",
-    "Developer",
+    "Community Moderator",
+    "Community Admin",
+    "Community Senior Admin",
+    "Gameplay Engineer",
     "Creative Designer",
-    "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
     "Operations Manager",
@@ -1348,22 +1343,25 @@ export default function ModCP() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Harassment or bullying of other community members">
-                        Harassment
+                        Participation in cyber crime (harassment/bullying)
                       </SelectItem>
-                      <SelectItem value="Spamming or flooding channels with unwanted content">
-                        Spam
+                      <SelectItem value="Unauthorized Access / Underage">
+                        UA / Underage
                       </SelectItem>
                       <SelectItem value="Violation of Terms of Service">
-                        TOS Violation
+                        V-TOS
                       </SelectItem>
                       <SelectItem value="Posting inappropriate, offensive, or NSFW content">
-                        Inappropriate Content
+                       Inappropriate / offensive content or illegal distribution of RTA protected content
                       </SelectItem>
                       <SelectItem value="Use of cheats, exploits, or unauthorized modifications">
-                        Cheating / Exploiting
+                        Cheating / EXP
                       </SelectItem>
                       <SelectItem value="Impersonating staff or other community members">
                         Impersonation
+                      </SelectItem>
+                      <SelectItem value="Admin Discretion">
+                        AD
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -1376,7 +1374,7 @@ export default function ModCP() {
                   <Textarea
                     value={banReason}
                     onChange={(e) => setBanReason(e.target.value)}
-                    placeholder="Reason for ban..."
+                    placeholder="Reason for ban.."
                     className="resize-none"
                     data-testid="input-ban-reason"
                   />

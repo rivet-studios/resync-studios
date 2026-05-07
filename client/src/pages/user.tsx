@@ -45,8 +45,8 @@ export default function UserProfile() {
   const { toast } = useToast();
   const userId = id || currentUser?.id;
   const staffRanks = [
-    "Trial Moderator", "Moderator", "Administrator", "Senior Administrator",
-    "Developer", "Staff Internal Affairs", "Team Member", "Staff Department Director",
+    "Community Moderator", "Community Admin", "Community Senior Admin",
+    "Creative Designer", "Gameplay Engineer", "Team Member", "Staff Department Director",
     "Operations Manager", "Company Director",
   ];
   const isStaffViewer = currentUser?.isModerator || currentUser?.isAdmin ||
@@ -332,7 +332,7 @@ export default function UserProfile() {
               >
                 {(() => {
                   const vipRanks = ["Lifetime", "Founders Edition VIP", "Diamond VIP", "Bronze VIP"];
-                  const communityRanks = ["Active Members", "Trusted Member", "Community Partner", "Vehicle Tester"];
+                  const communityRanks = ["Active Members", "Trusted Member"];
                   const allRanks = [
                     ...(profile.userRank && profile.userRank !== "Active Members" ? [profile.userRank] : []),
                     ...((profile as any).additionalRanks || []),
@@ -425,7 +425,7 @@ export default function UserProfile() {
             <p className="text-sm font-bold text-foreground truncate">
               {vipLabel || "None"}
             </p>
-            <p className="text-xs text-muted-foreground mt-0.5">VIP Tier</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Subscription Tier</p>
           </CardContent>
         </Card>
       </div>

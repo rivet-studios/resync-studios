@@ -79,7 +79,7 @@ export default function UserSearch() {
                       </span>
                       {user.isModerator && (
                         <Badge variant="secondary" className="text-[10px] h-4">
-                          Staff
+                         Community Staff
                         </Badge>
                       )}
                     </div>

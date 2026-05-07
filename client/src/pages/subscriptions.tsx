@@ -11,72 +11,73 @@ import { useLocation } from "wouter";
 const tiers = [
   {
     id: "bronze",
-    name: "Bronze VIP",
+    name: "Bronze Donator",
     rating: "4.5",
-    price: "9.99",
+    priceMonth: "9.99",
+    priceYear: "99.99",
     description:
-      "The Bronze Supporter package is for supporters who want to contribute to RIVET Studios while receiving light account enhancements within the RIVET Studios ecosystem only. This tier includes select boosts, limited priority access, and basic recognition perks designed to modestly improve your website and Roblox experience. Your support helps fund development, servers, and updates for our PC titles. Perks remain active while your subscription is active.",
+      "Your journey. Your control.",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "Priority Staff Applications",
       "Priority Ticket Support",
       "Priority Appeals and Player Reports",
-      "XP Boost (20%) & Paychecks Boost (20%)",
+      "XP Boost (22%) & Paychecks Boost (22%)",
       "All Playtime Requirements Waived",
-      "Save (20%) on Vehicles at Quinn's Autos",
-      "Save (20%) on Vehicle Insurance",
-      "More Placeable Chem-Tables & 20% Higher Sell Rates",
+      "Save (22%) on Vehicles at Velocity Autos",
+      "Save (22%) on Vehicle Insurance",
       "ATM Fees Waived",
     ],
   },
   {
     id: "diamond",
-    name: "Diamond VIP",
+    name: "Diamond Donator",
     rating: "4.8",
-    price: "14.99",
+    priceMonth: "14.99",
+    priceYear: "149.99",
     description:
-      "The Diamond Supporter package is built for supporters who want a powerful upgrade to their RIVET Studios experience. This tier unlocks expanded premium boosts, enhanced priority access, and high-value recognition across the RIVET Studios ecosystem only. Your support directly fuels development, infrastructure, and future expansion for our Roblox titles, while you receive a strong collection of impactful quality of life benefits. Perks remain active during your subscription.",
+      "Earn more. Play elite.",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "High Priority Staff Applications",
       "High Priority Ticket Support",
       "High Priority Appeals and Player Reports",
-      "⭐ [IN-DEV] Monthly Exclusive Vehicles",
-      "⭐ XP Boost (45%) & Paychecks Boost (40%)",
+      "⭐ Monthly Exclusive Vehicles",
+      "⭐ XP Boost (47%) & Paychecks Boost (45%)",
       "Medical Bills (50%) off after death",
       "Perma-Knife on Civilian Team",
-      "Save (35%) at Quinn's Autos & Isaac's Vehicle Dealership",
+      "Save (42%) at Velocity Autos & ElevenDrive Vehicle Dealership",
       "All Playtime Requirements Waived",
-      "Save (35%) on Vehicle Insurance",
-      "More Placeable Chem-Tables & 40% Higher Sell Rates",
+      "Save (42%) on Vehicle Insurance",
       "ATM Fees Waived",
     ],
   },
   {
     id: "founders",
-    name: "Founders Edition VIP",
+    name: "Founders Edition",
     rating: "4.8",
-    price: "19.99",
+    priceMonth: "19.99",
+    priceYear: "199.99",
     featured: true,
     description:
-      "The Founder’s Edition Supporter package is our most exclusive tier, created for supporters who want elite status within RIVET Studios. This membership delivers top-level boosts, elite recognition, and priority privileges across the RIVET Studios ecosystem. Your contribution supports long-term growth and expansion for our Roblox games while granting access to premier quality of life upgrades. Benefits remain active during your subscription.",
+      "Enforce. Resist. Rule.",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "Urgent Priority Staff Applications",
       "Urgent Priority Appeals and Player Reports",
       "Urgent Priority Ticket Support",
-      "⭐ All-Rank & Team Bypass: Instant Access to Every Slot & Rank. (No XP grinding—join any team and any rank immediately, even if the team is full!)",
-      "⭐ Internal Affairs Authority: Instant VBI Access on all Law Enforcement teams. (Bypass the VBI application/grind to get Arrest & Cite authority over other officers—perfect for stopping abusers from Day 1.)",
-      "⭐ [IN-DEV] Monthly Exclusive Vehicles",
-      "⭐ Permanent Firearm on Civilian Team: Spawn ready for action—no dealer required.",
+      "⭐ All-Rank & Team Bypass",
+      "⭐ Internal Affairs Authority",
+      "⭐ Monthly Exclusive Vehicles",
+      "⭐ Permanent Firearm on Civilian Team",
       "[IN-DEV] ⭐ National Guard & Federal Teams",
       "Bypass XP Restriction on all Law Enforcement Vehicles",
       "All Playtime Requirements Waived",
-      "XP Boost (55%) & Paychecks Boost (55%) across all teams",
-      "Save (50%) at Quinn's Autos & Isaac's Vehicle Dealership",
-      "Medical Bills (55%) off after death",
-      "Save (50%) on Vehicle Insurance",
-      "More Placeable Chem-Tables & 50% Higher Sell Rates",
+      "Bypass all XP restrictions globally",
+      "Paychecks Boost (78%) across all teams",
+      "Save (60%) at Velocity Autos & ElevenDrive Vehicle Dealership",
+      "Medical Bills (66%) off after death",
+      "Save (89%) on Vehicle Insurance",
       "ATM Fees Waived",
     ],
   },
@@ -97,8 +98,10 @@ export default function Subscriptions() {
 
     setLoadingTier(tier.id);
     try {
+      // ✅ Now passes the 'interval' (month/year) to the backend
       const response = await apiRequest("POST", "/api/stripe/checkout", {
         tierId: tier.id,
+        interval: billingCycle,
       });
       const data = await response.json();
 
@@ -207,9 +210,20 @@ export default function Subscriptions() {
 
               <div className="text-center space-y-1">
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl font-semibold">${tier.price}</span>
-                  <span className="text-sm text-muted-foreground">/ month</span>
+                  {/* ✅ Price swaps between priceMonth and priceYear based on toggle */}
+                  <span className="text-3xl font-semibold">
+                    ${billingCycle === "month" ? tier.priceMonth : tier.priceYear}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    / {billingCycle === "month" ? "month" : "year"}
+                  </span>
                 </div>
+                {/* Visual bonus for yearly selection */}
+                {billingCycle === "year" && (
+                  <Badge variant="outline" className="text-[10px] border-green-500/20 text-green-500 font-bold bg-green-500/5">
+                    Save ~20% Yearly
+                  </Badge>
+                )}
               </div>
 
               <div className="pt-2">
