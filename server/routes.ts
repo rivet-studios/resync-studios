@@ -184,7 +184,7 @@ export async function registerRoutes(
         isAdmin,
         isModerator,
         additionalRanks: isStaffEmail
-          ? ["Team Member", "Staff Internal Affairs"]
+          ? ["Team Member"]
           : [],
       } as any);
 
@@ -275,7 +275,7 @@ export async function registerRoutes(
       const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
       await resend.emails.send({
-        from: "RIVET Studios <support@rivetstudiosus.com>",
+        from: "RIVET Studios Support <support@rivetstudiosus.com>",
         to: email,
         subject: "Password Reset Request",
         html: `
@@ -415,7 +415,6 @@ export async function registerRoutes(
         "Team Member",
         "Operations Manager",
         "Company Director",
-        "Trial Moderator",
         "Community Moderator",
         "Community Admin",
         "Community Senior Admin",
@@ -644,13 +643,12 @@ export async function registerRoutes(
   });
 
   const forumStaffRanks = [
-    "Trial Moderator",
+    "Appeals Moderator",
     "Community Moderator",
     "Community Admin",
     "Community Senior Admin",
     "Gameplay Engineer",
     "Creative Designer",
-    "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
     "Operations Manager",
@@ -785,7 +783,6 @@ export async function registerRoutes(
     const adminRanks = [
       "Gameplay Engineer",
       "Creative Designer",
-      "Staff Internal Affairs",
       "Team Member",
       "Staff Department Director",
       "Operations Manager",
@@ -1256,7 +1253,7 @@ export async function registerRoutes(
     "/api/auth/discord/callback",
     passport.authenticate("discord", { failureRedirect: "/login" }),
     (req, res) => {
-      res.redirect("/onboarding");
+      res.redirect("/dashboard");
     },
   );
 
@@ -1813,7 +1810,7 @@ export async function registerRoutes(
     try {
       if (!isAdminUser(req.user as any)) return res.status(403).json({ message: "Forbidden" });
       const { status } = req.body;
-      const validStatuses = ["operational", "degraded", "partial outage", "offline", "maintenance"];
+      const validStatuses = ["operational", "degraded", "partial outage", "major outage", "offline", "maintenance"];
       if (!validStatuses.includes(status)) {
         return res.status(400).json({ message: "Invalid status" });
       }
@@ -1834,13 +1831,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeals Moderator",
-        "Community Moderator",
-        "Community Admin",
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -1880,13 +1873,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeals Moderator",
-        "Community Moderator",
-        "Community Admin",
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -1921,13 +1910,9 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeals Moderator",
-        "Community Moderator",
-        "Community Admin",
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -1966,7 +1951,6 @@ export async function registerRoutes(
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -2036,7 +2020,6 @@ export async function registerRoutes(
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -2088,13 +2071,11 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Appeals Moderator",
         "Community Moderator",
         "Community Admin",
         "Community Senior Admin",
         "Creative Designer",
         "Gameplay Engineer",
-        "Staff Internal Affairs",
         "Team Member",
         "Staff Department Director",
         "Operations Manager",
@@ -2468,7 +2449,7 @@ export async function registerRoutes(
       if (product.status !== "approved")
         return res
           .status(400)
-          .json({ message: "Product is not available for purchase" });
+          .json({ message: "This product is unavailable for purchase" });
       if (!product.price || product.price <= 0) {
         return res
           .status(400)
@@ -2579,8 +2560,8 @@ export async function registerRoutes(
   });
 
   let cachedExternalStats = {
-    discordMembers: 28,
-    robloxMembers: 10,
+    discordMembers: 36,
+    robloxMembers: 11,
     fetchedAt: 0,
   };
   const EXTERNAL_STATS_TTL = 120_000;
@@ -2643,10 +2624,10 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.json({
-        totalMembers: 20,
-        totalDiscussions: 2,
-        discordMembers: 28,
-        robloxMembers: 10,
+        totalMembers: 47,
+        totalDiscussions: 6,
+        discordMembers: 36,
+        robloxMembers: 11,
       });
     }
   });
@@ -2899,6 +2880,7 @@ export async function registerRoutes(
         services[svc.serviceKey] = { status: svc.status, label: svc.label };
       }
 
+      
       if (!services.platform) services.platform = { status: "operational", label: "Platform API" };
       if (!services.database) services.database = { status: "operational", label: "Database" };
       if (!services.authentication) services.authentication = { status: "operational", label: "Authentication" };

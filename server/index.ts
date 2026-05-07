@@ -173,7 +173,7 @@ export function markServerReady() {
   serverReady = true;
 }
 
-app.get("/_health", (_req, res) => {
+app.get("/health", (_req, res) => {
   res.json({ status: "ok", mode: process.env.NODE_ENV });
 });
 
