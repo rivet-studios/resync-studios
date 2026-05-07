@@ -54,55 +54,47 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
         scope: ["identify", "email", "guilds"],
         state: false,
       },
-      async (
-        _accessToken: string,
-        _refreshToken: string,
-        profile: any,
-        done: (err: any, user?: any) => void,
-      ) => {
+      async (_accessToken: string, _refreshToken: string, profile: any, done: any) => {
         try {
-          console.log("Discord auth started", {
-            id: profile?.id,
-            username: profile?.username,
-            email: profile?.email,
-          });
-
+          // 1. DATA PREP - Use fallbacks to prevent NULL crashes
           const discordId = profile.id;
-          const email =
-            profile.email || `${profile.username || profile.id}@discord.local`;
+          const email = profile.email || `${profile.username || profile.id}@discord.local`;
+          const avatarUrl = profile.avatar 
+            ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` 
+            : null; // Use null instead of undefined for Postgres
 
+          console.log("🚀 Discord auth started for:", profile.username);
+
+          // 2. CHECK BY DISCORD ID FIRST
           let user = await storage.getUserByDiscordId(discordId);
 
           if (!user) {
+            console.log("🔍 No Discord ID match, checking email...");
             let existingUser = null;
-
             if (email && !email.endsWith("@discord.local")) {
               existingUser = await storage.getUserByEmail(email);
             }
 
             if (existingUser) {
-              user =
-                (await storage.updateUser(existingUser.id, {
-                  discordId,
-                  discordUsername: profile.username,
-                  discordAvatar: profile.avatar,
-                  discordLinkedAt: new Date(),
-                })) || existingUser;
+              console.log("🔗 Email match found! Linking account...");
+              user = await storage.updateUser(existingUser.id, {
+                discordId,
+                discordUsername: profile.username,
+                discordAvatar: profile.avatar,
+                discordLinkedAt: new Date(),
+              });
             } else {
-              const baseUsername =
-                profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") ||
-                "user";
-
+              console.log("✨ Creating brand new user...");
+              const baseUsername = profile.username?.toLowerCase().replace(/[^a-z0-9_]/g, "") || "user";
               const newUsername = `${baseUsername}_${profile.id.slice(-6)}`;
 
+              // FAILSAFE: Ensure every field has a value to satisfy NOT NULL constraints
               user = await storage.upsertUser({
-                // id: undefined removed/disabled here because it is breaking DiscordOAuth handshake and DB handles this field automatically
                 email,
-                password: null as any,
-                firstName: profile.username || undefined,
-                lastName: undefined,
-                profileImageUrl: profile.avatar? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
                 username: newUsername,
+                password: null as any,
+                firstName: profile.username || "User",
+                profileImageUrl: avatarUrl,
                 discordId,
                 discordUsername: profile.username,
                 discordAvatar: profile.avatar,
@@ -110,51 +102,41 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                 userRank: "Active Members",
                 vipTier: "none",
               });
-
-              updateDiscordNickname(discordId, newUsername).catch((err) =>
-                console.error(
-                  "❌ Failed to update Discord nickname after signup:",
-                  err,
-                ),
-              );
-
-              sendSiteLog({
-                title: "User Login",
-                level: "success",
-                fields: [
-                  {
-                    name: "User",
-                    value: user.username || profile.username || "Unknown",
-                  },
-                  { name: "Discord ID", value: profile.id, inline: true },
-                  { name: "Email", value: email || "No email", inline: true },
-                ],
-              }).catch((err) =>
-                console.error("❌ Failed to send site log after signup:", err),
-              );
             }
           } else {
-            user =
-              (await storage.updateUser(user.id, {
-                discordUsername: profile.username,
-                discordAvatar: profile.avatar,
-                discordLinkedAt: new Date(),
-              })) || user;
-
-            syncUserFromDiscord(discordId).catch((err) =>
-              console.error("❌ Login sync failed:", err),
-            );
+            console.log("🔄 Existing Discord user found, refreshing data...");
+            user = await storage.updateUser(user.id, {
+              discordUsername: profile.username,
+              discordAvatar: profile.avatar,
+              discordLinkedAt: new Date(),
+            });
           }
 
-          console.log("✅ Discord auth success for user:", user?.id);
-          done(null, user as any);
+          // 3. BACKGROUND TASKS (Don't let these crash the login!)
+          if (user) {
+            updateDiscordNickname(discordId, user.username || "User").catch((_e) => 
+  console.error("Nickname sync failed")
+);
+            syncUserFromDiscord(discordId).catch(_e => console.error("Data sync failed"));
+            
+            sendSiteLog({
+              title: "User Login",
+              level: "success",
+              fields: [
+                { name: "User", value: user.username },
+                { name: "Discord ID", value: discordId },
+              ]
+            }).catch(_e => {});
+          }
+
+          return done(null, user);
         } catch (err) {
-          console.error("❌ Discord auth verify failed:", err);
-          done(err as any);
+          // THE ULTIMATE FAILSAFE
+          console.error("❌ CRITICAL AUTH CRASH:", err);
+          return done(null, false, { message: "Authentication failed at database level" });
         }
       },
     ),
   );
 }
-
 export default passport;
