@@ -97,14 +97,12 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
               const newUsername = `${baseUsername}_${profile.id.slice(-6)}`;
 
               user = await storage.upsertUser({
-                id: undefined,
+                // id: undefined removed/disabled here because it is breaking DiscordOAuth handshake and DB handles this field automatically
                 email,
                 password: null as any,
                 firstName: profile.username || undefined,
                 lastName: undefined,
-                profileImageUrl: profile.avatar
-                  ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
-                  : undefined,
+                profileImageUrl: profile.avatar? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : undefined,
                 username: newUsername,
                 discordId,
                 discordUsername: profile.username,
