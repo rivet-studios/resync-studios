@@ -51,8 +51,8 @@ import logoSvg from "@assets/logo.svg";
 import { useState } from "react";
 
 const ADMIN_RANKS = [
-  "Developer",
-  "Staff Internal Affairs",
+  "Creative Designer",
+  "Gameplay Engineer",
   "Team Member",
   "Staff Department Director",
   "Operations Manager",
@@ -61,10 +61,9 @@ const ADMIN_RANKS = [
 
 const MOD_RANKS = [
   "Appeals Moderator",
-  "Trial Moderator",
-  "Moderator",
-  "Administrator",
-  "Senior Administrator",
+  "Community Moderator",
+  "Community Admin",
+  "Community Senior Admin",
   ...ADMIN_RANKS,
 ];
 

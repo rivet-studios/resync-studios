@@ -120,8 +120,8 @@ export default function AdminCP() {
   const [quickViewUserId, setQuickViewUserId] = useState<string | null>(null);
 
   const adminRanks = [
-    "Developer",
-    "Staff Internal Affairs",
+    "Creative Designer",
+    "Gameplay Engineer",
     "Team Member",
     "Staff Department Director",
     "Operations Manager",

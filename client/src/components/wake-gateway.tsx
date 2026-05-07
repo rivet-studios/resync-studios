@@ -121,7 +121,7 @@ export function WakeGateway({ children }: { children: React.ReactNode }) {
               letterSpacing: "0.5px",
             }}
           >
-            RS
+            {"@/client/public/favicon.png"}
           </div>
         </div>
 
@@ -177,7 +177,14 @@ export function WakeGateway({ children }: { children: React.ReactNode }) {
         )}
 
         {status === "timeout" && (
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <button
               onClick={() => {
                 setStatus("contacting");

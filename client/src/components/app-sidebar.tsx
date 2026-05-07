@@ -55,8 +55,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
 
 const ADMIN_RANKS = [
-  "Developer",
-  "Staff Internal Affairs",
+  "Creative Designer",
+  "Gameplay Engineer",
   "Team Member",
   "Staff Department Director",
   "Operations Manager",
@@ -65,7 +65,6 @@ const ADMIN_RANKS = [
 
 const MOD_RANKS = [
   "Appeals Moderator",
-  "Trial Moderator",
   "Community Moderator",
   "Community Admin",
   "Community Senior Admin",
@@ -75,7 +74,8 @@ const MOD_RANKS = [
 function hasRank(user: any, ranks: string[]): boolean {
   if (!user) return false;
   if (ranks.includes(user.userRank || "")) return true;
-  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r))) return true;
+  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r)))
+    return true;
   return false;
 }
 
@@ -90,7 +90,11 @@ const accountItems = [
   { title: "My Account", url: "/settings?tab=account", icon: User },
   { title: "Billing", url: "/settings?tab=billing", icon: CreditCard },
   { title: "Orders", url: "/settings?tab=orders", icon: Receipt },
-  { title: "Payment Methods", url: "/settings?tab=payments", icon: ShoppingBag },
+  {
+    title: "Payment Methods",
+    url: "/settings?tab=payments",
+    icon: ShoppingBag,
+  },
 ];
 
 const storeItems = [
@@ -102,7 +106,11 @@ const storeItems = [
 
 const supportItems = [
   { title: "Policies", url: "/policies", icon: FileText },
-  { title: "Support", url: "https://support.rivetstudiosus.com", icon: HelpCircle },
+  {
+    title: "Support",
+    url: "https://support.rivetstudiosus.com",
+    icon: HelpCircle,
+  },
   { title: "FAQ", url: "/faq", icon: HelpCircle },
   { title: "Status", url: "/status", icon: Activity },
   { title: "Changelog", url: "/changelog", icon: ScrollText },
@@ -142,11 +150,11 @@ export function AppSidebar() {
   };
 
   const showModCP = user && (user.isModerator || hasRank(user, MOD_RANKS));
-  const showAdminCP = user && (
-    user.isAdmin ||
-    hasRank(user, ADMIN_RANKS) ||
-    user.email?.toLowerCase().endsWith("@resyncstudios.com")
-  );
+  const showAdminCP =
+    user &&
+    (user.isAdmin ||
+      hasRank(user, ADMIN_RANKS) ||
+      user.email?.toLowerCase().endsWith("@resyncstudios.com"));
 
   return (
     <Sidebar>
@@ -154,7 +162,9 @@ export function AppSidebar() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <img src={logoSvg} alt="RS" className="w-6 h-6" />
-            <span className="font-semibold text-base tracking-tight">RIVET Studios™</span>
+            <span className="font-semibold text-base tracking-tight">
+              RIVET Studios™
+            </span>
           </Link>
           <ThemeToggle />
         </div>
@@ -362,71 +372,84 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuPortal>
-                <DropdownMenuContent side="top" align="start" className="w-56 z-[100]">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/profile/${user.id}`} className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>My Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings?tab=account" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>My Account</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings?tab=billing" className="cursor-pointer">
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      <span>Billing</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings?tab=orders" className="cursor-pointer">
-                      <Receipt className="mr-2 h-4 w-4" />
-                      <span>Orders</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/marketplace" className="cursor-pointer">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      <span>Marketplace</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/support" className="cursor-pointer">
-                      <HelpCircle className="mr-2 h-4 w-4" />
-                      <span>Support</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => logoutMutation.mutate()}
-                    className="cursor-pointer text-destructive"
-                    data-testid="button-sidebar-logout"
+                  <DropdownMenuContent
+                    side="top"
+                    align="start"
+                    className="z-50 w-64"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-               </DropdownMenuPortal>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/profile/${user.id}`}
+                        className="cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/settings?tab=account"
+                        className="cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Account</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/settings?tab=billing"
+                        className="cursor-pointer"
+                      >
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        <span>Billing</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/settings?tab=orders"
+                        className="cursor-pointer"
+                      >
+                        <Receipt className="mr-2 h-4 w-4" />
+                        <span>Orders</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/marketplace" className="cursor-pointer">
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        <span>Marketplace</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/support" className="cursor-pointer">
+                        <HelpCircle className="mr-2 h-4 w-4" />
+                        <span>Support</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => logoutMutation.mutate()}
+                      className="cursor-pointer text-destructive"
+                      data-testid="button-sidebar-logout"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenuPortal>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                data-testid="sidebar-login"
-              >
+              <SidebarMenuButton asChild data-testid="sidebar-login">
                 <Link href="/login">
                   <User className="w-4 h-4" />
                   <span>Login</span>

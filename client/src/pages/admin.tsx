@@ -34,12 +34,8 @@ interface User {
 }
 
 const RANK_OPTIONS = [
-  { value: "Moderator", label: "Moderator" },
-  { value: "Administrator", label: "Administrator" },
-  { value: "Senior Administrator", label: "Senior Administrator" },
   { value: "Banned", label: "Banned" },
-  { value: "Member", label: "Member" },
-  { value: "Active Member", label: "Active Member" },
+  { value: "Active Members", label: "Active Members" },
   { value: "Trusted Member", label: "Trusted Member" },
   { value: "Community Partner", label: "Community Partner" },
   { value: "Bronze VIP", label: "Bronze VIP" },
@@ -49,12 +45,11 @@ const RANK_OPTIONS = [
   { value: "Vehicle Tester", label: "Vehicle Tester" },
   { value: "Customer Relations", label: "Customer Relations" },
   { value: "Appeals Moderator", label: "Appeals Moderator" },
-  { value: "Trial Moderator", label: "Trial Moderator" },
-  { value: "Moderator", label: "Moderator" },
-  { value: "Administrator", label: "Administrator" },
-  { value: "Senior Administrator", label: "Senior Administrator" },
-  { value: "Developer", label: "Developer" },
-  { value: "Staff Internal Affairs", label: "Staff Internal Affairs" },
+  { value: "Community Moderator", label: "Community Moderator" },
+  { value: "Community Admin", label: "Community Admin" },
+{ value: "Community Senior Admin", label: "Community Senior Admin" },
+  { value: "Creative Designer", label: "Creative Designer" },
+  { value: "Gameplay Engineer", label: "Gameplay Engineer" },
   { value: "Team Member", label: "Team Member" },
   { value: "Staff Department Director", label: "Staff Department Director" },
   { value: "Operations Manager", label: "Operations Manager" },
@@ -126,8 +121,9 @@ export default function AdminPanel() {
     "Staff Department Director",
     "Operations Manager",
     "Company Director",
-    "Developer",
-    "Staff Internal Affairs",
+    "Creative Designer",
+    "Gameplay Engineer",
+    
   ];
   const hasAccess =
     staffRanks.includes(currentUser?.userRank || "") ||

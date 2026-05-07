@@ -205,13 +205,11 @@ export function MainHeader() {
                     user.isModerator ||
                     [
                       "Appeals Moderator",
-                      "Trial Moderator",
                       "Community Moderator",
                       "Community Admin",
-                      "Communitu Senior Admin",
+                      "Community Senior Admin",
                       "Gameplay Engineer",
                       "Creative Designer",
-                      "Staff Internal Affairs",
                       "Team Member",
                       "Staff Department Director",
                       "Operations Manager",
