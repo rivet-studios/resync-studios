@@ -32,8 +32,6 @@ const ALWAYS_PUBLIC_PATHS = [
 function canBypassOffline(user: any): boolean {
   if (!user) return false;
   if (user.isAdmin) return true;
-  if (user.email?.toLowerCase().endsWith("@resyncstudios.com")) return true;
-  if (user.email?.toLowerCase().endsWith("@rivetstudiosus.com")) return true;
   if (STAFF_BYPASS_RANKS.includes(user.userRank || "")) return true;
   if ((user.additionalRanks || []).some((r: string) => STAFF_BYPASS_RANKS.includes(r))) return true;
   return false;
