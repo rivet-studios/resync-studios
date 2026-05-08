@@ -1372,23 +1372,47 @@ export async function registerRoutes(
       // Wrap passport.authenticate so we never crash with a blank 500 page.
       passport.authenticate("discord", (err: any, user: any, info: any) => {
         if (err) {
+          // Pull the underlying Discord token-exchange error body when present
+          // — that's the response body Discord sent us, which is the only way
+          // to know exactly why the token exchange failed.
+          let oauthBody: any = err?.oauthError;
+          try {
+            if (oauthBody && typeof oauthBody === "object" && "data" in oauthBody) {
+              const raw = oauthBody.data?.toString?.() || oauthBody.data;
+              try {
+                oauthBody = JSON.parse(raw);
+              } catch {
+                oauthBody = raw;
+              }
+            }
+          } catch {}
           console.error("❌ Discord callback error:", {
             message: err?.message,
             name: err?.name,
-            oauthError: err?.oauthError?.data?.toString?.() || err?.oauthError,
+            statusCode: err?.oauthError?.statusCode,
+            oauthBody,
+            queryError: req.query?.error,
+            queryErrorDescription: req.query?.error_description,
             host: req.headers.host,
+            xfHost: req.headers["x-forwarded-host"],
+            xfProto: req.headers["x-forwarded-proto"],
             originalUrl: req.originalUrl,
           });
-          return res.redirect(
-            "/login?error=" +
-              encodeURIComponent(
-                "Discord sign-in failed: " +
-                  (err?.message || "Unable to obtain access token") +
-                  ". Make sure the Discord Developer Portal redirect URI matches https://" +
-                  (req.headers.host || "rivetstudiosus.com") +
-                  "/api/auth/discord/callback",
-              ),
-          );
+          // Surface a useful message back to the user.
+          let userMsg =
+            "Discord sign-in failed: " +
+            (err?.message || "Unable to obtain access token") +
+            ".";
+          if (
+            (typeof oauthBody === "object" && oauthBody?.error) ||
+            (typeof oauthBody === "string" && oauthBody.includes("redirect_uri"))
+          ) {
+            userMsg +=
+              " The Discord Developer Portal redirect URI must EXACTLY match: https://" +
+              (req.headers["x-forwarded-host"] || req.headers.host || "rivetstudiosus.com") +
+              "/api/auth/discord/callback";
+          }
+          return res.redirect("/login?error=" + encodeURIComponent(userMsg));
         }
         if (!user) {
           console.warn("⚠️ Discord callback: no user.", info);

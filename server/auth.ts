@@ -6,16 +6,30 @@ import { sendSiteLog } from "./lib/discord-webhooks";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-// Allow explicit override via env var (this MUST exactly match the redirect URI
-// registered in the Discord Developer Portal, otherwise the access token
-// exchange will fail with "Unable to obtain access token").
-const CALLBACK_URL = process.env.DISCORD_CALLBACK_URL
-  || (process.env.NODE_ENV === 'production'
-    ? "https://rivetstudiosus.com/api/auth/discord/callback"
-    : `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`);
+
+// Resolve the callback URL. Order of precedence:
+//   1. DISCORD_CALLBACK_URL env override (always wins if set)
+//   2. Production → https://rivetstudiosus.com/api/auth/discord/callback
+//   3. Replit dev domain (REPLIT_DEV_DOMAIN, modern format)
+//   4. Legacy ${REPL_SLUG}.${REPL_OWNER}.repl.co (older Repls)
+//   5. Localhost fallback
+function resolveCallbackUrl(): string {
+  if (process.env.DISCORD_CALLBACK_URL) return process.env.DISCORD_CALLBACK_URL;
+  if (process.env.NODE_ENV === "production")
+    return "https://rivetstudiosus.com/api/auth/discord/callback";
+  if (process.env.REPLIT_DEV_DOMAIN)
+    return `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/discord/callback`;
+  if (process.env.REPL_SLUG && process.env.REPL_OWNER)
+    return `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`;
+  return "http://localhost:5000/api/auth/discord/callback";
+}
+const CALLBACK_URL = resolveCallbackUrl();
 
 console.log(`🔐 Discord OAuth Callback URL: ${CALLBACK_URL}`);
-console.log(`   ↳ This must match EXACTLY one of the Redirects in https://discord.com/developers/applications/${DISCORD_CLIENT_ID || '<APP_ID>'}/oauth2`);
+console.log(`   ↳ This MUST match EXACTLY one of the Redirects registered at:`);
+console.log(`     https://discord.com/developers/applications/${DISCORD_CLIENT_ID || "<APP_ID>"}/oauth2`);
+console.log(`   ↳ Common 500 causes: trailing slash mismatch, http vs https, www vs non-www,`);
+console.log(`     wrong DISCORD_CLIENT_SECRET, or stale CALLBACK_URL after a domain change.`);
 
 if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   console.warn(

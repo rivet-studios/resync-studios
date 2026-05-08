@@ -1,10 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { HardHat } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 
 
-const ADMIN_RANKS = [
+// Ranks that are allowed to bypass offline mode and access the site even
+// when the studio is closed to the public. Keep this list in sync with the
+// staff ranks that should always be able to log in.
+const STAFF_BYPASS_RANKS = [
   "Company Director",
   "Operations Manager",
   "Staff Department Director",
@@ -14,24 +18,41 @@ const ADMIN_RANKS = [
   "Team Member",
 ];
 
+// Routes that should always render — even when offline mode is on and even
+// when the user is not logged in. This lets staff log in (or reset their
+// password) and then have their rank checked by canBypassOffline below.
+const ALWAYS_PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/magic-link",
+];
+
 function canBypassOffline(user: any): boolean {
   if (!user) return false;
   if (user.isAdmin) return true;
   if (user.email?.toLowerCase().endsWith("@resyncstudios.com")) return true;
-  if (ADMIN_RANKS.includes(user.userRank || "")) return true;
-  if ((user.additionalRanks || []).some((r: string) => ADMIN_RANKS.includes(r))) return true;
+  if (user.email?.toLowerCase().endsWith("@rivetstudiosus.com")) return true;
+  if (STAFF_BYPASS_RANKS.includes(user.userRank || "")) return true;
+  if ((user.additionalRanks || []).some((r: string) => STAFF_BYPASS_RANKS.includes(r))) return true;
   return false;
 }
 
 export function OfflineGate({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const [location] = useLocation();
 
-    const { data: siteStatus } = useQuery<{ isOffline: boolean; offlineMessage: string | null; offlineTitle: string | null }>({
+  const { data: siteStatus } = useQuery<{ isOffline: boolean; offlineMessage: string | null; offlineTitle: string | null }>({
     queryKey: ["/api/site-status"],
     refetchInterval: 30000,
   });
 
-  if (siteStatus?.isOffline && !canBypassOffline(user)) {
+  const isAlwaysPublic = ALWAYS_PUBLIC_PATHS.some(
+    (p) => location === p || location.startsWith(p + "/") || location.startsWith(p + "?"),
+  );
+
+  if (siteStatus?.isOffline && !canBypassOffline(user) && !isAlwaysPublic) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center px-6" data-testid="offline-page">
         <div className="max-w-lg w-full text-center space-y-6">
