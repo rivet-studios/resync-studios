@@ -18,7 +18,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { SearchDialog } from "@/components/search-dialog";
-import logoSvg from "@assets/logo.svg";
+import logoSvg from "@assets/logo-rs.png";
 import {
   DropdownMenu,
   DropdownMenuContent,

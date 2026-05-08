@@ -38,11 +38,39 @@ export async function getVipPriceId(tierId: string, interval: "month" | "year" =
   // Check env fallback: e.g., STRIPE_PRICE_BRONZE_MONTH
   const envKey = `STRIPE_PRICE_${tierId.toUpperCase()}_${interval.toUpperCase()}`;
   const envVal = process.env[envKey];
-  
+
   if (envVal) {
     if (!priceCache[tierId]) priceCache[tierId] = {};
     priceCache[tierId][interval] = envVal;
     return envVal;
+  }
+
+  // Last resort: try to look it up live in Stripe so we don't crash if init
+  // hasn't run yet (e.g. cold start or Stripe init failed earlier).
+  try {
+    const tier = VIP_TIERS.find((t) => t.id === tierId);
+    if (!tier) return null;
+    const stripe = await getUncachableStripeClient();
+    const products = await stripe.products.search({
+      query: `metadata['tier_id']:'${tierId}'`,
+    });
+    if (!products.data.length) return null;
+    const prices = await stripe.prices.list({
+      product: products.data[0].id,
+      active: true,
+      type: "recurring",
+    });
+    const wantedAmount = interval === "year" ? tier.priceAmountYear : tier.priceAmountMonth;
+    const match = prices.data.find(
+      (p) => p.recurring?.interval === interval && p.unit_amount === wantedAmount,
+    ) || prices.data.find((p) => p.recurring?.interval === interval);
+    if (match) {
+      if (!priceCache[tierId]) priceCache[tierId] = {};
+      priceCache[tierId][interval] = match.id;
+      return match.id;
+    }
+  } catch (err: any) {
+    console.warn(`⚠️ getVipPriceId live lookup failed for ${tierId}/${interval}:`, err?.message);
   }
 
   return null;

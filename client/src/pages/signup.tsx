@@ -6,7 +6,7 @@ import { AlertCircle, CheckCircle } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import logoSvg from "@assets/logo.svg";
+import logoSvg from "@assets/logo-rs.png";
 
 export default function Signup() {
   const [, navigate] = useLocation();

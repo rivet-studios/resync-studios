@@ -1251,9 +1251,45 @@ export async function registerRoutes(
   app.get("/api/auth/discord", passport.authenticate("discord"));
   app.get(
     "/api/auth/discord/callback",
-    passport.authenticate("discord", { failureRedirect: "/login" }),
-    (req, res) => {
-      res.redirect("/dashboard");
+    (req, res, next) => {
+      // Wrap passport.authenticate so we never crash with a blank 500 page.
+      passport.authenticate("discord", (err: any, user: any, info: any) => {
+        if (err) {
+          console.error("❌ Discord callback error:", {
+            message: err?.message,
+            name: err?.name,
+            oauthError: err?.oauthError?.data?.toString?.() || err?.oauthError,
+            host: req.headers.host,
+            originalUrl: req.originalUrl,
+          });
+          return res.redirect(
+            "/login?error=" +
+              encodeURIComponent(
+                "Discord sign-in failed: " +
+                  (err?.message || "Unable to obtain access token") +
+                  ". Make sure the Discord Developer Portal redirect URI matches https://" +
+                  (req.headers.host || "rivetstudiosus.com") +
+                  "/api/auth/discord/callback",
+              ),
+          );
+        }
+        if (!user) {
+          console.warn("⚠️ Discord callback: no user.", info);
+          return res.redirect(
+            "/login?error=" +
+              encodeURIComponent(info?.message || "Discord sign-in cancelled"),
+          );
+        }
+        req.logIn(user, (loginErr) => {
+          if (loginErr) {
+            console.error("❌ Discord req.logIn failed:", loginErr);
+            return res.redirect(
+              "/login?error=" + encodeURIComponent("Session login failed"),
+            );
+          }
+          return res.redirect("/dashboard");
+        });
+      })(req, res, next);
     },
   );
 
@@ -2374,13 +2410,16 @@ export async function registerRoutes(
       const user = await storage.getUser((req.user as any).id);
       if (!user) return res.status(401).json({ message: "User not found" });
 
-      const { tierId } = req.body;
+      const { tierId, interval: rawInterval } = req.body;
 
       if (!tierId || typeof tierId !== "string") {
         return res.status(400).json({ message: "A valid tierId is required" });
       }
 
-      const priceId = await getVipPriceId(tierId);
+      const interval: "month" | "year" =
+        rawInterval === "year" ? "year" : "month";
+
+      const priceId = await getVipPriceId(tierId, interval);
       if (!priceId) {
         return res.status(400).json({
           message:
@@ -2410,6 +2449,7 @@ export async function registerRoutes(
         metadata: {
           userId: user.id,
           tierId: tierId || "",
+          interval,
         },
       });
 

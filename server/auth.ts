@@ -6,11 +6,16 @@ import { sendSiteLog } from "./lib/discord-webhooks";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const CALLBACK_URL = process.env.NODE_ENV === 'production' 
-  ? "https://rivetstudiosus.com/api/auth/discord/callback" 
-  : `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`;
+// Allow explicit override via env var (this MUST exactly match the redirect URI
+// registered in the Discord Developer Portal, otherwise the access token
+// exchange will fail with "Unable to obtain access token").
+const CALLBACK_URL = process.env.DISCORD_CALLBACK_URL
+  || (process.env.NODE_ENV === 'production'
+    ? "https://rivetstudiosus.com/api/auth/discord/callback"
+    : `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/auth/discord/callback`);
 
 console.log(`🔐 Discord OAuth Callback URL: ${CALLBACK_URL}`);
+console.log(`   ↳ This must match EXACTLY one of the Redirects in https://discord.com/developers/applications/${DISCORD_CLIENT_ID || '<APP_ID>'}/oauth2`);
 
 if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
   console.warn(
