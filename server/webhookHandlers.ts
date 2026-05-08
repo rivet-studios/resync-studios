@@ -1,5 +1,82 @@
-import { getStripeSync } from "./stripeClient";
+import { getStripeSync, getUncachableStripeClient } from "./stripeClient";
 import { sendStripeLog } from "./lib/discord-webhooks";
+import { storage } from "./storage";
+import { getVipTierFromPriceId, VIP_TIER_ID_TO_ENUM } from "./stripe-products";
+import { syncDiscordVipRole } from "./discord-bot";
+
+type VipTierEnum =
+  | "none"
+  | "Bronze VIP"
+  | "Diamond VIP"
+  | "Founders Edition VIP"
+  | "Lifetime";
+
+const VALID_VIP_TIERS = new Set<VipTierEnum>([
+  "none",
+  "Bronze VIP",
+  "Diamond VIP",
+  "Founders Edition VIP",
+  "Lifetime",
+]);
+
+/**
+ * Resolve the VIP tier (vipTierEnum value) for a Stripe subscription object.
+ * Looks at the first line item's price ID and reverses it back to a VIP tier.
+ * Returns "none" if the subscription is not in an active-ish state, or null if
+ * we can't determine the tier (caller should skip).
+ */
+async function resolveTierFromSubscription(
+  sub: any,
+): Promise<VipTierEnum | null> {
+  if (!sub) return null;
+  const activeStatuses = new Set(["active", "trialing", "past_due"]);
+  if (!activeStatuses.has(sub.status)) return "none";
+  const priceId: string | undefined = sub.items?.data?.[0]?.price?.id;
+  if (!priceId) return null;
+  const tierId = await getVipTierFromPriceId(priceId);
+  if (!tierId) return null;
+  return VIP_TIER_ID_TO_ENUM[tierId] ?? null;
+}
+
+async function applyVipTierForCustomer(
+  stripeCustomerId: string,
+  newTier: VipTierEnum,
+  stripeSubscriptionId: string | null,
+): Promise<void> {
+  if (!VALID_VIP_TIERS.has(newTier)) return;
+  const user = await storage.getUserByStripeCustomerId(stripeCustomerId);
+  if (!user) {
+    console.warn(`⚠️ Stripe webhook: no user found for customer ${stripeCustomerId}`);
+    return;
+  }
+  // Lifetime VIP is granted manually by an admin and must never be downgraded
+  // by a Stripe subscription event.
+  if (user.vipTier === "Lifetime") return;
+
+  const updates: Record<string, any> = {};
+  if (user.vipTier !== newTier) updates.vipTier = newTier;
+  if (
+    stripeSubscriptionId !== null &&
+    user.stripeSubscriptionId !== stripeSubscriptionId
+  ) {
+    updates.stripeSubscriptionId = stripeSubscriptionId;
+  }
+  if (Object.keys(updates).length === 0) return;
+
+  await storage.updateUser(user.id, updates as any);
+  console.log(
+    `🔄 Stripe webhook: user ${user.id} vipTier "${user.vipTier}" → "${updates.vipTier ?? user.vipTier}"`,
+  );
+
+  if (user.discordId && updates.vipTier) {
+    syncDiscordVipRole(user.discordId, updates.vipTier as any).catch((err) =>
+      console.error(
+        `❌ Stripe webhook: Discord VIP sync failed for user ${user.id}:`,
+        err,
+      ),
+    );
+  }
+}
 
 export class WebhookHandlers {
   static async processWebhook(
@@ -18,6 +95,50 @@ export class WebhookHandlers {
 
     const sync = await getStripeSync();
     const event = await sync.processWebhook(payload, signature);
+
+    try {
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as any;
+          if (session.mode !== "subscription") break;
+          const customerId = session.customer as string | null;
+          if (!customerId) break;
+          const subId = (session.subscription as string | null) ?? null;
+          // Prefer the explicit tierId from checkout metadata.
+          let tier: VipTierEnum | null = null;
+          const metaTierId = session.metadata?.tierId as string | undefined;
+          if (metaTierId && VIP_TIER_ID_TO_ENUM[metaTierId]) {
+            tier = VIP_TIER_ID_TO_ENUM[metaTierId];
+          } else if (subId) {
+            const stripe = await getUncachableStripeClient();
+            const sub = await stripe.subscriptions.retrieve(subId);
+            tier = await resolveTierFromSubscription(sub);
+          }
+          if (tier) {
+            await applyVipTierForCustomer(customerId, tier, subId);
+          }
+          break;
+        }
+        case "customer.subscription.created":
+        case "customer.subscription.updated": {
+          const sub = event.data.object as any;
+          const customerId = sub.customer as string;
+          const tier = await resolveTierFromSubscription(sub);
+          if (tier) {
+            await applyVipTierForCustomer(customerId, tier, sub.id);
+          }
+          break;
+        }
+        case "customer.subscription.deleted": {
+          const sub = event.data.object as any;
+          const customerId = sub.customer as string;
+          await applyVipTierForCustomer(customerId, "none", null);
+          break;
+        }
+      }
+    } catch (err) {
+      console.error(`❌ Stripe webhook handler error for ${event.type}:`, err);
+    }
 
     if (
       event.type === "payment_intent.succeeded" ||

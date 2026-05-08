@@ -76,6 +76,46 @@ export async function getVipPriceId(tierId: string, interval: "month" | "year" =
   return null;
 }
 
+/**
+ * Reverse lookup: given a Stripe Price ID, return the VIP tier id ("bronze" |
+ * "diamond" | "founders") or null if the price does not belong to a VIP tier.
+ * Uses the in-memory price cache first, then falls back to Stripe (reading the
+ * product's `tier_id` metadata).
+ */
+// Maps the internal short tier id used by Stripe products to the vipTierEnum
+// value stored on the user record.
+export const VIP_TIER_ID_TO_ENUM: Record<string, "Bronze VIP" | "Diamond VIP" | "Founders Edition VIP"> = {
+  bronze: "Bronze VIP",
+  diamond: "Diamond VIP",
+  founders: "Founders Edition VIP",
+};
+
+export async function getVipTierFromPriceId(
+  priceId: string,
+): Promise<string | null> {
+  for (const tierId of Object.keys(priceCache)) {
+    const intervals = priceCache[tierId];
+    if (intervals.month === priceId || intervals.year === priceId) {
+      return tierId;
+    }
+  }
+  try {
+    const stripe = await getUncachableStripeClient();
+    const price = await stripe.prices.retrieve(priceId, { expand: ["product"] });
+    const product = price.product as any;
+    const tierId = product?.metadata?.tier_id;
+    if (tierId && VIP_TIERS.find((t) => t.id === tierId)) {
+      if (!priceCache[tierId]) priceCache[tierId] = {};
+      const interval = price.recurring?.interval === "year" ? "year" : "month";
+      priceCache[tierId][interval] = priceId;
+      return tierId;
+    }
+  } catch (err: any) {
+    console.warn(`⚠️ getVipTierFromPriceId failed for ${priceId}:`, err?.message);
+  }
+  return null;
+}
+
 export async function initializeStripeProducts(): Promise<void> {
   try {
     const stripe = await getUncachableStripeClient();

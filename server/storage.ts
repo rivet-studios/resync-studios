@@ -54,6 +54,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByDiscordId(discordId: string): Promise<User | undefined>;
   getUserByRobloxId(robloxId: string): Promise<User | undefined>;
+  getUserByStripeCustomerId(customerId: string): Promise<User | undefined>;
   getUserByResetToken(token: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
@@ -232,6 +233,13 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(users)
       .where(eq(users.robloxId, robloxId));
+    return user;
+  }
+  async getUserByStripeCustomerId(customerId: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.stripeCustomerId, customerId));
     return user;
   }
   async getAllUsers(): Promise<User[]> {
