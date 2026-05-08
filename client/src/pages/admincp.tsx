@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation, useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -90,10 +91,45 @@ interface ActivityItem {
   createdAt: string;
 }
 
+const ADMINCP_TAB_IDS = [
+  "dashboard",
+  "analytics",
+  "users",
+  "settings",
+  "forums",
+  "announcements",
+  "policies",
+  "reports",
+  "audit-log",
+  "achievements",
+  "status",
+];
+
 export default function AdminCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [location, navigate] = useLocation();
+  const [, tabParams] = useRoute("/admincp/:tab");
+  const resolveInitialTab = () => {
+    const fromPath = tabParams?.tab;
+    if (fromPath && ADMINCP_TAB_IDS.includes(fromPath)) return fromPath;
+    const fromQuery = new URLSearchParams(window.location.search).get("tab");
+    if (fromQuery && ADMINCP_TAB_IDS.includes(fromQuery)) return fromQuery;
+    return "dashboard";
+  };
+  const [activeTab, setActiveTabState] = useState<string>(resolveInitialTab);
+  // Keep activeTab in sync when the URL changes (back/forward, deep links).
+  useEffect(() => {
+    const fromPath = tabParams?.tab;
+    if (fromPath && ADMINCP_TAB_IDS.includes(fromPath) && fromPath !== activeTab) {
+      setActiveTabState(fromPath);
+    }
+  }, [tabParams?.tab]);
+  const setActiveTab = (tabId: string) => {
+    setActiveTabState(tabId);
+    const target = `/admincp/${tabId}`;
+    if (location !== target) navigate(target);
+  };
   const [userSearch, setUserSearch] = useState("");
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementContent, setAnnouncementContent] = useState("");

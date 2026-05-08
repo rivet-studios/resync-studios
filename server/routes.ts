@@ -10,6 +10,7 @@ import {
   updateDiscordNickname,
   updateDiscordRoles,
   syncUserFromDiscord,
+  syncDiscordVipRole,
   getRoleMappingStatus,
   getDiscordMemberCount,
 } from "./discord-bot";
@@ -618,6 +619,8 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: push a user's current VIP tier to their linked Discord account.
+  // One-way only — never reads roles from Discord.
   app.post("/api/admin/discord-sync/:userId", requireAuth, async (req, res) => {
     try {
       const actingUser = req.user as any;
@@ -632,14 +635,43 @@ export async function registerRoutes(
           .status(400)
           .json({ message: "User has no linked Discord account" });
 
-      const success = await syncUserFromDiscord(targetUser.discordId);
+      const success = await syncDiscordVipRole(
+        targetUser.discordId,
+        targetUser.vipTier as any,
+      );
       if (success) {
-        res.json({ message: "Discord sync completed" });
+        res.json({ message: "VIP role synced to Discord" });
       } else {
-        res.status(500).json({ message: "Discord sync failed" });
+        res
+          .status(500)
+          .json({ message: "Discord sync failed (bot offline or no perms)" });
       }
     } catch (error) {
-      res.status(500).json({ message: "Failed to sync from Discord" });
+      res.status(500).json({ message: "Failed to sync VIP role to Discord" });
+    }
+  });
+
+  // User self-serve: push my current VIP tier to my linked Discord account.
+  // Triggered by the "Sync Accounts" button in user settings.
+  app.post("/api/users/sync", requireAuth, async (req, res) => {
+    try {
+      const me = await storage.getUser((req.user as any).id);
+      if (!me) return res.status(404).json({ message: "User not found" });
+      if (!me.discordId) {
+        return res.json({
+          message: "No Discord account linked — nothing to sync.",
+          synced: false,
+        });
+      }
+      const ok = await syncDiscordVipRole(me.discordId, me.vipTier as any);
+      res.json({
+        message: ok
+          ? "Your Discord VIP role is up to date."
+          : "Discord sync failed — please try again later.",
+        synced: ok,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to sync accounts" });
     }
   });
 
@@ -1324,7 +1356,17 @@ export async function registerRoutes(
       if (!targetUser)
         return res.status(404).json({ message: "User not found" });
 
+      const oldTier = targetUser.vipTier;
       await storage.updateUser(targetUser.id, { vipTier: vipTier as any });
+
+      // One-way push: keep the user's Discord VIP role in sync with their
+      // current tier. Fire-and-forget — do not block the admin response.
+      if (targetUser.discordId && oldTier !== vipTier) {
+        syncDiscordVipRole(targetUser.discordId, vipTier as any).catch((err) =>
+          console.error("Discord VIP sync error:", err),
+        );
+      }
+
       res.json({ message: "Subscription assigned successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to assign subscription" });
@@ -2544,16 +2586,17 @@ export async function registerRoutes(
         });
       }
 
-      if (updatedUser?.discordId && oldRank !== userRank) {
-        updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch(
-          (err) => console.error("Discord role sync error:", err),
-        );
-        if (updatedUser.username) {
-          updateDiscordNickname(
-            updatedUser.discordId,
-            updatedUser.username,
-          ).catch((err) => console.error("Discord nickname sync error:", err));
-        }
+      // Rank changes do NOT push roles to Discord — VIP roles only.
+      // We still keep the user's Discord nickname in sync with their username.
+      if (
+        updatedUser?.discordId &&
+        oldRank !== userRank &&
+        updatedUser.username
+      ) {
+        updateDiscordNickname(
+          updatedUser.discordId,
+          updatedUser.username,
+        ).catch((err) => console.error("Discord nickname sync error:", err));
       }
 
       res.json(updatedUser);

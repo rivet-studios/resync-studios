@@ -395,8 +395,14 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/modcp/case/:type/:id">
               {canAccessModCP(user) ? <CaseDetail /> : <NotFound />}
             </Route>
+            <Route path="/modcp/:tab">
+              {canAccessModCP(user) ? <ModCP /> : <NotFound />}
+            </Route>
             <Route path="/modcp">
               {canAccessModCP(user) ? <ModCP /> : <NotFound />}
+            </Route>
+            <Route path="/admincp/:tab">
+              {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}
             </Route>
             <Route path="/admincp">
               {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}

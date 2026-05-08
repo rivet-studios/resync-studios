@@ -188,46 +188,9 @@ export async function initializeDiscordBot() {
           }
         }
 
-        const oldRoleIds = new Set(oldMember.roles.cache.map((r) => r.id));
-        const newRoleIds = new Set(newMember.roles.cache.map((r) => r.id));
-
-        const addedRoles = [...newRoleIds].filter((id) => !oldRoleIds.has(id));
-        const removedRoles = [...oldRoleIds].filter(
-          (id) => !newRoleIds.has(id),
-        );
-
-        if (addedRoles.length === 0 && removedRoles.length === 0) return;
-
-        const managedRoleIds = new Set(
-          Object.values(RANK_TO_ROLE).filter(Boolean),
-        );
-        const relevantAdded = addedRoles.filter((id) => managedRoleIds.has(id));
-        const relevantRemoved = removedRoles.filter((id) =>
-          managedRoleIds.has(id),
-        );
-
-        if (relevantAdded.length === 0 && relevantRemoved.length === 0) return;
-
-        const currentManagedRoles = [...newRoleIds]
-          .filter((id) => managedRoleIds.has(id))
-          .map((id) => ROLE_TO_RANK[id])
-          .filter(Boolean);
-
-        let highestRank = "Active Members";
-        for (const rank of RANK_HIERARCHY) {
-          if (currentManagedRoles.includes(rank)) {
-            highestRank = rank;
-            break;
-          }
-        }
-
-        if (user.userRank !== highestRank) {
-          const oldRank = user.userRank;
-          await storage.updateUserRank(user.id, highestRank);
-          console.log(
-            `🔄 Synced rank from Discord for ${discordId}: "${oldRank}" → "${highestRank}"`,
-          );
-        }
+        // Discord → app rank sync is intentionally disabled.
+        // Role sync is one-way only (app → Discord, VIP roles only).
+        // Discord role changes are ignored on purpose.
       } catch (error) {
         console.error(
           `❌ Error handling GuildMemberUpdate for ${newMember.id}:`,
@@ -277,6 +240,77 @@ export async function updateDiscordNickname(
       `❌ Failed to update Discord nickname for ${discordId}:`,
       error,
     );
+    return false;
+  }
+}
+
+/**
+ * VIP tiers that map to Discord roles. These are the ONLY roles the bot
+ * is allowed to add/remove via VIP sync. Staff ranks are never touched.
+ */
+const VIP_TIER_RANKS = [
+  "Bronze VIP",
+  "Diamond VIP",
+  "Founders Edition VIP",
+  "Lifetime",
+] as const;
+
+export type VipTier = (typeof VIP_TIER_RANKS)[number] | "none" | null | undefined;
+
+/**
+ * One-way push of a user's current VIP tier to Discord.
+ * Removes any other VIP role they currently have, then adds the role for
+ * `newVipTier` (if it's a real tier). Never touches non-VIP roles.
+ *
+ * Safe to call repeatedly — idempotent.
+ */
+export async function syncDiscordVipRole(
+  discordId: string,
+  newVipTier: VipTier,
+): Promise<boolean> {
+  if (!rest) {
+    console.warn("⚠️ Discord bot not initialized. Cannot sync VIP role.");
+    return false;
+  }
+
+  if (!rolesDiscovered) {
+    await discoverGuildRoles();
+  }
+
+  const vipRoleIds = VIP_TIER_RANKS
+    .map((tier) => RANK_TO_ROLE[tier])
+    .filter((id): id is string => Boolean(id));
+  const vipRoleIdSet = new Set(vipRoleIds);
+
+  const targetRoleId =
+    newVipTier && newVipTier !== "none" ? RANK_TO_ROLE[newVipTier] : undefined;
+
+  try {
+    const member = (await rest.get(
+      Routes.guildMember(GUILD_ID, discordId),
+    )) as { roles: string[] };
+    const currentRoles = new Set(member.roles);
+
+    for (const roleId of vipRoleIds) {
+      if (roleId === targetRoleId) continue;
+      if (currentRoles.has(roleId)) {
+        await rest.delete(
+          Routes.guildMemberRole(GUILD_ID, discordId, roleId),
+        );
+        console.log(`🔄 Removed VIP role ${roleId} from ${discordId}`);
+      }
+    }
+
+    if (targetRoleId && !currentRoles.has(targetRoleId)) {
+      await rest.put(
+        Routes.guildMemberRole(GUILD_ID, discordId, targetRoleId),
+      );
+      console.log(`✅ Added VIP role for "${newVipTier}" to ${discordId}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to sync VIP role for ${discordId}:`, error);
     return false;
   }
 }
@@ -370,29 +404,12 @@ export async function syncUserFromDiscord(discordId: string): Promise<boolean> {
       }
     }
 
-    const managedRoleIds = new Set(Object.values(RANK_TO_ROLE).filter(Boolean));
-    const currentManagedRoles = member.roles
-      .filter((id) => managedRoleIds.has(id))
-      .map((id) => ROLE_TO_RANK[id])
-      .filter(Boolean);
-
-    let highestRank = "Active Members";
-    for (const rank of RANK_HIERARCHY) {
-      if (currentManagedRoles.includes(rank)) {
-        highestRank = rank;
-        break;
-      }
-    }
+    // Rank sync from Discord is intentionally disabled.
+    // Role sync is one-way only (app → Discord, VIP roles only).
+    // We only refresh nickname/avatar metadata here.
 
     if (Object.keys(updates).length > 0) {
       await storage.updateUser(user.id, updates as any);
-    }
-
-    if (user.userRank !== highestRank) {
-      await storage.updateUserRank(user.id, highestRank);
-      console.log(
-        `🔄 Manual sync rank for ${discordId}: "${user.userRank}" → "${highestRank}"`,
-      );
     }
 
     return true;

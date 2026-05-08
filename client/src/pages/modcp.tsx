@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -65,10 +65,43 @@ import {
 } from "lucide-react";
 import { VerifiedBadge } from "@/components/verified-badge";
 
+const MODCP_TAB_IDS = [
+  "dashboard",
+  "bans",
+  "reports",
+  "appeals",
+  "warnings",
+  "mass-warning",
+  "escalations",
+  "forums",
+  "audit",
+];
+
 export default function ModCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [location, navigate] = useLocation();
+  const [, tabParams] = useRoute("/modcp/:tab");
+  const resolveInitialTab = () => {
+    const fromPath = tabParams?.tab;
+    if (fromPath && MODCP_TAB_IDS.includes(fromPath)) return fromPath;
+    const fromQuery = new URLSearchParams(window.location.search).get("tab");
+    if (fromQuery && MODCP_TAB_IDS.includes(fromQuery)) return fromQuery;
+    return "dashboard";
+  };
+  const [activeTab, setActiveTabState] = useState<string>(resolveInitialTab);
+  // Keep activeTab in sync when the URL changes (back/forward, deep links).
+  useEffect(() => {
+    const fromPath = tabParams?.tab;
+    if (fromPath && MODCP_TAB_IDS.includes(fromPath) && fromPath !== activeTab) {
+      setActiveTabState(fromPath);
+    }
+  }, [tabParams?.tab]);
+  const setActiveTab = (tabId: string) => {
+    setActiveTabState(tabId);
+    const target = `/modcp/${tabId}`;
+    if (location !== target) navigate(target);
+  };
   const [banUserId, setBanUserId] = useState("");
   const [banUsername, setBanUsername] = useState("");
   const [banReason, setBanReason] = useState("");
