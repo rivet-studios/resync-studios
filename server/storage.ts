@@ -58,6 +58,8 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
+  updateUserRank(userId: string, rank: string): Promise<void>;
+  updateUserAdditionalRanks(userId: string, ranks: string[]): Promise<void>;
   deleteUser(id: string): Promise<void>;
   createMagicLinkToken(email: string): Promise<string>;
   verifyMagicLinkToken(token: string): Promise<string | undefined>;

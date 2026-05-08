@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { useLocation, useSearch, useRoute } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -992,16 +992,42 @@ export default function Settings() {
   const { layout: navLayout, setLayout: setNavLayout } = useNavigationLayout();
 
   const searchString = useSearch();
-  const [activeTab, setActiveTab] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("tab") || "account";
-  });
+  const [, tabParams] = useRoute("/settings/:tab");
+  const validTabIds = SETTINGS_TABS.map((t) => t.id);
 
+  const resolveInitialTab = () => {
+    const fromPath = tabParams?.tab;
+    if (fromPath && validTabIds.includes(fromPath)) return fromPath;
+    const fromQuery = new URLSearchParams(window.location.search).get("tab");
+    if (fromQuery && validTabIds.includes(fromQuery)) return fromQuery;
+    return "account";
+  };
+
+  const [activeTab, setActiveTab] = useState(resolveInitialTab);
+
+  // Sync URL -> state when the user navigates (back/forward, direct links).
   useEffect(() => {
-    const params = new URLSearchParams(searchString);
-    const tab = params.get("tab");
-    if (tab && tab !== activeTab) setActiveTab(tab);
-  }, [searchString]);
+    const fromPath = tabParams?.tab;
+    if (fromPath && validTabIds.includes(fromPath) && fromPath !== activeTab) {
+      setActiveTab(fromPath);
+      return;
+    }
+    const fromQuery = new URLSearchParams(searchString).get("tab");
+    if (
+      fromQuery &&
+      validTabIds.includes(fromQuery) &&
+      fromQuery !== activeTab
+    ) {
+      setActiveTab(fromQuery);
+    }
+  }, [tabParams?.tab, searchString]);
+
+  // Sync state -> URL when the user clicks a tab.
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    const target = `/settings/${tabId}`;
+    if (location !== target) navigate(target);
+  };
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -1177,6 +1203,27 @@ export default function Settings() {
     },
   });
 
+  const unlinkDiscord = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/discord/unlink", {});
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Discord Unlinked",
+        description: "Your Discord account has been unlinked.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to unlink Discord account.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const unlinkRoblox = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/roblox/unlink", {});
@@ -1226,7 +1273,7 @@ export default function Settings() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     isActive
                       ? "bg-accent text-foreground"
@@ -2077,10 +2124,9 @@ export default function Settings() {
                             {user.discordUsername}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {user.email}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatConnectedDate(user.createdAt)}
+                            {formatConnectedDate(
+                              (user as any).discordLinkedAt || user.createdAt,
+                            )}
                           </p>
                         </>
                       ) : (
@@ -2089,6 +2135,28 @@ export default function Settings() {
                         </p>
                       )}
                     </div>
+                    {user?.discordId ? (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => unlinkDiscord.mutate()}
+                        disabled={unlinkDiscord.isPending}
+                        data-testid="button-unlink-discord"
+                      >
+                        {unlinkDiscord.isPending ? "Unlinking..." : "Unlink"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          window.location.href = "/api/auth/discord";
+                        }}
+                        data-testid="button-link-discord"
+                      >
+                        Link Account
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

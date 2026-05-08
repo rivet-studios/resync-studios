@@ -385,6 +385,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             </Route>
             <Route path="/profile" component={UserProfile} />
             <Route path="/profile/:id" component={UserProfile} />
+            <Route path="/settings/:tab" component={Settings} />
             <Route path="/settings" component={Settings} />
             <Route path="/team" component={TeamDirectory} />
             <Route path="/search" component={UserSearch} />

@@ -3029,6 +3029,79 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/discord/unlink", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      // Don't let users unlink Discord if it's their only login method.
+      if (!targetUser.password) {
+        return res.status(400).json({
+          message:
+            "You can't unlink Discord because it's your only sign-in method. Set a password first under Account.",
+        });
+      }
+      await storage.updateUser(userId, {
+        discordId: null as any,
+        discordUsername: null as any,
+        discordAvatar: null as any,
+        discordLinkedAt: null as any,
+      });
+      const updatedUser = await storage.getUser(userId);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Discord unlink error:", error);
+      res.status(500).json({ message: "Failed to unlink Discord account" });
+    }
+  });
+
+  app.patch(
+    "/api/admin/users/:id/additional-ranks",
+    requireAuth,
+    async (req, res) => {
+      try {
+        const actingUser = await storage.getUser((req.user as any).id);
+        if (!actingUser || !isAdminUser(actingUser)) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+        const { additionalRanks } = req.body;
+        if (
+          !Array.isArray(additionalRanks) ||
+          !additionalRanks.every((r) => typeof r === "string")
+        ) {
+          return res
+            .status(400)
+            .json({ message: "additionalRanks must be an array of strings" });
+        }
+        const targetUser = await storage.getUser(req.params.id);
+        if (!targetUser) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        const oldRanks = targetUser.additionalRanks || [];
+        await storage.updateUserAdditionalRanks(req.params.id, additionalRanks);
+        const updatedUser = await storage.getUser(req.params.id);
+
+        await storage.createModerationLog({
+          action: "Additional Ranks Changed",
+          actorId: actingUser.id,
+          targetId: req.params.id,
+          targetType: targetUser.username || "",
+          details: `Additional ranks changed from [${oldRanks.join(", ") || "none"}] to [${additionalRanks.join(", ") || "none"}]`,
+          metadata: JSON.stringify({ oldRanks, newRanks: additionalRanks }),
+        });
+
+        res.json(updatedUser);
+      } catch (error) {
+        console.error("Update additional ranks error:", error);
+        res
+          .status(500)
+          .json({ message: "Failed to update additional ranks" });
+      }
+    },
+  );
+
   app.post("/api/roblox/unlink", requireAuth, async (req, res) => {
     try {
       await storage.updateUser((req.user as any).id, {

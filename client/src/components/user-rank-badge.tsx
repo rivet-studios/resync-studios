@@ -215,20 +215,40 @@ export function getUsernameColor(
   vipTier?: string | null,
   primaryRank?: string | null,
   additionalRanks?: string[] | null,
-): { className?: string; color?: string } {
+): { className?: string; color?: string; gradient?: string } {
+  // 1. Lifetime always wins, regardless of where it lives.
+  const hasLifetime =
+    vipTier === "Lifetime" ||
+    primaryRank === "Lifetime" ||
+    (additionalRanks || []).includes("Lifetime");
+  if (hasLifetime) {
+    const lifetimeGradient = rankConfig["Lifetime"]?.gradient;
+    if (lifetimeGradient) return { gradient: lifetimeGradient };
+    return { className: "lifetime-gradient" };
+  }
+
+  // 2. Other VIP tiers override the main rank.
   const gradientClass = getVipGradientClass(vipTier);
   if (gradientClass) return { className: gradientClass };
 
+  // 3. Otherwise the main rank determines the color.
   const primaryConfig = primaryRank
     ? rankConfig[primaryRank as keyof typeof rankConfig]
     : null;
-  if (primaryConfig?.color && primaryRank !== "Active Members") {
-    return { color: primaryConfig.color };
+  if (primaryConfig && primaryRank !== "Active Members") {
+    if (primaryConfig.isGradient && primaryConfig.gradient) {
+      return { gradient: primaryConfig.gradient };
+    }
+    if (primaryConfig.color) return { color: primaryConfig.color };
   }
 
+  // 4. Fall back to the first colored additional rank.
   if (additionalRanks) {
     for (const rank of additionalRanks) {
       const config = rankConfig[rank as keyof typeof rankConfig];
+      if (config?.isGradient && config.gradient) {
+        return { gradient: config.gradient };
+      }
       if (config?.color) return { color: config.color };
     }
   }
@@ -271,7 +291,18 @@ export function FormattedUsername({
       )}
       <span
         className={`font-bold uppercase ${styling.className || ""}`}
-        style={styling.color ? { color: styling.color } : undefined}
+        style={
+          styling.gradient
+            ? {
+                color: "transparent",
+                backgroundImage: styling.gradient,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+              }
+            : styling.color
+              ? { color: styling.color }
+              : undefined
+        }
       >
         {username}
       </span>

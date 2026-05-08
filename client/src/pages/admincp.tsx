@@ -59,6 +59,13 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SiDiscord } from "react-icons/si";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { MarkdownContent } from "@/components/markdown-content";
 
@@ -110,6 +117,10 @@ export default function AdminCP() {
   const [editCategoryOrder, setEditCategoryOrder] = useState("0");
   const [inlineEditUserId, setInlineEditUserId] = useState<string | null>(null);
   const [inlineEditRank, setInlineEditRank] = useState("");
+  const [inlineEditAdditionalRanks, setInlineEditAdditionalRanks] = useState<
+    string[]
+  >([]);
+  const [additionalRanksOpen, setAdditionalRanksOpen] = useState(false);
   const [usersSubTab, setUsersSubTab] = useState<
     "list" | "role-history" | "bulk"
   >("list");
@@ -578,24 +589,60 @@ export default function AdminCP() {
     mutationFn: async ({
       userId,
       userRank,
+      additionalRanks,
     }: {
       userId: string;
       userRank: string;
+      additionalRanks: string[];
     }) => {
-      const res = await apiRequest("PATCH", `/api/admin/users/${userId}/rank`, {
-        userRank,
-      });
-      return res.json();
+      const rankRes = await apiRequest(
+        "PATCH",
+        `/api/admin/users/${userId}/rank`,
+        { userRank },
+      );
+      const rankJson = await rankRes.json();
+      const addRes = await apiRequest(
+        "PATCH",
+        `/api/admin/users/${userId}/additional-ranks`,
+        { additionalRanks },
+      );
+      return { ...rankJson, ...(await addRes.json()) };
     },
     onSuccess: () => {
-      toast({ title: "User rank updated" });
+      toast({ title: "User ranks updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setInlineEditUserId(null);
       setInlineEditRank("");
+      setInlineEditAdditionalRanks([]);
     },
     onError: (e: any) => {
       toast({
-        title: "Failed to update rank",
+        title: "Failed to update ranks",
+        description: e.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const discordSyncMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiRequest(
+        "POST",
+        `/api/admin/discord-sync/${userId}`,
+        {},
+      );
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Discord sync complete",
+        description: "User's roles and nickname were re-synced from Discord.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Discord sync failed",
         description: e.message,
         variant: "destructive",
       });
@@ -1605,7 +1652,7 @@ export default function AdminCP() {
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                                   {inlineEditUserId === u.id ? (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-wrap justify-end">
                                       <Select
                                         value={inlineEditRank}
                                         onValueChange={setInlineEditRank}
@@ -1614,7 +1661,7 @@ export default function AdminCP() {
                                           className="w-40"
                                           data-testid={`select-inline-rank-${u.id}`}
                                         >
-                                          <SelectValue placeholder="Select rank" />
+                                          <SelectValue placeholder="Main rank" />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {allRankOptions.map((rank) => (
@@ -1624,6 +1671,96 @@ export default function AdminCP() {
                                           ))}
                                         </SelectContent>
                                       </Select>
+                                      <Popover
+                                        open={additionalRanksOpen}
+                                        onOpenChange={setAdditionalRanksOpen}
+                                      >
+                                        <PopoverTrigger asChild>
+                                          <Button
+                                            variant="outline"
+                                            className="w-48 justify-between font-normal"
+                                            onClick={(e) =>
+                                              e.stopPropagation()
+                                            }
+                                            data-testid={`button-additional-ranks-${u.id}`}
+                                          >
+                                            <span className="truncate text-xs">
+                                              {inlineEditAdditionalRanks.length ===
+                                              0
+                                                ? "Additional ranks"
+                                                : `${inlineEditAdditionalRanks.length} selected`}
+                                            </span>
+                                            <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                          className="w-64 p-0"
+                                          align="end"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <div className="p-2 border-b">
+                                            <p className="text-xs font-medium text-muted-foreground">
+                                              Additional ranks
+                                              {inlineEditAdditionalRanks.length >
+                                                0 && (
+                                                <button
+                                                  type="button"
+                                                  className="float-right text-xs underline hover:text-foreground"
+                                                  onClick={() =>
+                                                    setInlineEditAdditionalRanks(
+                                                      [],
+                                                    )
+                                                  }
+                                                  data-testid={`button-clear-additional-ranks-${u.id}`}
+                                                >
+                                                  Clear
+                                                </button>
+                                              )}
+                                            </p>
+                                          </div>
+                                          <ScrollArea className="h-64">
+                                            <div className="p-2 space-y-1">
+                                              {allRankOptions.map((rank) => {
+                                                const checked =
+                                                  inlineEditAdditionalRanks.includes(
+                                                    rank,
+                                                  );
+                                                return (
+                                                  <label
+                                                    key={rank}
+                                                    className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent cursor-pointer text-sm"
+                                                  >
+                                                    <Checkbox
+                                                      checked={checked}
+                                                      onCheckedChange={(
+                                                        v,
+                                                      ) => {
+                                                        if (v) {
+                                                          setInlineEditAdditionalRanks(
+                                                            [
+                                                              ...inlineEditAdditionalRanks,
+                                                              rank,
+                                                            ],
+                                                          );
+                                                        } else {
+                                                          setInlineEditAdditionalRanks(
+                                                            inlineEditAdditionalRanks.filter(
+                                                              (r) =>
+                                                                r !== rank,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }}
+                                                      data-testid={`checkbox-additional-${u.id}-${rank.replace(/\s+/g, "-")}`}
+                                                    />
+                                                    <span>{rank}</span>
+                                                  </label>
+                                                );
+                                              })}
+                                            </div>
+                                          </ScrollArea>
+                                        </PopoverContent>
+                                      </Popover>
                                       <Button
                                         size="icon"
                                         variant="ghost"
@@ -1632,6 +1769,8 @@ export default function AdminCP() {
                                             updateRankMutation.mutate({
                                               userId: u.id,
                                               userRank: inlineEditRank,
+                                              additionalRanks:
+                                                inlineEditAdditionalRanks,
                                             });
                                           }
                                         }}
@@ -1649,6 +1788,7 @@ export default function AdminCP() {
                                         onClick={() => {
                                           setInlineEditUserId(null);
                                           setInlineEditRank("");
+                                          setInlineEditAdditionalRanks([]);
                                         }}
                                         data-testid={`button-cancel-rank-${u.id}`}
                                       >
@@ -1687,11 +1827,39 @@ export default function AdminCP() {
                                           setInlineEditRank(
                                             u.userRank || "Active Members",
                                           );
+                                          setInlineEditAdditionalRanks(
+                                            u.additionalRanks || [],
+                                          );
                                         }}
                                         data-testid={`button-edit-rank-${u.id}`}
                                       >
                                         <Edit3 className="w-3.5 h-3.5" />
                                       </Button>
+                                      {u.discordId && (
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          title="Re-sync this user from Discord"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            discordSyncMutation.mutate(u.id);
+                                          }}
+                                          disabled={
+                                            discordSyncMutation.isPending &&
+                                            discordSyncMutation.variables ===
+                                              u.id
+                                          }
+                                          data-testid={`button-discord-sync-${u.id}`}
+                                        >
+                                          {discordSyncMutation.isPending &&
+                                          discordSyncMutation.variables ===
+                                            u.id ? (
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                          ) : (
+                                            <SiDiscord className="w-3.5 h-3.5 text-[#5865F2]" />
+                                          )}
+                                        </Button>
+                                      )}
                                       <Button
                                         size="icon"
                                         variant="ghost"
