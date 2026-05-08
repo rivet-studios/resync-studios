@@ -6,6 +6,31 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
+import { generateUploadButton } from "@uploadthing/react";
+import "@uploadthing/react/styles.css";
+import type { OurFileRouter } from "../../../server/uploadthing";
+
+const UploadButton = generateUploadButton<OurFileRouter>();
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Trash2, Pencil, X, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Card,
@@ -72,9 +97,24 @@ const submitProductSchema = z.object({
     ),
   category: z.string().min(1, "Category is required"),
   imageUrl: z.string().url("Must be a valid URL").or(z.literal("")),
+  attachments: z.array(z.string().url()).default([]),
 });
 
 type SubmitProductForm = z.infer<typeof submitProductSchema>;
+
+const editProductSchema = z.object({
+  name: z.string().min(1, "Required"),
+  description: z.string().min(1, "Required"),
+  price: z
+    .string()
+    .min(1, "Required")
+    .refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, "Price must be 0 or more"),
+  category: z.string().min(1, "Required"),
+  imageUrl: z.string().url("Must be a valid URL").or(z.literal("")),
+  attachments: z.array(z.string().url()).default([]),
+});
+
+type EditProductForm = z.infer<typeof editProductSchema>;
 
 const CATEGORIES = [
   "Rosewood Vehicle Addons",
@@ -184,11 +224,20 @@ export default function Marketplace() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
-  const opsRanks = ["Operations Manager", "Company Director", "Gameplay Engineer", "Creative Designer", "Developer"];
+  // Team Member rank (and any other staff/admin rank) can review, edit, and
+  // delete products. Mirrors the backend `isAdminUser` check.
+  const teamRanks = [
+    "Team Member",
+    "Gameplay Engineer",
+    "Creative Designer",
+    "Staff Department Director",
+    "Operations Manager",
+    "Company Director",
+  ];
   const isOpsManager =
     user?.isAdmin ||
-    opsRanks.includes(user?.userRank || "") ||
-    (user?.additionalRanks || []).some((r: string) => opsRanks.includes(r));
+    teamRanks.includes(user?.userRank || "") ||
+    (user?.additionalRanks || []).some((r: string) => teamRanks.includes(r));
 
   const form = useForm<SubmitProductForm>({
     resolver: zodResolver(submitProductSchema),
@@ -198,8 +247,36 @@ export default function Marketplace() {
       price: "",
       category: "",
       imageUrl: "",
+      attachments: [],
     },
   });
+  const submitAttachments = form.watch("attachments") ?? [];
+
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const editForm = useForm<EditProductForm>({
+    resolver: zodResolver(editProductSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      imageUrl: "",
+      attachments: [],
+    },
+  });
+  const editAttachments = editForm.watch("attachments") ?? [];
+
+  function openEdit(product: Product) {
+    setEditingProduct(product);
+    editForm.reset({
+      name: product.name,
+      description: product.description ?? "",
+      price: ((product.price ?? 0) / 100).toFixed(2),
+      category: product.category ?? "",
+      imageUrl: product.imageUrl ?? "",
+      attachments: (product.attachments as string[] | null) ?? [],
+    });
+  }
 
   const { data: myProducts, isLoading: myProductsLoading } = useQuery<
     Product[]
@@ -230,6 +307,7 @@ export default function Marketplace() {
         price: priceInCents,
         category: data.category,
         imageUrl: data.imageUrl || null,
+        attachments: data.attachments ?? [],
       });
     },
     onSuccess: () => {
@@ -273,6 +351,45 @@ export default function Marketplace() {
         description: error.message,
         variant: "destructive",
       });
+    },
+  });
+
+  const editMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: EditProductForm }) => {
+      const priceInCents = Math.round(parseFloat(data.price) * 100);
+      await apiRequest("PATCH", `/api/products/${id}`, {
+        name: data.name,
+        description: data.description,
+        price: priceInCents,
+        category: data.category,
+        imageUrl: data.imageUrl || null,
+        attachments: data.attachments ?? [],
+      });
+    },
+    onSuccess: () => {
+      toast({ title: "Product updated" });
+      setEditingProduct(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/products/all"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products/my"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to update product", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/products/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Product deleted" });
+      queryClient.invalidateQueries({ queryKey: ["/api/products/all"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products/my"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to delete product", description: error.message, variant: "destructive" });
     },
   });
 
@@ -591,6 +708,70 @@ export default function Marketplace() {
                       )}
                     />
 
+                    <div className="space-y-2">
+                      <FormLabel>Attachments (optional)</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        Upload up to 10 supporting files (images, PDFs, audio,
+                        video, archives, etc.).
+                      </p>
+                      <UploadButton
+                        endpoint="productAttachmentUploader"
+                        onClientUploadComplete={(res) => {
+                          if (res?.length) {
+                            form.setValue("attachments", [
+                              ...submitAttachments,
+                              ...res.map((r) => r.url),
+                            ]);
+                            toast({ title: `${res.length} file(s) uploaded` });
+                          }
+                        }}
+                        onUploadError={(error: Error) => {
+                          toast({
+                            title: "Upload failed",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                        }}
+                      />
+                      {submitAttachments.length > 0 && (
+                        <ul className="space-y-1 text-xs">
+                          {submitAttachments.map((url, idx) => (
+                            <li
+                              key={url}
+                              className="flex items-center justify-between gap-2 rounded border border-border bg-secondary/40 px-2 py-1"
+                              data-testid={`attachment-row-${idx}`}
+                            >
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 truncate text-foreground hover:underline"
+                              >
+                                <FileText className="h-3 w-3 flex-shrink-0" />
+                                <span className="truncate">
+                                  {url.split("/").pop() || url}
+                                </span>
+                              </a>
+                              <button
+                                type="button"
+                                aria-label="Remove attachment"
+                                onClick={() =>
+                                  form.setValue(
+                                    "attachments",
+                                    submitAttachments.filter((_, i) => i !== idx),
+                                  )
+                                }
+                                className="text-muted-foreground hover:text-destructive"
+                                data-testid={`button-remove-attachment-${idx}`}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
                     <Button
                       type="submit"
                       disabled={submitMutation.isPending}
@@ -820,6 +1001,55 @@ export default function Marketplace() {
                                 />
                                 Verified
                               </label>
+                              <div className="ml-auto flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openEdit(product)}
+                                  data-testid={`button-edit-${product.id}`}
+                                >
+                                  <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      data-testid={`button-delete-${product.id}`}
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Delete this product?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        "{product.name}" will be permanently
+                                        removed from the marketplace and
+                                        archived in Stripe. This cannot be
+                                        undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel
+                                        data-testid={`button-cancel-delete-${product.id}`}
+                                      >
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() =>
+                                          deleteMutation.mutate(product.id)
+                                        }
+                                        data-testid={`button-confirm-delete-${product.id}`}
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
                             </div>
                           )}
                         </CardContent>
@@ -832,6 +1062,194 @@ export default function Marketplace() {
           </TabsContent>
         )}
       </Tabs>
+
+      <Dialog
+        open={!!editingProduct}
+        onOpenChange={(open) => !open && setEditingProduct(null)}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Product</DialogTitle>
+            <DialogDescription>
+              Update product details. Setting a price above $0 on a previously
+              free product will automatically mark it Verified and enable
+              purchasing.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form
+              onSubmit={editForm.handleSubmit((data) => {
+                if (editingProduct) {
+                  editMutation.mutate({ id: editingProduct.id, data });
+                }
+              })}
+              className="space-y-3"
+            >
+              <FormField
+                control={editForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} data-testid="input-edit-name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} data-testid="input-edit-description" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  control={editForm.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price (USD)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          {...field}
+                          data-testid="input-edit-price"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-edit-category">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CATEGORIES.map((cat) => (
+                            <SelectItem key={cat} value={cat}>
+                              {cat}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={editForm.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                      <Input {...field} data-testid="input-edit-image-url" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="space-y-2">
+                <FormLabel>Attachments</FormLabel>
+                <UploadButton
+                  endpoint="productAttachmentUploader"
+                  onClientUploadComplete={(res) => {
+                    if (res?.length) {
+                      editForm.setValue("attachments", [
+                        ...editAttachments,
+                        ...res.map((r) => r.url),
+                      ]);
+                      toast({ title: `${res.length} file(s) uploaded` });
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast({
+                      title: "Upload failed",
+                      description: error.message,
+                      variant: "destructive",
+                    });
+                  }}
+                />
+                {editAttachments.length > 0 && (
+                  <ul className="space-y-1 text-xs">
+                    {editAttachments.map((url, idx) => (
+                      <li
+                        key={url}
+                        className="flex items-center justify-between gap-2 rounded border border-border bg-secondary/40 px-2 py-1"
+                      >
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 truncate text-foreground hover:underline"
+                        >
+                          <FileText className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {url.split("/").pop() || url}
+                          </span>
+                        </a>
+                        <button
+                          type="button"
+                          aria-label="Remove attachment"
+                          onClick={() =>
+                            editForm.setValue(
+                              "attachments",
+                              editAttachments.filter((_, i) => i !== idx),
+                            )
+                          }
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingProduct(null)}
+                  data-testid="button-cancel-edit"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={editMutation.isPending}
+                  data-testid="button-save-edit"
+                >
+                  {editMutation.isPending && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -122,6 +122,7 @@ export interface IStorage {
     id: string,
     updates: Partial<Product>,
   ): Promise<Product | undefined>;
+  deleteProduct(id: string): Promise<boolean>;
   getBans(activeOnly?: boolean): Promise<Ban[]>;
   getBan(id: string): Promise<Ban | undefined>;
   getUserBans(userId: string): Promise<Ban[]>;
@@ -588,6 +589,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(products.id, id))
       .returning();
     return product;
+  }
+  async deleteProduct(id: string): Promise<boolean> {
+    const result = await db.delete(products).where(eq(products.id, id)).returning();
+    return result.length > 0;
   }
   async getBans(activeOnly?: boolean): Promise<Ban[]> {
     if (activeOnly) {

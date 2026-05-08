@@ -297,6 +297,7 @@ export const products = pgTable("products", {
   stripeProductId: varchar("stripe_product_id"),
   stripePriceId: varchar("stripe_price_id"),
   canPurchase: boolean("can_purchase").default(true),
+  attachments: text("attachments").array().default(sql`ARRAY[]::text[]`),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

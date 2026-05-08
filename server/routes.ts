@@ -1752,8 +1752,7 @@ export async function registerRoutes(
   app.get("/api/products/all", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      const opsRanks = ["Operations Manager", "Company Director"];
-      if (!user.isAdmin && !opsRanks.includes(user.userRank)) {
+      if (!isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const prods = await storage.getProducts();
@@ -1814,6 +1813,22 @@ export async function registerRoutes(
   app.post("/api/products", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
+      // Validate attachments before parsing into the schema.
+      const att = req.body?.attachments;
+      if (att !== undefined) {
+        if (!Array.isArray(att) || att.length > 10) {
+          return res
+            .status(400)
+            .json({ message: "Attachments must be an array of up to 10 URLs" });
+        }
+        for (const u of att) {
+          if (typeof u !== "string" || !/^https?:\/\//i.test(u)) {
+            return res
+              .status(400)
+              .json({ message: "Each attachment must be an http(s) URL" });
+          }
+        }
+      }
       const data = insertProductSchema.parse({
         ...req.body,
         submitterId: user.id,
@@ -1825,17 +1840,181 @@ export async function registerRoutes(
     }
   });
 
+  // Edit an existing product (Team Member rank or admin). When a previously
+  // free ($0) product is edited to have a non-zero price, automatically:
+  //   - flip canPurchase=true
+  //   - flip isVerified=true
+  //   - create the matching Stripe product + price (one-time payment)
+  app.patch("/api/products/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user)) {
+        return res
+          .status(403)
+          .json({ message: "Only Team Members or admins can edit products" });
+      }
+      const existing = await storage.getProduct(req.params.id);
+      if (!existing) return res.status(404).json({ message: "Product not found" });
+
+      const allowed: Record<string, any> = {};
+      const body = req.body ?? {};
+      const editableFields = [
+        "name",
+        "description",
+        "price",
+        "category",
+        "imageUrl",
+        "attachments",
+        "canPurchase",
+        "isFeatured",
+        "isLimitedEdition",
+        "isVerified",
+        "isCommunityProvided",
+      ] as const;
+      for (const field of editableFields) {
+        if (body[field] !== undefined) allowed[field] = body[field];
+      }
+
+      if (typeof allowed.price === "number" && allowed.price < 0) {
+        return res.status(400).json({ message: "Price must be 0 or greater" });
+      }
+
+      // Validate attachments: must be an array of <=10 http(s) URLs.
+      if (allowed.attachments !== undefined) {
+        if (!Array.isArray(allowed.attachments)) {
+          return res
+            .status(400)
+            .json({ message: "Attachments must be an array of URLs" });
+        }
+        if (allowed.attachments.length > 10) {
+          return res
+            .status(400)
+            .json({ message: "A product may have at most 10 attachments" });
+        }
+        for (const u of allowed.attachments) {
+          if (typeof u !== "string" || !/^https?:\/\//i.test(u)) {
+            return res
+              .status(400)
+              .json({ message: "Each attachment must be an http(s) URL" });
+          }
+        }
+      }
+
+      const oldPrice = existing.price ?? 0;
+      const newPrice =
+        typeof allowed.price === "number" ? allowed.price : oldPrice;
+      const transitionedToPaid = oldPrice === 0 && newPrice > 0;
+
+      if (transitionedToPaid) {
+        // Going from free → paid: open it up for purchase and auto-verify.
+        if (allowed.canPurchase === undefined) allowed.canPurchase = true;
+        if (allowed.isVerified === undefined) allowed.isVerified = true;
+      }
+
+      // Stripe sync: ensure a Stripe product exists and the active Price
+      // matches the new amount whenever the final price is > 0 and either
+      // (a) we have no Stripe price yet, or (b) the price changed.
+      if (newPrice > 0 && (transitionedToPaid || newPrice !== oldPrice || !existing.stripePriceId)) {
+        try {
+          const stripe = await getUncachableStripeClient();
+          let stripeProductId = existing.stripeProductId;
+          if (!stripeProductId) {
+            const stripeProduct = await stripe.products.create({
+              name: allowed.name ?? existing.name,
+              description:
+                allowed.description ?? existing.description ?? undefined,
+              images: (allowed.imageUrl ?? existing.imageUrl)
+                ? [allowed.imageUrl ?? existing.imageUrl]
+                : [],
+              metadata: {
+                platform_product_id: existing.id,
+                category: allowed.category ?? existing.category ?? "",
+                submitter_id: existing.submitterId,
+              },
+            });
+            stripeProductId = stripeProduct.id;
+            allowed.stripeProductId = stripeProduct.id;
+          } else {
+            // Product was archived during a previous delete-then-restore? Re-activate.
+            try {
+              await stripe.products.update(stripeProductId, { active: true });
+            } catch {}
+          }
+          const stripePrice = await stripe.prices.create({
+            product: stripeProductId,
+            unit_amount: newPrice,
+            currency: "usd",
+            metadata: { platform_product_id: existing.id },
+          });
+          allowed.stripePriceId = stripePrice.id;
+          console.log(
+            `✅ Stripe price synced for "${existing.name}": ${stripePrice.id}`,
+          );
+        } catch (stripeErr: any) {
+          console.error(
+            `⚠️ Failed to sync Stripe pricing for "${existing.name}":`,
+            stripeErr.message,
+          );
+        }
+      }
+
+      const updated = await storage.updateProduct(req.params.id, allowed);
+      if (!updated) return res.status(404).json({ message: "Product not found" });
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Product edit failed:", error.message, error.stack);
+      res.status(500).json({ message: "Edit failed" });
+    }
+  });
+
+  // Delete a product (Team Member rank or admin).
+  app.delete("/api/products/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user)) {
+        return res
+          .status(403)
+          .json({ message: "Only Team Members or admins can delete products" });
+      }
+      const existing = await storage.getProduct(req.params.id);
+      if (!existing) return res.status(404).json({ message: "Product not found" });
+
+      if (existing.status !== "approved") {
+        return res
+          .status(400)
+          .json({ message: "Only approved products can be deleted here" });
+      }
+
+      // Best-effort: archive the Stripe product so it disappears from listings
+      // without breaking historical Checkout sessions.
+      if (existing.stripeProductId) {
+        try {
+          const stripe = await getUncachableStripeClient();
+          await stripe.products.update(existing.stripeProductId, { active: false });
+        } catch (stripeErr: any) {
+          console.warn(
+            `⚠️ Stripe product archive failed for ${existing.id}:`,
+            stripeErr.message,
+          );
+        }
+      }
+
+      const ok = await storage.deleteProduct(req.params.id);
+      if (!ok) return res.status(404).json({ message: "Product not found" });
+      res.json({ message: "Product deleted" });
+    } catch (error: any) {
+      console.error("Product delete failed:", error.message, error.stack);
+      res.status(500).json({ message: "Delete failed" });
+    }
+  });
+
   app.patch("/api/products/:id/review", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      const opsRanks = ["Operations Manager", "Company Director"];
-      const userRanks = [user.userRank, ...(user.additionalRanks || [])];
-      const hasOpsAccess =
-        user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
-      if (!hasOpsAccess) {
+      if (!isAdminUser(user)) {
         return res
           .status(403)
-          .json({ message: "Only Corporate can review products" });
+          .json({ message: "Only Team Members or admins can review products" });
       }
       let { status, reviewNotes } = req.body;
       const statusMap: Record<string, string> = {
@@ -1915,14 +2094,10 @@ export async function registerRoutes(
   app.patch("/api/products/:id/badges", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      const opsRanks = ["Operations Manager", "Company Director"];
-      const userRanks = [user.userRank, ...(user.additionalRanks || [])];
-      const hasOpsAccess =
-        user.isAdmin || userRanks.some((r: string) => opsRanks.includes(r));
-      if (!hasOpsAccess) {
+      if (!isAdminUser(user)) {
         return res
           .status(403)
-          .json({ message: "Restricted: Only Corporate can assign product badges" });
+          .json({ message: "Only Team Members or admins can assign product badges" });
       }
       const { isFeatured, isLimitedEdition, isVerified, isCommunityProvided } =
         req.body;
@@ -2781,10 +2956,29 @@ export async function registerRoutes(
         return res
           .status(400)
           .json({ message: "This product is unavailable for purchase" });
-      if (!product.price || product.price <= 0) {
+      if (product.canPurchase === false)
         return res
           .status(400)
-          .json({ message: "Product price must be greater than zero" });
+          .json({ message: "This product is not currently available for purchase" });
+
+      // Free / $0 products: only Vehicle Testers (and admins/Team Members) can
+      // "purchase" them, and Stripe checkout is bypassed entirely since Stripe
+      // does not allow $0 line items in payment mode. We just hand them a
+      // success URL so the client can navigate them to the granted state.
+      if (!product.price || product.price <= 0) {
+        const userRanks = [user.userRank, ...(user.additionalRanks || [])];
+        const canTakeFree =
+          isAdminUser(user) || userRanks.includes("Vehicle Tester");
+        if (!canTakeFree) {
+          return res.status(403).json({
+            message:
+              "Free products are reserved for Vehicle Testers and staff.",
+          });
+        }
+        return res.json({
+          url: `${getBaseUrl(req)}/store/product/${product.id}?free_granted=true`,
+          free: true,
+        });
       }
 
       let customerId = user.stripeCustomerId;

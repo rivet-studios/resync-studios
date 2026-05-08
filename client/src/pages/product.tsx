@@ -20,6 +20,8 @@ import {
   CreditCard,
   Loader2,
   MessageSquare,
+  FileText,
+  Download,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { Product } from "@shared/schema";
@@ -98,6 +100,24 @@ export default function ProductDetail() {
 
   const product = products.find((p) => p.id === id);
   const isFree = product?.price === 0;
+
+  // Vehicle Testers (and Team Members / admins) may "purchase" free products
+  // so they can test them before public release.
+  const teamRanks = [
+    "Team Member",
+    "Gameplay Engineer",
+    "Creative Designer",
+    "Staff Department Director",
+    "Operations Manager",
+    "Company Director",
+  ];
+  const userRanks = [user?.userRank, ...((user?.additionalRanks as string[]) || [])].filter(Boolean) as string[];
+  const canTakeFree =
+    !!user &&
+    (user.isAdmin ||
+      userRanks.includes("Vehicle Tester") ||
+      userRanks.some((r) => teamRanks.includes(r)));
+  const attachments = (product?.attachments as string[] | null) ?? [];
 
   const { data: reviews = [] } = useQuery<ReviewData[]>({
     queryKey: ["/api/products", id, "reviews"],
@@ -338,6 +358,33 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {attachments.length > 0 && (
+              <div className="space-y-2" data-testid="section-attachments">
+                <h3 className="text-sm font-medium text-white/60">
+                  Attachments ({attachments.length})
+                </h3>
+                <ul className="space-y-1.5">
+                  {attachments.map((url, idx) => (
+                    <li key={url}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
+                        data-testid={`link-attachment-${idx}`}
+                      >
+                        <FileText className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate flex-1">
+                          {url.split("/").pop() || url}
+                        </span>
+                        <Download className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {product.submitter && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-white/30">Submitted by</span>
@@ -354,11 +401,28 @@ export default function ProductDetail() {
 
             <div className="border-t border-white/10 pt-6 space-y-3">
               {isFree ? (
-                <div className="text-center py-4">
-                  <p className="text-sm text-white/40" data-testid="text-free-product-notice">
-                    This product is not available for purchase
-                  </p>
-                </div>
+                canTakeFree ? (
+                  <Button
+                    className="w-full bg-white text-black hover:bg-white/90"
+                    size="lg"
+                    onClick={() => checkoutMutation.mutate()}
+                    disabled={checkoutMutation.isPending}
+                    data-testid="button-claim-free"
+                  >
+                    {checkoutMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4 mr-2" />
+                    )}
+                    Get for Testing (Free)
+                  </Button>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-white/40" data-testid="text-free-product-notice">
+                      This product is reserved for Vehicle Testers
+                    </p>
+                  </div>
+                )
               ) : (
                 <>
                   <Button
