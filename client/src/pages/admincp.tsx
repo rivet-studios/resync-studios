@@ -595,18 +595,12 @@ export default function AdminCP() {
       userRank: string;
       additionalRanks: string[];
     }) => {
-      const rankRes = await apiRequest(
+      const res = await apiRequest(
         "PATCH",
         `/api/admin/users/${userId}/rank`,
-        { userRank },
+        { userRank, additionalRanks },
       );
-      const rankJson = await rankRes.json();
-      const addRes = await apiRequest(
-        "PATCH",
-        `/api/admin/users/${userId}/additional-ranks`,
-        { additionalRanks },
-      );
-      return { ...rankJson, ...(await addRes.json()) };
+      return res.json();
     },
     onSuccess: () => {
       toast({ title: "User ranks updated" });

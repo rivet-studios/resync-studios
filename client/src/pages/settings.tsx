@@ -1142,66 +1142,43 @@ export default function Settings() {
     },
   });
 
-  const [robloxLinkStep, setRobloxLinkStep] = useState<
-    "idle" | "username" | "verify"
-  >("idle");
-  const [robloxUsernameInput, setRobloxUsernameInput] = useState("");
-  const [robloxVerification, setRobloxVerification] = useState<{
-    robloxId: number;
-    verificationCode: string;
-    robloxUsername: string;
-    robloxDisplayName: string;
-  } | null>(null);
-
-  const startRobloxVerification = useMutation({
-    mutationFn: async (username: string) => {
-      const response = await apiRequest(
-        "POST",
-        "/api/roblox/start-verification",
-        { robloxUsername: username },
-      );
-      return response.json();
-    },
-    onSuccess: (data: any) => {
-      setRobloxVerification(data);
-      setRobloxLinkStep("verify");
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const verifyRoblox = useMutation({
-    mutationFn: async () => {
-      if (!robloxVerification) throw new Error("No verification in progress");
-      const response = await apiRequest("POST", "/api/roblox/verify", {
-        robloxId: robloxVerification.robloxId,
-        verificationCode: robloxVerification.verificationCode,
-      });
-      return response.json();
-    },
-    onSuccess: () => {
+  // Show a toast when we come back from the Roblox OAuth callback.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("roblox");
+    if (!status) return;
+    if (status === "linked") {
       toast({
         title: "Roblox Linked",
-        description: "Your Roblox account has been successfully linked!",
+        description: "Your Roblox account has been successfully linked.",
       });
-      setRobloxLinkStep("idle");
-      setRobloxVerification(null);
-      setRobloxUsernameInput("");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    },
-    onError: (error: Error) => {
+    } else if (status === "error") {
+      const reason = params.get("reason") || "unknown";
+      const reasonText: Record<string, string> = {
+        "already-linked":
+          "That Roblox account is already linked to a different RIVET account.",
+        "not-configured":
+          "Roblox sign-in isn't configured. Please contact an administrator.",
+        "invalid-state":
+          "The link request expired or was tampered with. Please try again.",
+        "session-mismatch":
+          "Your session changed during the link flow. Please sign in and try again.",
+        "token-exchange":
+          "Roblox rejected the link request. Please try again.",
+      };
       toast({
-        title: "Verification Failed",
-        description: error.message,
+        title: "Couldn't link Roblox",
+        description: reasonText[reason] || `Roblox link failed (${reason}).`,
         variant: "destructive",
       });
-    },
-  });
+    }
+    // Strip the query string so we don't keep re-toasting on refresh.
+    const url = new URL(window.location.href);
+    url.searchParams.delete("roblox");
+    url.searchParams.delete("reason");
+    window.history.replaceState({}, "", url.toString());
+  }, []);
 
   const unlinkDiscord = useMutation({
     mutationFn: async () => {
@@ -1994,119 +1971,15 @@ export default function Settings() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => setRobloxLinkStep("username")}
+                        onClick={() => {
+                          window.location.href = "/api/auth/roblox";
+                        }}
                         data-testid="button-link-roblox"
                       >
                         Link Account
                       </Button>
                     )}
                   </div>
-
-                  {robloxLinkStep === "username" && (
-                    <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        Enter your Roblox username to begin linking:
-                      </p>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Roblox username"
-                          value={robloxUsernameInput}
-                          onChange={(e) =>
-                            setRobloxUsernameInput(e.target.value)
-                          }
-                          className="flex-1"
-                          data-testid="input-roblox-username"
-                        />
-                        <Button
-                          onClick={() =>
-                            startRobloxVerification.mutate(robloxUsernameInput)
-                          }
-                          disabled={
-                            !robloxUsernameInput.trim() ||
-                            startRobloxVerification.isPending
-                          }
-                          data-testid="button-roblox-lookup"
-                        >
-                          {startRobloxVerification.isPending
-                            ? "Looking up..."
-                            : "Next"}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setRobloxLinkStep("idle");
-                            setRobloxUsernameInput("");
-                          }}
-                          data-testid="button-roblox-cancel"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {robloxLinkStep === "verify" && robloxVerification && (
-                    <div className="mt-4 p-4 rounded-xl bg-secondary/50 border border-border space-y-4">
-                      <div>
-                        <p className="text-sm font-medium">
-                          Verifying: {robloxVerification.robloxDisplayName} (
-                          {robloxVerification.robloxUsername})
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          To verify you own this Roblox account, add the
-                          following code to your Roblox profile description:
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary border border-border">
-                        <code
-                          className="text-sm font-mono text-white flex-1"
-                          data-testid="text-verification-code"
-                        >
-                          {robloxVerification.verificationCode}
-                        </code>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            navigator.clipboard.writeText(
-                              robloxVerification.verificationCode,
-                            );
-                            toast({
-                              title: "Copied!",
-                              description:
-                                "Verification code copied to clipboard.",
-                            });
-                          }}
-                          data-testid="button-copy-code"
-                        >
-                          Copy
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Go to your Roblox profile settings, paste the code in
-                        your "About" section, save, then click Verify below.
-                      </p>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => verifyRoblox.mutate()}
-                          disabled={verifyRoblox.isPending}
-                          data-testid="button-roblox-verify"
-                        >
-                          {verifyRoblox.isPending ? "Verifying..." : "Verify"}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setRobloxLinkStep("idle");
-                            setRobloxVerification(null);
-                          }}
-                          data-testid="button-roblox-cancel-verify"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

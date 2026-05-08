@@ -2417,28 +2417,134 @@ export async function registerRoutes(
     }
   });
 
+  // Canonical rank allowlist. Must stay in sync with rankConfig in
+  // client/src/components/user-rank-badge.tsx.
+  const ALLOWED_RANKS = new Set<string>([
+    "Active Members",
+    "Trusted Member",
+    "Community Partner",
+    "Bronze VIP",
+    "Diamond VIP",
+    "Founders Edition VIP",
+    "Lifetime",
+    "Vehicle Tester",
+    "Customer Relations",
+    "Appeals Moderator",
+    "Trial Moderator",
+    "Community Moderator",
+    "Community Admin",
+    "Community Senior Admin",
+    "Gameplay Engineer",
+    "Creative Designer",
+    "Staff Internal Affairs",
+    "Team Member",
+    "Staff Department Director",
+    "Operations Manager",
+    "Company Director",
+    "Banned",
+  ]);
+
   app.patch("/api/admin/users/:id/rank", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser((req.user as any).id);
       if (!user || !isAdminUser(user)) {
         return res.status(403).json({ message: "Forbidden" });
       }
-      const { userRank } = req.body;
+      const { userRank, additionalRanks } = req.body as {
+        userRank?: string;
+        additionalRanks?: string[];
+      };
+
+      // Validate the main rank.
+      if (!userRank || typeof userRank !== "string" || !ALLOWED_RANKS.has(userRank)) {
+        return res
+          .status(400)
+          .json({ message: `Invalid rank: ${userRank ?? "(missing)"}` });
+      }
+
+      // Validate additional ranks (optional). Reject anything not in the allowlist
+      // or that duplicates the main rank.
+      let cleanedAdditional: string[] | undefined;
+      if (additionalRanks !== undefined) {
+        if (
+          !Array.isArray(additionalRanks) ||
+          !additionalRanks.every((r) => typeof r === "string")
+        ) {
+          return res
+            .status(400)
+            .json({ message: "additionalRanks must be an array of strings" });
+        }
+        const invalid = additionalRanks.filter((r) => !ALLOWED_RANKS.has(r));
+        if (invalid.length > 0) {
+          return res
+            .status(400)
+            .json({ message: `Invalid additional ranks: ${invalid.join(", ")}` });
+        }
+        // Deduplicate and drop the main rank if it was also added here.
+        cleanedAdditional = Array.from(new Set(additionalRanks)).filter(
+          (r) => r !== userRank,
+        );
+      }
+
       const targetUser = await storage.getUser(req.params.id);
-      const oldRank = targetUser?.userRank || undefined;
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const oldRank = targetUser.userRank || undefined;
+      const oldAdditional = targetUser.additionalRanks || [];
+
+      // Apply both updates. updateUserRank + updateUserAdditionalRanks are
+      // independent single-row writes; if the second fails we restore the first
+      // so the user record can't end up in a half-updated state.
       await storage.updateUserRank(req.params.id, userRank);
+      if (cleanedAdditional !== undefined) {
+        try {
+          await storage.updateUserAdditionalRanks(
+            req.params.id,
+            cleanedAdditional,
+          );
+        } catch (e) {
+          // Best-effort rollback of the main rank update.
+          if (oldRank) {
+            await storage
+              .updateUserRank(req.params.id, oldRank)
+              .catch((rbErr) =>
+                console.error("Rank rollback failed:", rbErr),
+              );
+          }
+          throw e;
+        }
+      }
       const updatedUser = await storage.getUser(req.params.id);
 
-      await storage.createModerationLog({
-        action: "Rank Changed",
-        actorId: user!.id,
-        targetId: req.params.id,
-        targetType: user!.username,
-        details: `Rank changed from "${oldRank || "none"}" to "${userRank}"`,
-        metadata: JSON.stringify({ oldRank, newRank: userRank }),
-      });
+      const detailParts: string[] = [];
+      if (oldRank !== userRank) {
+        detailParts.push(
+          `Rank changed from "${oldRank || "none"}" to "${userRank}"`,
+        );
+      }
+      if (cleanedAdditional !== undefined) {
+        detailParts.push(
+          `Additional ranks changed from [${oldAdditional.join(", ") || "none"}] to [${cleanedAdditional.join(", ") || "none"}]`,
+        );
+      }
+      if (detailParts.length > 0) {
+        await storage.createModerationLog({
+          action: "Rank Changed",
+          actorId: user!.id,
+          targetId: req.params.id,
+          targetType: user!.username,
+          details: detailParts.join(" | "),
+          metadata: JSON.stringify({
+            oldRank,
+            newRank: userRank,
+            oldAdditional,
+            newAdditional: cleanedAdditional ?? oldAdditional,
+          }),
+        });
+      }
 
-      if (updatedUser?.discordId) {
+      if (updatedUser?.discordId && oldRank !== userRank) {
         updateDiscordRoles(updatedUser.discordId, userRank, oldRank).catch(
           (err) => console.error("Discord role sync error:", err),
         );
@@ -2452,6 +2558,7 @@ export async function registerRoutes(
 
       res.json(updatedUser);
     } catch (error) {
+      console.error("Update rank error:", error);
       res.status(500).json({ message: "Failed to update rank" });
     }
   });
@@ -2896,136 +3003,170 @@ export async function registerRoutes(
     }
   });
 
-  const pendingRobloxVerifications = new Map<
-    string,
-    { robloxId: number; verificationCode: string; expiresAt: number }
-  >();
+  // ----- Roblox OAuth 2.0 (OIDC) account linking -----
+  // Docs: https://create.roblox.com/docs/cloud/auth/oauth2-overview
+  const ROBLOX_AUTH_URL = "https://apis.roblox.com/oauth/v1/authorize";
+  const ROBLOX_TOKEN_URL = "https://apis.roblox.com/oauth/v1/token";
+  const ROBLOX_USERINFO_URL = "https://apis.roblox.com/oauth/v1/userinfo";
 
-  app.post("/api/roblox/start-verification", requireAuth, async (req, res) => {
-    try {
-      const { robloxUsername } = req.body;
-      if (!robloxUsername || typeof robloxUsername !== "string") {
-        return res.status(400).json({ message: "Roblox username is required" });
-      }
+  const getRobloxRedirectUri = (req: any) => {
+    const host = req.get("host");
+    const proto =
+      req.get("x-forwarded-proto") ||
+      (req.secure ? "https" : "http") ||
+      "https";
+    // In production we always use HTTPS.
+    const scheme = host?.includes("localhost") ? proto : "https";
+    return `${scheme}://${host}/api/auth/roblox/callback`;
+  };
 
-      const searchRes = await fetch(
-        `https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=10`,
-      );
-      if (!searchRes.ok) {
-        return res
-          .status(400)
-          .json({ message: "Failed to look up Roblox user. Try again later." });
-      }
-      const searchData = (await searchRes.json()) as {
-        data: Array<{ id: number; name: string; displayName: string }>;
-      };
-      const robloxUser = searchData.data?.find(
-        (u: any) => u.name.toLowerCase() === robloxUsername.toLowerCase(),
-      );
-      if (!robloxUser) {
-        return res.status(404).json({
-          message: "Roblox user not found. Check the username and try again.",
-        });
-      }
+  const base64UrlEncode = (buf: Buffer) =>
+    buf
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
 
-      const existingUser = await storage.getUserByRobloxId(
-        String(robloxUser.id),
-      );
-      if (existingUser && existingUser.id !== (req.user as any).id) {
-        return res.status(409).json({
-          message: "This Roblox account is already linked to another user. Contact support to have it removed",
-        });
-      }
-
-      const code = `RIVET-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-      pendingRobloxVerifications.set((req.user as any).id, {
-        robloxId: robloxUser.id,
-        verificationCode: code,
-        expiresAt: Date.now() + 15 * 60 * 1000,
-      });
-
-      res.json({
-        robloxId: robloxUser.id,
-        robloxUsername: robloxUser.name,
-        robloxDisplayName: robloxUser.displayName,
-        verificationCode: code,
-      });
-    } catch (error) {
-      console.error("Roblox start verification error:", error);
-      res
+  app.get("/api/auth/roblox", requireAuth, (req, res) => {
+    const clientId = process.env.ROBLOX_CLIENT_ID;
+    if (!clientId) {
+      return res
         .status(500)
-        .json({ message: "Verification failed. Try again later." });
+        .send("Roblox linking is not configured. Contact an administrator.");
     }
+    const state = base64UrlEncode(crypto.randomBytes(24));
+    const codeVerifier = base64UrlEncode(crypto.randomBytes(32));
+    const codeChallenge = base64UrlEncode(
+      crypto.createHash("sha256").update(codeVerifier).digest(),
+    );
+
+    (req.session as any).robloxOAuth = {
+      state,
+      codeVerifier,
+      userId: (req.user as any).id,
+    };
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: getRobloxRedirectUri(req),
+      scope: "openid profile",
+      response_type: "code",
+      state,
+      code_challenge: codeChallenge,
+      code_challenge_method: "S256",
+    });
+
+    res.redirect(`${ROBLOX_AUTH_URL}?${params.toString()}`);
   });
 
-  app.post("/api/roblox/verify", requireAuth, async (req, res) => {
+  app.get("/api/auth/roblox/callback", async (req, res) => {
     try {
-      const userId = (req.user as any).id;
-      const pending = pendingRobloxVerifications.get(userId);
+      const clientId = process.env.ROBLOX_CLIENT_ID;
+      const clientSecret = process.env.ROBLOX_CLIENT_SECRET;
+      const oauth = (req.session as any)?.robloxOAuth;
+      // Always clear the pending OAuth state.
+      if (req.session) delete (req.session as any).robloxOAuth;
 
-      if (!pending) {
-        return res.status(400).json({
-          message:
-            "No pending verification. Please start the linking process first.",
-        });
+      if (!clientId || !clientSecret) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=not-configured",
+        );
       }
 
-      if (Date.now() > pending.expiresAt) {
-        pendingRobloxVerifications.delete(userId);
-        return res
-          .status(400)
-          .json({ message: "Verification expired. Please start over." });
+      const { code, state, error: oauthError } = req.query as Record<
+        string,
+        string
+      >;
+      if (oauthError) {
+        return res.redirect(
+          `/settings/integrations?roblox=error&reason=${encodeURIComponent(oauthError)}`,
+        );
+      }
+      if (!oauth || !state || state !== oauth.state || !code) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=invalid-state",
+        );
       }
 
-      const profileRes = await fetch(
-        `https://users.roblox.com/v1/users/${pending.robloxId}`,
-      );
-      if (!profileRes.ok) {
-        return res
-          .status(400)
-          .json({ message: "Failed to fetch Roblox profile" });
-      }
-      const profileData = (await profileRes.json()) as {
-        description: string;
-        name: string;
-        displayName: string;
-      };
-
-      if (
-        !profileData.description ||
-        !profileData.description.includes(pending.verificationCode)
-      ) {
-        return res.status(400).json({
-          message:
-            "Verification code not found in your Roblox profile description. Please add the code and try again.",
-        });
+      // Make sure the user finishing the flow is the same one who started it.
+      const sessionUserId = (req.user as any)?.id;
+      if (!sessionUserId || sessionUserId !== oauth.userId) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=session-mismatch",
+        );
       }
 
-      const existingUser = await storage.getUserByRobloxId(
-        String(pending.robloxId),
-      );
-      if (existingUser && existingUser.id !== userId) {
-        return res.status(409).json({
-          message: "This Roblox account is already linked to another user. Contact support to have it removed",
-        });
-      }
-
-      await storage.updateUser(userId, {
-        robloxId: String(pending.robloxId),
-        robloxUsername: profileData.name,
-        robloxDisplayName: profileData.displayName,
-        robloxLinkedAt: new Date(),
+      const tokenBody = new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: getRobloxRedirectUri(req),
+        client_id: clientId,
+        client_secret: clientSecret,
+        code_verifier: oauth.codeVerifier,
       });
 
-      pendingRobloxVerifications.delete(userId);
-      const updatedUser = await storage.getUser(userId);
-      res.json(updatedUser);
+      const tokenResp = await fetch(ROBLOX_TOKEN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: tokenBody.toString(),
+      });
+      if (!tokenResp.ok) {
+        const txt = await tokenResp.text().catch(() => "");
+        console.error("Roblox token exchange failed:", tokenResp.status, txt);
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=token-exchange",
+        );
+      }
+      const tokenJson = (await tokenResp.json()) as {
+        access_token?: string;
+      };
+      if (!tokenJson.access_token) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=no-access-token",
+        );
+      }
+
+      const userInfoResp = await fetch(ROBLOX_USERINFO_URL, {
+        headers: { Authorization: `Bearer ${tokenJson.access_token}` },
+      });
+      if (!userInfoResp.ok) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=userinfo",
+        );
+      }
+      const userInfo = (await userInfoResp.json()) as {
+        sub?: string;
+        preferred_username?: string;
+        nickname?: string;
+        name?: string;
+      };
+      if (!userInfo.sub) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=no-sub",
+        );
+      }
+
+      // Make sure this Roblox account isn't already linked to another user.
+      const existing = await storage.getUserByRobloxId(userInfo.sub);
+      if (existing && existing.id !== sessionUserId) {
+        return res.redirect(
+          "/settings/integrations?roblox=error&reason=already-linked",
+        );
+      }
+
+      await storage.updateUser(sessionUserId, {
+        robloxId: userInfo.sub,
+        robloxUsername:
+          userInfo.preferred_username || userInfo.name || userInfo.nickname || "",
+        robloxDisplayName:
+          userInfo.nickname || userInfo.name || userInfo.preferred_username || "",
+        robloxLinkedAt: new Date(),
+      } as any);
+
+      res.redirect("/settings/integrations?roblox=linked");
     } catch (error) {
-      console.error("Roblox verify error:", error);
-      res
-        .status(500)
-        .json({ message: "Verification failed. Try again later." });
+      console.error("Roblox OAuth callback error:", error);
+      res.redirect("/settings/integrations?roblox=error&reason=server");
     }
   });
 
@@ -3056,51 +3197,6 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to unlink Discord account" });
     }
   });
-
-  app.patch(
-    "/api/admin/users/:id/additional-ranks",
-    requireAuth,
-    async (req, res) => {
-      try {
-        const actingUser = await storage.getUser((req.user as any).id);
-        if (!actingUser || !isAdminUser(actingUser)) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
-        const { additionalRanks } = req.body;
-        if (
-          !Array.isArray(additionalRanks) ||
-          !additionalRanks.every((r) => typeof r === "string")
-        ) {
-          return res
-            .status(400)
-            .json({ message: "additionalRanks must be an array of strings" });
-        }
-        const targetUser = await storage.getUser(req.params.id);
-        if (!targetUser) {
-          return res.status(404).json({ message: "User not found" });
-        }
-        const oldRanks = targetUser.additionalRanks || [];
-        await storage.updateUserAdditionalRanks(req.params.id, additionalRanks);
-        const updatedUser = await storage.getUser(req.params.id);
-
-        await storage.createModerationLog({
-          action: "Additional Ranks Changed",
-          actorId: actingUser.id,
-          targetId: req.params.id,
-          targetType: targetUser.username || "",
-          details: `Additional ranks changed from [${oldRanks.join(", ") || "none"}] to [${additionalRanks.join(", ") || "none"}]`,
-          metadata: JSON.stringify({ oldRanks, newRanks: additionalRanks }),
-        });
-
-        res.json(updatedUser);
-      } catch (error) {
-        console.error("Update additional ranks error:", error);
-        res
-          .status(500)
-          .json({ message: "Failed to update additional ranks" });
-      }
-    },
-  );
 
   app.post("/api/roblox/unlink", requireAuth, async (req, res) => {
     try {
