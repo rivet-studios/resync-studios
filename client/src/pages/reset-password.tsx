@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { AuthBackground } from "@/components/auth-background";
 import logoSvg from "@assets/logo-rs.png";
 
 export default function ResetPassword() {
@@ -58,63 +59,47 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            background: "linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(243,232,255,0.3) 25%, rgba(255,255,255,0.9) 50%, rgba(220,252,231,0.3) 75%, rgba(252,231,243,0.4) 100%)",
-          }}
-        />
-        <div className="absolute inset-0 z-0 bg-white/60 dark:bg-[#050505]/90" />
-
-        <div className="relative z-10 w-full max-w-[420px] space-y-8">
+      <AuthBackground>
+        <div className="space-y-8">
           <div className="flex flex-col items-center space-y-4">
-            <img src={logoSvg} alt="RS" className="w-12 h-12 invert dark:invert-0" data-testid="img-logo" />
-            <div className="text-center space-y-1">
-              <h1 className="text-xl font-semibold text-[#09090B] dark:text-white" data-testid="heading-invalid-link">
+            <img src={logoSvg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
+            <div className="text-center space-y-1.5">
+              <h1 className="text-2xl font-semibold tracking-tight text-white" data-testid="heading-invalid-link">
                 Invalid reset link
               </h1>
-              <p className="text-sm text-[#71717A] dark:text-white/50">
+              <p className="text-sm text-white/60">
                 This password reset link is invalid or has expired. Please request a new one.
               </p>
             </div>
           </div>
           <div className="flex flex-col gap-3">
             <Button
-              className="w-full bg-[#18181B] text-white rounded-lg font-medium text-sm shadow-sm"
+              className="w-full bg-white text-black hover:bg-white/90 rounded-lg font-medium text-sm shadow-sm h-11"
               onClick={() => navigate("/forgot-password")}
               data-testid="button-request-new"
             >
               Request a new link
             </Button>
-            <a href="/login" className="flex items-center justify-center gap-2 text-sm text-[#71717A] dark:text-white/50 hover:text-[#09090B] dark:hover:text-white transition-colors" data-testid="link-back-login">
+            <a href="/login" className="flex items-center justify-center gap-2 text-sm text-white/50 hover:text-white transition-colors" data-testid="link-back-login">
               <ArrowLeft className="w-4 h-4" />
               Back to login
             </a>
           </div>
         </div>
-      </div>
+      </AuthBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: "linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(243,232,255,0.3) 25%, rgba(255,255,255,0.9) 50%, rgba(220,252,231,0.3) 75%, rgba(252,231,243,0.4) 100%)",
-        }}
-      />
-      <div className="absolute inset-0 z-0 bg-white/60 dark:bg-[#050505]/90" />
-
-      <div className="relative z-10 w-full max-w-[420px] space-y-8">
+    <AuthBackground>
+      <div className="space-y-8">
         <div className="flex flex-col items-center space-y-4">
-          <img src={logoSvg} alt="RS" className="w-12 h-12 invert dark:invert-0" data-testid="img-logo" />
-          <div className="text-center space-y-1">
-            <h1 className="text-xl font-semibold text-[#09090B] dark:text-white" data-testid="heading-reset-password">
+          <img src={logoSvg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
+          <div className="text-center space-y-1.5">
+            <h1 className="text-2xl font-semibold tracking-tight text-white" data-testid="heading-reset-password">
               {success ? "Password reset" : "Set a new password"}
             </h1>
-            <p className="text-sm text-[#71717A] dark:text-white/50">
+            <p className="text-sm text-white/60">
               {success
                 ? "Your password has been successfully updated"
                 : "Enter your new password below"}
@@ -123,28 +108,28 @@ export default function ResetPassword() {
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600 dark:text-red-400" data-testid="text-error">{error}</p>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-400" data-testid="text-error">{error}</p>
           </div>
         )}
 
         {success ? (
           <div className="space-y-6">
-            <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg p-4 flex gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium" data-testid="text-success">
+                <p className="text-sm text-emerald-300 font-medium" data-testid="text-success">
                   Password updated successfully
                 </p>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400/70 mt-1">
+                <p className="text-xs text-emerald-400/80 mt-1">
                   You can now log in with your new password.
                 </p>
               </div>
             </div>
 
             <Button
-              className="w-full bg-[#18181B] text-white rounded-lg font-medium text-sm shadow-sm"
+              className="w-full bg-white text-black hover:bg-white/90 rounded-lg font-medium text-sm shadow-sm h-11"
               onClick={() => navigate("/login")}
               data-testid="button-go-to-login"
             >
@@ -154,7 +139,7 @@ export default function ResetPassword() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-[#09090B] dark:text-white">New password</label>
+              <label className="text-sm font-medium text-white">New password</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -163,12 +148,12 @@ export default function ResetPassword() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={resetMutation.isPending}
                   data-testid="input-password"
-                  className="rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white placeholder:text-[#A1A1AA] pr-10"
+                  className="rounded-lg border-white/10 bg-white/5 text-white placeholder:text-white/30 pr-10 h-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-[#09090B] dark:hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
                   data-testid="button-toggle-password"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -177,7 +162,7 @@ export default function ResetPassword() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-[#09090B] dark:text-white">Confirm password</label>
+              <label className="text-sm font-medium text-white">Confirm password</label>
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Confirm your password"
@@ -185,26 +170,26 @@ export default function ResetPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={resetMutation.isPending}
                 data-testid="input-confirm-password"
-                className="rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white placeholder:text-[#A1A1AA]"
+                className="rounded-lg border-white/10 bg-white/5 text-white placeholder:text-white/30 h-11"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-[#18181B] text-white rounded-lg font-medium text-sm shadow-sm"
+              className="w-full bg-white text-black hover:bg-white/90 rounded-lg font-medium text-sm shadow-sm h-11"
               disabled={resetMutation.isPending}
               data-testid="button-reset-password"
             >
               {resetMutation.isPending ? "Resetting..." : "Reset password"}
             </Button>
 
-            <a href="/login" className="flex items-center justify-center gap-2 text-sm text-[#71717A] dark:text-white/50 hover:text-[#09090B] dark:hover:text-white transition-colors" data-testid="link-back-login">
+            <a href="/login" className="flex items-center justify-center gap-2 text-sm text-white/50 hover:text-white transition-colors" data-testid="link-back-login">
               <ArrowLeft className="w-4 h-4" />
               Back to login
             </a>
           </form>
         )}
       </div>
-    </div>
+    </AuthBackground>
   );
 }

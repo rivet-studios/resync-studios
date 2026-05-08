@@ -46,7 +46,7 @@ import {
   type InsertStaffNote,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, lt } from "drizzle-orm";
+import { eq, desc, and, sql, lt, gt, isNull } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -289,21 +289,21 @@ export class DatabaseStorage implements IStorage {
   }
   async verifyMagicLinkToken(token: string): Promise<string | undefined> {
     const [record] = await db
-      .select()
-      .from(magicLinkTokens)
+      .update(magicLinkTokens)
+      .set({ usedAt: new Date() })
       .where(
         and(
           eq(magicLinkTokens.token, token),
-          lt(magicLinkTokens.expiresAt, new Date()),
+          gt(magicLinkTokens.expiresAt, new Date()),
+          isNull(magicLinkTokens.usedAt),
         ),
-      );
+      )
+      .returning({ email: magicLinkTokens.email });
     return record?.email;
   }
-  async markMagicLinkTokenAsUsed(token: string): Promise<void> {
-    await db
-      .update(magicLinkTokens)
-      .set({ usedAt: new Date() })
-      .where(eq(magicLinkTokens.token, token));
+  async markMagicLinkTokenAsUsed(_token: string): Promise<void> {
+    // No-op: verifyMagicLinkToken now atomically marks the token as used
+    // via UPDATE ... RETURNING to prevent token replay races.
   }
   async getForumCategories(): Promise<ForumCategory[]> {
     return db.select().from(forumCategories).orderBy(forumCategories.order);

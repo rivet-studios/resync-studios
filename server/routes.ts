@@ -141,6 +141,35 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express,
 ): Promise<Server> {
+  // ---- Rate limiting middleware (must be registered BEFORE the auth handlers
+  // so it actually intercepts requests) ----
+  const _rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+  function _rateLimit(windowMs: number, maxRequests: number) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const key = `${(req as any).ip || "unknown"}-${req.path}`;
+      const now = Date.now();
+      const entry = _rateLimitMap.get(key);
+      if (!entry || now > entry.resetAt) {
+        _rateLimitMap.set(key, { count: 1, resetAt: now + windowMs });
+        return next();
+      }
+      if (entry.count >= maxRequests) {
+        return res
+          .status(429)
+          .json({ message: "Too many requests. Please try again later." });
+      }
+      entry.count++;
+      next();
+    };
+  }
+  app.use("/api/auth/login", _rateLimit(15 * 60 * 1000, 10));
+  app.use("/api/auth/email-login", _rateLimit(15 * 60 * 1000, 10));
+  app.use("/api/auth/signup", _rateLimit(60 * 60 * 1000, 5));
+  app.use("/api/auth/forgot-password", _rateLimit(15 * 60 * 1000, 3));
+  app.use("/api/auth/reset-password", _rateLimit(15 * 60 * 1000, 5));
+  app.use("/api/auth/magic-link/request", _rateLimit(15 * 60 * 1000, 3));
+  app.use("/api/auth/magic-link/verify", _rateLimit(15 * 60 * 1000, 10));
+
   // Auth routes
   app.get("/api/auth/user", async (req, res) => {
     if (!(req as any).isAuthenticated?.() || !req.user) {
@@ -301,6 +330,94 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Forgot password error:", error);
       res.status(500).json({ message: "Failed to process request" });
+    }
+  });
+
+  app.post("/api/auth/magic-link/request", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ message: "Email is required" });
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.json({
+          message:
+            "If an account exists with that email, a login link has been sent.",
+        });
+      }
+
+      const token = await storage.createMagicLinkToken(email);
+
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://rivetstudiosus.com"
+          : process.env.REPLIT_DEV_DOMAIN
+            ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+            : "https://rivetstudiosus.com";
+      const loginUrl = `${baseUrl}/magic-link?token=${token}`;
+
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
+      await resend.emails.send({
+        from: "RIVET Studios Support <support@rivetstudiosus.com>",
+        to: email,
+        subject: "Your RIVET Studios login link",
+        html: `
+          <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #050505; color: #ffffff; padding: 40px; border-radius: 12px;">
+            <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Sign in to RIVET Studios</h1>
+            <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              Click the button below to sign in to your account. This link expires in 24 hours and can only be used once.
+            </p>
+            <a href="${loginUrl}" style="display: inline-block; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+              Sign in
+            </a>
+            <p style="color: #71717a; font-size: 12px; margin-top: 32px;">
+              If you didn't request this, you can safely ignore this email.
+            </p>
+          </div>
+        `,
+      });
+
+      res.json({
+        message:
+          "If an account exists with that email, a login link has been sent.",
+      });
+    } catch (error) {
+      console.error("Magic link request error:", error);
+      res.status(500).json({ message: "Failed to send login link" });
+    }
+  });
+
+  app.post("/api/auth/magic-link/verify", async (req, res) => {
+    try {
+      const { token } = req.body;
+      if (!token) return res.status(400).json({ message: "Token is required" });
+
+      const email = await storage.verifyMagicLinkToken(token);
+      if (!email) {
+        return res
+          .status(400)
+          .json({ message: "Invalid or expired login link" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(400).json({ message: "Account not found" });
+      }
+
+      await storage.markMagicLinkTokenAsUsed(token);
+
+      req.login(user as any, (err) => {
+        if (err) {
+          console.error("Magic link login error:", err);
+          return res.status(500).json({ message: "Failed to sign in" });
+        }
+        res.json({ message: "Signed in", user: sanitizeUser(user) });
+      });
+    } catch (error) {
+      console.error("Magic link verify error:", error);
+      res.status(500).json({ message: "Failed to verify login link" });
     }
   });
 
@@ -3862,10 +3979,8 @@ export async function registerRoutes(
     };
   }
 
-  // Apply rate limiting to auth endpoints
-  app.use("/api/auth/login", rateLimit(15 * 60 * 1000, 10));
-  app.use("/api/auth/signup", rateLimit(60 * 60 * 1000, 5));
-  app.use("/api/auth/forgot-password", rateLimit(15 * 60 * 1000, 3));
+  // (Auth rate limiting moved to top of registerRoutes so it runs before the
+  // route handlers it is meant to protect.)
 
   // ---- Security / session info endpoint ----
   app.get("/api/auth/security-info", async (req, res) => {

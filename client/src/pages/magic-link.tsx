@@ -1,29 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, ArrowLeft, CheckCircle2, Mail } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AuthBackground } from "@/components/auth-background";
 import logoSvg from "@assets/logo-rs.png";
 
-export default function ForgotPassword() {
+export default function MagicLink() {
+  const [, navigate] = useLocation();
+  const searchString = useSearch();
+  const params = new URLSearchParams(searchString);
+  const token = params.get("token");
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [verifying, setVerifying] = useState(!!token);
 
-  const forgotMutation = useMutation({
+  const requestMutation = useMutation({
     mutationFn: async (data: { email: string }) => {
-      const response = await apiRequest("POST", "/api/auth/forgot-password", data);
+      const response = await apiRequest("POST", "/api/auth/magic-link/request", data);
       return response.json();
     },
-    onSuccess: () => {
-      setSent(true);
+    onSuccess: () => setSent(true),
+    onError: (err: any) => setError(err.message || "Something went wrong. Please try again."),
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: async (data: { token: string }) => {
+      const response = await apiRequest("POST", "/api/auth/magic-link/verify", data);
+      return response.json();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      navigate("/dashboard");
     },
     onError: (err: any) => {
-      setError(err.message || "Something went wrong. Please try again.");
+      setVerifying(false);
+      setError(err.message || "This login link is invalid or has expired.");
     },
   });
+
+  useEffect(() => {
+    if (token) {
+      verifyMutation.mutate({ token });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +57,25 @@ export default function ForgotPassword() {
       setError("Please enter your email address");
       return;
     }
-    forgotMutation.mutate({ email });
+    requestMutation.mutate({ email });
   };
+
+  if (verifying) {
+    return (
+      <AuthBackground>
+        <div className="space-y-8 text-center">
+          <div className="flex flex-col items-center space-y-4">
+            <img src={logoSvg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
+            <Loader2 className="w-8 h-8 text-white/60 animate-spin" />
+            <div className="space-y-1.5">
+              <h1 className="text-2xl font-semibold tracking-tight text-white">Signing you in</h1>
+              <p className="text-sm text-white/60">Verifying your login link...</p>
+            </div>
+          </div>
+        </div>
+      </AuthBackground>
+    );
+  }
 
   return (
     <AuthBackground>
@@ -41,13 +83,13 @@ export default function ForgotPassword() {
         <div className="flex flex-col items-center space-y-4">
           <img src={logoSvg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
           <div className="text-center space-y-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight text-white" data-testid="heading-forgot-password">
-              {sent ? "Check your email" : "Forgot password"}
+            <h1 className="text-2xl font-semibold tracking-tight text-white" data-testid="heading-magic-link">
+              {sent ? "Check your email" : "Email login link"}
             </h1>
             <p className="text-sm text-white/60">
               {sent
-                ? "We've sent a password reset link to your email"
-                : "Enter your email to receive a password reset link"}
+                ? "We've sent a login link to your email"
+                : "Enter your email to receive a login link"}
             </p>
           </div>
         </div>
@@ -65,10 +107,10 @@ export default function ForgotPassword() {
               <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-emerald-300 font-medium" data-testid="text-success">
-                  Reset link sent
+                  Login link sent
                 </p>
                 <p className="text-xs text-emerald-400/80 mt-1">
-                  If an account exists for <strong>{email}</strong>, you'll receive an email with instructions to reset your password. The link expires in 1 hour.
+                  If an account exists for <strong>{email}</strong>, you'll receive an email with a one-time login link. The link expires in 24 hours.
                 </p>
               </div>
             </div>
@@ -99,7 +141,7 @@ export default function ForgotPassword() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={forgotMutation.isPending}
+                disabled={requestMutation.isPending}
                 data-testid="input-email"
                 className="rounded-lg border-white/10 bg-white/5 text-white placeholder:text-white/30 h-11"
               />
@@ -108,10 +150,10 @@ export default function ForgotPassword() {
             <Button
               type="submit"
               className="w-full bg-white text-black hover:bg-white/90 rounded-lg font-medium text-sm shadow-sm h-11"
-              disabled={forgotMutation.isPending}
-              data-testid="button-send-reset"
+              disabled={requestMutation.isPending}
+              data-testid="button-send-link"
             >
-              {forgotMutation.isPending ? "Sending..." : "Send reset link"}
+              {requestMutation.isPending ? "Sending..." : "Send login link"}
             </Button>
 
             <a href="/login" className="flex items-center justify-center gap-2 text-sm text-white/50 hover:text-white transition-colors" data-testid="link-back-login">

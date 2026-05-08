@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Mail } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -160,6 +160,17 @@ export default function Login() {
             <a href="/api/auth/discord">
               <SiDiscord className="w-4 h-4" />
               Login with Discord
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="w-full gap-2 rounded-lg border-[#E4E4E7] dark:border-white/10 bg-white dark:bg-white/5 text-[#09090B] dark:text-white font-medium text-sm shadow-sm"
+            data-testid="button-login-magic-link"
+          >
+            <a href="/magic-link">
+              <Mail className="w-4 h-4" />
+              Email me a login link
             </a>
           </Button>
         </div>

@@ -26,6 +26,7 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
+import MagicLink from "@/pages/magic-link";
 import Dashboard from "@/pages/dashboard";
 
 import ForumHome from "@/pages/forums/home";
@@ -357,6 +358,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/signup" component={Signup} />
             <Route path="/forgot-password" component={ForgotPassword} />
             <Route path="/reset-password" component={ResetPassword} />
+            <Route path="/magic-link" component={MagicLink} />
             <Route path="/blog" component={Blog} />
             <Route path="/blog/:id" component={Announcements} />
             <Route path="/store" component={Store} />
