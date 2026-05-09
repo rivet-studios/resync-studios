@@ -21,7 +21,7 @@ const rankEntries: Record<
   },
   "Company Director": {
     label: "Company Director",
-    color: "#184878", //4B7DF7 
+    color: "#4B7DF7", 
     badgeUrl: null,
     formatted: true,
   },
@@ -45,7 +45,7 @@ const rankEntries: Record<
   },
   "Appeals Moderator": {
     label: "Appeals Moderator",
-    color: "#484878", //a2b9f1
+    color: "#a2b9f1",
     badgeUrl: null,
     formatted: true,
   },

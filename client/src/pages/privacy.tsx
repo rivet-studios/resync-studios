@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <PolicyWrapper slug="privacy" title="Privacy Policy" effectiveDate="4/11/2026" version={2}>
       <h2>Privacy Policy — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: May 9, 2026</strong></p>
 
       <p>IMPORTANT — PLEASE READ THIS PRIVACY POLICY CAREFULLY. This Privacy Policy ("Policy") describes how RIVET Studios™ ("Company," "We," "Us," or "Our") collects, uses, stores, shares, and protects Your information when You access or use any of Our websites, games, applications, platforms, and related services (collectively, the "Service"). This Policy applies to all users of the Service, regardless of location.</p>
 
@@ -99,7 +99,7 @@ export default function PrivacyPolicy() {
       <p>You may request deletion of Your personal information. We will honor such requests subject to Our legal obligations and legitimate business interests (such as fraud prevention, legal compliance, and dispute resolution). Deletion of Your Account will result in immediate and permanent loss of access to the Service and all associated Digital Purchases.</p>
 
       <h3>7.4 Opt-Out of Marketing</h3>
-      <p>You may opt out of promotional communications by following the unsubscribe instructions in any marketing email or by contacting Us at support@rivetstudios.com. Opting out of marketing communications does not affect Our ability to send transactional or service-related communications.</p>
+      <p>You may opt out of promotional communications by following the unsubscribe instructions in any marketing email or by contacting Us at support@rivetstudiosus.com. Opting out of marketing communications does not affect Our ability to send transactional or service-related communications.</p>
 
       <h3>7.5 EU/UK/EEA Specific Rights</h3>
       <p>If You are located in the EU, EEA, or UK, You have additional rights under applicable data protection law, including the right to object to processing, the right to restrict processing, the right to withdraw consent, and the right to lodge a complaint with Your local data protection authority.</p>
@@ -117,7 +117,7 @@ export default function PrivacyPolicy() {
       <p>We may update this Privacy Policy from time to time. We will notify You of material changes by updating the "Last Updated" date at the top of this document and, where appropriate, by sending an email notification to the address associated with Your Account. Your continued use of the Service following notification of changes constitutes Your acceptance of the updated Policy.</p>
 
       <h2>12. Contact Us</h2>
-      <p>If You have any questions, concerns, or requests regarding this Privacy Policy or Our data practices, please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>If You have any questions, concerns, or requests regarding this Privacy Policy or Our data practices, please contact Us at: <strong>support@rivetstudiosus.com</strong></p>
     </PolicyWrapper>
   );
 }

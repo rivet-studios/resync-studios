@@ -25,7 +25,7 @@ export default function CommunityStaffAgreement() {
           Terms and conditions for community moderators and staff members
         </p>
         <p className="text-sm text-muted-foreground mt-4">
-          Last Updated: April 1, 2026
+          Last Updated: May 9, 2026
         </p>
       </div>
 

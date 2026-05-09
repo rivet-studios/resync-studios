@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
+import img2svg from "img2.svg";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -45,11 +46,9 @@ import Announcements from "@/pages/announcements";
 import Projects from "@/pages/projects";
 import Support from "@/pages/support";
 import DMCA from "@/pages/dmca";
-import ProjectRosewoodrules from "@/pages/project-rosewood-rules";
 import CommunityStaffAgreement from "@/pages/community-staff-agreement";
 import CommunityRules from "@/pages/community-rules";
 import About from "@/pages/about";
-import Rosewood from "@/pages/rosewood";
 
 import ModCP from "@/pages/modcp";
 import AdminCP from "@/pages/admincp";
@@ -82,11 +81,13 @@ import ReferralsPage from "@/pages/referrals";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 import Intercom from '@intercom/messenger-js-sdk';
+import Serrano from "@/pages/serrano";
+import ProjectSerranorules from "@/pages/project-serrano-rules";
       
 
 const ADMIN_RANKS = [
-  "Developer",
-  "Staff Internal Affairs",
+  "Gameplay Engineer",
+  "Creative Designer",
   "Team Member",
   "Staff Department Director",
   "Operations Manager",
@@ -95,7 +96,6 @@ const ADMIN_RANKS = [
 
 const MOD_RANKS = [
   "Appeals Moderator",
-  "Trial Moderator",
   "Community Moderator",
   "Community Admin",
   "Community Senior Admin",
@@ -135,11 +135,7 @@ function SiteFooter() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
               <div className="col-span-2 md:col-span-1 space-y-6">
                 <div className="flex items-center gap-2.5">
-                  <img
-                    src="/attached_assets/rs.svg"
-                    alt="RS"
-                    className="w-6 h-6"
-                  />
+                  <img src={img2svg} alt="RS" className="w-6 h-6"/>
                   <h3 className="font-semibold text-base">RIVET Studios™</h3>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -196,7 +192,7 @@ function SiteFooter() {
                   </li>
                   <li>
                     <Link
-                      href="/subscriptions"
+                      href="/store/subscriptions"
                       className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                     >
                       Subscriptions
@@ -368,8 +364,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
             <Route path="/policies/legal" component={LegalPolicies} />
             <Route path="/policies" component={Policies} />
-            <Route path="/subscription-agreement" component={SubscriptionAgreement} />
-            <Route path="/eu-withdrawal" component={EUWithdrawal} />
+            <Route path="/policies/legal/subscriptions" component={SubscriptionAgreement} />
+            <Route path="/policies/legal/eu-uk-withdrawal" component={EUWithdrawal} />
             <Route path="/forums" component={ForumHome} />
             <Route path="/forums/category/:id" component={ForumCategory} />
             <Route path="/forums/thread/:id/edit" component={EditThread} />
@@ -407,21 +403,20 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/admincp">
               {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}
             </Route>
-            <Route path="/guidelines" component={Guidelines} />
-            <Route path="/privacy" component={Privacy} />
-            <Route path="/terms" component={Terms} />
+            <Route path="/policies/legal/guidelines" component={Guidelines} />
+            <Route path="/policies/legal/privacy" component={Privacy} />
+            <Route path="/policies/legal/terms" component={Terms} />
             <Route path="/announcements" component={Announcements} />
             <Route path="/projects" component={Projects} />
             <Route path="/support" component={Support} />
-            <Route path="/dmca" component={DMCA} />
-            <Route path="/rosewood-rules" component={ProjectRosewoodrules} />
+            <Route path="/policies/legal/dmca" component={DMCA} />
+            <Route path="/serrano-rules" component={ProjectSerranorules} />
             <Route
-              path="/staff-terms"
-              component={CommunityStaffAgreement}
-            />
+              path="/policies/legal/staff-terms"
+              component={CommunityStaffAgreement} />
             <Route path="/community-rules" component={CommunityRules} />
             <Route path="/about" component={About} />
-            <Route path="/rosewood" component={Rosewood} />
+            <Route path="/serrano" component={Serrano} />
             <Route path="/onboarding" component={Onboarding} />
             <Route path="/status" component={Status} />
             <Route path="/changelog" component={Changelog} />

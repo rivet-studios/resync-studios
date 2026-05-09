@@ -1,10 +1,12 @@
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
+// 1ˢᵗ, 2ⁿᵈ, 3ʳᵈ, ᵗʰ
+
 export default function SubscriptionAgreement() {
   return (
-    <PolicyWrapper slug="subscription-agreement" title="Subscription Services Agreement" effectiveDate="4/11/2026" version={1}>
+    <PolicyWrapper slug="subscription-agreement" title="Subscription Services Agreement" effectiveDate="4/11/2026" version={2}>
       <h2>Subscription Services Agreement — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <p><strong>Effective Date: April 11ᵗʰ, 2026 · Last Updated: May 9ᵗʰ, 2026</strong></p>
 
       <p>THIS SUBSCRIPTION SERVICES AGREEMENT ("Agreement") governs Your access to and use of subscription-based services offered by RIVET Studios™ ("Company," "We," "Us," or "Our"), including but not limited to VIP memberships, premium access tiers, and any other recurring subscription products made available through the Service. This Agreement is supplemental to and incorporated into Our Terms and Conditions, Privacy Policy, and Acceptable Use Policy. In the event of any conflict, the more restrictive provision in favor of the Company shall control.</p>
 
@@ -49,7 +51,7 @@ export default function SubscriptionAgreement() {
       <h2>4. Cancellation Policy</h2>
 
       <h3>4.1 How to Cancel</h3>
-      <p>You may cancel Your subscription at any time through the subscription management portal accessible from Your account dashboard on the Service, or by contacting Us at support@rivetstudios.com. Cancellation requests must be submitted prior to the start of the next Billing Cycle to take effect for that cycle.</p>
+      <p>You may cancel Your subscription at any time through the subscription management portal accessible from Your account dashboard on the Service, or by contacting Us at support@rivetstudiosus.com. Cancellation requests must be submitted prior to the start of the next Billing Cycle to take effect for that cycle.</p>
 
       <h3>4.2 Effect of Cancellation</h3>
       <p>Upon cancellation, Your subscription will remain active through the end of the current Billing Cycle for which You have already paid. You will not receive a refund for any portion of the current Billing Cycle, regardless of when in the cycle You cancel. At the end of the current Billing Cycle, Your access to subscription benefits will terminate automatically.</p>
@@ -57,10 +59,11 @@ export default function SubscriptionAgreement() {
       <h3>4.3 Loss of Benefits Upon Cancellation</h3>
       <p>Upon expiration of Your subscription, You will immediately lose access to all subscription-specific benefits, features, content, virtual items, and perks associated with Your subscription tier. The Company is not obligated to preserve, restore, or compensate for any benefits lost as a result of subscription cancellation or expiration.</p>
 
-      <h2>5. No-Refund Policy</h2>
+      <h2>5. Refund Policy</h2>
 
       <h3>5.1 All Sales Final</h3>
-      <p>ALL SUBSCRIPTION FEES ARE FINAL, NON-REFUNDABLE, AND NON-EXCHANGEABLE. This applies without exception to all subscription payments, including but not limited to: the initial subscription payment, any renewal payment, any mid-cycle payment, and any payment made during a plan upgrade. Refunds will not be provided for any reason, including but not limited to: accidental subscription initiation, buyer's remorse, dissatisfaction with subscription benefits, failure to cancel prior to renewal, changes to subscription benefits, Account termination for violation of Company policies, technical issues, or any other reason.</p>
+      <p>ALL SUBSCRIPTION FEES ARE FINAL, NON-REFUNDABLE*, AND NON-EXCHANGEABLE. This applies without exception to all subscription payments, including but not limited to: the initial subscription payment, any renewal payment, any mid-cycle payment, and any payment made during a plan upgrade. Refunds will not be provided for any reason, including but not limited to: accidental subscription initiation, buyer's remorse, dissatisfaction with subscription benefits, failure to cancel prior to renewal, changes to subscription benefits, Account termination for violation of Company policies, technical issues, or any other reason. </p>
+       <p><strong>* Refunds are offered at the sole discretion of the Company.</strong></p>
 
       <h3>5.2 Account Termination — No Refund</h3>
       <p>If Your Account is terminated by the Company for any reason, including for violation of the Terms and Conditions, Acceptable Use Policy, or any other Company policy, You are not entitled to a refund of any subscription fees paid. Subscription access will be immediately revoked upon Account termination.</p>
@@ -81,7 +84,7 @@ export default function SubscriptionAgreement() {
       <p>The Company reserves the right to modify this Agreement at any time. We will notify You of material changes by updating the "Last Updated" date at the top of this document and, where appropriate, by sending an email notification. Your continued subscription after such changes constitutes Your acceptance of the updated Agreement.</p>
 
       <h2>10. Contact Information</h2>
-      <p>If You have any questions about Your subscription or this Agreement, please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>If You have any questions about Your subscription or this Agreement, please contact Us at: <strong>support@rivetstudiosus.com</strong></p>
     </PolicyWrapper>
   );
 }

@@ -11,7 +11,7 @@ import { Gamepad2, Shield } from "lucide-react";
 const RS_PROJECTS = [
   {
     name: "Los Angeles, California: Reimagined",
-    projectManager: "Project Manager: cxiqlne",
+    projectManager: "Project Manager: Isaac D.",
     game: "ROBLOX",
     status: "discontinued",
     location: "Los Angeles, CA",
@@ -19,17 +19,17 @@ const RS_PROJECTS = [
       "Los Angeles, California: Reimagined™ was discontinued for the release of Rosewood.",
   },
   {
-    name: "Project Rosewood",
-    projectManager: "Project Manager: cxiqlne, silentdirective.",
+    name: "Project Serrano",
+    projectManager: "Project Manager: Isaac D., Quinn",
     game: "ROBLOX",
     status: "development",
-    location: "Rosewod County, California",
+    location: "Serrano County, Rosewood",
     notes:
-      "Project Rosewood is our main flagship roleplay game based on the real-world location Rosewood County, California. Rosewood is expected to release within the next few months.",
+      "Project Serrano is our main flagship roleplay game inspired by Project Ventura and Once Upon a Time in Rosewood. Serrano is expected to release fall 2027.",
   },
   {
     name: "Fort Loredo: Reimagined",
-    projectManager: "Project Manager: cxiqlne",
+    projectManager: "Project Manager: Isaac D.",
     game: "ROBLOX",
     status: "discontinued",
     location: "Loredo, TX",
@@ -38,7 +38,7 @@ const RS_PROJECTS = [
   },
   {
     name: "Project Sydney",
-    projectManager: "Project Manager: cxiqlne, Reni, silentdirective.",
+    projectManager: "Project Manager: Isaac D., Reni, Quinn",
     notes: "Notes: None were provided",
     game: "ROBLOX",
     status: "discontinued",

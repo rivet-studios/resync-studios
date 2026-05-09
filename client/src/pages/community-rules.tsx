@@ -164,7 +164,7 @@ export default function CommunityRules() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Contact staff privately or through Internal Affairs. Public staff
-              complaints will be removed. Use the designated staff report forums
+              complaints will be removed. Use the designated staff report form
               to report our moderators.
             </CardContent>
           </Card>
@@ -347,7 +347,7 @@ export default function CommunityRules() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Questioning or criticizing moderation outcomes in public chat is
-              not allowed. Appeals must go through formal tickets or staff
+              not allowed. Appeals must go through our appeal system or staff
               reports.
             </CardContent>
           </Card>

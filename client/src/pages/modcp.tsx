@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import img1svg from "img1.svg"
 import {
   Select,
   SelectContent,
@@ -900,12 +901,7 @@ export default function ModCP() {
       <div className="md:w-64 border-b md:border-b-0 md:border-r border-border flex md:flex-col p-3 md:p-4 gap-1 md:space-y-1 overflow-x-auto md:overflow-x-visible">
         <div className="hidden md:flex items-center gap-3 px-4 py-6 mb-2">
           <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
-            <Shield className="w-4 h-4 text-background" />
-          </div>
-          <div>
-            <span className="font-semibold text-sm tracking-tight uppercase block">
-              ModCP
-            </span>
+            <img src={img1svg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
             <span className="text-[10px] text-muted-foreground">
               {user?.username}
             </span>
@@ -1376,7 +1372,7 @@ export default function ModCP() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Harassment or bullying of other community members">
-                        Participation in cyber crime (harassment/bullying)
+                        harassment/bullying
                       </SelectItem>
                       <SelectItem value="Unauthorized Access / Underage">
                         UA / Underage
@@ -1385,7 +1381,7 @@ export default function ModCP() {
                         V-TOS
                       </SelectItem>
                       <SelectItem value="Posting inappropriate, offensive, or NSFW content">
-                       Inappropriate / offensive content or illegal distribution of RTA protected content
+                      Posting inappropriate, offensive, or NSFW content 
                       </SelectItem>
                       <SelectItem value="Use of cheats, exploits, or unauthorized modifications">
                         Cheating / EXP

@@ -54,7 +54,8 @@ export const vipTierEnum = pgEnum("vip_tier", [
 ]);
 export const userRankEnum = pgEnum("user_rank", [
   "Banned",
-  "Active Members",
+  "Members",
+  "Active Member",
   "Trusted Member",
   "Community Partner",
   "Bronze VIP",
@@ -64,13 +65,11 @@ export const userRankEnum = pgEnum("user_rank", [
   "Vehicle Tester",
   "Customer Relations",
   "Appeals Moderator",
-  "Trial Moderator",
   "Community Moderator",
-  "Community Admin",
-  "Community Senior Admin",
+  "Community Administrator",
+  "Community Senior Administrator",
   "Creative Designer",
   "Gameplay Engineer",
-  "Staff Internal Affairs",
   "Team Member",
   "Staff Department Director",
   "Operations Manager",
@@ -116,7 +115,7 @@ export const users = pgTable("users", {
   robloxDisplayName: varchar("roblox_display_name"),
   robloxLinkedAt: timestamp("roblox_linked_at"),
   // User Ranks
-  userRank: userRankEnum("user_rank").default("Active Members"),
+  userRank: userRankEnum("user_rank").default("Members"),
 
   additionalRanks: text("additional_ranks")
     .array()
@@ -288,7 +287,7 @@ export const products = pgTable("products", {
   category: varchar("category"),
   submitterId: varchar("submitter_id").notNull(),
   status: productStatusEnum("status").default("pending"),
-  isCommunityProvided: boolean("is_community_provided").default(true),
+  isCommunityProvided: boolean("is_community_provided").default(false),
   isFeatured: boolean("is_featured").default(false),
   isLimitedEdition: boolean("is_limited_edition").default(false),
   isVerified: boolean("is_verified").default(false),
@@ -356,7 +355,7 @@ export const bans = pgTable("bans", {
   isPermanent: boolean("is_permanent").default(true),
   expiresAt: timestamp("expires_at"),
   isActive: boolean("is_active").default(true),
-  priorRank: varchar("prior_rank").default("Active Members"),
+  priorRank: varchar("prior_rank").default("Members"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -8,16 +8,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Users, Crown, Shield, Headphones, Cpu, Trophy } from "lucide-react";
 
+// Note for human devs: do not use a hyphen, instead use an en dash (–) for a more professional look.
+
 interface TeamMember {
   name: string;
   role: string;
-  additionalInfo?: string;
+  contact?: string;
   joinDate: string;
   endDate?: string;
 }
 
 interface Department {
   name: string;
+  contact?: string;
   icon: any;
   color: string;
   members: TeamMember[];
@@ -25,91 +28,86 @@ interface Department {
 
 const departments: Department[] = [
   {
-    name: "RS Leaders",
+    name: "Executive Leadership",
     icon: Crown,
     color: "text-yellow-500",
     members: [
       {
-        name: "Isaac",
+        name: "Isaac D.",
         role: "Chief Executive Officer (CEO) & Founder",
-        joinDate: "2018-Present",
+        contact: "Contact: isaac@rivetstudiosus.com",
+        joinDate: "2018–Present",
       },
       {
-        name: "silentdirective",
+        name: "Quinn (silentdirective)",
         role: "Operations Manager & Co Founder",
-        joinDate: "2024-Present",
+        contact: "Contact: quinn@rivetstudiosus.com",
+        joinDate: "2024–Present",
       },
     ],
   },
   {
-    name: "RS Management",
+    name: "Management",
     icon: Shield,
     color: "text-blue-500",
     members: [
       {
-        name: "eranovuh",
+        name: "Chase K. (eranovuh)",
         role: "Staff Director",
-        joinDate: "2026-Present",
+        contact: "Contact: chase@rivetstudiosus.com",
+        joinDate: "2026–Present",
       },
       {
-        name: "jst_basix",
+        name: "Aidan (jst_basix)",
         role: "Operations Manager",
-        joinDate: "2026-Present",
+        contact: "Contact: aidan@rivetstudiosus.com",
+        joinDate: "2026–Present",
       },
     ],
   },
   {
-    name: "RS Customer Support",
+    name: "Customer Relations",
+    contact: "Contact: support@rivetstudiosus.com",
     icon: Headphones,
     color: "text-green-500",
     members: [
       {
-        name: "silentdirective",
+        name: "Quinn (silentdirective)",
         role: "Customer Relations & Partnership Support",
-        joinDate: "2024-Present",
+        joinDate: "2024–Present",
       },
       {
-        name: "Isaac",
+        name: "Isaac D.",
         role: "Customer Relations Lead",
-        joinDate: "2018-Present",
+        joinDate: "2018–Present",
       },
 
       {
-        name: "eranovuh",
+        name: "Chase K. (eranovuh)",
         role: "Customer Relations",
-        joinDate: "2026-Present",
+        joinDate: "2026–Present",
       },
     ],
   },
   {
-    name: "RS Game Designers & Programmers",
+    name: "Engineering & Design",
     icon: Cpu,
     color: "text-purple-500",
     members: [
       {
-        name: "Isaac",
-        role: "Gameplay Engineer & Creative Designer",
-        joinDate: "2018-Present",
+        name: "Isaac D.",
+        role: "Engineering Lead",
+        joinDate: "2018–Present",
       },
       {
-        name: "silentdirective",
+        name: "Quinn (silentdirective)",
         role: "Creative Designer",
-        joinDate: "2024-Present",
-      },
-      {
-        name: "Isaac",
-        role: "Programmer",
-        joinDate: "2018-Present",
-      },
-      {
-        name: "Isaac",
-        role: "Vehicle Engineer",
-        joinDate: "2018-Present",
+        joinDate: "2024–Present",
       },
     ],
   },
   {
-    name: "RS Retired Team Members",
+    name: "Alumni",
     icon: Trophy,
     color: "text-gray-500",
     members: [
@@ -168,7 +166,7 @@ export default function StaffDirectory() {
           Meet the Team
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Staff Directory
+          Corporate Directory
         </h1>
         <p className="text-lg text-muted-foreground">
           Meet the passionate team behind RIVET Studios™
@@ -230,21 +228,21 @@ export default function StaffDirectory() {
             Interested in joining RIVET Studios? Check out our career
             opportunities. We're always looking for talented individuals to help
             grow our community.
-            <CardDescription className="text-xs"></CardDescription> To become a community volunteer, you can apply for the Community Staff program
+            <CardDescription className="text-xs"></CardDescription> To become a community volunteer, you can apply for the Community Staff program {" "}
             <a
-              href=" https://rivetstudios.fillout.com/apply"
+              href="https://rivetstudios.fillout.com/apply"
               className="text-primary hover:underline"
             >
-              here
+              here¸
             </a>
 
               <CardDescription className="text-xs"></CardDescription>
-              If you are interested in joining Corporate, check out our
+                 If you are interested in joining Corporate, check out our {" "}
               <a
     href="https://x.com/rivetstudiosau/jobs"
                 className="text-primary hover:underline"
                 >
-              Twitter page.
+                Twitter page
               </a>
           </p>
         </CardContent>

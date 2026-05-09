@@ -4,7 +4,7 @@ export default function DMCAPolicy() {
   return (
     <PolicyWrapper slug="dmca" title="DMCA Policy" effectiveDate="4/11/2026" version={1}>
       <h2>DMCA Policy — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: May 9, 2026</strong></p>
 
       <p>This Digital Millennium Copyright Act ("DMCA") Policy explains how RIVET Studios™ ("Company," "We," "Us," or "Our") handles claims of copyright infringement and responds to takedown notices in connection with our websites, platforms, games, and related services (collectively, the "Service"). We respect intellectual property rights and expect all users of the Service to do the same.</p>
 
@@ -35,7 +35,7 @@ export default function DMCAPolicy() {
         <li>Your physical or electronic signature;</li>
         <li>Identification of the material that has been removed or to which access has been disabled and the location at which the material appeared before it was removed or access to it was disabled;</li>
         <li>A statement under penalty of perjury that You have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled;</li>
-        <li>Your name, address, and telephone number, and a statement that You consent to the jurisdiction of Federal District Court for the judicial district in which Your address is located, or if Your address is outside of the United States, for any judicial district in which the Company may be found, and that You will accept service of process from the person who provided the original DMCA notice or an agent of such person.</li>
+        <li>Your name, address, and telephone number, and a statement that You consent to the jurisdiction of Federal District Court for the judicial district in which Your address is located, or if Your address is outside of Australia, for any judicial district in which the Company may be found, and that You will accept service of process from the person who provided the original DMCA notice or an agent of such person.</li>
       </ol>
 
       <h3>2.2 Restoration of Content</h3>
@@ -43,7 +43,7 @@ export default function DMCAPolicy() {
 
       <h2>3. Designated Copyright Agent</h2>
       <p>All DMCA takedown notices and counter-notices should be sent to Our designated copyright agent. You may contact Our copyright agent at:</p>
-      <p><strong>RIVET Studios™ — Copyright Agent</strong><br />Email: <strong>support@rivetstudios.com</strong><br />Subject Line: DMCA Notice</p>
+      <p><strong>RIVET Studios™ — Copyright & Legal</strong><br />Email: <strong>legal@rivetstudiosus.com</strong><br />Subject Line: DMCA Notice</p>
       <p>We strongly recommend submitting DMCA notices via email, as this ensures the fastest possible response. Only notices that comply with the requirements of 17 U.S.C. § 512 will be processed.</p>
 
       <h2>4. Repeat Infringer Policy</h2>
@@ -55,7 +55,7 @@ export default function DMCAPolicy() {
       <p>All content owned or created by RIVET Studios™, including but not limited to game assets, code, artwork, music, video, logos, trademarks, character designs, platform features, and any other materials associated with the Service, is protected by applicable intellectual property law. Unauthorized reproduction, distribution, modification, or use of any Company-owned content is strictly prohibited and may constitute copyright infringement, trademark infringement, or other violations of applicable law.</p>
 
       <h3>5.2 Enforcement</h3>
-      <p>RIVET Studios™ actively monitors for and enforces against unauthorized use of its intellectual property. If You become aware of any unauthorized use of Company-owned content, please report it to support@rivetstudios.com so that We may take appropriate action.</p>
+      <p>RIVET Studios™ actively monitors for and enforces against unauthorized use of its intellectual property. If You become aware of any unauthorized use of Company-owned content, please report it to support@rivetstudiosus.com so that We may take appropriate action.</p>
 
       <h3>5.3 DMCA Claims Against Users</h3>
       <p>If Your content on the Service is subject to a valid DMCA claim by RIVET Studios™, the content will be removed without prior notice. You will receive notification of the takedown to the email address on file with Your Account. You may file a counter-notice as described in Section 2 if You believe the takedown was in error. Repeated or willful infringement of RIVET Studios™ intellectual property will result in permanent Account termination without refund.</p>
@@ -64,7 +64,7 @@ export default function DMCAPolicy() {
       <p>Nothing in this DMCA Policy constitutes legal advice. If You have questions about Your legal rights or obligations under copyright law or the DMCA, We strongly encourage You to consult with a qualified attorney.</p>
 
       <h2>7. Contact Information</h2>
-      <p>For general questions about this DMCA Policy (other than DMCA notices and counter-notices), please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>For general questions about this DMCA Policy (other than DMCA notices and counter-notices), please contact Us at: <strong>support@rivetstudiosus.com</strong></p>
     </PolicyWrapper>
   );
 }

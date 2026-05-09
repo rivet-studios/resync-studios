@@ -3,11 +3,9 @@ COPY AND PASTE THESE COMMANDS INTO YOUR REPLIT TERMINAL
 
 ---
 
-cd /home/runner/workspace
-git remote remove origin
-git remote add origin https://github.com/sharkyowlskv-lab/resync-studios.git
-git branch -M main
-git push -u origin main
+git add .
+git commit -m "ty"
+git push
 
 ---
 

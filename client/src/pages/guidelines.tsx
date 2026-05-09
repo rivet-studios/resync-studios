@@ -3,8 +3,8 @@ import { PolicyWrapper } from "@/components/policy-wrapper";
 export default function CommunityGuidelines() {
   return (
     <PolicyWrapper slug="guidelines" title="Acceptable Use Policy (AUP) & Community Guidelines" effectiveDate="4/11/2026" version={1}>
-      <h2>Acceptable Use Policy &amp; Community Guidelines — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <h2>Acceptable Use Policy & Community Guidelines — RIVET Studios™</h2>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: May 9, 2026</strong></p>
 
       <p>THIS ACCEPTABLE USE POLICY AND COMMUNITY GUIDELINES ("AUP") GOVERN YOUR CONDUCT ACROSS ALL RIVET STUDIOS™ SERVICES. This AUP is supplemental to and incorporated into Our Terms and Conditions, Privacy Policy, and Subscription Services Agreement. In the event of any conflict, the more restrictive provision in favor of the Company shall control.</p>
 
@@ -41,7 +41,7 @@ export default function CommunityGuidelines() {
         <li>Using modified game clients, unofficial launchers, custom firmware, or any software that alters the intended functionality of the Service;</li>
         <li>Using any technique to manipulate network traffic, server responses, or client-server communications.</li>
       </ol>
-      <p>You agree to report any bugs, glitches, or exploits to the Company immediately upon discovery at support@rivetstudios.com. Failure to report a known exploit, or exploitation of a known bug even once, constitutes a violation of this AUP.</p>
+      <p>You agree to report any bugs, glitches, or exploits to the Company immediately upon discovery at support@rivetstudiosus.com. Failure to report a known exploit, or exploitation of a known bug even once, constitutes a violation of this AUP.</p>
 
       <h3>2.2 Raiding, Brigading, and Coordinated Disruption</h3>
       <ol type="a">
@@ -119,7 +119,7 @@ export default function CommunityGuidelines() {
         <li>Disrespecting, insulting, threatening, or harassing any staff member in connection with a moderation decision is a bannable offense;</li>
         <li>Repeatedly DMing, pinging, tagging, or messaging staff members regarding moderation decisions, bans, or complaints outside of designated support channels constitutes harassment and is grounds for further enforcement action;</li>
         <li>Attempting to manipulate, bribe, blackmail, or coerce staff members is a zero-tolerance offense resulting in immediate permanent ban;</li>
-        <li>The sole authorized method for appealing moderation decisions is through the official support portal or by contacting support@rivetstudios.com. Appeals submitted through any other channel will not be considered.</li>
+        <li>The sole authorized method for appealing moderation decisions is through <strong>https://appeal.gg/rivetstudios</strong> or by contacting <strong>support@rivetstudiosus.com</strong>. Appeals submitted through any other method will not be considered.</li>
       </ol>
 
       <h3>3.4 Content Standards</h3>
@@ -148,7 +148,7 @@ export default function CommunityGuidelines() {
       <p>Not all enforcement actions are eligible for appeal. Enforcement actions resulting from violations of zero-tolerance provisions (Sections 2.1 through 2.8) are generally not eligible for appeal. The Company reserves sole discretion to determine which enforcement actions, if any, are eligible for appeal in any given case.</p>
 
       <h3>5.2 Appeal Process</h3>
-      <p>If You believe an enforcement action was applied in error, You may submit an appeal through the official support portal at resyncstudios.com/appeals or by contacting support@rivetstudios.com. Appeals must be submitted within thirty (30) days of the enforcement action. Appeals submitted after this deadline will not be considered.</p>
+      <p>If You believe an enforcement action was applied in error, You may submit an appeal through <strong>https://appeal.gg/rivetstudios</strong> or by contacting <strong>support@rivetstudiosus.com</strong>. Appeals must be submitted within thirty (30) days of the enforcement action. Appeals submitted after this deadline will not be considered.</p>
 
       <h3>5.3 No Guarantee of Outcome</h3>
       <p>Submission of an appeal does not guarantee reversal of the enforcement action. The Company's appeal decision is final and not subject to further review.</p>
@@ -157,7 +157,7 @@ export default function CommunityGuidelines() {
       <p>The Company reserves the right to modify this AUP at any time. We will notify You of material changes by updating the "Last Updated" date at the top of this document. Your continued use of the Service following notification of changes constitutes Your acceptance of the updated AUP.</p>
 
       <h2>7. Contact Information</h2>
-      <p>If You have any questions about this AUP or wish to report a violation, please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>If You have any questions about this AUP or wish to report a violation, please contact Us at: <strong>support@rivetstudiosus.com</strong></p>
     </PolicyWrapper>
   );
 }

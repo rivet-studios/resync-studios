@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import img1svg from "img1.svg";
 
 const steps = [
   { id: 1, label: "Account", sub: "Verify your status" },
@@ -64,7 +65,7 @@ export default function Onboarding() {
       <div className="hidden lg:flex w-[35%] bg-card border-r border-white/[0.04] p-12 flex-col justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white flex items-center justify-center rounded">
-            <span className="text-black font-semibold text-xl italic">RS</span>
+            <img src={img1svg} alt="RIVET Studios" className="h-10 w-auto" data-testid="img-logo" />
           </div>
           <span className="font-semibold text-xl tracking-tight text-foreground">
             RIVET Studios™

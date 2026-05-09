@@ -16,9 +16,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function ProjectRosewoodrules() {
+export default function ProjectSerranorules() {
   return (
-    <PolicyWrapper slug="project-rosewood-rules">
+    <PolicyWrapper slug="project-serrano-rules">
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       <div className="text-center space-y-2">
         <Badge variant="outline" className="mx-auto gap-2">
@@ -26,7 +26,7 @@ export default function ProjectRosewoodrules() {
           Server Rules
         </Badge>
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          Project Rosewood Rules
+          Project Serrano Rules
         </h1>
         <p className="text-lg text-muted-foreground">
           Official roleplay standards and expectations for all players
@@ -42,7 +42,7 @@ export default function ProjectRosewoodrules() {
                 Serious Roleplay Environment
               </p>
               <p className="text-muted-foreground text-sm">
-                Project Rosewood is a serious roleplay environment with a strong
+                Project Serrano is a serious roleplay environment with a strong
                 focus on realism, immersive storytelling, and consistent
                 character portrayal. All rules are enforced using a common-sense
                 approach—if an action is clearly disruptive, unrealistic, or
@@ -216,8 +216,8 @@ export default function ProjectRosewoodrules() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               All players must be 13+ years old with prior serious RP
-              experience. Lying about age results in permanent bans from all
-              Rivet Studios games.
+              experience. Lying about your age results in permanent bans from all
+              RIVET Studios games.
             </CardContent>
           </Card>
 
@@ -533,11 +533,9 @@ export default function ProjectRosewoodrules() {
       {/* Footer */}
       <Card className="border-blue-500/30 bg-blue-500/5">
         <CardContent className="p-6 text-center space-y-3">
-          <p className="text-lg font-semibold">Common Sense Approach</p>
+          <p className="text-lg font-semibold">Guide First Approach</p>
           <p className="text-muted-foreground text-sm">
-            All rules are enforced using a common-sense approach. Ignorance of
-            the rules is never an excuse. If an action is clearly disruptive,
-            unrealistic, or breaks immersion, it will be treated as a violation.
+            All rules are enforced using a guide first approach. First offenses are enforced with a verbal warn guided to our guidelines. If an action is severe, it will be treated as a violation.
             Staff discretion applies to ensure a quality roleplay experience for
             all players.
           </p>

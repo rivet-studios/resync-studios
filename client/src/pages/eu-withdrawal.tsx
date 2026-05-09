@@ -4,7 +4,7 @@ export default function EUWithdrawal() {
   return (
     <PolicyWrapper slug="eu-withdrawal" title="EU/UK Consumer Withdrawal Rights Waiver Policy" effectiveDate="4/11/2026" version={1}>
       <h2>EU/UK Consumer Withdrawal Rights Waiver Policy — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11, 2026 · Last Updated: April 11, 2026</strong></p>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: May 9, 2026</strong></p>
 
       <p>THIS POLICY IS LEGALLY BINDING. This EU/UK Consumer Withdrawal Rights Waiver Policy ("Waiver Policy") applies exclusively and mandatorily to all consumers located in the European Union ("EU"), European Economic Area ("EEA"), or United Kingdom ("UK") who purchase, subscribe to, or otherwise acquire any digital content, virtual goods, virtual currency, tokens, in-game items, subscriptions, premium features, downloadable content, or any other purely digital services or products (collectively, "Digital Purchases") from RIVET Studios™ ("Company," "We," "Us," or "Our").</p>
 
@@ -85,7 +85,8 @@ export default function EUWithdrawal() {
       </ol>
 
       <h3>5.2 No-Refund Policy</h3>
-      <p>Our strict No-Refund Policy, as detailed in the Terms and Conditions, applies in full to all Digital Purchases made by EU/UK consumers. All sales are final, non-refundable, and non-exchangeable for any reason, including but not limited to: buyer's remorse or change of mind; accidental purchase; dissatisfaction with the product, Service, or any aspect thereof; loss of access due to Account termination for violation of Company policies; technical issues, server downtime, or service interruptions; or changes, modifications, or discontinuation of digital content, features, or the Service.</p>
+      <p>Our strict No-Refund Policy, as detailed in the Terms and Conditions, applies in full to all Digital Purchases made by EU/UK consumers. All sales are final, non-refundable*, and non-exchangeable for any reason, including but not limited to: buyer's remorse or change of mind; accidental purchase; dissatisfaction with the product, Service, or any aspect thereof; loss of access due to Account termination for violation of Company policies; technical issues, server downtime, or service interruptions; or changes, modifications, or discontinuation of digital content, features, or the Service.</p>
+      <p><strong>* Refunds are offered at the sole discretion of the Company.</strong></p>
 
       <h3>5.3 Non-Waivable Rights Preserved</h3>
       <p>Nothing in this Waiver Policy is intended to waive or limit any consumer rights that are non-waivable under applicable mandatory law (such as rights relating to defective or non-conforming digital content under Directive (EU) 2019/770 on Digital Content). However, the exercise of withdrawal rights under the Consumer Rights Directive is a waivable right when the conditions of Article 16(m) are met, and those conditions are satisfied for every Digital Purchase from RIVET Studios™ as described in this Policy.</p>
@@ -118,7 +119,7 @@ export default function EUWithdrawal() {
       <p>To avoid a renewal charge, You must cancel Your subscription before the start of the next Billing Cycle. Cancellation after a renewal payment has been processed does not entitle You to a refund for that Billing Cycle.</p>
 
       <h2>8. Contact Information</h2>
-      <p>If You have questions about this Waiver Policy or Your rights as an EU/UK consumer, please contact Us at: <strong>support@rivetstudios.com</strong></p>
+      <p>If You have questions about this Waiver Policy or Your rights as an EU/UK consumer, please contact Us at: <strong>support@rivetstudiosus.com</strong></p>
       <p>You also have the right to lodge a complaint with Your local data protection or consumer protection authority if You believe Your rights have not been respected.</p>
     </PolicyWrapper>
   );
