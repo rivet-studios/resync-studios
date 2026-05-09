@@ -19,7 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
-import img2svg from "@attached/img2.svg";
+import img2svg from "@assets/img2.svg";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
