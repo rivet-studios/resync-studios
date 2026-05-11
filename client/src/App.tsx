@@ -19,7 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
-import img2svg from "@assets/img2.svg";
+import img2png from "attached_assets/img2.png";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -135,7 +135,7 @@ function SiteFooter() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
               <div className="col-span-2 md:col-span-1 space-y-6">
                 <div className="flex items-center gap-2.5">
-                  <img src={img2svg} alt="RS" className="w-6 h-6"/>
+                  <img src={img2png} alt="RS" className="w-6 h-6"/>
                   <h3 className="font-semibold text-base">RIVET Studios™</h3>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
