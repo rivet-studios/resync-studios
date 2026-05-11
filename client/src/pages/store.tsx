@@ -61,7 +61,7 @@ function ProductBadges({ product }: { product: ProductWithSubmitter }) {
           className="text-[10px] font-medium"
           data-testid={`badge-community-${product.id}`}
         >
-          Community
+          Community Provided
         </Badge>
       )}
     </div>
@@ -76,17 +76,7 @@ function ProductCard({ product }: { product: ProductWithSubmitter }) {
         data-testid={`card-product-${product.id}`}
       >
         <div className="aspect-[4/3] bg-muted rounded-t-xl overflow-hidden">
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="w-10 h-10 text-muted-foreground/30" />
-            </div>
-          )}
+          {product.attachments}
         </div>
         <CardContent className="p-4 space-y-2">
           <ProductBadges product={product} />
@@ -126,18 +116,8 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
         data-testid={`card-featured-${product.id}`}
       >
         <div className="aspect-[16/10] bg-muted h-full">
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-muted">
-              <Package className="w-16 h-16 text-muted-foreground/20" />
+          {product.attachments}
             </div>
-          )}
-        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <div className="flex flex-wrap gap-1.5 mb-2">
@@ -170,7 +150,7 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
 }
 
 const CATEGORY_ICONS: Record<string, typeof Tag> = {
-  "Rosewood Vehicle Addons": Tag,
+  "Serrano Vehicle Addons": Tag,
   Addons: Sparkles,
 };
 

@@ -2,7 +2,7 @@ import { PolicyWrapper } from "@/components/policy-wrapper";
 
 export default function CommunityGuidelines() {
   return (
-    <PolicyWrapper slug="guidelines" title="Acceptable Use Policy (AUP) & Community Guidelines" effectiveDate="4/11/2026" version={1}>
+    <PolicyWrapper slug="guidelines" title="Acceptable Use Policy (AUP) & Community Guidelines" effectiveDate="4/11/2026" version={2}>
       <h2>Acceptable Use Policy & Community Guidelines — RIVET Studios™</h2>
       <p><strong>Effective Date: April 11, 2026 · Last Updated: May 9, 2026</strong></p>
 

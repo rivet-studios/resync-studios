@@ -1,12 +1,10 @@
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
-// 1ˢᵗ, 2ⁿᵈ, 3ʳᵈ, ᵗʰ
-
 export default function TermsOfService() {
   return (
     <PolicyWrapper slug="terms" title="Terms & Conditions" effectiveDate="17/06/2018" version={3}>
       <h2>Terms and Conditions — RIVET Studios™</h2>
-      <p><strong>Effective Date: July 17ᵗʰ, 2018 · Last Updated: May 9ᵗʰ, 2026</strong></p>
+      <p><strong>Effective Date: July 17, 2018 · Last Updated: May 11, 2026</strong></p>
 
       <p>IMPORTANT — PLEASE READ CAREFULLY. These Terms and Conditions ("Terms") constitute a legally binding agreement between You and RIVET Studios™. By accessing, downloading, installing, or using any Service, You acknowledge that You have read, understood, and agree to be bound by these Terms in their entirety. If You do not agree, You must immediately cease all use of the Service.</p>
 

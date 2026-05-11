@@ -117,11 +117,11 @@ const editProductSchema = z.object({
 type EditProductForm = z.infer<typeof editProductSchema>;
 
 const CATEGORIES = [
-  "Rosewood Vehicle Addons",
-  "Rosewood Civilian Vehicles",
-  "Rosewood LEO Vehicles",
-  "Rosewood EMS Vehicles",
-  "Rosewood Fire Vehicles",
+  "Serrano Vehicle Addons",
+  "Serrano Civilian Vehicles",
+  "Serrano LEO Vehicles",
+  "Serrano EMS Vehicles",
+  "Serrano Fire Vehicles",
   "Addons",
 ];
 

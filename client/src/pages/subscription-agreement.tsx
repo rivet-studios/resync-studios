@@ -1,12 +1,10 @@
 import { PolicyWrapper } from "@/components/policy-wrapper";
 
-// 1ˢᵗ, 2ⁿᵈ, 3ʳᵈ, ᵗʰ
-
 export default function SubscriptionAgreement() {
   return (
     <PolicyWrapper slug="subscription-agreement" title="Subscription Services Agreement" effectiveDate="4/11/2026" version={2}>
       <h2>Subscription Services Agreement — RIVET Studios™</h2>
-      <p><strong>Effective Date: April 11ᵗʰ, 2026 · Last Updated: May 9ᵗʰ, 2026</strong></p>
+      <p><strong>Effective Date: April 11, 2026 · Last Updated: May 11, 2026</strong></p>
 
       <p>THIS SUBSCRIPTION SERVICES AGREEMENT ("Agreement") governs Your access to and use of subscription-based services offered by RIVET Studios™ ("Company," "We," "Us," or "Our"), including but not limited to VIP memberships, premium access tiers, and any other recurring subscription products made available through the Service. This Agreement is supplemental to and incorporated into Our Terms and Conditions, Privacy Policy, and Acceptable Use Policy. In the event of any conflict, the more restrictive provision in favor of the Company shall control.</p>
 

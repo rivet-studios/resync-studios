@@ -6,13 +6,13 @@ export type CategoryNode = {
 
 export const CATEGORY_TREE: CategoryNode[] = [
   {
-    name: "Rosewood Vehicle Addons",
-    description: "Vehicle packs for Rosewood — browse by type",
+    name: "Serrano Vehicle Addons",
+    description: "Vehicle packs for Serrano — browse by type",
     children: [
-      "Rosewood Civilian Vehicles",
-      "Rosewood LEO Vehicles",
-      "Rosewood EMS Vehicles",
-      "Rosewood Fire Vehicles",
+      "Serrano Civilian Vehicles",
+      "Serrano LEO Vehicles",
+      "Serrano EMS Vehicles",
+      "Serrano Fire Vehicles",
     ],
   },
   {
