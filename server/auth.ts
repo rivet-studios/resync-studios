@@ -118,7 +118,7 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
                 discordUsername: profile.username,
                 discordAvatar: profile.avatar,
                 discordLinkedAt: new Date(),
-                userRank: "Active Members",
+                userRank: "Members",
                 vipTier: "none",
               });
             }
@@ -131,22 +131,24 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
             });
           }
 
-          // 3. BACKGROUND TASKS (Don't let these crash the login!)
-          if (user) {
-            updateDiscordNickname(discordId, user.username || "User").catch((_e) => 
-  console.error("Nickname sync failed")
-);
-            syncUserFromDiscord(discordId).catch(_e => console.error("Data sync failed"));
-            
-            sendSiteLog({
-              title: "User Login",
-              level: "success",
-              fields: [
-                { name: "User", value: user.username },
-                { name: "Discord ID", value: discordId },
-              ]
-            }).catch(_e => {});
-          }
+          // 3. BACKGROUND TASKS (Run sequentially to avoid rate limits)
+if (user) {
+  (async () => {
+    try {
+      // Run the nickname update first
+      await updateDiscordNickname(discordId, user.username || "User");
+
+      // Wait a tiny bit, then sync
+      await new Promise(resolve => setTimeout(resolve, 500)); 
+      await syncUserFromDiscord(discordId);
+
+      // Log success
+      sendSiteLog({ title: "User Login", level: "success" });
+    } catch (e) {
+      console.error("Non-critical background task failed:", e);
+    }
+  })();
+}
 
           return done(null, user);
         } catch (err) {
