@@ -229,24 +229,13 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining RIVET Studios? Check out our career
-            opportunities. We're always looking for talented individuals to help
+            Interested in joining RIVET Studios? Check out our {" "}. We're always looking for talented individuals to help
             grow our community.
-            <CardDescription className="text-xs"></CardDescription> To become a community volunteer, you can apply for the Community Staff program {" "}
-            <a
-              href="https://rivetstudios.fillout.com/apply"
-              className="text-primary hover:underline"
-            >
-              here
-            </a>
-
-              <CardDescription className="text-xs"></CardDescription>
-                 If you are interested in joining Corporate, check out our {" "}
               <a
     href="https://x.com/rivetstudiosau/jobs"
-                className="text-primary hover:underline"
+                className="text-primary hover:underline font-bold"
                 >
-                Twitter page
+                careers page
               </a>
           </p>
         </CardContent>
