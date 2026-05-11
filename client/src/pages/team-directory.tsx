@@ -183,6 +183,7 @@ export default function StaffDirectory() {
               <div className="flex items-center gap-3 pb-2 border-b border-border">
                 <DeptIcon className={`w-6 h-6 ${dept.color}`} />
                 <h2 className="font-display text-2xl font-bold">{dept.name}</h2>
+                <p className="font-display text-2xl font-bold">{dept.contact}</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -197,6 +198,9 @@ export default function StaffDirectory() {
                       </CardTitle>
                       <CardDescription className="text-xs">
                         {member.role}
+                      </CardDescription>
+                       <CardDescription className="text-xs">
+                        {member.contact}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
@@ -233,7 +237,7 @@ export default function StaffDirectory() {
               href="https://rivetstudios.fillout.com/apply"
               className="text-primary hover:underline"
             >
-              here¸
+              here
             </a>
 
               <CardDescription className="text-xs"></CardDescription>
