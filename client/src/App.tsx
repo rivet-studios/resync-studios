@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppHeader } from "@/components/app-header";
-import "/logo-rs1.png";
+import logoPng from "client/public/logo-rs1.png";
 import {
   SidebarProvider,
   SidebarInset,
@@ -135,7 +135,7 @@ function SiteFooter() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
               <div className="col-span-2 md:col-span-1 space-y-6">
                 <div className="flex items-center gap-2.5">
-                  <img src="/logo-rs1.png" alt="RIVET Studios" className="h-10 w-auto" />
+                  <img src={logoPng} alt="RIVET Studios" className="h-10 w-auto" />
                   <h3 className="font-semibold text-base">RIVET Studios™</h3>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
