@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import img1png from "attached_assets/img1.png";
+import img1png from "@assets/attached_assets/img1.png";
 
 const steps = [
   { id: 1, label: "Account", sub: "Verify your status" },

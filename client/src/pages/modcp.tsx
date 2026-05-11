@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import img1png from "attached_assets/img1.png"
+import img1png from "@assets/attached_assets/img1.png";
 import {
   Select,
   SelectContent,
