@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import img1png from "@assets/attached_assets/img1.png";
+import logoSvg from "@assets/logo-rs.png";
 import {
   Select,
   SelectContent,
@@ -901,7 +901,7 @@ export default function ModCP() {
       <div className="md:w-64 border-b md:border-b-0 md:border-r border-border flex md:flex-col p-3 md:p-4 gap-1 md:space-y-1 overflow-x-auto md:overflow-x-visible">
         <div className="hidden md:flex items-center gap-3 px-4 py-6 mb-2">
           <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
-            <img src={img1png} alt="ModCP" className="h-10 w-auto" data-testid="img-logo" />
+            <img src={logoSvg} alt="ModCP" className="h-10 w-auto" data-testid="img-logo" />
             <span className="text-[10px] text-muted-foreground">
               {user?.username}
             </span>
