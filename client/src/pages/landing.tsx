@@ -105,46 +105,46 @@ export default function Landing() {
               data-testid="section-hero-stats"
             >
               <div
-                className="inline-flex items-center gap-2.5 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
+                className="inline-flex items-center gap-2.5 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4"
                 data-testid="stat-platform-members"
               >
                 <Rocket className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-foreground/90">
+                <span className="text-m text-foreground/90">
                   Now powering {formatCount(publicStats?.totalMembers || 24)}+
                   members
                 </span>
               </div>
               <div
-                className="inline-flex items-center gap-2 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
+                className="inline-flex items-center gap-2 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4"
                 data-testid="stat-discord-members"
               >
                 <div className="relative flex items-center justify-center">
-                <SiDiscord className="w-5 h-5 text-[#5865F2]" />
+                <SiDiscord className="w-5 h-4 text-[#5865F2]" />
                   <span className="absolute -top-0.5 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-[#121212] rounded-full"></span>
                 </div>
-                <span className="text-sm font-medium text-white">
+                <span className="text-m text-muted-foreground/90">
                   {formatCount(publicStats?.discordMembers || 35)}
                 </span>
               </div>
               <div
-                className="inline-flex items-center gap-2 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
+                className="inline-flex items-center gap-2 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4"
                 data-testid="stat-roblox-members"
               >
                 <SiRoblox className="w-4 h-4 text-white" />
-                <span className="text-sm font-medium text-white">
+                <span className="text-m text-muted-foreground/90">
                   {formatCount(publicStats?.robloxMembers || 11)}
                 </span>
               </div>
             </div>
 
-            <h1
-              className="text-4xl sm:text-6xl md:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]"
+            <p
+              className="text-2xl sm:text-3xl md:text-5xl font-semibold tracking-tight text-foreground leading-[0.95]"
               data-testid="text-hero-title"
             >
-              The number one online gaming community platform
-            </h1>
+             The number one online gaming community platform
+            </p>
             <p
-              className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed"
+              className="text-base sm:text-1xl text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed"
               data-testid="text-hero-description"
             >
               RIVET Studios™ creates an open gaming environment available to everyone, delivering worlds that breathe, stories that live, and cities that command attention through our exceptional game development expertise. Every project is treated like a city — layered, alive, and engineered to last.
