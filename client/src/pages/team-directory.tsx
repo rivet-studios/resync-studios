@@ -229,14 +229,15 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining RIVET Studios? Check out our {" "}. We're always looking for talented individuals to help
-            grow our community.
+            Interested in joining RIVET Studios? Check out our {" "}. 
               <a
     href="https://x.com/rivetstudiosau/jobs"
                 className="text-primary hover:underline font-bold"
                 >
                 careers page
               </a>
+            We're always looking for talented individuals to help
+              grow our community.
           </p>
         </CardContent>
       </Card>

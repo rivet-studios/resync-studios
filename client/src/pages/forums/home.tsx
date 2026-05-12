@@ -126,7 +126,7 @@ export default function ForumHome() {
 
                   return (
                     <div key={groupName} className="mt-4" data-testid={`group-${groupName}`}>
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-3 mb-1.5">
+                      <h3 className="text-xs text-blue-400 font-bold uppercase tracking-wider text-muted-foreground px-3 mb-1.5">
                         {groupName}
                       </h3>
                       <div className="space-y-0.5">
