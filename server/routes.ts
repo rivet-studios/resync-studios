@@ -245,7 +245,7 @@ export async function registerRoutes(
       // Auto-assign Team Member rank if email matches domain
       if (
         user.email?.toLowerCase().endsWith("@resyncstudios.com") &&
-        user.userRank === "Active Members"
+        user.userRank === "Members"
       ) {
         await storage.updateUserRank(user.id, "Team Member");
         user.userRank = "Team Member";

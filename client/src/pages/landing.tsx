@@ -12,8 +12,9 @@ import {
   Globe,
   ArrowRight,
   ShoppingCart,
-  Sparkles,
   Zap,
+  Rocket,
+  UserPlus,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
 import { Link } from "wouter";
@@ -37,31 +38,31 @@ const features = [
     icon: MessageSquare,
     title: "Community Forums",
     description:
-      "Built-in forum system with real-time discussions, announcements, and engaging spaces for our community.",
+      "Built-in forum system with real-time chat, announcements, and engaging spaces for our community.",
   },
   {
     icon: BarChart3,
     title: "Analytics Dashboard",
     description:
-      "Advanced analytics providing deep insights into member engagement and community growth metrics.",
+      "Advanced analytics providing deep insights into member engagement and community growth metrics to enhance innovative solutions and our community-first scope.",
   },
   {
     icon: Gamepad2,
     title: "Game Integration",
     description:
-      "Advanced game development integration supporting high-fidelity experiences across platforms.",
+      "Advanced game development integration supporting high-fidelity experiences across platforms with custom software capabilities.",
   },
   {
     icon: Shield,
     title: "Security & Moderation",
     description:
-      "Advanced security systems ensuring fair play and safe gaming environments with robust monitoring. Powered by Sentinel — our new security & moderation system.",
+      "Advanced security systems ensuring fair play and safe gaming environments with robust anti-cheat and monitoring capabilities.",
   },
   {
     icon: Globe,
     title: "Global Infrastructure",
     description:
-      "Worldwide server network delivering high-fidelity gaming experiences with low latency globally.",
+      "Worldwide server network delivering high-fidelity gaming experiences with low latency and global availability.",
   },
 ];
 
@@ -80,16 +81,10 @@ export default function Landing() {
   });
 
   const stats = [
-    {
-      value: publicStats?.totalMembers || 40,
-      label: "Connected Members",
-      suffix: "+",
-    },
-    {
-      value: publicStats?.totalDiscussions || 3,
-      label: "Active Discussions",
-      suffix: "+",
-    },
+    { value: publicStats?.totalMembers || 24, label: "Connected Members" },
+    { value: 35, label: "Discord Members" },
+    { value: 11, label: "Roblox Members" },
+    { value: 5, label: "Active Discussions" },
     { value: 99.9, label: "Uptime", suffix: "%" },
     { value: 24, label: "Support", suffix: "/7" },
   ];
@@ -110,102 +105,95 @@ export default function Landing() {
               data-testid="section-hero-stats"
             >
               <div
-                className="inline-flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-5 py-2.5"
+                className="inline-flex items-center gap-2.5 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
                 data-testid="stat-platform-members"
               >
-                <Sparkles className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground/90">
-                  Now powering {formatCount(publicStats?.totalMembers || 40)}+
+                <Rocket className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground/90">
+                  Now powering {formatCount(publicStats?.totalMembers || 24)}+
                   members
                 </span>
               </div>
               <div
-                className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-2.5"
+                className="inline-flex items-center gap-2 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
                 data-testid="stat-discord-members"
               >
+                <div className="relative flex items-center justify-center">
                 <SiDiscord className="w-5 h-5 text-[#5865F2]" />
-                <span className="text-sm font-medium text-foreground/90">
-                  {formatCount(publicStats?.discordMembers || 30)}
+                  <span className="absolute -top-0.5 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-[#121212] rounded-full"></span>
+                </div>
+                <span className="text-sm font-medium text-white">
+                  {formatCount(publicStats?.discordMembers || 35)}
                 </span>
               </div>
               <div
-                className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-2.5"
+                className="inline-flex items-center gap-2 bg-black/40 border border-white/[0.08] backdrop-blur-sm rounded-full px-4 py-1.5"
                 data-testid="stat-roblox-members"
               >
                 <SiRoblox className="w-4 h-4 text-white" />
-                <span className="text-sm font-medium text-foreground/90">
-                  {formatCount(publicStats?.robloxMembers || 10)}
+                <span className="text-sm font-medium text-white">
+                  {formatCount(publicStats?.robloxMembers || 11)}
                 </span>
               </div>
             </div>
 
-            <Badge
-              variant="outline"
-              className="bg-white/[0.04] border-white/[0.08] backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground tracking-wide uppercase gap-2"
-              data-testid="badge-hero-tagline"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              Building the Future of Digital Experiences
-            </Badge>
             <h1
               className="text-4xl sm:text-6xl md:text-8xl font-semibold tracking-tight text-foreground leading-[0.95]"
               data-testid="text-hero-title"
             >
-              RIVET Studios<span className="text-muted-foreground">™</span>
+              The number one online gaming community platform
             </h1>
             <p
               className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed"
               data-testid="text-hero-description"
             >
-              We build worlds that breathe, stories that live, and brands that
-              command attention. Every project is treated like a city — layered,
-              alive, and engineered to last.
+              RIVET Studios™ creates an open gaming environment available to everyone, delivering worlds that breathe, stories that live, and cities that command attention through our exceptional game development expertise. Every project is treated like a city — layered, alive, and engineered to last.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+          <div className="flex flex-col gap-3 items-center justify-center pt-4">
             <Button
               size="lg"
-              className="bg-white text-black gap-2"
+              className="bg-white text-black h-11 px-6 rounded-half font-medium hover:bg-gray-200 transition-colors gap-2"
               asChild
               data-testid="button-cta-primary"
             >
               <Link href={user ? "/dashboard" : "/onboarding"}>
-                <Users className="w-4 h-4" />
+                <UserPlus className="w-4 h-4" />
                 {user ? "My Dashboard" : "Join The Community"}
               </Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/10 bg-white/[0.03] text-muted-foreground gap-2"
-              asChild
-              data-testid="button-cta-store"
-            >
-              <Link href="/store">
-                <ShoppingCart className="w-4 h-4" />
-                Browse Store
-              </Link>
-            </Button>
+            {/* This button will only render if 'user' is truthy */}
+            {user && (
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="bg-black/40 border border-white/20 text-white h-11 px-6 rounded-half font-medium backdrop-blur-md transition-all"
+              >
+                <Link href="/store">
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Browse Store
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
-
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       </section>
-
       <section className="py-20 bg-background" data-testid="section-stats">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-y-12 gap-x-8 max-w-2xl mx-auto">
             {stats.map((stat) => (
               <div
                 key={stat.label}
                 className="text-center space-y-2"
                 data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, "-")}`}
               >
-                <div className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
+                <div className="text-4xl sm:text-5xl font-bold text-foreground tracking-tight">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {stat.label}
                 </p>
               </div>

@@ -262,17 +262,17 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 mt-6">
           <div className="aspect-square bg-card rounded-xl overflow-hidden" data-testid="product-image-container">
             {product.imageUrl ? (
-              <img
+            <img
                 src={product.imageUrl}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 data-testid="img-product"
               />
-            ) : (
+              ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Package className="w-20 h-20 text-white/10" />
               </div>
-            )}
+                )}
           </div>
 
           <div className="space-y-6">
@@ -414,12 +414,12 @@ export default function ProductDetail() {
                     ) : (
                       <Download className="w-4 h-4 mr-2" />
                     )}
-                    Get for Testing (Free)
+                    Buy now
                   </Button>
                 ) : (
                   <div className="text-center py-4">
                     <p className="text-sm text-white/40" data-testid="text-free-product-notice">
-                      This product is reserved for Vehicle Testers
+                      This product is reserved for testers
                     </p>
                   </div>
                 )

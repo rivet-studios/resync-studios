@@ -6,7 +6,7 @@ const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 const RANK_NAMES_TO_DISCORD_ROLES: Record<string, string[]> = {
-  "Active Members": ["Verified Member"],
+  Members: ["Verified Member"],
   "Trusted Member": ["Trusted Member"],
   "Bronze VIP": ["Bronze Donator®"],
   "Diamond VIP": ["Diamond Donator®"],

@@ -121,7 +121,7 @@ export function WakeGateway({ children }: { children: React.ReactNode }) {
               letterSpacing: "0.5px",
             }}
           >
-            <img src="/logo-rs1.png" alt="RS" className="h-10 w-auto" />
+            <img src="/favicon.svg" alt="RS" className="h-10 w-auto" />
           </div>
         </div>
 

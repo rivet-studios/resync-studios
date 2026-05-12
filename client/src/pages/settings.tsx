@@ -104,7 +104,7 @@ type ProfileForm = z.infer<typeof profileSchema>;
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(5, "Password must be at least 5 characters"),
     confirmPassword: z.string().min(1, "Please confirm your new password"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -534,40 +534,40 @@ function DownloadsTab() {
           ) : (
             <div className="divide-y">
               {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-4 p-4"
-                  data-testid={`row-download-${product.id}`}
-                >
-                  <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    {product.imageUrl ? (
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Package className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="font-medium text-sm truncate"
-                      data-testid={`text-product-name-${product.id}`}
-                    >
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {product.category || "Uncategorized"}
-                    </p>
-                  </div>
-                  <Badge
-                    variant="secondary"
-                    data-testid={`badge-product-status-${product.id}`}
+                  <div
+                      key={product.id}
+                      className="flex items-center gap-4 p-4"
+                      data-testid={`row-download-${product.id}`}
                   >
-                    {product.status}
-                  </Badge>
-                </div>
+                      <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          {product.attachments ? (
+                              <img
+                                  src={product.attachments}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover" />
+                              
+                          ) : (
+                              <Package className="w-5 h-5 text-muted-foreground" />
+                          )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                          <p
+                              className="font-medium text-sm truncate"
+                              data-testid={`text-product-name-${product.id}`}
+                          >
+                              {product.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                              {product.category || "Uncategorized"}
+                          </p>
+                      </div>
+                      <Badge
+                          variant="secondary"
+                          data-testid={`badge-product-status-${product.id}`}
+                      >
+                          {product.status}
+                      </Badge>
+                  </div>
               ))}
             </div>
           )}
@@ -1157,15 +1157,15 @@ export default function Settings() {
       const reason = params.get("reason") || "unknown";
       const reasonText: Record<string, string> = {
         "already-linked":
-          "That Roblox account is already linked to a different RIVET account.",
+          "That Roblox account is already linked to a different account.",
         "not-configured":
-          "Roblox sign-in isn't configured. Please contact an administrator.",
+          "Roblox sign-in isn't configured. Please contact the site developer or an administrator. Email support at <mailto:support@rivetstudiosus.com>.",
         "invalid-state":
           "The link request expired or was tampered with. Please try again.",
         "session-mismatch":
           "Your session changed during the link flow. Please sign in and try again.",
         "token-exchange":
-          "Roblox rejected the link request. Please try again.",
+          "Roblox rejected the link request. Please try again. If the issue persists, contact Roblox or email support at <mailto:support@rivetstudiosus.com>.",
       };
       toast({
         title: "Couldn't link Roblox",
@@ -1187,7 +1187,7 @@ export default function Settings() {
     },
     onSuccess: () => {
       toast({
-        title: "Discord Unlinked",
+        title: "Discord unlinked",
         description: "Your Discord account has been unlinked.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -1208,7 +1208,7 @@ export default function Settings() {
     },
     onSuccess: () => {
       toast({
-        title: "Roblox Unlinked",
+        title: "Roblox unlinked",
         description: "Your Roblox account has been unlinked.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });

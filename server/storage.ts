@@ -635,7 +635,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bans.id, id))
       .returning();
     if (ban) {
-      const restoreRank = (ban.priorRank || "Active Members") as any;
+      const restoreRank = (ban.priorRank || "Members") as any;
       await db
         .update(users)
         .set({ userRank: restoreRank, updatedAt: new Date() })

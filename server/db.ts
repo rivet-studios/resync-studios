@@ -43,9 +43,11 @@ export async function initializeDatabase() {
       DO $$ BEGIN
         CREATE TYPE user_rank AS ENUM (
           'Banned',
-          'Active Members',
+          'Members',
+          'Active Member',
           'Trusted Member',
           'Community Partner',
+          'Vehicle Tester',
           'Bronze VIP',
           'Diamond VIP',
           'Founders Edition VIP',
@@ -89,7 +91,7 @@ export async function initializeDatabase() {
         "roblox_username" varchar,
         "roblox_display_name" varchar,
         "roblox_linked_at" timestamp,
-        "user_rank" user_rank DEFAULT 'Active Members',
+        "user_rank" user_rank DEFAULT 'Members',
         "created_at" timestamp DEFAULT now(),
         "updated_at" timestamp DEFAULT now()
       );
