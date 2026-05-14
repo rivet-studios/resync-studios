@@ -147,7 +147,10 @@ export async function registerRoutes(
   const _rateLimitMap = new Map<string, { count: number; resetAt: number }>();
   function _rateLimit(windowMs: number, maxRequests: number) {
     return (req: Request, res: Response, next: NextFunction) => {
-      const key = `${(req as any).ip || "unknown"}-${req.path}`;
+      // Use originalUrl (full path) so every endpoint gets its own independent
+      // counter. Using req.path inside an app.use() mount collapses all mounted
+      // routes to "/" — causing every auth endpoint to share one bucket.
+      const key = `${(req as any).ip || "unknown"}-${req.originalUrl.split("?")[0]}`;
       const now = Date.now();
       const entry = _rateLimitMap.get(key);
       if (!entry || now > entry.resetAt) {
@@ -2956,10 +2959,6 @@ export async function registerRoutes(
         return res
           .status(400)
           .json({ message: "This product is unavailable for purchase" });
-      if (product.canPurchase === false)
-        return res
-          .status(400)
-          .json({ message: "This product is not currently available for purchase" });
 
       // Free / $0 products: only Vehicle Testers (and admins/Team Members) can
       // "purchase" them, and Stripe checkout is bypassed entirely since Stripe
