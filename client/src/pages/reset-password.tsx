@@ -41,8 +41,8 @@ export default function ResetPassword() {
       setError("Please fill in both password fields");
       return;
     }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (password.length < 5) {
+      setError("Password must be at least 5 characters");
       return;
     }
     if (password !== confirmPassword) {
@@ -143,7 +143,7 @@ export default function ResetPassword() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="At least 8 characters"
+                  placeholder="At least 5 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={resetMutation.isPending}
