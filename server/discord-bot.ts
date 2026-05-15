@@ -47,6 +47,7 @@ const RANK_HIERARCHY = [
 
 let RANK_TO_ROLE: Record<string, string> = {};
 let ROLE_TO_RANK: Record<string, string> = {};
+let VERIFIED_MEMBER_ROLE_ID: string | null = null;
 
 let client: Client | null = null;
 let rest: REST | null = null;
@@ -92,6 +93,7 @@ async function discoverGuildRoles(): Promise<void> {
 
     RANK_TO_ROLE = newRankToRole;
     ROLE_TO_RANK = newRoleToRank;
+    VERIFIED_MEMBER_ROLE_ID = newRankToRole["Members"] || roleNameToId["Verified Member"] || null;
     rolesDiscovered = true;
 
     const mapped = Object.keys(newRankToRole);
@@ -329,6 +331,8 @@ export async function updateDiscordRoles(
     await discoverGuildRoles();
   }
 
+  const protectedRoleId = VERIFIED_MEMBER_ROLE_ID || RANK_TO_ROLE["Members"];
+
   try {
     const member = (await rest.get(
       Routes.guildMember(GUILD_ID, discordId),
@@ -337,7 +341,7 @@ export async function updateDiscordRoles(
 
     if (oldRank && RANK_TO_ROLE[oldRank]) {
       const oldRoleId = RANK_TO_ROLE[oldRank];
-      if (oldRoleId && currentRoles.has(oldRoleId)) {
+      if (oldRoleId && oldRoleId !== protectedRoleId && currentRoles.has(oldRoleId)) {
         await rest.delete(
           Routes.guildMemberRole(GUILD_ID, discordId, oldRoleId),
         );
@@ -348,6 +352,7 @@ export async function updateDiscordRoles(
     } else {
       const allManagedRoleIds = Object.values(RANK_TO_ROLE).filter(Boolean);
       for (const roleId of allManagedRoleIds) {
+        if (roleId === protectedRoleId) continue;
         if (currentRoles.has(roleId)) {
           await rest.delete(
             Routes.guildMemberRole(GUILD_ID, discordId, roleId),
@@ -357,7 +362,7 @@ export async function updateDiscordRoles(
     }
 
     const newRoleId = RANK_TO_ROLE[newRank];
-    if (newRoleId) {
+    if (newRoleId && newRoleId !== protectedRoleId && !currentRoles.has(newRoleId)) {
       await rest.put(Routes.guildMemberRole(GUILD_ID, discordId, newRoleId));
       console.log(`✅ Added Discord role for "${newRank}" to ${discordId}`);
     }
@@ -365,6 +370,64 @@ export async function updateDiscordRoles(
     return true;
   } catch (error) {
     console.error(`❌ Failed to update Discord roles for ${discordId}:`, error);
+    return false;
+  }
+}
+
+export async function ensureVerifiedMemberRole(discordId: string): Promise<boolean> {
+  if (!rest) {
+    console.warn("⚠️ Discord bot not initialized. Cannot ensure Verified Member role.");
+    return false;
+  }
+
+  if (!rolesDiscovered) {
+    await discoverGuildRoles();
+  }
+
+  const roleId = VERIFIED_MEMBER_ROLE_ID || RANK_TO_ROLE["Members"];
+  if (!roleId) {
+    console.warn("⚠️ Verified Member role not found in Discord guild. Check role name mapping.");
+    return false;
+  }
+
+  try {
+    const member = (await rest.get(Routes.guildMember(GUILD_ID, discordId))) as { roles: string[] };
+    if (!member.roles.includes(roleId)) {
+      await rest.put(Routes.guildMemberRole(GUILD_ID, discordId, roleId));
+      console.log(`✅ Added Verified Member role to ${discordId}`);
+    }
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to ensure Verified Member role for ${discordId}:`, error);
+    return false;
+  }
+}
+
+export async function removeVerifiedMemberRole(discordId: string): Promise<boolean> {
+  if (!rest) {
+    console.warn("⚠️ Discord bot not initialized. Cannot remove Verified Member role.");
+    return false;
+  }
+
+  if (!rolesDiscovered) {
+    await discoverGuildRoles();
+  }
+
+  const roleId = VERIFIED_MEMBER_ROLE_ID || RANK_TO_ROLE["Members"];
+  if (!roleId) {
+    console.warn("⚠️ Verified Member role not found in Discord guild.");
+    return false;
+  }
+
+  try {
+    await rest.delete(Routes.guildMemberRole(GUILD_ID, discordId, roleId));
+    console.log(`🔄 Removed Verified Member role from ${discordId} (account unlinked)`);
+    return true;
+  } catch (error: any) {
+    if (error?.status === 404) {
+      return true;
+    }
+    console.error(`❌ Failed to remove Verified Member role for ${discordId}:`, error);
     return false;
   }
 }

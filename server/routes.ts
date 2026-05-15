@@ -13,6 +13,8 @@ import {
   syncDiscordVipRole,
   getRoleMappingStatus,
   getDiscordMemberCount,
+  ensureVerifiedMemberRole,
+  removeVerifiedMemberRole,
 } from "./discord-bot";
 import {
   insertForumThreadSchema,
@@ -731,10 +733,13 @@ export async function registerRoutes(
           synced: false,
         });
       }
-      const ok = await syncDiscordVipRole(me.discordId, me.vipTier as any);
+      const [ok] = await Promise.all([
+        syncDiscordVipRole(me.discordId, me.vipTier as any),
+        ensureVerifiedMemberRole(me.discordId),
+      ]);
       res.json({
         message: ok
-          ? "Your Discord VIP role is up to date."
+          ? "Your Discord roles are up to date."
           : "Discord sync failed — please try again later.",
         synced: ok,
       });
@@ -3533,13 +3538,15 @@ export async function registerRoutes(
       if (!targetUser) {
         return res.status(404).json({ message: "User not found" });
       }
-      // Don't let users unlink Discord if it's their only login method.
       if (!targetUser.password) {
         return res.status(400).json({
           message:
             "You can't unlink Discord because it's your only sign-in method. Set a password first under Account.",
         });
       }
+      await removeVerifiedMemberRole(targetUser.discordId).catch((err) =>
+        console.error("Failed to remove Verified Member role on unlink:", err),
+      );
       await storage.updateUser(userId, {
         discordId: null as any,
         discordUsername: null as any,

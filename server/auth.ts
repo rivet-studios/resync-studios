@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as DiscordStrategy } from "passport-discord";
 import { storage } from "./storage";
-import { updateDiscordNickname, syncUserFromDiscord } from "./discord-bot";
+import { updateDiscordNickname, syncUserFromDiscord, ensureVerifiedMemberRole } from "./discord-bot";
 import { sendSiteLog } from "./lib/discord-webhooks";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
@@ -135,14 +135,10 @@ if (DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET) {
 if (user) {
   (async () => {
     try {
-      // Run the nickname update first
       await updateDiscordNickname(discordId, user.username || "User");
-
-      // Wait a tiny bit, then sync
-      await new Promise(resolve => setTimeout(resolve, 500)); 
+      await new Promise(resolve => setTimeout(resolve, 500));
       await syncUserFromDiscord(discordId);
-
-      // Log success
+      await ensureVerifiedMemberRole(discordId);
       sendSiteLog({ title: "User Login", level: "success" });
     } catch (e) {
       console.error("Non-critical background task failed:", e);
