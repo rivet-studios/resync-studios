@@ -307,32 +307,12 @@ export async function registerRoutes(
             : "https://rivetstudiosus.com";
       const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
+      const { passwordResetEmail } = await import("./emails");
       await resend.emails.send({
         from: "RIVET Studios Support <support@rivetstudiosus.com>",
         to: email,
         subject: "Password Reset Request",
-        html: `
-          <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #050505; color: #ffffff; padding: 40px; border-radius: 12px;">
-            <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Password Reset</h1>
-            <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-              You requested a password reset for your RIVET Studios account. Click the button below to set a new password. This link expires in 1 hour.
-            </p>
-            <a href="${resetUrl}" style="display: inline-block; background: #18181B; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
-              Reset Password
-            </a>
-            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #27272a;">
-              <p style="color: #71717a; font-size: 12px; margin: 0 0 8px;">
-                If the button above doesn't work, copy and paste this link into your browser:
-              </p>
-              <p style="color: #a1a1aa; font-size: 11px; word-break: break-all; margin: 0 0 16px;">
-                ${resetUrl}
-              </p>
-              <p style="color: #52525b; font-size: 11px; margin: 0;">
-                If you didn't request this, you can safely ignore this email. This link will expire in 1 hour.
-              </p>
-            </div>
-          </div>
-        `,
+        html: passwordResetEmail(resetUrl),
       });
 
       res.json({
@@ -371,32 +351,12 @@ export async function registerRoutes(
       const { Resend } = await import("resend");
       const resend = new Resend(process.env.RESEND_API_KEY);
 
+      const { magicLinkEmail } = await import("./emails");
       await resend.emails.send({
         from: "RIVET Studios Support <support@rivetstudiosus.com>",
         to: email,
         subject: "Your RIVET Studios login link",
-        html: `
-          <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #050505; color: #ffffff; padding: 40px; border-radius: 12px;">
-            <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Sign in to RIVET Studios</h1>
-            <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-              Click the button below to sign in to your account. This link expires in 24 hours and can only be used once.
-            </p>
-            <a href="${loginUrl}" style="display: inline-block; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
-              Sign in
-            </a>
-            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #27272a;">
-              <p style="color: #71717a; font-size: 12px; margin: 0 0 8px;">
-                If the button above doesn't work, copy and paste this link into your browser:
-              </p>
-              <p style="color: #a1a1aa; font-size: 11px; word-break: break-all; margin: 0 0 16px;">
-                ${loginUrl}
-              </p>
-              <p style="color: #52525b; font-size: 11px; margin: 0;">
-                If you didn't request this, you can safely ignore this email. This link will expire in 24 hours and can only be used once.
-              </p>
-            </div>
-          </div>
-        `,
+        html: magicLinkEmail(loginUrl),
       });
 
       res.json({
