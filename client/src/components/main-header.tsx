@@ -206,8 +206,8 @@ export function MainHeader() {
                     [
                       "Appeals Moderator",
                       "Community Moderator",
-                      "Community Admin",
-                      "Community Senior Admin",
+                      "Community Administrator",
+                      "Community Senior Administrator",
                       "Gameplay Engineer",
                       "Creative Designer",
                       "Team Member",

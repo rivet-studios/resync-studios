@@ -49,13 +49,13 @@ const rankEntries: Record<
     badgeUrl: null,
     formatted: true,
   },
-  "Community Senior Admin": {
+  "Community Senior Administrator": {
     label: "Community Senior Administrator",
     color: "#CD5C5C",
     badgeUrl: null,
     formatted: true,
   },
-  "Community Admin": {
+  "Community Administrator": {
     label: "Community Administrator",
     color: "#781818",
     badgeUrl: null,

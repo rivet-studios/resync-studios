@@ -45,7 +45,7 @@ export default function UserProfile() {
   const { toast } = useToast();
   const userId = id || currentUser?.id;
   const staffRanks = [
-  "Appeals Moderator", "Customer Relations",  "Community Moderator", "Community Admin", "Community Senior Admin",
+  "Appeals Moderator", "Customer Relations", "Community Moderator", "Community Administrator", "Community Senior Administrator",
     "Creative Designer", "Gameplay Engineer", "Team Member", "Staff Department Director",
     "Operations Manager", "Company Director",
   ];
@@ -180,9 +180,9 @@ export default function UserProfile() {
       "border-red-500 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
     "Community Moderator":
       "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/30",
-    "Community Admin":
+    "Community Administrator":
       "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
-    "Community Senior Admin":
+    "Community Senior Administrator":
       "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30",
     "Gameplay Engineer":
       "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30",

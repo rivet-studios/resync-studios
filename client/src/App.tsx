@@ -96,8 +96,8 @@ const ADMIN_RANKS = [
 const MOD_RANKS = [
   "Appeals Moderator",
   "Community Moderator",
-  "Community Admin",
-  "Community Senior Admin",
+  "Community Administrator",
+  "Community Senior Administrator",
   ...ADMIN_RANKS,
 ];
 

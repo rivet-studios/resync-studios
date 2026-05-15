@@ -604,8 +604,8 @@ export async function registerRoutes(
         "Operations Manager",
         "Company Director",
         "Community Moderator",
-        "Community Admin",
-        "Community Senior Admin",
+        "Community Administrator",
+        "Community Senior Administrator",
       ];
       const isStaff =
         user.isAdmin ||
@@ -867,8 +867,8 @@ export async function registerRoutes(
   const forumStaffRanks = [
     "Appeals Moderator",
     "Community Moderator",
-    "Community Admin",
-    "Community Senior Admin",
+    "Community Administrator",
+    "Community Senior Administrator",
     "Gameplay Engineer",
     "Creative Designer",
     "Team Member",
@@ -2350,7 +2350,7 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Senior Admin",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2392,7 +2392,7 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Senior Admin",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2429,7 +2429,7 @@ export async function registerRoutes(
     try {
       const user = req.user as any;
       const staffRanks = [
-        "Community Senior Admin",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2466,8 +2466,8 @@ export async function registerRoutes(
       const staffRanks = [
         "Appeals Moderator",
         "Community Moderator",
-        "Community Admin",
-        "Community Senior Admin",
+        "Community Administrator",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2535,8 +2535,8 @@ export async function registerRoutes(
       const staffRanks = [
         "Appeals Moderator",
         "Community Moderator",
-        "Community Admin",
-        "Community Senior Admin",
+        "Community Administrator",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2591,8 +2591,8 @@ export async function registerRoutes(
       const user = req.user as any;
       const staffRanks = [
         "Community Moderator",
-        "Community Admin",
-        "Community Senior Admin",
+        "Community Administrator",
+        "Community Senior Administrator",
         "Creative Designer",
         "Gameplay Engineer",
         "Team Member",
@@ -2774,8 +2774,8 @@ export async function registerRoutes(
     "Appeals Moderator",
     "Trial Moderator",
     "Community Moderator",
-    "Community Admin",
-    "Community Senior Admin",
+    "Community Administrator",
+    "Community Senior Administrator",
     "Gameplay Engineer",
     "Creative Designer",
     "Staff Internal Affairs",

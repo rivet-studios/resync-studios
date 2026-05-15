@@ -171,8 +171,8 @@ export default function ModCP() {
 
   const staffRanks = [
     "Community Moderator",
-    "Community Admin",
-    "Community Senior Admin",
+    "Community Administrator",
+    "Community Senior Administrator",
     "Gameplay Engineer",
     "Creative Designer",
     "Team Member",
