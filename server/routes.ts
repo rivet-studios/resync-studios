@@ -208,6 +208,10 @@ export async function registerRoutes(
       const isAdmin = isStaffEmail;
       const isModerator = isStaffEmail;
 
+      // Generate email verification token
+      const crypto = await import("crypto");
+      const verificationToken = crypto.randomBytes(32).toString("hex");
+
       const user = await storage.upsertUser({
         email,
         username,
@@ -216,10 +220,32 @@ export async function registerRoutes(
         vipTier: "none",
         isAdmin,
         isModerator,
-        additionalRanks: isStaffEmail
-          ? ["Team Member"]
-          : [],
+        emailVerified: false,
+        emailVerificationToken: verificationToken,
+        additionalRanks: isStaffEmail ? ["Team Member"] : [],
       } as any);
+
+      // Send verification email (non-blocking)
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://rivetstudiosus.com"
+          : process.env.REPLIT_DEV_DOMAIN
+            ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+            : "https://rivetstudiosus.com";
+      const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+      try {
+        const { Resend } = await import("resend");
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const { emailVerificationEmail } = await import("./emails");
+        await resend.emails.send({
+          from: "RIVET Studios Support <support@rivetstudiosus.com>",
+          to: email,
+          subject: "Verify your RIVET Studios email",
+          html: emailVerificationEmail(verifyUrl),
+        });
+      } catch (_) {
+        // Don't fail signup if email send fails
+      }
 
       req.login(user as Express.User, (err) => {
         if (err) {
@@ -228,13 +254,76 @@ export async function registerRoutes(
               "Signup successful but login failed. Please try logging in manually.",
           });
         }
-        res.json(user);
+        const { password: _pw, ...safeUser } = user as any;
+        res.json(safeUser);
       });
     } catch (error) {
       res
         .status(500)
         .json({ message: "Signup failed. Contact support for help." });
     }
+  });
+
+  // ─── Email verification endpoints ───────────────────────────────────────────
+
+  // Resend verification email
+  app.post("/api/auth/send-verification", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const user = req.user as any;
+    if (user.emailVerified) return res.json({ message: "Already verified" });
+
+    try {
+      const crypto = await import("crypto");
+      const token = crypto.randomBytes(32).toString("hex");
+      await storage.updateUser(user.id, { emailVerificationToken: token } as any);
+
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://rivetstudiosus.com"
+          : process.env.REPLIT_DEV_DOMAIN
+            ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+            : "https://rivetstudiosus.com";
+      const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
+
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const { emailVerificationEmail } = await import("./emails");
+      await resend.emails.send({
+        from: "RIVET Studios Support <support@rivetstudiosus.com>",
+        to: user.email,
+        subject: "Verify your RIVET Studios email",
+        html: emailVerificationEmail(verifyUrl),
+      });
+      res.json({ message: "Verification email sent" });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to send verification email" });
+    }
+  });
+
+  // Click link in email → verify and redirect to onboarding
+  app.get("/api/auth/verify-email", async (req, res) => {
+    const { token } = req.query as Record<string, string>;
+    if (!token) return res.redirect("/onboarding?step=2&verified=false");
+    try {
+      const user = await storage.getUserByVerificationToken(token);
+      if (!user) return res.redirect("/onboarding?step=2&verified=false&reason=invalid");
+      await storage.updateUser(user.id, {
+        emailVerified: true,
+        emailVerificationToken: null as any,
+      } as any);
+      res.redirect("/onboarding?step=2&verified=true");
+    } catch (_) {
+      res.redirect("/onboarding?step=2&verified=false&reason=error");
+    }
+  });
+
+  // Poll endpoint — frontend checks this every few seconds
+  app.get("/api/auth/email-verified", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ verified: false });
+    const user = req.user as any;
+    // Re-fetch from DB to get latest value
+    const fresh = await storage.getUser(user.id);
+    res.json({ verified: !!fresh?.emailVerified });
   });
 
   app.post("/api/auth/email-login", async (req, res) => {
@@ -3256,6 +3345,7 @@ export async function registerRoutes(
       state,
       codeVerifier,
       userId: (req.user as any).id,
+      returnTo: (req.query.returnTo as string) || "/settings/integrations",
     };
 
     const params = new URLSearchParams({
@@ -3375,7 +3465,9 @@ export async function registerRoutes(
         robloxLinkedAt: new Date(),
       } as any);
 
-      res.redirect("/settings/integrations?roblox=linked");
+      const returnTo = oauth.returnTo || "/settings/integrations";
+      const separator = returnTo.includes("?") ? "&" : "?";
+      res.redirect(`${returnTo}${separator}roblox=linked`);
     } catch (error) {
       console.error("Roblox OAuth callback error:", error);
       res.redirect("/settings/integrations?roblox=error&reason=server");

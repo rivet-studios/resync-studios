@@ -342,6 +342,17 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Standalone full-screen routes (no sidebar / header / footer)
+  const [pathname] = useLocation();
+  if (pathname === "/onboarding" || pathname.startsWith("/onboarding?")) {
+    return (
+      <RouteErrorBoundary>
+        <ScrollToTop />
+        <Route path="/onboarding" component={Onboarding} />
+      </RouteErrorBoundary>
+    );
+  }
+
   return (
     <PublicLayout>
       <OfflineGate>

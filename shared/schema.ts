@@ -128,6 +128,9 @@ export const users = pgTable("users", {
   isVerified: boolean("is_verified").default(false),
   // Date of Birth
   dateOfBirth: varchar("date_of_birth"),
+  // Email Verification
+  emailVerified: boolean("email_verified").default(false),
+  emailVerificationToken: varchar("email_verification_token"),
   // Password Reset
   passwordResetToken: varchar("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),

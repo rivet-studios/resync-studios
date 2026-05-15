@@ -28,6 +28,24 @@ function footer(url: string, expiry: string): string {
   `;
 }
 
+// ─── Email Verification ───────────────────────────────────────────────────────
+
+export function emailVerificationEmail(verifyUrl: string): string {
+  return wrapper(`
+    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Verify your email</h1>
+    <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+      Thanks for signing up for RIVET Studios! Click the button below to verify your email address
+      and continue setting up your account.
+    </p>
+    <a href="${verifyUrl}"
+       style="display: inline-block; background: #ffffff; color: #000000; padding: 12px 24px;
+              border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+      Verify Email Address
+    </a>
+    ${footer(verifyUrl, "This link will expire in 24 hours.")}
+  `);
+}
+
 // ─── Password Reset ───────────────────────────────────────────────────────────
 
 export function passwordResetEmail(resetUrl: string): string {
