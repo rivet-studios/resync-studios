@@ -282,8 +282,8 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex flex-col min-h-screen bg-background">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4">
+      <SidebarInset className="flex flex-col min-h-screen bg-transparent">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 bg-[#050505]/95 backdrop-blur-sm">
           <SidebarTrigger className="-ml-1" />
         </header>
         <main className="flex-1 w-full">{children}</main>
@@ -295,7 +295,7 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-transparent">
       <AppHeader />
       <main className="flex-1 w-full">{children}</main>
       <SiteFooter />

@@ -1767,6 +1767,58 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/blog/:id/comments", async (req, res) => {
+    try {
+      const comments = await storage.getBlogComments(req.params.id);
+      const withAuthors = await Promise.all(
+        comments.map(async (c) => {
+          const author = await storage.getUser(c.authorId);
+          return {
+            ...c,
+            author: author
+              ? {
+                  id: author.id,
+                  username: author.username,
+                  userRank: author.userRank,
+                  profileImageUrl: author.profileImageUrl,
+                  isVerified: author.isVerified,
+                }
+              : null,
+          };
+        }),
+      );
+      res.json(withAuthors);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  app.post("/api/blog/:id/comments", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const { content } = req.body;
+      if (!content?.trim())
+        return res.status(400).json({ message: "Content required" });
+      const comment = await storage.createBlogComment({
+        postId: req.params.id,
+        authorId: user.id,
+        content: content.trim(),
+      });
+      res.json(comment);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to post comment" });
+    }
+  });
+
+  app.delete("/api/blog/:postId/comments/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteBlogComment(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete comment" });
+    }
+  });
+
   app.post("/api/blog", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;

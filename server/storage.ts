@@ -44,6 +44,9 @@ import {
   staffNotes,
   type StaffNote,
   type InsertStaffNote,
+  blogComments,
+  type BlogComment,
+  type InsertBlogComment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, lt, gt, isNull } from "drizzle-orm";
@@ -98,6 +101,9 @@ export interface IStorage {
     updates: Partial<Announcement>,
   ): Promise<Announcement | undefined>;
   deleteAnnouncement(id: string): Promise<void>;
+  getBlogComments(postId: string): Promise<BlogComment[]>;
+  createBlogComment(comment: InsertBlogComment): Promise<BlogComment>;
+  deleteBlogComment(id: string): Promise<void>;
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings>;
   createPayment(payment: InsertPayment): Promise<Payment>;
@@ -485,6 +491,20 @@ export class DatabaseStorage implements IStorage {
   }
   async deleteAnnouncement(id: string): Promise<void> {
     await db.delete(announcements).where(eq(announcements.id, id));
+  }
+  async getBlogComments(postId: string): Promise<BlogComment[]> {
+    return db
+      .select()
+      .from(blogComments)
+      .where(eq(blogComments.postId, postId))
+      .orderBy(desc(blogComments.createdAt));
+  }
+  async createBlogComment(comment: InsertBlogComment): Promise<BlogComment> {
+    const [created] = await db.insert(blogComments).values(comment).returning();
+    return created;
+  }
+  async deleteBlogComment(id: string): Promise<void> {
+    await db.delete(blogComments).where(eq(blogComments.id, id));
   }
   async getSiteSettings(): Promise<SiteSettings> {
     const [settings] = await db.select().from(siteSettings).limit(1);
