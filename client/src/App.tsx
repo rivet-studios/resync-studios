@@ -266,8 +266,8 @@ function SiteFooter() {
             </div>
 <iframe 
   src="https://rivetstudios.instatus.com/embed-status/2c3f9c70/dark-md" 
-  width="230" 
-  height="61"
+  width="267" 
+  height="55"
   style={{ border: "none" }}
   title="System Status"
 >
@@ -284,16 +284,15 @@ function SiteFooter() {
         </footer>
   );
 }
-
 function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex flex-col min-h-screen bg-transparent">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-sm bg-[#050505]">
+      <SidebarInset className="flex flex-col min-h-screen bg-fullr">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 bg-full backdrop-blur-lg">
           <SidebarTrigger className="-ml-1" />
         </header>
-        <main className="flex-1 w-full">{children}</main>
+        <main className="flex-1 w-full bg-[#000000f7]">{children}</main>
         <SiteFooter />
       </SidebarInset>
     </SidebarProvider>
@@ -302,7 +301,7 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen bg-transparent">
+    <div className="flex flex-col min-h-screen bg-full">
       <AppHeader />
       <main className="flex-1 w-full">{children}</main>
       <SiteFooter />
@@ -403,6 +402,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/settings" component={Settings} />
             <Route path="/team" component={TeamDirectory} />
             <Route path="/search" component={UserSearch} />
+            <Route path="/marketplace/:tab" component={Marketplace} />
             <Route path="/marketplace" component={Marketplace} />
             <Route path="/appeals" component={Appeals} />
             <Route path="/my-cases" component={MyCases} />
@@ -435,6 +435,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/community-rules" component={CommunityRules} />
             <Route path="/about" component={About} />
             <Route path="/serrano" component={Serrano} />
+            <Route path="/onboarding/:tab" component={Onboarding} />
             <Route path="/onboarding" component={Onboarding} />
             <Route path="/status" component={Status} />
             <Route path="/changelog" component={Changelog} />
