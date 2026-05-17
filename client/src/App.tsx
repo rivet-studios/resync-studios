@@ -264,7 +264,14 @@ function SiteFooter() {
                 </ul>
               </div>
             </div>
-
+<iframe 
+  src="https://rivetstudios.instatus.com/embed-status/2c3f9c70/dark-md" 
+  width="230" 
+  height="61"
+  style={{ border: "none" }}
+  title="System Status"
+>
+</iframe>
             <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-xs text-muted-foreground font-normal">
                 © 2026 RIVET Studios™, All rights reserved.
