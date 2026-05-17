@@ -95,7 +95,7 @@ export default function Landing() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_60%)]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_60%)] bg-[#ff000000]" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center space-y-10">
@@ -201,9 +201,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
       <section className="py-28 bg-background" data-testid="section-features">
         <div className="container mx-auto px-4 space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
@@ -244,9 +242,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
       <section className="py-28 bg-background" data-testid="section-cta">
         <div className="container mx-auto px-4">
           <Card className="border-white/[0.04] bg-card rounded-xl overflow-hidden">
