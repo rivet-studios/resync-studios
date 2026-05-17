@@ -243,7 +243,7 @@ export default function Landing() {
         </div>
       </section>
       <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-      <section className="py-28 bg-background" data-testid="section-cta">
+      <section className="py-28 bg-[#00060a00]" data-testid="section-cta">
         <div className="container mx-auto px-4">
           <Card className="border-white/[0.04] bg-card rounded-xl overflow-hidden">
             <CardContent className="relative p-12 sm:p-16 text-center">
