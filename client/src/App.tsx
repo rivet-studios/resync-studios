@@ -329,7 +329,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       }
     }, [user]);
 
-
+ const [pathname] = useLocation();
+    
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -343,7 +344,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   }
 
   // Standalone full-screen routes (no sidebar / header / footer)
-  const [pathname] = useLocation();
+
   if (pathname === "/onboarding" || pathname.startsWith("/onboarding?")) {
     return (
       <RouteErrorBoundary>
