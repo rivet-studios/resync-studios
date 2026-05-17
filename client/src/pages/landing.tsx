@@ -144,7 +144,7 @@ export default function Landing() {
              The number one online gaming community platform
             </p>
             <p
-              className="text-base sm:text-1xl text-muted-foreground max-w-xl mx-auto font-normal leading-relaxed"
+              className="sm:text-1xl text-muted-foreground max-w-xl mx-auto font-normal text-[19px]"
               data-testid="text-hero-description"
             >
               RIVET Studios™ creates an open gaming environment available to everyone, delivering worlds that breathe, stories that live, and cities that command attention through our exceptional game development expertise. Every project is treated like a city — layered, alive, and engineered to last.
