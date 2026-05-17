@@ -109,7 +109,7 @@ export default function Landing() {
                 data-testid="stat-platform-members"
               >
                 <Rocket className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground/90 text-[14px]">
+                <span className="text-foreground/90 text-[16px]">
                   Now powering {formatCount(publicStats?.totalMembers || 24)}+
                   members
                 </span>
