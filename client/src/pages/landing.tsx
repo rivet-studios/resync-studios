@@ -98,7 +98,7 @@ export default function Landing() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_60%)] bg-[#ff000000]" />
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 text-center space-y-10">
+        <div className="relative z-10 container mx-auto px-4 text-center space-y-10 bg-[#000000f0]">
           <div className="space-y-6 max-w-3xl mx-auto">
             <div
               className="flex flex-wrap items-center justify-center gap-3 pt-[55px] pb-[55px] pl-[0px] pr-[0px] mt-[5px] mb-[5px]"
