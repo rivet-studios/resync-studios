@@ -115,7 +115,7 @@ export default function Landing() {
                 </span>
               </div>
               <div
-                className="inline-flex items-center gap-2 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4"
+                className="inline-flex items-center gap-2 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4 pl-[12.88px] pr-[12.88px] pt-[3px] pb-[3px]"
                 data-testid="stat-discord-members"
               >
                 <div className="relative flex items-center justify-center">
