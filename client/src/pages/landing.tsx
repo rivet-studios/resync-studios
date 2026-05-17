@@ -138,7 +138,7 @@ export default function Landing() {
             </div>
 
             <p
-              className="text-2xl sm:text-3xl md:text-5xl font-semibold tracking-tight text-foreground leading-[0.95]"
+              className="sm:text-3xl md:text-5xl font-semibold tracking-tight text-foreground text-[46px]"
               data-testid="text-hero-title"
             >
              The number one online gaming community platform
