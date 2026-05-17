@@ -101,7 +101,7 @@ export default function Landing() {
         <div className="relative z-10 container mx-auto px-4 text-center space-y-10">
           <div className="space-y-6 max-w-3xl mx-auto">
             <div
-              className="flex flex-wrap items-center justify-center gap-3"
+              className="flex flex-wrap items-center justify-center gap-3 pt-[55px] pb-[55px] pl-[0px] pr-[0px] mt-[5px] mb-[5px]"
               data-testid="section-hero-stats"
             >
               <div
