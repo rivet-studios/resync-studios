@@ -293,14 +293,13 @@ export default function Dashboard() {
     .slice(0, 5);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 bg-[#000000f7]">
       <h1
         className="text-2xl font-semibold tracking-tight text-foreground"
         data-testid="text-dashboard-title"
       >
         Dashboard
       </h1>
-
       {/* Top rated products */}
       <section className="space-y-4" data-testid="section-top-rated">
         <div className="flex items-end justify-between gap-3 flex-wrap">
@@ -404,7 +403,6 @@ export default function Dashboard() {
           </div>
         )}
       </section>
-
       {/* Latest blog posts */}
       <section className="space-y-4" data-testid="section-latest-blog">
         <div className="flex items-end justify-between gap-3 flex-wrap">
@@ -524,7 +522,6 @@ export default function Dashboard() {
           </Card>
         )}
       </section>
-
       {/* Trending topics */}
       <section className="space-y-4" data-testid="section-trending-topics">
         <div className="flex items-end justify-between gap-3 flex-wrap">
@@ -621,7 +618,6 @@ export default function Dashboard() {
           </Card>
         )}
       </section>
-
       {/* Recent support tickets */}
       <section className="space-y-4" data-testid="section-support-tickets">
         <div className="flex items-end justify-between gap-3 flex-wrap">

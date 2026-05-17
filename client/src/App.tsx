@@ -129,159 +129,159 @@ function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
 
 function SiteFooter() {
   return (
-    <footer className="bg-card border-t border-border/50 py-10 md:py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
-              <div className="col-span-2 md:col-span-1 space-y-6">
-                <div className="flex items-center gap-2.5">
-                  <img src="/logo-rs1.png" alt="RS" className="h-10 w-auto" />
-                  <h3 className="font-semibold text-base">RIVET Studios™</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Building the future of digital experiences with innovative
-                  solutions and community-driven development.
-                </p>
-                <div className="space-y-2 text-sm text-muted-foreground font-medium">
-                  <p className="flex items-center gap-2">
-                    {" "}
-                    support@rivetstudiosus.com
-                  </p>
-                  <p className="flex items-center gap-2">
-                    101 Duke Street, Sunshine, VIC, 3020, Australia
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                  Navigation
-                </h4>
-                <ul className="space-y-3 text-sm font-normal">
-                  <li>
-                    <Link
-                      href="/"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/blog"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Blog
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/forums"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Forums
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/store"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Store
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/store/subscriptions"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Subscriptions
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-6">
-                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                  Support & Resources
-                </h4>
-                <ul className="space-y-3 text-sm font-normal">
-                  <li>
-                    <Link
-                      href="/support"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Knowledge Base
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/policies"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Policies
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="https://support.rivetstudiosus.com"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Support
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-6">
-                <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
-                  Other
-                </h4>
-                <ul className="space-y-3 text-sm font-normal">
-                  <li>
-                    <Link
-                      href="/profile"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      My Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/search"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Search
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/team"
-                      className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                      Staff Directory
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+    <footer className="border-t border-border/50 py-10 md:py-20 bg-[#000000eb]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
+          <div className="col-span-2 md:col-span-1 space-y-6">
+            <div className="flex items-center gap-2.5">
+              <img src="/logo-rs1.png" alt="RS" className="h-10 w-auto" />
+              <h3 className="font-semibold text-base">RIVET Studios™</h3>
             </div>
-<iframe 
-  src="https://rivetstudios.instatus.com/embed-status/2c3f9c70/dark-md" 
-  width="267" 
-  height="55"
-  style={{ border: "none" }}
-  title="System Status"
->
-</iframe>
-            <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-xs text-muted-foreground font-normal">
-                © 2026 RIVET Studios™, All rights reserved.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Building the future of digital experiences with innovative
+              solutions and community-driven development.
+            </p>
+            <div className="space-y-2 text-sm text-muted-foreground font-medium">
+              <p className="flex items-center gap-2">
+                {" "}
+                support@rivetstudiosus.com
               </p>
-              <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
-                Formerly RESYNC Studios™
+              <p className="flex items-center gap-2">
+                101 Duke Street, Sunshine, VIC, 3020, Australia
               </p>
             </div>
           </div>
-        </footer>
+
+          <div className="space-y-6">
+            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+              Navigation
+            </h4>
+            <ul className="space-y-3 text-sm font-normal">
+              <li>
+                <Link
+                  href="/"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/forums"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Forums
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/store"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Store
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/store/subscriptions"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Subscriptions
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+              Support & Resources
+            </h4>
+            <ul className="space-y-3 text-sm font-normal">
+              <li>
+                <Link
+                  href="/support"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Knowledge Base
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/policies"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Policies
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://support.rivetstudiosus.com"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Support
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+              Other
+            </h4>
+            <ul className="space-y-3 text-sm font-normal">
+              <li>
+                <Link
+                  href="/profile"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  My Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/search"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Search
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/team"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  Staff Directory
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+<iframe 
+src="https://rivetstudios.instatus.com/embed-status/2c3f9c70/dark-md" 
+width="267" 
+height="55"
+style={{ border: "none" }}
+title="System Status"
+>
+</iframe>
+        <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-muted-foreground font-normal">
+            © 2026 RIVET Studios™, All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
+            Formerly RESYNC Studios™
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 }
 function SidebarLayout({ children }: { children: React.ReactNode }) {
@@ -289,7 +289,7 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="flex flex-col min-h-screen bg-fullr">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 bg-full backdrop-blur-lg">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-lg bg-[#000000f7]">
           <SidebarTrigger className="-ml-1" />
         </header>
         <main className="flex-1 w-full">{children}</main>
