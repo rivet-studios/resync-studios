@@ -290,7 +290,7 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="flex flex-col min-h-screen bg-transparent">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 bg-[#050505]/95 backdrop-blur-sm">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-sm bg-[#050505]">
           <SidebarTrigger className="-ml-1" />
         </header>
         <main className="flex-1 w-full">{children}</main>
