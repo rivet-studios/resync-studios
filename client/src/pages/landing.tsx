@@ -181,7 +181,7 @@ export default function Landing() {
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       </section>
-      <section className="py-20 bg-background" data-testid="section-stats">
+      <section className="py-20 bg-[#000000f7]" data-testid="section-stats">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 gap-y-12 gap-x-8 max-w-2xl mx-auto">
             {stats.map((stat) => (
@@ -202,7 +202,7 @@ export default function Landing() {
         </div>
       </section>
       <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-      <section className="py-28 bg-background" data-testid="section-features">
+      <section className="py-28 bg-[#000000f7]" data-testid="section-features">
         <div className="container mx-auto px-4 space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
@@ -243,7 +243,7 @@ export default function Landing() {
         </div>
       </section>
       <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-      <section className="py-28 bg-[#00060a00]" data-testid="section-cta">
+      <section className="py-28 bg-[#000000f7]" data-testid="section-cta">
         <div className="container mx-auto px-4">
           <Card className="border-white/[0.04] bg-card rounded-xl overflow-hidden">
             <CardContent className="relative p-12 sm:p-16 text-center">
