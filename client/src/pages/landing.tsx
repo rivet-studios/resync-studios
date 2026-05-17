@@ -105,7 +105,7 @@ export default function Landing() {
               data-testid="section-hero-stats"
             >
               <div
-                className="inline-flex items-center gap-2.5 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4"
+                className="inline-flex items-center gap-2.5 bg-black/90 border border-white/[0.03] backdrop-blur-sm rounded-full px-3 py-1.4 border-l-[0.666667px] border-r-[0.666667px] rounded-tl-[9px] rounded-tr-[9px] rounded-br-[9px] rounded-bl-[9px]"
                 data-testid="stat-platform-members"
               >
                 <Rocket className="w-4 h-4 text-muted-foreground" />
