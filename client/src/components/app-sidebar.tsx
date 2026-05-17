@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import {
   Home,
@@ -363,125 +364,127 @@ export function AppSidebar() {
                     <ChevronUp className="w-4 h-4" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                
-                <DropdownMenuContent
-                  side="top"
-                  align="start"
-                  sideOffset={8}
-                  className="z-[100] w-64 p-0 bg-zinc-900 text-zinc-50 border border-white/10 shadow-xl rounded-lg overflow-hidden"
-                >
-                  <div className="flex items-center gap-3 px-3 py-3 bg-zinc-900">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage
-                        src={user.profileImageUrl || undefined}
-                        alt={getDisplayName()}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="text-xs">
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        {(() => {
-                          const styling = getUsernameColor(
-                            (user as any).vipTier,
-                            (user as any).userRank,
-                            (user as any).additionalRanks,
-                          );
-                          return (
-                            <span
-                              className={`text-sm font-semibold uppercase tracking-wide truncate ${styling.className || ""}`}
-                              style={styling.color ? { color: styling.color } : undefined}
-                              data-testid="text-sidebar-username"
-                            >
-                              {getDisplayName()}
-                            </span>
-                          );
-                        })()}
-                        {user.vipTier && user.vipTier !== "none" && (
-                          <VipBadge tier={user.vipTier as any} size="sm" />
+
+                <DropdownMenuPortal>
+                  <DropdownMenuContent
+                    side="right" 
+                    align="end"
+                    sideOffset={16}
+                    className="z-[9999] w-64 p-0 bg-zinc-900 text-zinc-50 border border-zinc-800 shadow-2xl rounded-lg overflow-hidden"
+                  >
+                    <div className="flex items-center gap-3 px-3 py-3 bg-zinc-900">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage
+                          src={user.profileImageUrl || undefined}
+                          alt={getDisplayName()}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-xs">
+                          {getInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {(() => {
+                            const styling = getUsernameColor(
+                              (user as any).vipTier,
+                              (user as any).userRank,
+                              (user as any).additionalRanks,
+                            );
+                            return (
+                              <span
+                                className={`text-sm font-semibold uppercase tracking-wide truncate ${styling.className || ""}`}
+                                style={styling.color ? { color: styling.color } : undefined}
+                                data-testid="text-sidebar-username"
+                              >
+                                {getDisplayName()}
+                              </span>
+                            );
+                          })()}
+                          {user.vipTier && user.vipTier !== "none" && (
+                            <VipBadge tier={user.vipTier as any} size="sm" />
+                          )}
+                        </div>
+                        {user.email && (
+                          <span className="text-xs text-white/40 truncate">
+                            {user.email}
+                          </span>
                         )}
                       </div>
-                      {user.email && (
-                        <span className="text-xs text-white/40 truncate">
-                          {user.email}
-                        </span>
-                      )}
                     </div>
-                  </div>
-                  <DropdownMenuSeparator className="my-0 bg-white/10" />
-                  <div className="p-1">
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/settings?tab=account"
-                        className="cursor-pointer focus:bg-white/10"
+                    <DropdownMenuSeparator className="my-0 bg-white/10" />
+                    <div className="p-1">
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings?tab=account"
+                          className="cursor-pointer focus:bg-white/10"
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          <span>My Account</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings?tab=billing"
+                          className="cursor-pointer focus:bg-white/10"
+                        >
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          <span>Billing</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings?tab=orders"
+                          className="cursor-pointer focus:bg-white/10"
+                        >
+                          <Receipt className="mr-2 h-4 w-4" />
+                          <span>Orders</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings?tab=payments"
+                          className="cursor-pointer focus:bg-white/10"
+                        >
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          <span>Payment Methods</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                    <DropdownMenuSeparator className="my-0 bg-white/10" />
+                    <div className="p-1">
+                      <DropdownMenuItem asChild>
+                        <Link href="/marketplace" className="cursor-pointer focus:bg-white/10">
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          <span>Marketplace</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings" className="cursor-pointer focus:bg-white/10">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/support" className="cursor-pointer focus:bg-white/10">
+                          <HelpCircle className="mr-2 h-4 w-4" />
+                          <span>Support</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                    <DropdownMenuSeparator className="my-0 bg-white/10" />
+                    <div className="p-1">
+                      <DropdownMenuItem
+                        onClick={() => logoutMutation.mutate()}
+                        className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                        data-testid="button-sidebar-logout"
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>My Account</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/settings?tab=billing"
-                        className="cursor-pointer focus:bg-white/10"
-                      >
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        <span>Billing</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/settings?tab=orders"
-                        className="cursor-pointer focus:bg-white/10"
-                      >
-                        <Receipt className="mr-2 h-4 w-4" />
-                        <span>Orders</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/settings?tab=payments"
-                        className="cursor-pointer focus:bg-white/10"
-                      >
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        <span>Payment Methods</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </div>
-                  <DropdownMenuSeparator className="my-0 bg-white/10" />
-                  <div className="p-1">
-                    <DropdownMenuItem asChild>
-                      <Link href="/marketplace" className="cursor-pointer focus:bg-white/10">
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        <span>Marketplace</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings" className="cursor-pointer focus:bg-white/10">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/support" className="cursor-pointer focus:bg-white/10">
-                        <HelpCircle className="mr-2 h-4 w-4" />
-                        <span>Support</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </div>
-                  <DropdownMenuSeparator className="my-0 bg-white/10" />
-                  <div className="p-1">
-                    <DropdownMenuItem
-                      onClick={() => logoutMutation.mutate()}
-                      className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-                      data-testid="button-sidebar-logout"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenuPortal>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
