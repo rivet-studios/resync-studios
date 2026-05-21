@@ -115,8 +115,14 @@ const rankEntries: Record<
     badgeUrl: null,
     formatted: true,
   },
-  "Active Members": {
-    label: "Active Members",
+  "Active Member": {
+    label: "Active Member",
+    color: "#778899",
+    badgeUrl: null,
+    formatted: true,
+  },
+  Members: {
+    label: "Members",
     color: "#778899",
     badgeUrl: null,
     formatted: true,
