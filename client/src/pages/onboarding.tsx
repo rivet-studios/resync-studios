@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 
 // ─── Step config ─────────────────────────────────────────────────────────────
 

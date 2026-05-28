@@ -6,7 +6,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail } from "lucide-reac
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AuthBackground } from "@/components/auth-background";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 
 export default function MagicLink() {
   const [, navigate] = useLocation();

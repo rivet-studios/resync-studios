@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 import {
   Select,
   SelectContent,

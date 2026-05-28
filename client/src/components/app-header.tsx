@@ -47,7 +47,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 import { useState } from "react";
 
 const ADMIN_RANKS = [

@@ -53,7 +53,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 
 const ADMIN_RANKS = [
   "Creative Designer",

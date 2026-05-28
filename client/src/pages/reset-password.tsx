@@ -6,7 +6,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react"
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { AuthBackground } from "@/components/auth-background";
-import logoSvg from "@assets/logo-rs.png";
+import logoSvg from "@assets/logo.svg";
 
 export default function ResetPassword() {
   const [, navigate] = useLocation();
