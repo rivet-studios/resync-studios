@@ -62,6 +62,7 @@ export const userRankEnum = pgEnum("user_rank", [
   "Diamond VIP",
   "Founders Edition VIP",
   "Lifetime",
+  "Retired Team Member",
   "Vehicle Tester",
   "Customer Relations",
   "Appeals Moderator",

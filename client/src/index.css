@@ -94,16 +94,10 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased text-foreground;
-    background-color: #050505;
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='68'%3E%3Cpath d='M3,65 L3,35 Q20,3 37,35 L37,65' fill='none' stroke='%231a1a1a' stroke-width='0.8'/%3E%3C/svg%3E"),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='68'%3E%3Cpath d='M3,65 L3,35 Q20,3 37,35 L37,65' fill='none' stroke='%231a1a1a' stroke-width='0.8'/%3E%3C/svg%3E");
-    background-size: 40px 68px, 40px 68px;
-    background-position: 0 0, 20px 34px;
+    @apply font-sans antialiased bg-background text-foreground;
     overflow-x: hidden;
   }
-  
+
   html {
     scroll-behavior: auto;
   }

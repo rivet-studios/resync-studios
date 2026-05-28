@@ -7,7 +7,9 @@ const GUILD_ID = process.env.DISCORD_GUILD_ID || "1419115257753768031";
 
 const RANK_NAMES_TO_DISCORD_ROLES: Record<string, string[]> = {
   Members: ["Verified Member"],
+  "Active Member": ["Verified Member"],
   "Trusted Member": ["Trusted Member"],
+  "Retired Team Member": ["Retired Team Member"],
   "Bronze VIP": ["Bronze Donator®"],
   "Diamond VIP": ["Diamond Donator®"],
   "Founders Edition VIP": ["Founders Edition®", "Founder's Edition®"],
@@ -35,6 +37,7 @@ const RANK_HIERARCHY = [
   "Community Moderator",
   "Appeals Moderator",
   "Customer Relations",
+  "Retired Team Member",
   "Lifetime",
   "Founders Edition VIP",
   "Diamond VIP",
@@ -42,7 +45,8 @@ const RANK_HIERARCHY = [
   "Community Partner",
   "Trusted Member",
   "Vehicle Tester",
-  "Active Members",
+  "Active Member",
+  "Members",
 ];
 
 let RANK_TO_ROLE: Record<string, string> = {};

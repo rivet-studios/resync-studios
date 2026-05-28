@@ -741,7 +741,8 @@ export default function AdminCP() {
   }
 
   const allRankOptions = [
-    "Active Members",
+    "Members",
+    "Active Member",
     "Trusted Member",
     "Community Partner",
     "Bronze VIP",
@@ -749,6 +750,7 @@ export default function AdminCP() {
     "Founders Edition VIP",
     "Lifetime",
     "Vehicle Tester",
+    "Retired Team Member",
     "Customer Relations",
     "Appeals Moderator",
     "Trial Moderator",

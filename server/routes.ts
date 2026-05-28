@@ -206,7 +206,7 @@ export async function registerRoutes(
       const hashedPassword = hashPassword(password);
 
       const isStaffEmail = email.toLowerCase().endsWith("@resyncstudios.com");
-      const defaultRank = isStaffEmail ? "Team Member" : "Active Members";
+      const defaultRank = isStaffEmail ? "Team Member" : "Members";
       const isAdmin = isStaffEmail;
       const isModerator = isStaffEmail;
 

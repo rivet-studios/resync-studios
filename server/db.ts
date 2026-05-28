@@ -52,6 +52,7 @@ export async function initializeDatabase() {
           'Diamond VIP',
           'Founders Edition VIP',
           'Lifetime',
+          'Retired Team Member',
           'Customer Relations',
           'Appeals Moderator',
           'Community Moderator',

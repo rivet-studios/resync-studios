@@ -139,7 +139,7 @@ if (user) {
       await new Promise(resolve => setTimeout(resolve, 500));
       await syncUserFromDiscord(discordId);
       await ensureVerifiedMemberRole(discordId);
-      sendSiteLog({ title: "User Login", level: "success" });
+      sendSiteLog({ title: "User Login Successful", level: "success" });
     } catch (e) {
       console.error("Non-critical background task failed:", e);
     }
