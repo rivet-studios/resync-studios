@@ -335,7 +335,7 @@ export default function GlobalSearch() {
                           />
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {user.userRank || "Member"}
+                          {user.userRank || "Members"}
                         </p>
                       </div>
                       <UserRankBadge

@@ -309,7 +309,7 @@ export default function UserProfile() {
                 >
                   {profile.username}
                   <VerifiedBadge isVerified={profile.isVerified} size="lg" />
-                </h1>
+                </h1>  
                 {profile.vipTier && profile.vipTier !== "none" && (
                   <VipBadge tier={profile.vipTier as any} size="lg" />
                 )}
@@ -330,9 +330,9 @@ export default function UserProfile() {
               >
                 {(() => {
                   const vipRanks = ["Lifetime", "Founders Edition VIP", "Diamond VIP", "Bronze VIP"];
-                  const communityRanks = ["Active Members", "Trusted Member"];
+                  const communityRanks = ["Members", "Active Member", "Trusted Member", "Community Partner", "Vehicle Tester", "Retired Team Member"];
                   const allRanks = [
-                    ...(profile.userRank && profile.userRank !== "Active Members" ? [profile.userRank] : []),
+                    ...(profile.userRank && profile.userRank !== "Members" ? [profile.userRank] : []),
                     ...((profile as any).additionalRanks || []),
                   ];
                   const uniqueRanks = [...new Set(allRanks)];

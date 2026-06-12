@@ -458,7 +458,7 @@ export default function AdminCP() {
     "eu-withdrawal": "EU/UK Consumer Withdrawal Rights Waiver Policy",
     dmca: "DMCA Policy",
     "community-rules": "Community Rules",
-    "project-rosewood-rules": "Project Rosewood Rules",
+    "project-seranno-rules": "Project Serrano Rules",
     "volunteer-staff-agreement": "Community Staff Agreement",
   };
 
@@ -1604,7 +1604,7 @@ export default function AdminCP() {
                           </div>
                         </div>
                         <Badge variant="outline" className="text-xs">
-                          {u.userRank || "Active Members"}
+                          {u.userRank || "Members"}
                         </Badge>
                       </div>
                     ))}
@@ -1833,14 +1833,14 @@ export default function AdminCP() {
                                         variant="outline"
                                         className="text-xs"
                                       >
-                                        {u.userRank || "Active Members"}
+                                        {u.userRank || "Members"}
                                       </Badge>
                                       {u.isAdmin && (
                                         <Badge
                                           variant="secondary"
                                           className="text-[10px]"
                                         >
-                                          Corporate
+                                          Corp
                                         </Badge>
                                       )}
                                       {u.isModerator && (
@@ -1848,7 +1848,7 @@ export default function AdminCP() {
                                           variant="secondary"
                                           className="text-[10px]"
                                         >
-                                          Community Staff
+                                          Staff
                                         </Badge>
                                       )}
                                       <Button
@@ -1857,7 +1857,7 @@ export default function AdminCP() {
                                         onClick={() => {
                                           setInlineEditUserId(u.id);
                                           setInlineEditRank(
-                                            u.userRank || "Active Members",
+                                            u.userRank || "Members",
                                           );
                                           setInlineEditAdditionalRanks(
                                             u.additionalRanks || [],
@@ -1931,7 +1931,7 @@ export default function AdminCP() {
                                         Rank
                                       </p>
                                       <p className="text-sm font-medium text-foreground">
-                                        {quickViewUser.userRank || "Active Members"}
+                                        {quickViewUser.userRank || "Members"}
                                       </p>
                                     </div>
                                     <div>
@@ -2036,7 +2036,7 @@ export default function AdminCP() {
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <Button size="sm" variant="outline" asChild>
                                       <a
-                                        href={`/user/${u.id}`}
+                                        href={`/profile/${u.id}`}
                                         data-testid={`link-view-profile-${u.id}`}
                                       >
                                         View Profile

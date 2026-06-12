@@ -11,7 +11,7 @@ import { useLocation } from "wouter";
 const tiers = [
   {
     id: "bronze",
-    name: "Bronze Donator",
+    name: "Bronze VIP®",
     rating: "4.5",
     priceMonth: "9.99",
     priceYear: "99.99",
@@ -31,7 +31,7 @@ const tiers = [
   },
   {
     id: "diamond",
-    name: "Diamond Donator",
+    name: "Diamond VIP®",
     rating: "4.8",
     priceMonth: "14.99",
     priceYear: "149.99",
@@ -54,7 +54,7 @@ const tiers = [
   },
   {
     id: "founders",
-    name: "Founders Edition",
+    name: "Founders Edition®",
     rating: "4.8",
     priceMonth: "19.99",
     priceYear: "199.99",

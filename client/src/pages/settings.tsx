@@ -1493,7 +1493,7 @@ export default function Settings() {
                       <Input
                         id="dob"
                         type="date"
-                        placeholder="MM/DD/YYYY"
+                        placeholder="DD/MM/YYYY"
                         {...profileForm.register("dateOfBirth")}
                         data-testid="input-settings-dob"
                       />

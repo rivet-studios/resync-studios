@@ -35,7 +35,8 @@ interface User {
 
 const RANK_OPTIONS = [
   { value: "Banned", label: "Banned" },
-  { value: "Active Members", label: "Active Members" },
+  { value: "Members", label: "Members" },
+  { value: "Active Member", label: "Active Members" },
   { value: "Trusted Member", label: "Trusted Member" },
   { value: "Community Partner", label: "Community Partner" },
   { value: "Bronze VIP", label: "Bronze VIP" },
@@ -43,6 +44,7 @@ const RANK_OPTIONS = [
   { value: "Founders Edition VIP", label: "Founders Edition VIP" },
   { value: "Lifetime", label: "Lifetime" },
   { value: "Vehicle Tester", label: "Vehicle Tester" },
+  { value: "Retired Team Member", label: "Retired Team Member" },
   { value: "Customer Relations", label: "Customer Relations" },
   { value: "Appeals Moderator", label: "Appeals Moderator" },
   { value: "Community Moderator", label: "Community Moderator" },

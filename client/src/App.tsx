@@ -134,7 +134,7 @@ function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
           <div className="col-span-2 md:col-span-1 space-y-6">
             <div className="flex items-center gap-2.5">
-              <img src="/logo.svg" alt="RS" className="h-10 w-auto" />
+              <img src="/footer.png" alt="RS" className="h-10 w-auto" />
               <h3 className="font-semibold text-base">RIVET Studios™</h3>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -207,7 +207,7 @@ function SiteFooter() {
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
-                  href="/support"
+                  href="/knowledge-base"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
                   Knowledge Base
@@ -264,14 +264,7 @@ function SiteFooter() {
             </ul>
           </div>
         </div>
-<iframe 
-src="https://rivetstudios.instatus.com/embed-status/2c3f9c70/dark-md" 
-width="267" 
-height="55"
-style={{ border: "none" }}
-title="System Status"
->
-</iframe>
+
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
             © 2026 RIVET Studios™, All rights reserved.
@@ -440,7 +433,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/status" component={Status} />
             <Route path="/changelog" component={Changelog} />
             <Route path="/gift-cards" component={GiftCards} />
-            <Route path="/faq" component={FAQ} />
+            <Route path="/knowledge-base" component={FAQ} />
             <Route path="/notifications" component={NotificationsPage} />
             <Route path="/activity" component={ActivityFeedPage} />
             <Route path="/messages" component={MessagesPage} />

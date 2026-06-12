@@ -2,9 +2,9 @@ import { Link } from "wouter";
 import { Folder, FileText, ChevronRight } from "lucide-react";
 
 const RECENT_POLICIES = [
-  { label: "Terms & Conditions", href: "/terms" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Subscription Services Agreement", href: "/subscription-agreement" },
+  { label: "Terms & Conditions", href: "/policies/legal/terms" },
+  { label: "Privacy Policy", href: "/policies/legal/privacy" },
+  { label: "Subscription Services Agreement", href: "/policies/legal/subscriptions" },
 ];
 
 export default function Policies() {
@@ -22,10 +22,10 @@ export default function Policies() {
               <Folder className="w-6 h-6 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-foreground group-hover:underline">Legal &amp; Policies</p>
+              <p className="font-semibold text-foreground group-hover:underline">Legal & Policies</p>
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
                 <FileText className="w-3.5 h-3.5" />
-                <span>5 policies</span>
+                <span>7 policies</span>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />

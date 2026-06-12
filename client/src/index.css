@@ -30,7 +30,7 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(255,255,255, .03);
   --elevate-2: rgba(255,255,255, .08);
-  
+
   --sidebar-background: 202 50% 3%;
   --sidebar-foreground: 202 5% 90%;
   --sidebar-primary: 202 100% 35%;
@@ -93,13 +93,47 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
     overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+    background-color: transparent; /* Allows custom background layers to show through */
+  }
+
+  /* Global Layer 1: The 5-color linear gradient background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(243,232,255,0.3) 25%, rgba(255,255,255,0.9) 50%, rgba(220,252,231,0.3) 75%, rgba(252,231,243,0.4) 100%);
+    pointer-events: none;
+  }
+
+  /* Global Layer 2: Theme mode tint overlay */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Applied when light mode is active */
+  .light body::after {
+    @apply bg-white/60;
+  }
+
+  /* Applied when dark mode is active */
+  .dark body::after {
+    background-color: rgba(5, 5, 5, 0.9);
   }
 
   html {
     scroll-behavior: auto;
+    @apply bg-background;
   }
 }
 

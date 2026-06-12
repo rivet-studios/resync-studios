@@ -39,7 +39,7 @@ const departments: Department[] = [
         joinDate: "2018–Present",
       },
       {
-        name: "Quinn (silentdirective)",
+        name: "Quinn M. (silentdirective)",
         role: "Operations Manager & Co Founder",
         contact: "Contact: quinn@rivetstudiosus.com",
         joinDate: "2024–Present",
@@ -53,8 +53,14 @@ const departments: Department[] = [
     members: [
       {
         name: "Chase K. (eranovuh)",
-        role: "Staff Director",
+        role: "Operations Manager",
         contact: "Contact: chase@rivetstudiosus.com",
+        joinDate: "2026–Present",
+      },
+      {
+        name: "Timothy J. (XUSeriouslyYT)",
+        role: "Staff Director",
+        contact: "Contact: tim@rivetstudiosus.com",
         joinDate: "2026–Present",
       },
       {
@@ -72,7 +78,7 @@ const departments: Department[] = [
     color: "text-green-500",
     members: [
       {
-        name: "Quinn (silentdirective)",
+        name: "Quinn M. (silentdirective)",
         role: "Customer Relations & Partnership Support",
         joinDate: "2024–Present",
       },
@@ -100,7 +106,7 @@ const departments: Department[] = [
         joinDate: "2018–Present",
       },
       {
-        name: "Quinn (silentdirective)",
+        name: "Quinn M. (silentdirective)",
         role: "Creative Designer",
         joinDate: "2024–Present",
       },
@@ -229,14 +235,14 @@ export default function StaffDirectory() {
         <CardContent className="p-6 text-center">
           <p className="text-lg font-semibold mb-2">Join Our Team</p>
           <p className="text-muted-foreground">
-            Interested in joining RIVET Studios? Check out our {" "} 
+            Interested in joining our team? Check out our {" "} 
               <a
     href="https://x.com/rivetstudiosau/jobs"
                 className="text-primary hover:underline font-bold"
                 >
                 careers page. 
               </a>
-            We're always looking for talented individuals to help
+             We're always looking for talented individuals to help
               grow our community.
           </p>
         </CardContent>
