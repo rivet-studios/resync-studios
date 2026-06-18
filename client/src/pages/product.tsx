@@ -197,7 +197,7 @@ export default function ProductDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white">
+      <div className="min-h-screen bg-transparent text-foreground">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <Skeleton className="h-8 w-32 mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -216,7 +216,7 @@ export default function ProductDetail() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center justify-center gap-4 px-4">
         <Package className="w-16 h-16 text-white/15" />
         <h2 className="text-xl font-semibold" data-testid="text-product-error">
           Failed to load product
@@ -233,7 +233,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center justify-center gap-4 px-4">
         <Package className="w-16 h-16 text-white/15" />
         <h2 className="text-xl font-semibold" data-testid="text-product-not-found">
           Product not found
@@ -248,7 +248,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 animate-in fade-in duration-500">
         <Link href="/store">
           <span

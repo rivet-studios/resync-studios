@@ -160,7 +160,7 @@ export default function EditThread() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-3xl mx-auto p-6 space-y-4">
         <Link href={`/forums/thread/${threadId}`}>
           <Button variant="ghost" size="sm" data-testid="button-back-thread">

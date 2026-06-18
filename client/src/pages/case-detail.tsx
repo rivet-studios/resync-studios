@@ -175,7 +175,7 @@ export default function CaseDetail() {
 
   if (!normalizedType || !["report", "appeal", "ban"].includes(normalizedType)) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/40">
+      <div className="min-h-screen bg-transparent flex items-center justify-center text-foreground/40">
         Invalid case type
       </div>
     );
@@ -183,7 +183,7 @@ export default function CaseDetail() {
 
   if (queryError) {
     return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-4 text-white">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center gap-4 text-foreground">
         <Shield className="w-16 h-16 text-red-400/30" />
         <h2 className="text-xl font-semibold">Unable to load case</h2>
         <p className="text-white/40 text-sm">
@@ -204,7 +204,7 @@ export default function CaseDetail() {
 
   if (queryLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white">
+      <div className="min-h-screen bg-transparent text-foreground">
         <div className="max-w-4xl mx-auto px-6 py-12 space-y-6">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-64 w-full rounded-xl" />
@@ -216,7 +216,7 @@ export default function CaseDetail() {
 
   if (!caseData) {
     return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-4 text-white">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center gap-4 text-foreground">
         <FileText className="w-16 h-16 text-white/15" />
         <h2 className="text-xl font-semibold">Case not found</h2>
         <Link href="/modcp">
@@ -268,7 +268,7 @@ export default function CaseDetail() {
   const hasRelatedCases = relatedReports.length > 0 || relatedAppeals.length > 0 || relatedBans.length > 0;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-8 animate-in fade-in duration-500">
         <Link href="/modcp">
           <span

@@ -111,7 +111,7 @@ export default function CreateThread() {
   });
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-3xl mx-auto p-6">
         <Card className="border border-white/5 shadow-xl bg-card">
           <CardHeader>

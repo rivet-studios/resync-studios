@@ -151,7 +151,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4 bg-[#000000ed]">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <img src={logoSvg} alt="RS" className="w-6 h-6" />
@@ -163,7 +163,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-[#000000ed]">
         <SidebarGroup>
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -331,7 +331,7 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-2 bg-[#000000ed]">
         {user ? (
           <SidebarMenu>
             <SidebarMenuItem>

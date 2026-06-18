@@ -176,7 +176,7 @@ export default function Store() {
   const allProducts = products;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-14 animate-in fade-in duration-500">
         <section className="space-y-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">

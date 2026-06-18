@@ -425,7 +425,7 @@ export default function ForumThread() {
   const canEditThread = isStaff || isThreadAuthor;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-in fade-in duration-500">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <Link href="/forums">

@@ -757,7 +757,7 @@ export default function ModCP() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+      <div className="flex items-center justify-center min-h-[60vh] bg-transparent">
         <Skeleton className="h-[600px] w-full max-w-[1400px] rounded-md" />
       </div>
     );
@@ -765,7 +765,7 @@ export default function ModCP() {
 
   if (!isMod) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-background">
+      <div className="flex items-center justify-center min-h-[60vh] bg-transparent">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
@@ -897,7 +897,7 @@ export default function ModCP() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">
+    <div className="flex flex-col md:flex-row min-h-screen bg-transparent text-foreground">
       <div className="md:w-64 border-b md:border-b-0 md:border-r border-border flex md:flex-col p-3 md:p-4 gap-1 md:space-y-1 overflow-x-auto md:overflow-x-visible">
         <div className="hidden md:flex items-center gap-3 px-4 py-6 mb-2">
           <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
