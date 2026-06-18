@@ -100,22 +100,53 @@ export class WebhookHandlers {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object as any;
-          if (session.mode !== "subscription") break;
-          const customerId = session.customer as string | null;
-          if (!customerId) break;
-          const subId = (session.subscription as string | null) ?? null;
-          // Prefer the explicit tierId from checkout metadata.
-          let tier: VipTierEnum | null = null;
-          const metaTierId = session.metadata?.tierId as string | undefined;
-          if (metaTierId && VIP_TIER_ID_TO_ENUM[metaTierId]) {
-            tier = VIP_TIER_ID_TO_ENUM[metaTierId];
-          } else if (subId) {
-            const stripe = await getUncachableStripeClient();
-            const sub = await stripe.subscriptions.retrieve(subId);
-            tier = await resolveTierFromSubscription(sub);
-          }
-          if (tier) {
-            await applyVipTierForCustomer(customerId, tier, subId);
+
+          if (session.mode === "subscription") {
+            // ── VIP subscription purchase ────────────────────────────────────
+            const customerId = session.customer as string | null;
+            if (!customerId) break;
+            const subId = (session.subscription as string | null) ?? null;
+            let tier: VipTierEnum | null = null;
+            const metaTierId = session.metadata?.tierId as string | undefined;
+            if (metaTierId && VIP_TIER_ID_TO_ENUM[metaTierId]) {
+              tier = VIP_TIER_ID_TO_ENUM[metaTierId];
+            } else if (subId) {
+              const stripe = await getUncachableStripeClient();
+              const sub = await stripe.subscriptions.retrieve(subId);
+              tier = await resolveTierFromSubscription(sub);
+            }
+            if (tier) {
+              await applyVipTierForCustomer(customerId, tier, subId);
+            }
+          } else if (session.mode === "payment") {
+            // ── One-time product purchase ────────────────────────────────────
+            const userId = session.metadata?.userId as string | undefined;
+            const productId = session.metadata?.productId as string | undefined;
+            if (!userId || !productId) break;
+
+            // Idempotency: skip if we already recorded this session
+            const stripeRef = (session.payment_intent as string | null) ?? session.id;
+            const existingPayments = await storage.getUserPayments(userId);
+            const alreadyRecorded = existingPayments.some(
+              (p) => p.stripePaymentId === stripeRef,
+            );
+            if (alreadyRecorded) break;
+
+            const product = await storage.getProduct(productId);
+            await storage.createPayment({
+              userId,
+              amount: session.amount_total ?? 0,
+              currency: ((session.currency as string | null) ?? "usd").toUpperCase(),
+              status: "completed",
+              tierId: `product:${productId}`,
+              stripePaymentId: stripeRef,
+              adminNotes: product
+                ? `Store purchase: ${product.name}`
+                : `Store purchase: ${productId}`,
+            });
+            console.log(
+              `✅ Stripe webhook: recorded product purchase for user ${userId}, product ${productId}`,
+            );
           }
           break;
         }
