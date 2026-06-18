@@ -367,9 +367,9 @@ export function AppSidebar() {
 
                 <DropdownMenuPortal>
                   <DropdownMenuContent
-                    side="right" 
-                    align="end"
-                    sideOffset={16}
+                    side="top"
+                    align="start"
+                    sideOffset={8}
                     className="z-[9999] w-64 p-0 bg-zinc-900 text-zinc-50 border border-zinc-800 shadow-2xl rounded-lg overflow-hidden"
                   >
                     <div className="flex items-center gap-3 px-3 py-3 bg-zinc-900">

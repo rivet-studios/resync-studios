@@ -130,14 +130,18 @@ export default function Onboarding() {
   useEffect(() => {
     if (authLoading) return;
     if (user) {
-      // Email just verified via link?
+      // Sync local emailVerified state from the server user object
+      if ((user as any).emailVerified) setEmailVerified(true);
+
+      // Email just verified via link — advance past step 2
       if (urlVerified) {
         setEmailVerified(true);
-        setStep(2);
+        setStep(3);
         return;
       }
-      // Resume from URL step
-      const target = Math.max(urlStep, 2);
+      // Resume from URL step, skipping step 2 if email already verified
+      const minStep = (user as any).emailVerified ? 3 : 2;
+      const target = Math.max(urlStep, minStep);
       setStep(target);
       if (user.dateOfBirth) setDateOfBirth(user.dateOfBirth);
     }
