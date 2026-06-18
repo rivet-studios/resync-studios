@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useParams, Link, useLocation } from "wouter";
-import { useState } from "react";
+import { useParams, Link, useLocation, useSearch } from "wouter";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -22,9 +22,10 @@ import {
   MessageSquare,
   FileText,
   Download,
+  CheckCircle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import type { Product } from "@shared/schema";
+import type { Product, Payment } from "@shared/schema";
 
 interface ProductWithSubmitter extends Product {
   submitter: { id: string; username: string; userRank: string } | null;
@@ -89,17 +90,40 @@ function StarRating({ rating, onRate, interactive = false, size = "md" }: {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
+  const search = useSearch();
   const { user } = useAuth();
   const { toast } = useToast();
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
 
+  // Show toast when landing on the page after a free claim
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (params.get("free_granted") === "true") {
+      if (params.get("already") === "true") {
+        toast({ title: "Already claimed", description: "You already have this product." });
+      } else {
+        toast({ title: "Product claimed!", description: "The product has been added to your library." });
+        queryClient.invalidateQueries({ queryKey: ["/api/payments/my"] });
+      }
+      // Strip the params from the URL without a page reload
+      window.history.replaceState({}, "", `/store/product/${id}`);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { data: products = [], isLoading, isError } = useQuery<ProductWithSubmitter[]>({
     queryKey: ["/api/products"],
   });
 
+  const { data: myPayments = [] } = useQuery<Payment[]>({
+    queryKey: ["/api/payments/my"],
+    enabled: !!user,
+  });
+
   const product = products.find((p) => p.id === id);
   const isFree = product?.price === 0;
+  const alreadyClaimed = isFree && myPayments.some((p) => p.tierId === `product:${id}`);
 
   // Vehicle Testers (and Team Members / admins) may "purchase" free products
   // so they can test them before public release.
@@ -143,8 +167,12 @@ export default function ProductDetail() {
       });
       return res.json();
     },
-    onSuccess: (data: { url: string }) => {
+    onSuccess: (data: { url: string; free?: boolean }) => {
       if (data.url) {
+        if (data.free) {
+          // For free products, invalidate payments cache before navigating
+          queryClient.invalidateQueries({ queryKey: ["/api/payments/my"] });
+        }
         window.location.href = data.url;
       }
     },
@@ -401,7 +429,18 @@ export default function ProductDetail() {
 
             <div className="border-t border-white/10 pt-6 space-y-3">
               {isFree ? (
-                canTakeFree ? (
+                alreadyClaimed ? (
+                  <div
+                    className="flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3"
+                    data-testid="banner-already-claimed"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-green-400">Already claimed</p>
+                      <p className="text-xs text-green-400/70">This product is in your library.</p>
+                    </div>
+                  </div>
+                ) : canTakeFree ? (
                   <Button
                     className="w-full bg-white text-black hover:bg-white/90"
                     size="lg"
@@ -414,7 +453,7 @@ export default function ProductDetail() {
                     ) : (
                       <Download className="w-4 h-4 mr-2" />
                     )}
-                    Buy now
+                    Claim for Free
                   </Button>
                 ) : (
                   <div className="text-center py-4">

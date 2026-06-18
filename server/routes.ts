@@ -3084,8 +3084,8 @@ export async function registerRoutes(
 
       // Free / $0 products: only Vehicle Testers (and admins/Team Members) can
       // "purchase" them, and Stripe checkout is bypassed entirely since Stripe
-      // does not allow $0 line items in payment mode. We just hand them a
-      // success URL so the client can navigate them to the granted state.
+      // does not allow $0 line items in payment mode. We create a payment
+      // record and redirect to the success URL.
       if (!product.price || product.price <= 0) {
         const userRanks = [user.userRank, ...(user.additionalRanks || [])];
         const canTakeFree =
@@ -3096,6 +3096,30 @@ export async function registerRoutes(
               "Free products are reserved for Vehicle Testers and staff.",
           });
         }
+
+        // Prevent duplicate claims
+        const existingPayments = await storage.getUserPayments(user.id);
+        const alreadyClaimed = existingPayments.some(
+          (p) => p.tierId === `product:${product.id}`,
+        );
+        if (alreadyClaimed) {
+          return res.json({
+            url: `${getBaseUrl(req)}/store/product/${product.id}?free_granted=true&already=true`,
+            free: true,
+          });
+        }
+
+        // Record the free claim as a $0 completed payment
+        await storage.createPayment({
+          userId: user.id,
+          amount: 0,
+          currency: "USD",
+          status: "completed",
+          tierId: `product:${product.id}`,
+          stripePaymentId: null,
+          adminNotes: `Free product claim: ${product.name}`,
+        });
+
         return res.json({
           url: `${getBaseUrl(req)}/store/product/${product.id}?free_granted=true`,
           free: true,
