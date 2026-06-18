@@ -33,7 +33,7 @@ const departments: Department[] = [
     color: "text-yellow-500",
     members: [
       {
-        name: "Isaac D.",
+        name: "Isaac C.",
         role: "Chief Executive Officer (CEO) & Founder",
         contact: "Contact: isaac@rivetstudiosus.com",
         joinDate: "2018–Present",
