@@ -29,6 +29,8 @@ import {
   insertFaqEntrySchema,
   insertNotificationSchema,
   insertActivityFeedSchema,
+  insertDiscountSchema,
+  discounts,
   users,
   forumThreads,
   forumReplies,
@@ -61,6 +63,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { getVipPriceId } from "./stripe-products";
+import {
+  createStripeDiscount,
+  setStripeDiscountActive,
+  deleteStripeDiscount,
+} from "./discounts";
 
 const uploadDir = path.join(process.cwd(), "uploads", "avatars");
 if (!fs.existsSync(uploadDir)) {
@@ -1443,6 +1450,335 @@ export async function registerRoutes(
       res.json({ message: "Subscription assigned successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to assign subscription" });
+    }
+  });
+
+  // List all users who currently have an active VIP tier (subscription or trial)
+  app.get("/api/admin/subscriptions", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const subscribers = await storage.getActiveSubscribers();
+      res.json(
+        subscribers.map((u) => ({
+          id: u.id,
+          username: u.username,
+          email: u.email,
+          vipTier: u.vipTier,
+          stripeSubscriptionId: u.stripeSubscriptionId,
+          vipTrialEndsAt: u.vipTrialEndsAt,
+          isTrial: !!u.vipTrialEndsAt && !u.stripeSubscriptionId,
+        })),
+      );
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch subscriptions" });
+    }
+  });
+
+  // Grant a free trial of a VIP tier to a user, no Stripe subscription required
+  app.post("/api/admin/subscriptions/grant-trial", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const { targetUsername, vipTier, trialDays } = req.body;
+      if (!targetUsername || !vipTier || !trialDays) {
+        return res.status(400).json({
+          message: "targetUsername, vipTier, and trialDays are required",
+        });
+      }
+
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
+
+      const trialEndsAt = new Date(
+        Date.now() + Number(trialDays) * 24 * 60 * 60 * 1000,
+      );
+      const oldTier = targetUser.vipTier;
+      await storage.updateUser(targetUser.id, {
+        vipTier: vipTier as any,
+        vipTrialEndsAt: trialEndsAt,
+      });
+
+      if (targetUser.discordId && oldTier !== vipTier) {
+        syncDiscordVipRole(targetUser.discordId, vipTier as any).catch((err) =>
+          console.error("Discord VIP sync error:", err),
+        );
+      }
+
+      res.json({
+        message: `Granted a ${trialDays}-day ${vipTier} trial`,
+        trialEndsAt,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to grant trial" });
+    }
+  });
+
+  // Extend an existing trial by N days
+  app.post("/api/admin/subscriptions/extend-trial", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const { targetUsername, extraDays } = req.body;
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
+
+      const base =
+        targetUser.vipTrialEndsAt && targetUser.vipTrialEndsAt > new Date()
+          ? new Date(targetUser.vipTrialEndsAt)
+          : new Date();
+      const newEnd = new Date(
+        base.getTime() + Number(extraDays) * 24 * 60 * 60 * 1000,
+      );
+      await storage.updateUser(targetUser.id, { vipTrialEndsAt: newEnd });
+      res.json({ message: "Trial extended", trialEndsAt: newEnd });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to extend trial" });
+    }
+  });
+
+  // Manually revoke/cancel a user's VIP tier (trial or otherwise). If they
+  // have a live Stripe subscription it is cancelled as well.
+  app.post("/api/admin/subscriptions/cancel", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const { targetUsername } = req.body;
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
+
+      if (targetUser.stripeSubscriptionId) {
+        try {
+          const stripe = await getUncachableStripeClient();
+          await stripe.subscriptions.cancel(targetUser.stripeSubscriptionId);
+        } catch (err: any) {
+          console.warn("⚠️ Failed to cancel Stripe subscription:", err?.message);
+        }
+      }
+
+      await storage.updateUser(targetUser.id, {
+        vipTier: "none" as any,
+        vipTrialEndsAt: null,
+        stripeSubscriptionId: null,
+      });
+
+      if (targetUser.discordId) {
+        syncDiscordVipRole(targetUser.discordId, "none" as any).catch((err) =>
+          console.error("Discord VIP sync error:", err),
+        );
+      }
+
+      res.json({ message: "Subscription cancelled" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to cancel subscription" });
+    }
+  });
+
+  // Grant a product to a user directly, bypassing Stripe checkout entirely.
+  app.post("/api/admin/products/grant", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const { targetUsername, productId, note } = req.body;
+      if (!targetUsername || !productId) {
+        return res
+          .status(400)
+          .json({ message: "targetUsername and productId are required" });
+      }
+
+      const targetUser = await storage.getUserByUsername(targetUsername);
+      if (!targetUser)
+        return res.status(404).json({ message: "User not found" });
+
+      const product = await storage.getProduct(productId);
+      if (!product)
+        return res.status(404).json({ message: "Product not found" });
+
+      const existingPayments = await storage.getUserPayments(targetUser.id);
+      const alreadyOwns = existingPayments.some(
+        (p) => p.tierId === `product:${product.id}`,
+      );
+      if (alreadyOwns) {
+        return res
+          .status(400)
+          .json({ message: "User already owns this product" });
+      }
+
+      await storage.createPayment({
+        userId: targetUser.id,
+        amount: 0,
+        currency: "USD",
+        status: "completed",
+        tierId: `product:${product.id}`,
+        stripePaymentId: null,
+        adminNotes: `Admin grant by ${user.username}${note ? `: ${note}` : ""}`,
+      });
+
+      res.json({ message: `Granted "${product.name}" to ${targetUser.username}` });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to grant product" });
+    }
+  });
+
+  // List all admin-granted products
+  app.get("/api/admin/products/grants", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const grants = await storage.getProductGrantPayments();
+      const allUsers = await storage.getAllUsers();
+      const allProducts = await storage.getProducts();
+      const userMap = new Map(allUsers.map((u) => [u.id, u]));
+      const productMap = new Map(allProducts.map((p) => [p.id, p]));
+
+      res.json(
+        grants.map((g) => {
+          const productId = g.tierId?.replace("product:", "") || "";
+          return {
+            id: g.id,
+            userId: g.userId,
+            username: userMap.get(g.userId)?.username || "Unknown",
+            productId,
+            productName: productMap.get(productId)?.name || "Unknown product",
+            adminNotes: g.adminNotes,
+            createdAt: g.createdAt,
+          };
+        }),
+      );
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch product grants" });
+    }
+  });
+
+  // --- Discount management ---
+  app.get("/api/admin/discounts", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+      const list = await storage.getDiscounts();
+      res.json(list);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch discounts" });
+    }
+  });
+
+  app.get("/api/discounts/active", async (_req, res) => {
+    try {
+      const list = await storage.getDiscounts();
+      const now = new Date();
+      const active = list.filter(
+        (d) =>
+          d.isActive &&
+          (!d.expiresAt || new Date(d.expiresAt) > now) &&
+          (!d.maxRedemptions || (d.timesRedeemed || 0) < d.maxRedemptions),
+      );
+      res.json(
+        active.map((d) => ({
+          code: d.code,
+          description: d.description,
+          discountType: d.discountType,
+          amount: d.amount,
+          expiresAt: d.expiresAt,
+        })),
+      );
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch active discounts" });
+    }
+  });
+
+  app.post("/api/admin/discounts", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const data = insertDiscountSchema.parse({
+        ...req.body,
+        createdBy: user.id,
+      });
+
+      const existing = await storage.getDiscountByCode(data.code);
+      if (existing) {
+        return res.status(400).json({ message: "A discount with this code already exists" });
+      }
+
+      let stripeIds: { stripeCouponId: string; stripePromotionCodeId: string } | null = null;
+      try {
+        stripeIds = await createStripeDiscount(data);
+      } catch (err: any) {
+        console.error("Stripe discount creation error:", err?.message);
+        return res.status(400).json({
+          message: err?.message || "Failed to create discount in Stripe",
+        });
+      }
+
+      const discount = await storage.createDiscount({
+        ...data,
+        ...stripeIds,
+      } as any);
+
+      res.status(201).json(discount);
+    } catch (error: any) {
+      res.status(400).json({ message: error?.message || "Invalid discount data" });
+    }
+  });
+
+  app.patch("/api/admin/discounts/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const existing = await storage.getDiscount(req.params.id);
+      if (!existing)
+        return res.status(404).json({ message: "Discount not found" });
+
+      if (typeof req.body.isActive === "boolean" && req.body.isActive !== existing.isActive) {
+        await setStripeDiscountActive(existing, req.body.isActive).catch((err) =>
+          console.warn("⚠️ Failed to sync Stripe discount status:", err?.message),
+        );
+      }
+
+      const updated = await storage.updateDiscount(req.params.id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update discount" });
+    }
+  });
+
+  app.delete("/api/admin/discounts/:id", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isAdminUser(user))
+        return res.status(403).json({ message: "Forbidden" });
+
+      const existing = await storage.getDiscount(req.params.id);
+      if (!existing)
+        return res.status(404).json({ message: "Discount not found" });
+
+      await deleteStripeDiscount(existing).catch((err) =>
+        console.warn("⚠️ Failed to clean up Stripe discount:", err?.message),
+      );
+      await storage.deleteDiscount(req.params.id);
+      res.json({ message: "Discount deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete discount" });
     }
   });
 
@@ -3035,6 +3371,7 @@ export async function registerRoutes(
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
+        allow_promotion_codes: true,
         success_url: `${getBaseUrl(req)}/store/subscriptions?success=true`,
         cancel_url: `${getBaseUrl(req)}/store/subscriptions?cancelled=true`,
         metadata: {
@@ -3158,6 +3495,7 @@ export async function registerRoutes(
         payment_method_types: ["card"],
         line_items: [lineItem],
         mode: "payment",
+        allow_promotion_codes: true,
         metadata: { productId: product.id, userId: user.id },
         success_url: `${getBaseUrl(req)}/store/product/${product.id}?success=true`,
         cancel_url: `${getBaseUrl(req)}/store/product/${product.id}?cancelled=true`,

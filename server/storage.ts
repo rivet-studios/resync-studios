@@ -47,9 +47,12 @@ import {
   blogComments,
   type BlogComment,
   type InsertBlogComment,
+  discounts,
+  type Discount,
+  type InsertDiscount,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, lt, gt, isNull } from "drizzle-orm";
+import { eq, desc, and, sql, lt, gt, isNull, like, ne } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -182,6 +185,19 @@ export interface IStorage {
   createStaffNote(note: InsertStaffNote): Promise<StaffNote>;
   getStaffNotes(userId: string): Promise<StaffNote[]>;
   deleteStaffNote(id: string): Promise<void>;
+  getAllPayments(): Promise<Payment[]>;
+  getProductGrantPayments(): Promise<Payment[]>;
+  getUsersWithExpiredTrials(): Promise<User[]>;
+  getActiveSubscribers(): Promise<User[]>;
+  getDiscounts(): Promise<Discount[]>;
+  getDiscount(id: string): Promise<Discount | undefined>;
+  getDiscountByCode(code: string): Promise<Discount | undefined>;
+  createDiscount(discount: InsertDiscount): Promise<Discount>;
+  updateDiscount(
+    id: string,
+    updates: Partial<Discount>,
+  ): Promise<Discount | undefined>;
+  deleteDiscount(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -924,6 +940,76 @@ export class DatabaseStorage implements IStorage {
   }
   async deleteStaffNote(id: string): Promise<void> {
     await db.delete(staffNotes).where(eq(staffNotes.id, id));
+  }
+  async getAllPayments(): Promise<Payment[]> {
+    return db.select().from(payments).orderBy(desc(payments.createdAt));
+  }
+  async getProductGrantPayments(): Promise<Payment[]> {
+    return db
+      .select()
+      .from(payments)
+      .where(
+        and(
+          like(payments.tierId, "product:%"),
+          sql`${payments.adminNotes} ILIKE '%admin grant%'`,
+        ),
+      )
+      .orderBy(desc(payments.createdAt));
+  }
+  async getUsersWithExpiredTrials(): Promise<User[]> {
+    return db
+      .select()
+      .from(users)
+      .where(
+        and(
+          lt(users.vipTrialEndsAt, new Date()),
+          ne(users.vipTier, "none"),
+          isNull(users.stripeSubscriptionId),
+        ),
+      );
+  }
+  async getActiveSubscribers(): Promise<User[]> {
+    return db
+      .select()
+      .from(users)
+      .where(ne(users.vipTier, "none"))
+      .orderBy(desc(users.updatedAt));
+  }
+  async getDiscounts(): Promise<Discount[]> {
+    return db.select().from(discounts).orderBy(desc(discounts.createdAt));
+  }
+  async getDiscount(id: string): Promise<Discount | undefined> {
+    const [d] = await db.select().from(discounts).where(eq(discounts.id, id));
+    return d;
+  }
+  async getDiscountByCode(code: string): Promise<Discount | undefined> {
+    const [d] = await db
+      .select()
+      .from(discounts)
+      .where(sql`LOWER(${discounts.code}) = LOWER(${code})`);
+    return d;
+  }
+  async createDiscount(discountData: InsertDiscount): Promise<Discount> {
+    const [d] = await db.insert(discounts).values(discountData).returning();
+    return d;
+  }
+  async updateDiscount(
+    id: string,
+    updates: Partial<Discount>,
+  ): Promise<Discount | undefined> {
+    const [d] = await db
+      .update(discounts)
+      .set(updates)
+      .where(eq(discounts.id, id))
+      .returning();
+    return d;
+  }
+  async deleteDiscount(id: string): Promise<boolean> {
+    const result = await db
+      .delete(discounts)
+      .where(eq(discounts.id, id))
+      .returning();
+    return result.length > 0;
   }
 }
 

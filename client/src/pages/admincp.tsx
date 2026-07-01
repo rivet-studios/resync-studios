@@ -58,7 +58,11 @@ import {
   Loader2,
   Signal,
   BadgeCheck,
+  Gift,
+  Tag,
 } from "lucide-react";
+import { SubscriptionsTab } from "@/components/admincp/subscriptions-tab";
+import { ProductsDiscountsTab } from "@/components/admincp/products-discounts-tab";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
@@ -99,6 +103,8 @@ const ADMINCP_TAB_IDS = [
   "forums",
   "announcements",
   "policies",
+  "subscriptions",
+  "products",
   "reports",
   "audit-log",
   "achievements",
@@ -775,6 +781,8 @@ export default function AdminCP() {
     { id: "forums", label: "Forums", icon: MessageSquare },
     { id: "announcements", label: "Announcements", icon: Megaphone },
     { id: "policies", label: "Policies", icon: Scale },
+    { id: "subscriptions", label: "Subscriptions", icon: Crown },
+    { id: "products", label: "Products & Discounts", icon: Tag },
     { id: "reports", label: "Reports", icon: AlertTriangle },
     { id: "audit-log", label: "Audit Log", icon: History },
     { id: "achievements", label: "Achievements", icon: Crown },
@@ -2961,6 +2969,10 @@ export default function AdminCP() {
             )}
           </>
         )}
+
+        {activeTab === "subscriptions" && <SubscriptionsTab />}
+
+        {activeTab === "products" && <ProductsDiscountsTab />}
 
         {activeTab === "reports" && (
           <>

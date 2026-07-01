@@ -257,6 +257,32 @@ httpServer.listen(port, host, () => {
       }
     })();
 
+    // Periodically revert admin-granted VIP trials once they expire (only
+    // affects users without a live Stripe subscription backing their tier).
+    const sweepExpiredTrials = async () => {
+      try {
+        const { storage } = await import("./storage");
+        const { syncDiscordVipRole } = await import("./discord-bot");
+        const expired = await storage.getUsersWithExpiredTrials();
+        for (const u of expired) {
+          await storage.updateUser(u.id, {
+            vipTier: "none" as any,
+            vipTrialEndsAt: null,
+          });
+          if (u.discordId) {
+            syncDiscordVipRole(u.discordId, "none" as any).catch((err) =>
+              console.error("Discord VIP sync error:", err),
+            );
+          }
+          console.log(`⏰ VIP trial expired for ${u.username}, reverted to none`);
+        }
+      } catch (err: any) {
+        console.error("⚠️ Trial sweep error:", err.message);
+      }
+    };
+    setInterval(sweepExpiredTrials, 15 * 60 * 1000);
+    sweepExpiredTrials();
+
     // Discord bot can hang; don't block the web server coming up.
     console.log("STEP: init discord bot (non-blocking)");
     initializeDiscordBot()

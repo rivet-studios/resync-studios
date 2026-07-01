@@ -76,7 +76,18 @@ function ProductCard({ product }: { product: ProductWithSubmitter }) {
         data-testid={`card-product-${product.id}`}
       >
         <div className="aspect-[4/3] bg-muted rounded-t-xl overflow-hidden">
-         {product.imageUrl}
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              data-testid={`img-product-${product.id}`}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-10 h-10 text-muted-foreground/40" />
+            </div>
+          )}
         </div>
         <CardContent className="p-4 space-y-2">
           <ProductBadges product={product} />
@@ -116,8 +127,19 @@ function FeaturedCard({ product }: { product: ProductWithSubmitter }) {
         data-testid={`card-featured-${product.id}`}
       >
         <div className="aspect-[16/10] bg-muted h-full">
-          {product.imageUrl}
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              data-testid={`img-featured-${product.id}`}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-12 h-12 text-muted-foreground/40" />
             </div>
+          )}
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <div className="flex flex-wrap gap-1.5 mb-2">

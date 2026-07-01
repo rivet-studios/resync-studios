@@ -105,6 +105,8 @@ export const users = pgTable("users", {
   vipTier: vipTierEnum("vip_tier").default("none"),
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
+  // Free trial (admin-granted, no Stripe subscription attached)
+  vipTrialEndsAt: timestamp("vip_trial_ends_at"),
   // Discord linking
   discordId: varchar("discord_id").unique(),
   discordUsername: varchar("discord_username"),
@@ -366,6 +368,44 @@ export const insertProductSchema = createInsertSchema(products).omit({
   createdAt: true,
   updatedAt: true,
 });
+
+export const discountTypeEnum = pgEnum("discount_type", ["percent", "fixed"]);
+export const discountAppliesToEnum = pgEnum("discount_applies_to", [
+  "all",
+  "vip",
+  "product",
+]);
+
+export const discounts = pgTable("discounts", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  code: varchar("code").notNull().unique(),
+  description: varchar("description"),
+  discountType: discountTypeEnum("discount_type").notNull().default("percent"),
+  amount: integer("amount").notNull(), // percent (1-100) or fixed amount in cents
+  appliesTo: discountAppliesToEnum("applies_to").notNull().default("all"),
+  productId: varchar("product_id"),
+  maxRedemptions: integer("max_redemptions"),
+  timesRedeemed: integer("times_redeemed").default(0),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  stripeCouponId: varchar("stripe_coupon_id"),
+  stripePromotionCodeId: varchar("stripe_promotion_code_id"),
+  createdBy: varchar("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDiscountSchema = createInsertSchema(discounts).omit({
+  id: true,
+  timesRedeemed: true,
+  stripeCouponId: true,
+  stripePromotionCodeId: true,
+  createdAt: true,
+});
+
+export type Discount = typeof discounts.$inferSelect;
+export type InsertDiscount = z.infer<typeof insertDiscountSchema>;
 
 export const bans = pgTable("bans", {
   id: varchar("id")
