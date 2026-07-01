@@ -392,6 +392,8 @@ export const discounts = pgTable("discounts", {
   expiresAt: timestamp("expires_at"),
   stripeCouponId: varchar("stripe_coupon_id"),
   stripePromotionCodeId: varchar("stripe_promotion_code_id"),
+  assignedToUserId: varchar("assigned_to_user_id"),
+  usedAt: timestamp("used_at"),
   createdBy: varchar("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -401,6 +403,7 @@ export const insertDiscountSchema = createInsertSchema(discounts).omit({
   timesRedeemed: true,
   stripeCouponId: true,
   stripePromotionCodeId: true,
+  usedAt: true,
   createdAt: true,
 });
 
