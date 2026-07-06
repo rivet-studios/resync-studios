@@ -661,7 +661,7 @@ export class DatabaseStorage implements IStorage {
   }
   async createBan(banData: InsertBan): Promise<Ban> {
     const targetUser = await this.getUser(banData.userId);
-    const priorRank = targetUser?.userRank || "Active Members";
+    const priorRank = targetUser?.userRank || "Members";
     const [ban] = await db
       .insert(bans)
       .values({ ...banData, priorRank })

@@ -69,7 +69,7 @@ export const userRankEnum = pgEnum("user_rank", [
   "Community Moderator",
   "Community Administrator",
   "Community Senior Administrator",
-  "Creative Designer",
+  "Community Developer",
   "Gameplay Engineer",
   "Team Member",
   "Staff Department Director",
@@ -123,28 +123,38 @@ export const users = pgTable("users", {
   additionalRanks: text("additional_ranks")
     .array()
     .default(sql`'{}'::text[]`),
+
+  
   // Moderator Dashboard
   isModerator: boolean("is_moderator").default(false),
+  
   // Admin Dashboard
   isAdmin: boolean("is_admin").default(false),
-  // Verified Checkmark
-  isVerified: boolean("is_verified").default(false),
+
+  
+  // Verified Checkmark (Deprecated)
+  // isVerified: boolean("is_verified").default(false),
+
+  
   // Date of Birth
   dateOfBirth: varchar("date_of_birth"),
+  
   // Email Verification
   emailVerified: boolean("email_verified").default(false),
   emailVerificationToken: varchar("email_verification_token"),
+  
   // Password Reset
   passwordResetToken: varchar("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
-  // Two-Factor Authentication
-  twoFactorSecret: varchar("two_factor_secret"),
-  twoFactorEnabled: boolean("two_factor_enabled").default(false),
-  twoFactorBackupCodes: text("two_factor_backup_codes"),
-  // Reputation & Referrals
-  reputationPoints: integer("reputation_points").default(0),
-  referralCode: varchar("referral_code"),
-  referredBy: varchar("referred_by"),
+
+  // Two-Factor Authentication (Deprecated)
+  // twoFactorSecret: varchar("two_factor_secret"),
+// twoFactorEnabled: boolean("two_factor_enabled").default(false),
+// twoFactorBackupCodes: text("two_factor_backup_codes"),
+  // Reputation & Referrals (Deprecated)
+  // reputationPoints: integer("reputation_points").default(0), referralCode: varchar("referral_code"), referredBy: varchar("referred_by"),
+
+  
   // Profile Customization
   profileBannerUrl: varchar("profile_banner_url"),
   featuredBadgeId: varchar("featured_badge_id"),
@@ -372,7 +382,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
 export const discountTypeEnum = pgEnum("discount_type", ["percent", "fixed"]);
 export const discountAppliesToEnum = pgEnum("discount_applies_to", [
   "all",
-  "vip",
+  "subscription",
   "product",
 ]);
 
@@ -674,35 +684,33 @@ export const insertReactionSchema = createInsertSchema(reactions).omit({
   createdAt: true,
 });
 
-// Achievements
-export const achievementDefinitions = pgTable("achievement_definitions", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull(),
-  description: text("description").notNull(),
-  icon: varchar("icon").notNull().default("trophy"),
-  category: varchar("category").notNull().default("general"),
-  requirement: jsonb("requirement"),
-  points: integer("points").notNull().default(10),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const userAchievements = pgTable("user_achievements", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  achievementId: varchar("achievement_id").notNull(),
-  earnedAt: timestamp("earned_at").defaultNow(),
-});
-
-export const insertAchievementDefinitionSchema = createInsertSchema(
-  achievementDefinitions,
-).omit({
-  id: true,
-  createdAt: true,
-});
+// Achievements (Deprecated)
+// export const achievementDefinitions = pgTable("achievement_definitions", {
+  // id: varchar("id")
+ //   .primaryKey()
+ //   .default(sql`gen_random_uuid()`),
+//  name: varchar("name").notNull(),
+//  description: text("description").notNull(),
+ // icon: varchar("icon").notNull().default("trophy"),
+ // category: varchar("category").notNull().default("general"),
+//  requirement: jsonb("requirement"),
+//  points: integer("points").notNull().default(10),
+//  createdAt: timestamp("created_at").defaultNow(),
+// });
+// export const userAchievements = pgTable("user_achievements", {
+ // id: varchar("id")
+  //  .primaryKey()
+ //   .default(sql`gen_random_uuid()`),
+//  userId: varchar("user_id").notNull(),
+ // achievementId: varchar("achievement_id").notNull(),
+ // earnedAt: timestamp("earned_at").defaultNow(),
+// });
+// export const insertAchievementDefinitionSchema = createInsertSchema(
+//  achievementDefinitions,
+// ).omit({
+ // id: true,
+ // createdAt: true,
+// });
 
 // Forum Polls
 export const forumPolls = pgTable("forum_polls", {
@@ -740,19 +748,6 @@ export const insertBookmarkSchema = createInsertSchema(bookmarks).omit({
   createdAt: true,
 });
 
-// Staff Page Config
-export const staffPageConfig = pgTable("staff_page_config", {
-  id: varchar("id").primaryKey().default("default"),
-  title: varchar("title").notNull().default("Community Staff"),
-  subtitle: varchar("subtitle"),
-  introText: text("intro_text"),
-  visibleRanks: text("visible_ranks").array(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const insertStaffPageConfigSchema = createInsertSchema(staffPageConfig).omit({ updatedAt: true });
-export type StaffPageConfig = typeof staffPageConfig.$inferSelect;
-
 // Audit Log (enhanced admin audit trail)
 export const auditLog = pgTable("audit_log", {
   id: varchar("id")
@@ -776,8 +771,8 @@ export type DirectMessage = typeof directMessages.$inferSelect;
 export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
 export type Reaction = typeof reactions.$inferSelect;
 export type InsertReaction = z.infer<typeof insertReactionSchema>;
-export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;
-export type UserAchievement = typeof userAchievements.$inferSelect;
+// export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;
+// export type UserAchievement = typeof userAchievements.$inferSelect;
 export type ForumPoll = typeof forumPolls.$inferSelect;
 export type Bookmark = typeof bookmarks.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;

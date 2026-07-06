@@ -75,18 +75,31 @@ import FAQ from "@/pages/faq";
 import NotificationsPage from "@/pages/notifications";
 import ActivityFeedPage from "@/pages/activity-feed";
 import MessagesPage from "@/pages/messages";
-import AchievementsPage from "@/pages/achievements";
-import ReferralsPage from "@/pages/referrals";
+// import AchievementsPage from "@/pages/achievements";
+// import ReferralsPage from "@/pages/referrals";
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
 import Intercom from '@intercom/messenger-js-sdk';
 import Serrano from "@/pages/serrano";
 import ProjectSerranorules from "@/pages/project-serrano-rules";
+import { 
+  House,
+  ShoppingCart,
+  Mail,
+  MapPin,
+  HelpCircle,
+  Folder,
+  CircleUser,
+  Search,
+  MessageSquareText,
+  LayoutList,
+  Copyright
+} from "lucide-react"
       
 
 const ADMIN_RANKS = [
   "Gameplay Engineer",
-  "Creative Designer",
+  "Community Developer",
   "Team Member",
   "Staff Department Director",
   "Operations Manager",
@@ -143,11 +156,11 @@ function SiteFooter() {
             </p>
             <div className="space-y-2 text-sm text-muted-foreground font-medium">
               <p className="flex items-center gap-2">
-                {" "}
+                <Mail className="h-4 w-4" /> {" "}
                 support@rivetstudiosus.com
               </p>
               <p className="flex items-center gap-2">
-                101 Duke Street, Sunshine, VIC, 3020, Australia
+                <MapPin className="h-4 w-4" /> 101 Duke Street, Sunshine, VIC, 3020, Australia
               </p>
             </div>
           </div>
@@ -160,17 +173,9 @@ function SiteFooter() {
               <li>
                 <Link
                   href="/"
-                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                >
-                  Blog
+                <House className="h-4 w-4" /> Home
                 </Link>
               </li>
               <li>
@@ -178,7 +183,8 @@ function SiteFooter() {
                   href="/forums"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Forums
+                 
+                  <MessageSquareText className="h-4 w-4" /> Forums
                 </Link>
               </li>
               <li>
@@ -186,15 +192,7 @@ function SiteFooter() {
                   href="/store"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Store
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/store/subscriptions"
-                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                >
-                  Subscriptions
+                  <ShoppingCart className="h-4 w-4" /> Store
                 </Link>
               </li>
             </ul>
@@ -210,7 +208,7 @@ function SiteFooter() {
                   href="/knowledge-base"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Knowledge Base
+                  <HelpCircle className="h-4 w-4" /> Knowledge Base
                 </Link>
               </li>
               <li>
@@ -218,15 +216,7 @@ function SiteFooter() {
                   href="/policies"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Policies
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://support.rivetstudiosus.com"
-                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-                >
-                  Support
+                  <Folder className="h-4 w-4" /> Policies
                 </Link>
               </li>
             </ul>
@@ -242,7 +232,7 @@ function SiteFooter() {
                   href="/profile"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  My Profile
+                  <CircleUser className="h-4 w-4" /> My Account
                 </Link>
               </li>
               <li>
@@ -250,7 +240,7 @@ function SiteFooter() {
                   href="/search"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Search
+                  <Search className="h-4 w-4" /> Search
                 </Link>
               </li>
               <li>
@@ -258,7 +248,7 @@ function SiteFooter() {
                   href="/team"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  Staff Directory
+                  <LayoutList className="h-4 w-4" /> Staff Directory
                 </Link>
               </li>
             </ul>
@@ -267,10 +257,10 @@ function SiteFooter() {
 
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
-            © 2026 RIVET Studios™, All rights reserved.
+            <Copyright className="h-4 w-4" /> 2026 RIVET Studios™, All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
-            Formerly RESYNC Studios™
+            Established 2017, publicly introduced 2022
           </p>
         </div>
       </div>
@@ -436,9 +426,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/knowledge-base" component={FAQ} />
             <Route path="/notifications" component={NotificationsPage} />
             <Route path="/activity" component={ActivityFeedPage} />
-            <Route path="/messages" component={MessagesPage} />
-            <Route path="/achievements" component={AchievementsPage} />
-            <Route path="/referrals" component={ReferralsPage} />
+           <Route path="/messages" component={MessagesPage} />              
+            
             <Route component={NotFound} />
           </Switch>
         </BanWall>
@@ -482,3 +471,9 @@ function App() {
 }
 
 export default App;
+
+// Deprecated Routes
+
+// <Route path="/achievements" component={AchievementsPage}/>
+
+// <Route path="/referrals" component={ReferralsPage} />

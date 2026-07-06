@@ -71,7 +71,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SiDiscord } from "react-icons/si";
-import { VerifiedBadge } from "@/components/verified-badge";
+// import { VerifiedBadge } from "@/components/verified-badge";
 import { MarkdownContent } from "@/components/markdown-content";
 
 interface AdminStats {
@@ -107,7 +107,7 @@ const ADMINCP_TAB_IDS = [
   "products",
   "reports",
   "audit-log",
-  "achievements",
+ // "achievements",
   "status",
 ];
 
@@ -173,7 +173,7 @@ export default function AdminCP() {
   const [quickViewUserId, setQuickViewUserId] = useState<string | null>(null);
 
   const adminRanks = [
-    "Creative Designer",
+    "Community Developer",
     "Gameplay Engineer",
     "Team Member",
     "Staff Department Director",
@@ -203,10 +203,10 @@ export default function AdminCP() {
     enabled: !!isAdmin && activeTab === "audit-log",
   });
 
-  const { data: allAchievements = [] } = useQuery<any[]>({
-    queryKey: ["/api/achievements"],
-    enabled: !!isAdmin && activeTab === "achievements",
-  });
+  // const { data: allAchievements = [] } = useQuery<any[]>({
+   // queryKey: ["/api/achievements"],
+//    enabled: !!isAdmin && activeTab === "achievements",
+//  });
 
   const { data: serviceStatuses = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/service-statuses"],
@@ -448,7 +448,7 @@ export default function AdminCP() {
     if (!allUsers.length) return [];
     const counts: Record<string, number> = {};
     allUsers.forEach((u: any) => {
-      const rank = u.userRank || "Active Members";
+      const rank = u.userRank || "Members";
       counts[rank] = (counts[rank] || 0) + 1;
     });
     return Object.entries(counts)
@@ -671,49 +671,49 @@ export default function AdminCP() {
     },
     onSuccess: () => {
       toast({
-        title: "Discord sync complete",
-        description: "User's roles and nickname were re-synced from Discord.",
+        title: "SUCCESS",
+        description: "User's roles and nickname have been updated",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (e: any) => {
       toast({
-        title: "Discord sync failed",
+        title: "ERROR",
         description: e.message,
         variant: "destructive",
       });
     },
   });
 
-  const toggleVerifyMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      isVerified,
-    }: {
-      userId: string;
-      isVerified: boolean;
-    }) => {
-      const res = await apiRequest(
-        "PATCH",
-        `/api/admin/users/${userId}/verify`,
-        { isVerified },
-      );
-      return res.json();
-    },
-    onSuccess: (_data, variables) => {
-      toast({
-        title: variables.isVerified ? "User verified" : "Verification removed",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-    },
-    onError: (e: any) => {
-      toast({
-        title: "Failed to update verification",
-        description: e.message,
-        variant: "destructive",
-      });
-    },
-  });
+  // const toggleVerifyMutation = useMutation({
+ //   mutationFn: async ({
+  //    userId,
+   //   isVerified,
+   // }: {
+ //     userId: string;
+    ////  isVerified: boolean;
+   // }) => {
+     // const res = await apiRequest(
+     //   "PATCH",
+       // `/api/admin/users/${userId}/verify`,
+    //   { isVerified },
+//      );
+//      return res.json();
+  //  },
+   // onSuccess: (_data, variables) => {
+     // toast({
+   //     title: variables.isVerified ? "User verified" : "Verification removed",
+//      });
+    //  queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+ //   },
+    // onError: (e: any) => {
+    //  toast({
+    //    title: "Failed to update verification",
+ //       description: e.message,
+//        variant: "destructive",
+  //    });
+ //   },
+ // });
 
   if (authLoading) {
     return (
@@ -764,7 +764,7 @@ export default function AdminCP() {
     "Community Administrator",
     "Community Senior Administrator",
     "Gameplay Engineer",
-    "Creative Designer",
+    "Community Developer",
     "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
@@ -785,7 +785,7 @@ export default function AdminCP() {
     { id: "products", label: "Products & Discounts", icon: Tag },
     { id: "reports", label: "Reports", icon: AlertTriangle },
     { id: "audit-log", label: "Audit Log", icon: History },
-    { id: "achievements", label: "Achievements", icon: Crown },
+   // { id: "achievements", label: "Achievements", icon: Crown },
     { id: "status", label: "Service Status", icon: Signal },
   ];
 
