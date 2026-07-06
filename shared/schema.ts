@@ -382,7 +382,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
 export const discountTypeEnum = pgEnum("discount_type", ["percent", "fixed"]);
 export const discountAppliesToEnum = pgEnum("discount_applies_to", [
   "all",
-  "subscription",
+  "vip",
   "product",
 ]);
 

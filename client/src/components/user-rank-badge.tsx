@@ -73,8 +73,8 @@ const rankEntries: Record<
     badgeUrl: null,
     formatted: true,
   },
-  "Creative Designer": {
-    label: "Creative Designer",
+  "Community Developer": {
+    label: "Community Developer",
     color: "#FF4500",
     badgeUrl: null,
     formatted: true,
@@ -166,12 +166,12 @@ interface UserRankBadgeProps {
 }
 
 export function UserRankBadge({
-  rank = "Active Members",
+  rank = "Members",
   username,
   className = "",
   size = "md",
 }: UserRankBadgeProps) {
-  if (!rank || rank === "Active Members") return null;
+  if (!rank || rank === "Members") return null;
 
   const config = rankConfig[rank as keyof typeof rankConfig];
   if (!config) return null;
@@ -241,7 +241,7 @@ export function getUsernameColor(
   const primaryConfig = primaryRank
     ? rankConfig[primaryRank as keyof typeof rankConfig]
     : null;
-  if (primaryConfig && primaryRank !== "Active Members") {
+  if (primaryConfig && primaryRank !== "Members") {
     if (primaryConfig.isGradient && primaryConfig.gradient) {
       return { gradient: primaryConfig.gradient };
     }
@@ -263,7 +263,7 @@ export function getUsernameColor(
 }
 
 export function FormattedUsername({
-  rank = "Active Members",
+  rank = "Members",
   username = "User",
   className = "",
   vipTier,

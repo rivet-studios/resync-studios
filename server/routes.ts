@@ -43,8 +43,6 @@ import {
   activityFeed,
   directMessages,
   reactions,
-  achievementDefinitions,
-  userAchievements,
   forumPolls,
   bookmarks,
   auditLog,
@@ -1011,7 +1009,7 @@ export async function registerRoutes(
   function isAdminUser(user: any): boolean {
     const adminRanks = [
       "Gameplay Engineer",
-      "Creative Designer",
+      "Community Developer",
       "Team Member",
       "Staff Department Director",
       "Operations Manager",
@@ -1487,7 +1485,7 @@ export async function registerRoutes(
       const { targetUsername, vipTier, trialDays } = req.body;
       if (!targetUsername || !vipTier || !trialDays) {
         return res.status(400).json({
-          message: "targetUsername, vipTier, and trialDays are required",
+          message: "Username, VIP tier, and trial period are required",
         });
       }
 
@@ -2687,7 +2685,7 @@ export async function registerRoutes(
       const user = req.user as any;
       const staffRanks = [
         "Community Senior Administrator",
-        "Creative Designer",
+        "Community Developer",
         "Gameplay Engineer",
         "Team Member",
         "Staff Department Director",
@@ -2783,11 +2781,11 @@ export async function registerRoutes(
       const ban = await storage.deactivateBan(req.params.id);
       if (!ban) return res.status(404).json({ message: "Ban not found" });
       await storage.createModerationLog({
-        action: "Ban Lifted",
-        actorId: user.id,
+        action: "IP Ban Lifted",
+        actorId: user.userId,
         targetId: ban.userId,
         targetType: "user",
-        details: "Ban lifted",
+        details: "IP Ban lifted",
       });
       res.json({ message: "Ban lifted", ban });
     } catch (error) {
@@ -3098,7 +3096,8 @@ export async function registerRoutes(
   // Canonical rank allowlist. Must stay in sync with rankConfig in
   // client/src/components/user-rank-badge.tsx.
   const ALLOWED_RANKS = new Set<string>([
-    "Active Members",
+    "Members",
+    "Active Member",
     "Trusted Member",
     "Community Partner",
     "Bronze VIP",
@@ -3108,12 +3107,12 @@ export async function registerRoutes(
     "Vehicle Tester",
     "Customer Relations",
     "Appeals Moderator",
-    "Trial Moderator",
+    "Retired Team Member",
     "Community Moderator",
     "Community Administrator",
     "Community Senior Administrator",
     "Gameplay Engineer",
-    "Creative Designer",
+    "Community Developer",
     "Staff Internal Affairs",
     "Team Member",
     "Staff Department Director",
@@ -3662,7 +3661,7 @@ export async function registerRoutes(
           .map((u) => ({
             id: u.id,
             title: u.username,
-            description: u.userRank || "Active Members",
+            description: u.userRank || "Members",
             url: `/profile/${u.id}`,
             image: u.profileImageUrl,
           }));
@@ -3903,7 +3902,7 @@ export async function registerRoutes(
       if (!targetUser.password) {
         return res.status(400).json({
           message:
-            "You can't unlink Discord because it's your only sign-in method. Set a password first under Account.",
+            "You can't unlink Discord because it's your only sign-in method. Set a password first under account settings.",
         });
       }
       await removeVerifiedMemberRole(targetUser.discordId).catch((err) =>
@@ -4541,101 +4540,6 @@ export async function registerRoutes(
     }
   });
 
-  // ===== ACHIEVEMENTS =====
-  app.get("/api/achievements", async (_req, res) => {
-    try {
-      const achievements = await db
-        .select()
-        .from(achievementDefinitions)
-        .orderBy(achievementDefinitions.category);
-      res.json(achievements);
-    } catch {
-      res.json([]);
-    }
-  });
-
-  app.get("/api/achievements/user/:userId", async (req, res) => {
-    try {
-      const result = await db.execute(sql`
-        SELECT ua.*, ad.name, ad.description, ad.icon, ad.category, ad.points
-        FROM user_achievements ua
-        JOIN achievement_definitions ad ON ua.achievement_id = ad.id
-        WHERE ua.user_id = ${req.params.userId}
-        ORDER BY ua.earned_at DESC
-      `);
-      res.json((result as any).rows || []);
-    } catch {
-      res.json([]);
-    }
-  });
-
-  app.post("/api/admin/achievements", requireAuth, async (req, res) => {
-    const user = req.user as any;
-    if (!isAdminUser(user))
-      return res.status(403).json({ message: "Forbidden" });
-    try {
-      const { name, description, icon, category, points } = req.body;
-      const [achievement] = await db
-        .insert(achievementDefinitions)
-        .values({
-          name,
-          description,
-          icon: icon || "trophy",
-          category: category || "general",
-          points: points || 10,
-        })
-        .returning();
-      res.json(achievement);
-    } catch (err) {
-      res.status(500).json({ message: "Failed to create achievement" });
-    }
-  });
-
-  app.post("/api/admin/achievements/grant", requireAuth, async (req, res) => {
-    const user = req.user as any;
-    if (!isAdminUser(user))
-      return res.status(403).json({ message: "Forbidden" });
-    try {
-      const { userId, achievementId } = req.body;
-      const existing = await db
-        .select()
-        .from(userAchievements)
-        .where(
-          and(
-            eq(userAchievements.userId, userId),
-            eq(userAchievements.achievementId, achievementId),
-          ),
-        );
-      if (existing.length > 0)
-        return res.status(400).json({ message: "Already earned" });
-
-      const [ua] = await db
-        .insert(userAchievements)
-        .values({ userId, achievementId })
-        .returning();
-
-      const [achDef] = await db
-        .select()
-        .from(achievementDefinitions)
-        .where(eq(achievementDefinitions.id, achievementId));
-      if (achDef) {
-        await db.execute(
-          sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + ${achDef.points} WHERE id = ${userId}`,
-        );
-        await db.insert(notifications).values({
-          userId,
-          type: "achievement",
-          title: "Achievement Unlocked!",
-          message: `You earned "${achDef.name}" (+${achDef.points} rep)`,
-          link: `/profile`,
-        });
-      }
-      res.json(ua);
-    } catch (err) {
-      res.status(500).json({ message: "Failed to grant achievement" });
-    }
-  });
-
   // ===== BOOKMARKS =====
   app.get("/api/bookmarks", requireAuth, async (req, res) => {
     try {
@@ -4761,71 +4665,6 @@ export async function registerRoutes(
     }
   });
 
-  // ===== REFERRAL SYSTEM =====
-  app.get("/api/referral/code", requireAuth, async (req, res) => {
-    try {
-      const userId = (req.user as any).id;
-      const user = await storage.getUser(userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      let code = (user as any).referralCode;
-      if (!code) {
-        const crypto = await import("crypto");
-        code = crypto.randomBytes(6).toString("hex");
-        await db.execute(
-          sql`UPDATE users SET referral_code = ${code} WHERE id = ${userId}`,
-        );
-      }
-      const referralCount = await db.execute(
-        sql`SELECT COUNT(*) as count FROM users WHERE referred_by = ${userId}`,
-      );
-      res.json({
-        code,
-        referralCount: parseInt(
-          (referralCount as any).rows?.[0]?.count || "0",
-          10,
-        ),
-      });
-    } catch (err) {
-      res.status(500).json({ message: "Failed to get referral code" });
-    }
-  });
-
-  app.post("/api/referral/apply", requireAuth, async (req, res) => {
-    try {
-      const userId = (req.user as any).id;
-      const { referralCode } = req.body;
-      if (!referralCode)
-        return res.status(400).json({ message: "Missing referral code" });
-
-      const currentUser = await db.execute(
-        sql`SELECT referred_by FROM users WHERE id = ${userId}`,
-      );
-      const current = (currentUser as any).rows?.[0];
-      if (current?.referred_by)
-        return res.status(400).json({ message: "Referral already applied" });
-
-      const referrerResult = await db.execute(
-        sql`SELECT id FROM users WHERE referral_code = ${referralCode}`,
-      );
-      const referrer = (referrerResult as any).rows?.[0];
-      if (!referrer)
-        return res.status(404).json({ message: "Invalid referral code" });
-      if (referrer.id === userId)
-        return res.status(400).json({ message: "Cannot refer yourself" });
-
-      await db.execute(
-        sql`UPDATE users SET referred_by = ${referrer.id} WHERE id = ${userId} AND referred_by IS NULL`,
-      );
-      await db.execute(
-        sql`UPDATE users SET reputation_points = COALESCE(reputation_points, 0) + 10 WHERE id = ${referrer.id}`,
-      );
-      res.json({ success: true });
-    } catch (err) {
-      res.status(500).json({ message: "Failed to apply referral" });
-    }
-  });
-
   // ===== AUDIT LOG =====
   app.get("/api/admin/audit-log", requireAuth, async (req, res) => {
     const user = req.user as any;
@@ -4852,27 +4691,6 @@ export async function registerRoutes(
       res.json((result as any).rows || []);
     } catch (err) {
       res.status(500).json({ message: "Failed to fetch audit log" });
-    }
-  });
-
-  // ===== USER REPUTATION =====
-  app.get("/api/users/:userId/reputation", async (req, res) => {
-    try {
-      const user = await storage.getUser(req.params.userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
-      const achievements = await db.execute(sql`
-        SELECT ua.*, ad.name, ad.description, ad.icon, ad.points
-        FROM user_achievements ua
-        JOIN achievement_definitions ad ON ua.achievement_id = ad.id
-        WHERE ua.user_id = ${req.params.userId}
-        ORDER BY ua.earned_at DESC
-      `);
-      res.json({
-        reputationPoints: (user as any).reputationPoints || 0,
-        achievements: (achievements as any).rows || [],
-      });
-    } catch {
-      res.json({ reputationPoints: 0, achievements: [] });
     }
   });
 
