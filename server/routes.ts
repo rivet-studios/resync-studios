@@ -3939,7 +3939,7 @@ export async function registerRoutes(
 
   // ---- Discord domain verification ----
   app.get("/.well-known/discord", (_req, res) => {
-    res.type("text/plain").send("dh=47352e73b380893b8e6cdf646091746b12c236a6");
+    res.type("text/plain").send("dh=c31775214910b57d17d49b7b6309693f1a9232d7");
   });
 
   // ---- Platform Status endpoint ----

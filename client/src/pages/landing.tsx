@@ -81,9 +81,9 @@ export default function Landing() {
   });
 
   const stats = [
-    { value: publicStats?.totalMembers || 24, label: "Connected Members" },
-    { value: 35, label: "Discord Members" },
-    { value: 11, label: "Roblox Members" },
+    { value: publicStats?.totalMembers || 54, label: "Connected Members" },
+    { value: 42, label: "Discord Members" },
+    { value: 12, label: "Roblox Members" },
     { value: 5, label: "Active Discussions" },
     { value: 99.9, label: "Uptime", suffix: "%" },
     { value: 24, label: "Support", suffix: "/7" },
@@ -137,23 +137,23 @@ export default function Landing() {
             </div>
 
             <p
-              className="sm:text-3xl md:text-5xl font-semibold tracking-tight text-foreground text-[46px]"
+              className="sm:text-3xl md:text-5xl font-bold tracking-tight text-foreground text-[25px]"
               data-testid="text-hero-title"
             >
              The number one online gaming community platform
             </p>
             <p
-              className="sm:text-1xl text-muted-foreground max-w-xl mx-auto font-normal text-[19px]"
+              className="sm:text-1xl text-muted-foreground max-w-xl mx-auto font-normal text-[13px]"
               data-testid="text-hero-description"
             >
-              RIVET Studios™ creates an open gaming environment available to everyone, delivering worlds that breathe, stories that live, and cities that command attention through our exceptional game development expertise. Every project is treated like a city — layered, alive, and engineered to last.
+              RIVET Studios™ creates an open gaming environment accessible to everyone, delivering high-fidelity games through our exceptional game development expertise and building online communities.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 items-center justify-center pt-4">
             <Button
               size="lg"
-              className="bg-white text-black h-11 px-6 rounded-half font-medium hover:bg-gray-200 transition-colors gap-2"
+              className="bg-white text-black h-11 px-4 rounded-half font-medium hover:bg-gray-200 transition-colors gap-2"
               asChild
               data-testid="button-cta-primary"
             >
@@ -162,23 +162,21 @@ export default function Landing() {
                 {user ? "My Dashboard" : "Join The Community"}
               </Link>
             </Button>
-            {/* This button will only render if 'user' is truthy */}
-            {user && (
+            
               <Button
                 size="lg"
                 variant="outline"
                 asChild
-                className="bg-black/40 border border-white/20 text-white h-11 px-6 rounded-half font-medium backdrop-blur-md transition-all"
+                className="bg-black/40 border border-white/20 text-white h-11 px-3 rounded-half font-medium backdrop-blur-md transition-all"
               >
                 <Link href="/store">
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Browse Store
                 </Link>
               </Button>
-            )}
+            
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       </section>
       <section className="py-20" data-testid="section-stats">
         <div className="container mx-auto px-4">
@@ -205,11 +203,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
-              Everything you need
+              Everything you need for thriving communities
             </h2>
             <p className="text-base text-muted-foreground font-normal leading-relaxed">
-              Our platform provides all the essential tools to build and manage
-              thriving communities.
+              Our gaming platform provides all the essential tools needed to build thriving communities and deliver exceptional high-fidelity gaming experiences through advanced development capabilities.
             </p>
           </div>
 
@@ -252,38 +249,12 @@ export default function Landing() {
                   <Zap className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-                  Ready to get started?
+                  Ready to join the community?
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Join a growing community of creators, developers, and
-                  enthusiasts building the future together.
+                  Join thousands of members who trust RIVET Studios™ to deliver exceptional high-fidelity gaming experiences in our open, accessible environment.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                  <Button
-                    size="lg"
-                    className="bg-white text-black gap-2"
-                    asChild
-                    data-testid="button-cta-bottom-join"
-                  >
-                    <Link href={user ? "/dashboard" : "/onboarding"}>
-                      <ArrowRight className="w-4 h-4" />
-                      {user ? "Go to Dashboard" : "Create Account"}
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/10 bg-white/[0.03] text-muted-foreground gap-2"
-                    asChild
-                    data-testid="button-cta-bottom-forums"
-                  >
-                    <Link href="/forums">
-                      <MessageSquare className="w-4 h-4" />
-                      Browse Forums
-                    </Link>
-                  </Button>
                 </div>
-              </div>
             </CardContent>
           </Card>
         </div>

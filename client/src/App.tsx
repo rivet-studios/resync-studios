@@ -257,7 +257,7 @@ function SiteFooter() {
 
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
-            <Copyright className="h-4 w-4" /> 2026 RIVET Studios™, All rights reserved.
+            <Copyright className="h-2 w-2" /> 2026 RIVET Studios™, All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
             Established 2017, publicly introduced 2022

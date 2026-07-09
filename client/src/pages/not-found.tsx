@@ -8,19 +8,23 @@ export default function NotFound() {
         <CardContent className="pt-8 pb-8 flex flex-col items-center text-center">
 
           {/* Alert Icon Container */}
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-red-200">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-orange-200">
             <TriangleAlert className="h-6 w-6" />
           </div>
 
           {/* Heading */}
           <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
-            404 Page Not Found
+            404
           </h1>
+
+          {/* Heading */}
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-100">
+            Page Not Found
+          </h2>
 
           {/* Copy */}
           <p className="mt-3 text-sm text-zinc-400 leading-relaxed px-2">
-            Oh no! The page you're looking for was brought back to the workshop. 
-            The requested page could not be found.
+            The page you are trying to reach could not be found.
           </p>
 
           {/* Call to Action Button */}
