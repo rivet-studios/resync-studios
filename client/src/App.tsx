@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
 
+import Unauthorized from "@/pages/unauthorized"
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -257,7 +258,8 @@ function SiteFooter() {
 
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
-            <Copyright className="h-2 w-2" /> 2026 RIVET Studios™, All rights reserved.
+            <Copyright className="h-2 w-2" />
+            2026 RIVET Studios™, All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
             Established 2017, publicly introduced 2022
@@ -390,19 +392,19 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/appeals" component={Appeals} />
             <Route path="/my-cases" component={MyCases} />
             <Route path="/modcp/case/:type/:id">
-              {canAccessModCP(user) ? <CaseDetail /> : <NotFound />}
+              {canAccessModCP(user) ? <CaseDetail /> : <Unauthorized />}
             </Route>
             <Route path="/modcp/:tab">
-              {canAccessModCP(user) ? <ModCP /> : <NotFound />}
+              {canAccessModCP(user) ? <ModCP /> : <Unauthorized />}
             </Route>
             <Route path="/modcp">
-              {canAccessModCP(user) ? <ModCP /> : <NotFound />}
+              {canAccessModCP(user) ? <ModCP /> : <Unauthorized />}
             </Route>
             <Route path="/admincp/:tab">
-              {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}
+              {canAccessAdminCP(user) ? <AdminCP /> : <Unauthorized />}
             </Route>
             <Route path="/admincp">
-              {canAccessAdminCP(user) ? <AdminCP /> : <NotFound />}
+              {canAccessAdminCP(user) ? <AdminCP /> : <Unauthorized />}
             </Route>
             <Route path="/policies/legal/guidelines" component={Guidelines} />
             <Route path="/policies/legal/privacy" component={Privacy} />
@@ -429,6 +431,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
            <Route path="/messages" component={MessagesPage} />              
             
             <Route component={NotFound} />
+            <Route component={Unauthorized} />
           </Switch>
         </BanWall>
       </OfflineGate>
