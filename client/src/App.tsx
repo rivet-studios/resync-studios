@@ -167,9 +167,9 @@ function SiteFooter() {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+            <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Navigation
-            </h4>
+            </h3>
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
@@ -200,9 +200,9 @@ function SiteFooter() {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+            <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Support & Resources
-            </h4>
+            </h3>
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
@@ -224,9 +224,9 @@ function SiteFooter() {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-medium text-sm tracking-wider uppercase opacity-50">
+            <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Other
-            </h4>
+            </h3>
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
@@ -258,8 +258,7 @@ function SiteFooter() {
 
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
-            <Copyright className="h-2 w-2" />
-            2026 RIVET Studios™, All rights reserved.
+          © 2026 RIVET Studios™, All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
             Established 2017, publicly introduced 2022
@@ -351,6 +350,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
         <BanWall>
           <Switch>
             <Route path="/" component={Landing} />
+            <Route path="/403" component={Unauthorized} />
+            <Route path="/404" component={NotFound} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
@@ -431,7 +432,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
            <Route path="/messages" component={MessagesPage} />              
             
             <Route component={NotFound} />
-            <Route component={Unauthorized} />
           </Switch>
         </BanWall>
       </OfflineGate>

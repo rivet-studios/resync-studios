@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useLocation, useRoute } from "wouter";
+import { useLocation, useRoute, Redirect } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -71,7 +71,6 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SiDiscord } from "react-icons/si";
-// import { VerifiedBadge } from "@/components/verified-badge";
 import { MarkdownContent } from "@/components/markdown-content";
 
 interface AdminStats {
@@ -685,36 +684,6 @@ export default function AdminCP() {
     },
   });
 
-  // const toggleVerifyMutation = useMutation({
- //   mutationFn: async ({
-  //    userId,
-   //   isVerified,
-   // }: {
- //     userId: string;
-    ////  isVerified: boolean;
-   // }) => {
-     // const res = await apiRequest(
-     //   "PATCH",
-       // `/api/admin/users/${userId}/verify`,
-    //   { isVerified },
-//      );
-//      return res.json();
-  //  },
-   // onSuccess: (_data, variables) => {
-     // toast({
-   //     title: variables.isVerified ? "User verified" : "Verification removed",
-//      });
-    //  queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
- //   },
-    // onError: (e: any) => {
-    //  toast({
-    //    title: "Failed to update verification",
- //       description: e.message,
-//        variant: "destructive",
-  //    });
- //   },
- // });
-
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] bg-transparent">
@@ -723,28 +692,9 @@ export default function AdminCP() {
     );
   }
 
-  if (!user || !isAdmin) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] bg-transparent">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <AlertTriangle className="w-12 h-12 text-destructive" />
-              <div>
-                <h2 className="font-semibold text-xl text-foreground uppercase tracking-tight">
-                  Access Denied
-                </h2>
-                <p className="text-muted-foreground text-sm mt-2">
-                  You do not have permission to access the Administrator Control
-                  Panel.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+      if (!user || !isAdmin) {
+        return <Redirect to="/403" />;
+      }
 
   const allRankOptions = [
     "Members",
@@ -759,7 +709,6 @@ export default function AdminCP() {
     "Retired Team Member",
     "Customer Relations",
     "Appeals Moderator",
-    "Trial Moderator",
     "Community Moderator",
     "Community Administrator",
     "Community Senior Administrator",
@@ -1680,11 +1629,7 @@ export default function AdminCP() {
                                   <div className="min-w-0">
                                     <div className="font-medium text-sm text-foreground truncate inline-flex items-center gap-1">
                                       {u.username || "No username"}
-                                      <VerifiedBadge
-                                        isVerified={u.isVerified}
-                                        size="sm"
-                                      />
-                                    </div>
+</div>
                                     <div className="text-xs text-muted-foreground truncate">
                                       {u.email}
                                     </div>
@@ -1701,7 +1646,7 @@ export default function AdminCP() {
                                           className="w-40"
                                           data-testid={`select-inline-rank-${u.id}`}
                                         >
-                                          <SelectValue placeholder="Main rank" />
+                                          <SelectValue placeholder="Primary rank" />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {allRankOptions.map((rank) => (
@@ -1900,30 +1845,6 @@ export default function AdminCP() {
                                           )}
                                         </Button>
                                       )}
-                                      <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        title={
-                                          u.isVerified
-                                            ? "Unverify user"
-                                            : "Verify user"
-                                        }
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleVerifyMutation.mutate({
-                                            userId: u.id,
-                                            isVerified: !u.isVerified,
-                                          });
-                                        }}
-                                        disabled={
-                                          toggleVerifyMutation.isPending
-                                        }
-                                        data-testid={`button-inline-verify-${u.id}`}
-                                      >
-                                        <BadgeCheck
-                                          className={`w-3.5 h-3.5 ${u.isVerified ? "text-blue-400" : "text-muted-foreground"}`}
-                                        />
-                                      </Button>
                                     </>
                                   )}
                                 </div>
@@ -2058,23 +1979,7 @@ export default function AdminCP() {
                                         View Warnings
                                       </a>
                                     </Button>
-                                    <Button
-                                      size="sm"
-                                      variant={
-                                        u.isVerified ? "destructive" : "outline"
-                                      }
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleVerifyMutation.mutate({
-                                          userId: u.id,
-                                          isVerified: !u.isVerified,
-                                        });
-                                      }}
-                                      disabled={toggleVerifyMutation.isPending}
-                                      data-testid={`button-verify-${u.id}`}
-                                    >
-                                      {u.isVerified ? "Unverify" : "Verify"}
-                                    </Button>
+                                    
                                   </div>
                                 </div>
                               )}
@@ -3398,48 +3303,7 @@ export default function AdminCP() {
           </>
         )}
 
-        {activeTab === "achievements" && (
-          <>
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div>
-                <h2
-                  className="text-xl font-bold"
-                  data-testid="text-admin-achievements-title"
-                >
-                  Achievement Management
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Manage platform achievements and badges
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {allAchievements.map((a: any) => (
-                <Card key={a.id} data-testid={`card-admin-achievement-${a.id}`}>
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Crown className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm">{a.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {a.description}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="text-[10px]">
-                          {a.category}
-                        </Badge>
-                        <span className="text-[10px] text-muted-foreground">
-                          +{a.points} pts
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </>
-        )}
+
 
         {activeTab === "status" && (
           <>

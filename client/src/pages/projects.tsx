@@ -10,17 +10,16 @@ import { Gamepad2, Shield } from "lucide-react";
 
 const RS_PROJECTS = [
   {
-    name: "Los Angeles, California: Reimagined",
-    projectManager: "Project Manager: Isaac D.",
+    name: "Project Sundown",
+    projectManager: "Project Manager: Isaac C., Quinn M.",
+    notes: "Notes: Sundown is currently going through active QOL improvements and bug fixes. Expected to be published NLT Jan 2027",
     game: "ROBLOX",
-    status: "discontinued",
-    location: "Los Angeles, CA",
-    notes:
-      "Los Angeles, California: Reimagined™ was discontinued for the release of Rosewood.",
+    status: "active",
+    location: "Los Angeles County, CA",
   },
   {
     name: "Project Serrano",
-    projectManager: "Project Manager: Isaac D., Quinn",
+    projectManager: "Project Manager: Isaac C.",
     game: "ROBLOX",
     status: "development",
     location: "Serrano County, Rosewood",
@@ -29,20 +28,21 @@ const RS_PROJECTS = [
   },
   {
     name: "Fort Loredo: Reimagined",
-    projectManager: "Project Manager: Isaac D.",
+    projectManager: "Project Manager: Isaac C.",
     game: "ROBLOX",
     status: "discontinued",
     location: "Loredo, TX",
     notes:
-      "Reason for Discontinuation: The project does not match RS themes and was inconsistent for theme adjustment. The project was originally accquired from Mountain Interactive",
+      "Reason for Discontinuation: The game does not meet studio standards and is incompatible for adjustment. The game was originally accquired from Mountain Interactive",
   },
   {
-    name: "Project Sydney",
-    projectManager: "Project Manager: Isaac D., Reni, Quinn",
-    notes: "Notes: None were provided",
+    name: "Los Angeles, California: Reimagined",
+    projectManager: "Project Manager: Isaac C.",
     game: "ROBLOX",
     status: "discontinued",
-    location: "Victoria, AU",
+    location: "Los Angeles, CA",
+    notes:
+      "Reason for Discontinuation: The game was deprecated as it was inconsistent for our developers and became unstable.",
   },
 ];
 
@@ -61,7 +61,7 @@ export default function Projects() {
           Our Portfolio
         </Badge>
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
-          RIVET Studios Projects
+          RIVET Studios™ Projects
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Explore our diverse range of roleplay environments, specialized

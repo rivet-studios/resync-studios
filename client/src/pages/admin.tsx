@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Users as UsersIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import NotFound from "@/pages/not-found";
+import Unauthorized from "@/pages/unauthorized";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
@@ -160,7 +160,7 @@ export default function AdminPanel() {
   }
 
   if (!hasAccess) {
-    return <NotFound />;
+    return <Unauthorized />;
   }
 
   const isLoading = usersLoading || authLoading;

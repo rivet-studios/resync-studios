@@ -59,7 +59,7 @@ export async function initializeDatabase() {
           'Community Administrator',
           'Community Senior Administrator',
           'Gameplay Engineer',
-          'Creative Designer',
+          'Community Developer',
           'Team Member',
           'Staff Department Director',
           'Operations Manager',
