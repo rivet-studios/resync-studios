@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, useLocation, Redirect, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +19,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
+
+// @ts-ignore
+import NET from "vanta/dist/vanta.net.min";
+// @ts-ignore
+import * as THREE from "three";
 
 import Unauthorized from "@/pages/unauthorized"
 import NotFound from "@/pages/not-found";
@@ -96,7 +101,7 @@ import {
   LayoutList,
   Copyright
 } from "lucide-react"
-      
+
 
 const ADMIN_RANKS = [
   "Gameplay Engineer",
@@ -184,7 +189,7 @@ function SiteFooter() {
                   href="/forums"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                 
+
                   <MessageSquareText className="h-4 w-4" /> Forums
                 </Link>
               </li>
@@ -272,8 +277,8 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex flex-col min-h-screen bg-fullr">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-lg bg-[#000000f7]">
+      <SidebarInset className="flex flex-col min-h-screen bg-transparent">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-lg bg-[#000000a6]">
           <SidebarTrigger className="-ml-1" />
         </header>
         <main className="flex-1 w-full">{children}</main>
@@ -283,9 +288,10 @@ function SidebarLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Adjusted layout backgrounds below to support transparency overlays
 function HeaderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen bg-full">
+    <div className="flex flex-col min-h-screen bg-transparent">
       <AppHeader />
       <main className="flex-1 w-full">{children}</main>
       <SiteFooter />
@@ -305,7 +311,36 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
   function Router() {
     const { isLoading, user } = useAuth();
-    // This watches the "user" variable. When someone logs in, it loads Intercom.
+    const [vantaEffect, setVantaEffect] = useState<any>(null);
+
+    // Vanta custom global background lifecycle effect
+    useEffect(() => {
+      if (!vantaEffect) {
+        setVantaEffect(
+          NET({
+            el: "#vanta-bg",
+            THREE: THREE,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x0084ff,           // Neon Blue Nodes
+            backgroundColor: 0x02060d, // Dark Matte Core Space
+            points: 12.00,
+            maxDistance: 22.00,
+            spacing: 15.00
+          })
+        );
+      }
+      return () => {
+        if (vantaEffect) vantaEffect.destroy();
+      };
+    }, [vantaEffect]);
+
+    // Intercom setup effect hook
     useEffect(() => {
       if (user) {
         Intercom({
@@ -313,14 +348,13 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           user_id: user.id,
           username: user.username, 
           email: user.email || undefined, 
-          // We add new Date() here to turn the string back into a Date object
           created_at: user.createdAt ? Math.floor(new Date(user.createdAt).getTime() / 1000) : undefined,
         });
       }
     }, [user]);
 
- const [pathname] = useLocation();
-    
+  const [pathname] = useLocation();
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -429,8 +463,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/knowledge-base" component={FAQ} />
             <Route path="/notifications" component={NotificationsPage} />
             <Route path="/activity" component={ActivityFeedPage} />
-           <Route path="/messages" component={MessagesPage} />              
-            
+           <Route path="/messages" component={MessagesPage} />               
+
             <Route component={NotFound} />
           </Switch>
         </BanWall>
@@ -474,9 +508,3 @@ function App() {
 }
 
 export default App;
-
-// Deprecated Routes
-
-// <Route path="/achievements" component={AchievementsPage}/>
-
-// <Route path="/referrals" component={ReferralsPage} />
