@@ -1,43 +1,76 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { TriangleAlert, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Home, ArrowLeft, Search, Gamepad2 } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#0b0c0e] p-4">
-      <Card className="w-full max-w-md bg-[#16181c] border-zinc-800 shadow-2xl">
-        <CardContent className="pt-8 pb-8 flex flex-col items-center text-center">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 50% at 50% 0%, hsl(var(--primary)/0.08) 0%, transparent 70%)",
+        }}
+      />
 
-          {/* Alert Icon Container */}
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-orange-200">
-            <TriangleAlert className="h-6 w-6" />
-          </div>
+      <div className="relative z-10 flex flex-col items-center text-center max-w-lg w-full gap-6">
+        <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-2">
+          <Gamepad2 className="w-8 h-8 text-primary" />
+        </div>
 
-          {/* Heading */}
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+        <div>
+          <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">
+            Error 404
+          </p>
+          <h1
+            className="text-7xl sm:text-8xl font-black text-foreground leading-none tracking-tight"
+            data-testid="text-404-heading"
+          >
             404
           </h1>
-
-          {/* Heading */}
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-100">
-            Page Not Found
+          <h2 className="text-xl sm:text-2xl font-semibold text-foreground mt-4">
+            Page not found
           </h2>
-
-          {/* Copy */}
-          <p className="mt-3 text-sm text-zinc-400 leading-relaxed px-2">
-            The page you are trying to reach could not be found.
+          <p className="text-muted-foreground mt-3 text-sm sm:text-base leading-relaxed">
+            Looks like this page got sent back to the workshop. It might have
+            been moved, removed, or never existed in the first place.
           </p>
+        </div>
 
-          {/* Call to Action Button */}
-          <button
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-2">
+          <Button asChild size="lg" data-testid="link-go-home">
+            <Link href="/">
+              <Home className="w-4 h-4 mr-2" />
+              Go home
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
             onClick={() => window.history.back()}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-98"
+            data-testid="button-go-back"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Return
-          </button>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Go back
+          </Button>
+        </div>
 
-        </CardContent>
-      </Card>
+        <div className="flex items-center gap-6 text-xs text-muted-foreground mt-4 pt-4 border-t border-border w-full justify-center">
+          <Link href="/forums" className="hover:text-foreground transition-colors">
+            Forums
+          </Link>
+          <Link href="/store" className="hover:text-foreground transition-colors">
+            Store
+          </Link>
+          <Link href="/blog" className="hover:text-foreground transition-colors">
+            Blog
+          </Link>
+          <Link href="/support" className="hover:text-foreground transition-colors">
+            Support
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

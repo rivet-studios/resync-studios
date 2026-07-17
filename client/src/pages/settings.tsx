@@ -577,42 +577,138 @@ function DownloadsTab() {
   );
 }
 
+interface MyDiscount {
+  id: string;
+  code: string;
+  description: string | null;
+  discountType: "percent" | "fixed";
+  amount: number;
+  status: "active" | "used" | "expired";
+  expiresAt: string | null;
+  usedAt: string | null;
+  createdAt: string;
+}
+
 function DiscountsTab() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const { data: myDiscounts, isLoading } = useQuery<MyDiscount[]>({
+    queryKey: ["/api/discounts/my"],
+  });
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(code);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
+
+  const statusBadge = (d: MyDiscount) => {
+    if (d.status === "active")
+      return (
+        <Badge className="bg-green-500/15 text-green-500 border-green-500/20 hover:bg-green-500/15" data-testid={`badge-discount-status-${d.id}`}>
+          Active
+        </Badge>
+      );
+    if (d.status === "used")
+      return (
+        <Badge variant="secondary" data-testid={`badge-discount-status-${d.id}`}>
+          Used
+        </Badge>
+      );
+    return (
+      <Badge variant="outline" className="text-muted-foreground" data-testid={`badge-discount-status-${d.id}`}>
+        Expired
+      </Badge>
+    );
+  };
+
+  const formatAmount = (d: MyDiscount) =>
+    d.discountType === "percent"
+      ? `${d.amount}% off`
+      : `$${(d.amount / 100).toFixed(2)} off`;
+
   return (
     <div className="space-y-6">
       <div>
-        <h2
-          className="text-lg font-semibold"
-          data-testid="text-discounts-title"
-        >
+        <h2 className="text-lg font-semibold" data-testid="text-discounts-title">
           Discounts
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Your available discount codes and promotions
+          Discount codes assigned to your account
         </p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 flex-wrap">
-            <Tag className="w-5 h-5" />
-            Active Promotions
-          </CardTitle>
-          <CardDescription>Discount codes and special offers</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="py-8 text-center">
-            <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-            <p
-              className="text-muted-foreground font-medium"
-              data-testid="text-no-discounts"
-            >
-              No active promotions
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Check back later for special offers and discount codes
-            </p>
-          </div>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="p-6 space-y-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : !myDiscounts || myDiscounts.length === 0 ? (
+            <div className="py-12 text-center">
+              <Tag className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground font-medium" data-testid="text-no-discounts">
+                No discount codes yet
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Discount codes assigned to your account will appear here
+              </p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Value</TableHead>
+                  <TableHead>Expires</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {myDiscounts.map((d) => (
+                  <TableRow key={d.id} data-testid={`row-discount-${d.id}`}>
+                    <TableCell>
+                      <button
+                        onClick={() => d.status === "active" && copyCode(d.code)}
+                        disabled={d.status !== "active"}
+                        className="flex items-center gap-2 group"
+                        title={d.status === "active" ? "Click to copy" : undefined}
+                        data-testid={`button-copy-discount-${d.id}`}
+                      >
+                        <span className={`font-mono font-semibold text-sm ${d.status === "active" ? "text-foreground" : "text-muted-foreground line-through"}`}>
+                          {d.code}
+                        </span>
+                        {d.status === "active" && (
+                          copied === d.code
+                            ? <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                            : <Copy className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0 transition-opacity" />
+                        )}
+                      </button>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {d.description || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-xs">
+                        {formatAmount(d)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {d.usedAt
+                        ? `Used ${new Date(d.usedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+                        : d.expiresAt
+                        ? new Date(d.expiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                        : "Never"}
+                    </TableCell>
+                    <TableCell>{statusBadge(d)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

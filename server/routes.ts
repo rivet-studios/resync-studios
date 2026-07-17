@@ -1676,6 +1676,41 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/discounts/my", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const list = await storage.getUserDiscounts(user.id);
+      const now = new Date();
+      res.json(
+        list.map((d) => {
+          let status: "active" | "used" | "expired";
+          if (d.usedAt) {
+            status = "used";
+          } else if (d.expiresAt && new Date(d.expiresAt) < now) {
+            status = "expired";
+          } else if (!d.isActive) {
+            status = "expired";
+          } else {
+            status = "active";
+          }
+          return {
+            id: d.id,
+            code: d.code,
+            description: d.description,
+            discountType: d.discountType,
+            amount: d.amount,
+            status,
+            expiresAt: d.expiresAt,
+            usedAt: d.usedAt,
+            createdAt: d.createdAt,
+          };
+        }),
+      );
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch your discounts" });
+    }
+  });
+
   app.get("/api/discounts/active", async (_req, res) => {
     try {
       const list = await storage.getDiscounts();
@@ -1706,8 +1741,10 @@ export async function registerRoutes(
       if (!isAdminUser(user))
         return res.status(403).json({ message: "Forbidden" });
 
+      const { assignedToUsername, ...bodyRest } = req.body;
+
       const data = insertDiscountSchema.parse({
-        ...req.body,
+        ...bodyRest,
         createdBy: user.id,
       });
 
@@ -1716,9 +1753,36 @@ export async function registerRoutes(
         return res.status(400).json({ message: "A discount with this code already exists" });
       }
 
+      // Resolve the user this code is assigned to (for personal one-time-use codes)
+      let assignedToUserId: string | null = null;
+      let assigneeStripeCustomerId: string | undefined;
+      if (assignedToUsername) {
+        const assignee = await storage.getUserByUsername(assignedToUsername);
+        if (!assignee) {
+          return res.status(404).json({ message: `User "${assignedToUsername}" not found` });
+        }
+        assignedToUserId = assignee.id;
+        // Ensure user has a Stripe customer record so we can restrict the promo code
+        if (assignee.stripeCustomerId) {
+          assigneeStripeCustomerId = assignee.stripeCustomerId;
+        } else {
+          try {
+            const stripe = await getUncachableStripeClient();
+            const customer = await stripe.customers.create({
+              email: assignee.email || undefined,
+              metadata: { userId: assignee.id },
+            });
+            await storage.updateUser(assignee.id, { stripeCustomerId: customer.id } as any);
+            assigneeStripeCustomerId = customer.id;
+          } catch (_) {
+            // Non-fatal: still create the discount, just without Stripe customer restriction
+          }
+        }
+      }
+
       let stripeIds: { stripeCouponId: string; stripePromotionCodeId: string } | null = null;
       try {
-        stripeIds = await createStripeDiscount(data);
+        stripeIds = await createStripeDiscount(data, assigneeStripeCustomerId);
       } catch (err: any) {
         console.error("Stripe discount creation error:", err?.message);
         return res.status(400).json({
@@ -1729,6 +1793,7 @@ export async function registerRoutes(
       const discount = await storage.createDiscount({
         ...data,
         ...stripeIds,
+        ...(assignedToUserId ? { assignedToUserId, maxRedemptions: 1 } : {}),
       } as any);
 
       res.status(201).json(discount);

@@ -192,6 +192,8 @@ export interface IStorage {
   getDiscounts(): Promise<Discount[]>;
   getDiscount(id: string): Promise<Discount | undefined>;
   getDiscountByCode(code: string): Promise<Discount | undefined>;
+  getDiscountByStripePromotionCodeId(promoCodeId: string): Promise<Discount | undefined>;
+  getUserDiscounts(userId: string): Promise<Discount[]>;
   createDiscount(discount: InsertDiscount): Promise<Discount>;
   updateDiscount(
     id: string,
@@ -988,6 +990,20 @@ export class DatabaseStorage implements IStorage {
       .from(discounts)
       .where(sql`LOWER(${discounts.code}) = LOWER(${code})`);
     return d;
+  }
+  async getDiscountByStripePromotionCodeId(promoCodeId: string): Promise<Discount | undefined> {
+    const [d] = await db
+      .select()
+      .from(discounts)
+      .where(eq(discounts.stripePromotionCodeId, promoCodeId));
+    return d;
+  }
+  async getUserDiscounts(userId: string): Promise<Discount[]> {
+    return db
+      .select()
+      .from(discounts)
+      .where(eq(discounts.assignedToUserId, userId))
+      .orderBy(desc(discounts.createdAt));
   }
   async createDiscount(discountData: InsertDiscount): Promise<Discount> {
     const [d] = await db.insert(discounts).values(discountData).returning();

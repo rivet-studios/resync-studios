@@ -4,6 +4,30 @@ import { storage } from "./storage";
 import { getVipTierFromPriceId, VIP_TIER_ID_TO_ENUM } from "./stripe-products";
 import { syncDiscordVipRole } from "./discord-bot";
 
+/** Track promotion code redemptions in our local discounts table. */
+async function trackPromoRedemptions(session: any): Promise<void> {
+  try {
+    const promoEntries: any[] =
+      session.total_details?.breakdown?.discounts ?? [];
+    for (const entry of promoEntries) {
+      const promoCodeId = entry.discount?.promotion_code;
+      if (!promoCodeId) continue;
+      const discount = await storage.getDiscountByStripePromotionCodeId(promoCodeId);
+      if (!discount) continue;
+      const updates: Record<string, any> = {
+        timesRedeemed: (discount.timesRedeemed ?? 0) + 1,
+      };
+      // For personal (assigned) codes, stamp the used time once
+      if (discount.assignedToUserId && !discount.usedAt) {
+        updates.usedAt = new Date();
+      }
+      await storage.updateDiscount(discount.id, updates);
+    }
+  } catch (err: any) {
+    console.warn("⚠️ Could not track promo redemptions:", err?.message);
+  }
+}
+
 type VipTierEnum =
   | "none"
   | "Bronze VIP"
@@ -100,6 +124,9 @@ export class WebhookHandlers {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object as any;
+
+          // Always track promo code redemptions regardless of mode
+          await trackPromoRedemptions(session);
 
           if (session.mode === "subscription") {
             // ── VIP subscription purchase ────────────────────────────────────

@@ -4,9 +4,14 @@ import type { Discount, InsertDiscount } from "@shared/schema";
 /**
  * Creates a matching Stripe Coupon + Promotion Code for a locally-defined
  * discount so it can be redeemed at checkout via `allow_promotion_codes`.
+ *
+ * Uses the legacy top-level `coupon` param which works across all Stripe API
+ * versions. A `customer` param can be passed to restrict the code to one
+ * specific Stripe customer (for personal / one-time-use codes).
  */
 export async function createStripeDiscount(
   discount: InsertDiscount,
+  stripeCustomerId?: string,
 ): Promise<{ stripeCouponId: string; stripePromotionCodeId: string }> {
   const stripe = await getUncachableStripeClient();
 
@@ -20,15 +25,11 @@ export async function createStripeDiscount(
     couponParams.amount_off = discount.amount;
     couponParams.currency = "usd";
   }
-  if (discount.appliesTo === "product" && discount.productId) {
-    // Stripe coupons can restrict to specific products via `applies_to`
-    // when the product has been synced to Stripe.
-  }
 
   const coupon = await stripe.coupons.create(couponParams);
 
   const promoParams: Record<string, any> = {
-    promotion: { type: "coupon", coupon: coupon.id },
+    coupon: coupon.id,
     code: discount.code,
   };
   if (discount.maxRedemptions) {
@@ -38,6 +39,11 @@ export async function createStripeDiscount(
     promoParams.expires_at = Math.floor(
       new Date(discount.expiresAt as any).getTime() / 1000,
     );
+  }
+  // Restrict to a single Stripe customer for personal / assigned codes
+  if (stripeCustomerId) {
+    promoParams.customer = stripeCustomerId;
+    promoParams.max_redemptions = 1; // always single-use when personal
   }
 
   const promotionCode = await stripe.promotionCodes.create(promoParams as any);

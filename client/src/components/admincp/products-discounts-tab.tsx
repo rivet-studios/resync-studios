@@ -174,6 +174,7 @@ function DiscountsSection() {
   const [appliesTo, setAppliesTo] = useState<"all" | "vip" | "product">("all");
   const [maxRedemptions, setMaxRedemptions] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
+  const [assignedToUsername, setAssignedToUsername] = useState("");
 
   const { data: discountList = [], isLoading } = useQuery<Discount[]>({
     queryKey: ["/api/admin/discounts"],
@@ -187,17 +188,22 @@ function DiscountsSection() {
         discountType,
         amount: discountType === "percent" ? Number(amount) : Math.round(Number(amount) * 100),
         appliesTo,
-        maxRedemptions: maxRedemptions ? Number(maxRedemptions) : undefined,
+        maxRedemptions: assignedToUsername ? 1 : (maxRedemptions ? Number(maxRedemptions) : undefined),
         expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
+        assignedToUsername: assignedToUsername || undefined,
       });
     },
     onSuccess: () => {
-      toast({ title: "Discount created", description: `${code.toUpperCase()} is now live` });
+      const msg = assignedToUsername
+        ? `${code.toUpperCase()} assigned to ${assignedToUsername}`
+        : `${code.toUpperCase()} is now live`;
+      toast({ title: "Discount created", description: msg });
       setCode("");
       setDescription("");
       setAmount("10");
       setMaxRedemptions("");
       setExpiresAt("");
+      setAssignedToUsername("");
       queryClient.invalidateQueries({ queryKey: ["/api/admin/discounts"] });
     },
     onError: (err: any) => {
@@ -239,7 +245,7 @@ function DiscountsSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Input
               placeholder="Code (e.g. SUMMER25)"
               value={code}
@@ -262,7 +268,18 @@ function DiscountsSection() {
                 <SelectItem value="product">Store products only</SelectItem>
               </SelectContent>
             </Select>
+            <Input
+              placeholder="Assign to username (optional)"
+              value={assignedToUsername}
+              onChange={(e) => setAssignedToUsername(e.target.value)}
+              data-testid="input-discount-assigned-user"
+            />
           </div>
+          {assignedToUsername && (
+            <p className="text-xs text-primary">
+              This code will be a personal one-time-use code redeemable only by <strong>{assignedToUsername}</strong>. Max redemptions will be set to 1 automatically.
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <Select value={discountType} onValueChange={(v: any) => setDiscountType(v)}>
               <SelectTrigger data-testid="select-discount-type">
@@ -286,6 +303,7 @@ function DiscountsSection() {
               min={1}
               placeholder="Max redemptions (optional)"
               value={maxRedemptions}
+              disabled={!!assignedToUsername}
               onChange={(e) => setMaxRedemptions(e.target.value)}
               data-testid="input-discount-max-redemptions"
             />
