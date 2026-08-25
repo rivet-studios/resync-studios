@@ -38,6 +38,7 @@ import { Link } from "wouter";
 import { UserRankBadge } from "@/components/user-rank-badge";
 
 interface BlogPost extends Announcement {
+  viewCount?: number;
   author: {
     id: string;
     username: string;

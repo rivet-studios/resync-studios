@@ -130,7 +130,7 @@ function RankUsername({ user, className = "" }: { user?: User | null; className?
       >
         {user.username}
       </span>
-      <VerifiedBadge isVerified={user?.isVerified} size="sm" />
+      <VerifiedBadge isVerified={(user as any)?.isVerified} size="sm" />
     </span>
   );
 }

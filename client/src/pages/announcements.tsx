@@ -25,6 +25,7 @@ import { VerifiedBadge } from "@/components/verified-badge";
 import { useToast } from "@/hooks/use-toast";
 
 interface BlogPost extends Announcement {
+  viewCount?: number;
   author: {
     id: string;
     username: string;

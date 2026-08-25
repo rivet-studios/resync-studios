@@ -330,7 +330,7 @@ export default function GlobalSearch() {
                         <p className="text-sm font-medium text-foreground truncate flex items-center gap-1">
                           {user.username}
                           <VerifiedBadge
-                            isVerified={user.isVerified}
+                            isVerified={(user as any).isVerified}
                             size="sm"
                           />
                         </p>

@@ -43,7 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UploadButton } from "@uploadthing/react";
+import { generateUploadButton } from "@uploadthing/react";
+import type { OurFileRouter } from "../../../server/uploadthing";
 import "@uploadthing/react/styles.css";
 import {
   User,
@@ -74,6 +75,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { SiDiscord, SiRoblox } from "react-icons/si";
+
+const SettingsUploadButton = generateUploadButton<OurFileRouter>();
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
 
 const profileSchema = z.object({
@@ -1407,7 +1410,7 @@ export default function Settings() {
                           <span className="text-xs text-muted-foreground">
                             or
                           </span>
-                              <UploadButton
+                              <SettingsUploadButton
                                 endpoint="avatarUploader"
                                     onClientUploadComplete={(res) => {
                                       if (res && res.length > 0) {

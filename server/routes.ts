@@ -275,7 +275,7 @@ export async function registerRoutes(
 
   // Resend verification email
   app.post("/api/auth/send-verification", async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    if (!(req as any).isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
     const user = req.user as any;
     if (user.emailVerified) return res.json({ message: "Already verified" });
 
@@ -326,7 +326,7 @@ export async function registerRoutes(
 
   // Poll endpoint — frontend checks this every few seconds
   app.get("/api/auth/email-verified", async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ verified: false });
+    if (!(req as any).isAuthenticated?.()) return res.status(401).json({ verified: false });
     const user = req.user as any;
     // Re-fetch from DB to get latest value
     const fresh = await storage.getUser(user.id);
@@ -2185,7 +2185,7 @@ export async function registerRoutes(
                   username: author.username,
                   userRank: author.userRank,
                   profileImageUrl: author.profileImageUrl,
-                  isVerified: author.isVerified,
+                  isVerified: (author as any).isVerified,
                 }
               : null,
           };
@@ -3320,7 +3320,7 @@ export async function registerRoutes(
       if (!targetUser) {
         return res.status(404).json({ message: "User not found" });
       }
-      await storage.updateUser(req.params.id, { isVerified });
+      await storage.updateUser(req.params.id, { isVerified } as any);
       const updatedUser = await storage.getUser(req.params.id);
 
       await db.insert(auditLog).values({
@@ -3970,9 +3970,11 @@ export async function registerRoutes(
             "You can't unlink Discord because it's your only sign-in method. Set a password first under account settings.",
         });
       }
-      await removeVerifiedMemberRole(targetUser.discordId).catch((err) =>
-        console.error("Failed to remove Verified Member role on unlink:", err),
-      );
+      if (targetUser.discordId) {
+        await removeVerifiedMemberRole(targetUser.discordId).catch((err) =>
+          console.error("Failed to remove Verified Member role on unlink:", err),
+        );
+      }
       await storage.updateUser(userId, {
         discordId: null as any,
         discordUsername: null as any,

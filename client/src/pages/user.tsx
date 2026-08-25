@@ -308,7 +308,7 @@ export default function UserProfile() {
                   data-testid="text-username"
                 >
                   {profile.username}
-                  <VerifiedBadge isVerified={profile.isVerified} size="lg" />
+                  <VerifiedBadge isVerified={(profile as any).isVerified} size="lg" />
                 </h1>  
                 {profile.vipTier && profile.vipTier !== "none" && (
                   <VipBadge tier={profile.vipTier as any} size="lg" />

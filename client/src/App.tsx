@@ -311,13 +311,18 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
   function Router() {
     const { isLoading, user } = useAuth();
-    const [vantaEffect, setVantaEffect] = useState<any>(null);
 
     // Vanta custom global background lifecycle effect
     useEffect(() => {
-      if (!vantaEffect) {
-        setVantaEffect(
-          NET({
+      let effect: any = null;
+      try {
+        const canvas = document.createElement("canvas");
+        const webglAvailable =
+          !!window.WebGLRenderingContext &&
+          !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+
+        if (webglAvailable && document.querySelector("#vanta-bg")) {
+          effect = NET({
             el: "#vanta-bg",
             THREE: THREE,
             mouseControls: true,
@@ -332,13 +337,16 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             points: 12.00,
             maxDistance: 22.00,
             spacing: 15.00
-          })
-        );
+          });
+        }
+      } catch (error) {
+        // WebGL is unavailable in some preview sandboxes; keep the CSS background.
+        console.warn("Vanta background disabled because WebGL is unavailable.", error);
       }
       return () => {
-        if (vantaEffect) vantaEffect.destroy();
+        if (effect) effect.destroy();
       };
-    }, [vantaEffect]);
+    }, []);
 
     // Intercom setup effect hook
     useEffect(() => {
