@@ -50,6 +50,7 @@ import TeamDirectory from "@/pages/team-directory";
 import Announcements from "@/pages/announcements";
 import Projects from "@/pages/projects";
 import Support from "@/pages/support";
+import SupportTeam from "@/pages/support-team";
 import DMCA from "@/pages/dmca";
 import CommunityStaffAgreement from "@/pages/community-staff-agreement";
 import CommunityRules from "@/pages/community-rules";
@@ -454,7 +455,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
             <Route path="/policies/legal/terms" component={Terms} />
             <Route path="/announcements" component={Announcements} />
             <Route path="/projects" component={Projects} />
-            <Route path="/support" component={Support} />
+             <Route path="/support/team">
+               {canAccessModCP(user) ? <SupportTeam /> : <Unauthorized />}
+             </Route>
+             <Route path="/support" component={Support} />
             <Route path="/policies/legal/dmca" component={DMCA} />
             <Route path="/serrano-rules" component={ProjectSerranorules} />
             <Route

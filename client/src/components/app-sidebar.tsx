@@ -51,6 +51,7 @@ import {
   Mail,
   Trophy,
   UserPlus,
+  Headset,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -258,6 +259,20 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {showModCP && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/support/team")}
+                    data-testid="sidebar-team-support"
+                  >
+                    <Link href="/support/team">
+                      <Headset className="w-4 h-4" />
+                      <span>Team Support</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

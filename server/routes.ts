@@ -1023,6 +1023,250 @@ export async function registerRoutes(
     );
   }
 
+  const supportTicketInputSchema = z.object({
+    subject: z.string().trim().min(5).max(200),
+    description: z.string().trim().min(10).max(10000),
+    category: z
+      .enum(["General", "Account", "Billing", "Technical", "Moderation", "Partnership"])
+      .default("General"),
+    priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
+  });
+
+  const supportMessageInputSchema = z.object({
+    body: z.string().trim().min(1).max(10000),
+    isInternal: z.boolean().default(false),
+  });
+
+  const supportUpdateSchema = z.object({
+    status: z
+      .enum(["open", "in_progress", "awaiting_user", "resolved", "closed"])
+      .optional(),
+    priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
+    assignedToId: z.string().nullable().optional(),
+  });
+
+  function isSupportTeam(user: any): boolean {
+    return isForumStaff(user) || isAdminUser(user);
+  }
+
+  async function supportPerson(userId: string | null | undefined) {
+    if (!userId) return null;
+    const user = await storage.getUser(userId);
+    return user
+      ? {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          userRank: user.userRank,
+          profileImageUrl: user.profileImageUrl,
+        }
+      : null;
+  }
+
+  async function serializeSupportTicket(ticket: any) {
+    const [requester, assignee] = await Promise.all([
+      supportPerson(ticket.requesterId),
+      supportPerson(ticket.assignedToId),
+    ]);
+    return { ...ticket, requester, assignee };
+  }
+
+  async function serializeSupportMessage(message: any) {
+    return { ...message, author: await supportPerson(message.authorId) };
+  }
+
+  // ─── Support ticket portal ─────────────────────────────────────────────────
+  app.get("/api/support/tickets/my", requireAuth, async (req, res) => {
+    try {
+      const tickets = await storage.getSupportTicketsByUser((req.user as any).id);
+      res.json(await Promise.all(tickets.map(serializeSupportTicket)));
+    } catch (error) {
+      console.error("Support ticket list error:", error);
+      res.status(500).json({ message: "Failed to load your support tickets" });
+    }
+  });
+
+  app.post("/api/support/tickets", requireAuth, async (req, res) => {
+    try {
+      const input = supportTicketInputSchema.parse(req.body);
+      const requesterId = (req.user as any).id;
+      const ticket = await storage.createSupportTicket({
+        ...input,
+        requesterId,
+        ticketNumber: `SUP-${Date.now().toString(36).toUpperCase()}-${crypto
+          .randomUUID()
+          .slice(0, 6)
+          .toUpperCase()}`,
+      });
+      await storage.createSupportMessage({
+        ticketId: ticket.id,
+        authorId: requesterId,
+        body: input.description,
+        isInternal: false,
+      });
+      res.status(201).json(await serializeSupportTicket(ticket));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Please check the ticket details", errors: error.errors });
+      }
+      console.error("Support ticket creation error:", error);
+      res.status(500).json({ message: "Failed to create support ticket" });
+    }
+  });
+
+  app.get("/api/support/team/tickets", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!isSupportTeam(user)) return res.status(403).json({ message: "Forbidden" });
+      const tickets = await storage.getSupportTickets({
+        status: typeof req.query.status === "string" ? req.query.status : undefined,
+        priority: typeof req.query.priority === "string" ? req.query.priority : undefined,
+        assignedToId:
+          typeof req.query.assignedToId === "string"
+            ? req.query.assignedToId
+            : undefined,
+        search: typeof req.query.search === "string" ? req.query.search : undefined,
+      });
+      res.json(await Promise.all(tickets.map(serializeSupportTicket)));
+    } catch (error) {
+      console.error("Support team ticket list error:", error);
+      res.status(500).json({ message: "Failed to load the support queue" });
+    }
+  });
+
+  app.get("/api/support/team/members", requireAuth, async (req, res) => {
+    try {
+      if (!isSupportTeam(req.user as any)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const staffRanks = new Set([
+        "Appeals Moderator",
+        "Community Moderator",
+        "Community Administrator",
+        "Community Senior Administrator",
+        "Gameplay Engineer",
+        "Creative Designer",
+        "Team Member",
+        "Staff Department Director",
+        "Operations Manager",
+        "Company Director",
+      ]);
+      const members = (await storage.getAllUsers())
+        .filter(
+          (member) =>
+            member.isAdmin ||
+            member.isModerator ||
+            staffRanks.has(member.userRank || "") ||
+            (member.additionalRanks || []).some((rank) => staffRanks.has(rank)),
+        )
+        .map((member) => ({
+          id: member.id,
+          username: member.username,
+          email: member.email,
+          userRank: member.userRank,
+        }));
+      res.json(members);
+    } catch (error) {
+      console.error("Support team member list error:", error);
+      res.status(500).json({ message: "Failed to load support team members" });
+    }
+  });
+
+  app.get("/api/support/tickets/:id", requireAuth, async (req, res) => {
+    try {
+      const ticket = await storage.getSupportTicket(req.params.id);
+      if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+      const user = req.user as any;
+      const staff = isSupportTeam(user);
+      if (!staff && ticket.requesterId !== user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const messages = await storage.getSupportMessages(ticket.id);
+      const visibleMessages = staff
+        ? messages
+        : messages.filter((message) => !message.isInternal);
+      res.json({
+        ...(await serializeSupportTicket(ticket)),
+        messages: await Promise.all(visibleMessages.map(serializeSupportMessage)),
+      });
+    } catch (error) {
+      console.error("Support ticket detail error:", error);
+      res.status(500).json({ message: "Failed to load support ticket" });
+    }
+  });
+
+  app.post("/api/support/tickets/:id/messages", requireAuth, async (req, res) => {
+    try {
+      const ticket = await storage.getSupportTicket(req.params.id);
+      if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+      const user = req.user as any;
+      const staff = isSupportTeam(user);
+      if (!staff && ticket.requesterId !== user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const input = supportMessageInputSchema.parse(req.body);
+      if (input.isInternal && !staff) {
+        return res.status(403).json({ message: "Only support team members can add internal notes" });
+      }
+      const message = await storage.createSupportMessage({
+        ticketId: ticket.id,
+        authorId: user.id,
+        body: input.body,
+        isInternal: input.isInternal,
+      });
+      if (!input.isInternal) {
+        await storage.updateSupportTicket(ticket.id, {
+          status: staff ? "awaiting_user" : "open",
+          closedAt: null,
+        });
+      }
+      res.status(201).json(await serializeSupportMessage(message));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Message cannot be empty", errors: error.errors });
+      }
+      console.error("Support message creation error:", error);
+      res.status(500).json({ message: "Failed to send support message" });
+    }
+  });
+
+  app.patch("/api/support/tickets/:id", requireAuth, async (req, res) => {
+    try {
+      const ticket = await storage.getSupportTicket(req.params.id);
+      if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+      const user = req.user as any;
+      const staff = isSupportTeam(user);
+      const input = supportUpdateSchema.parse(req.body);
+
+      if (!staff) {
+        if (ticket.requesterId !== user.id) return res.status(403).json({ message: "Forbidden" });
+        if (input.status && !["open", "closed"].includes(input.status)) {
+          return res.status(403).json({ message: "Customers can only open or close their tickets" });
+        }
+        if (input.priority !== undefined || input.assignedToId !== undefined) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+      if (input.assignedToId) {
+        const assignee = await storage.getUser(input.assignedToId);
+        if (!assignee || !isSupportTeam(assignee)) {
+          return res.status(400).json({ message: "Assignee must be a support team member" });
+        }
+      }
+      const updates: any = { ...input };
+      if (input.status === "closed") updates.closedAt = new Date();
+      if (input.status && input.status !== "closed") updates.closedAt = null;
+      const updated = await storage.updateSupportTicket(ticket.id, updates);
+      res.json(await serializeSupportTicket(updated || ticket));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid ticket update", errors: error.errors });
+      }
+      console.error("Support ticket update error:", error);
+      res.status(500).json({ message: "Failed to update support ticket" });
+    }
+  });
+
   // Admin forum category management
   app.post("/api/admin/forum-categories", requireAuth, async (req, res) => {
     try {

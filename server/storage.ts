@@ -50,9 +50,15 @@ import {
   discounts,
   type Discount,
   type InsertDiscount,
+  supportTickets,
+  type SupportTicket,
+  type InsertSupportTicket,
+  supportMessages,
+  type SupportMessage,
+  type InsertSupportMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, lt, gt, isNull, like, ne } from "drizzle-orm";
+import { eq, desc, asc, and, sql, lt, gt, isNull, like, ne } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -200,6 +206,21 @@ export interface IStorage {
     updates: Partial<Discount>,
   ): Promise<Discount | undefined>;
   deleteDiscount(id: string): Promise<boolean>;
+  createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
+  getSupportTicket(id: string): Promise<SupportTicket | undefined>;
+  getSupportTicketsByUser(userId: string): Promise<SupportTicket[]>;
+  getSupportTickets(filters?: {
+    status?: string;
+    priority?: string;
+    assignedToId?: string;
+    search?: string;
+  }): Promise<SupportTicket[]>;
+  updateSupportTicket(
+    id: string,
+    updates: Partial<SupportTicket>,
+  ): Promise<SupportTicket | undefined>;
+  getSupportMessages(ticketId: string): Promise<SupportMessage[]>;
+  createSupportMessage(message: InsertSupportMessage): Promise<SupportMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1026,6 +1047,83 @@ export class DatabaseStorage implements IStorage {
       .where(eq(discounts.id, id))
       .returning();
     return result.length > 0;
+  }
+
+  async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
+    const [created] = await db.insert(supportTickets).values(ticket).returning();
+    return created;
+  }
+
+  async getSupportTicket(id: string): Promise<SupportTicket | undefined> {
+    const [ticket] = await db
+      .select()
+      .from(supportTickets)
+      .where(eq(supportTickets.id, id));
+    return ticket;
+  }
+
+  async getSupportTicketsByUser(userId: string): Promise<SupportTicket[]> {
+    return db
+      .select()
+      .from(supportTickets)
+      .where(eq(supportTickets.requesterId, userId))
+      .orderBy(desc(supportTickets.updatedAt));
+  }
+
+  async getSupportTickets(filters: {
+    status?: string;
+    priority?: string;
+    assignedToId?: string;
+    search?: string;
+  } = {}): Promise<SupportTicket[]> {
+    const conditions = [];
+    if (filters.status && filters.status !== "all") {
+      conditions.push(eq(supportTickets.status, filters.status));
+    }
+    if (filters.priority && filters.priority !== "all") {
+      conditions.push(eq(supportTickets.priority, filters.priority));
+    }
+    if (filters.assignedToId && filters.assignedToId !== "all") {
+      conditions.push(eq(supportTickets.assignedToId, filters.assignedToId));
+    }
+    if (filters.search?.trim()) {
+      const search = `%${filters.search.trim()}%`;
+      conditions.push(
+        sql`(${supportTickets.subject} ILIKE ${search} OR ${supportTickets.ticketNumber} ILIKE ${search})`,
+      );
+    }
+    return db
+      .select()
+      .from(supportTickets)
+      .where(conditions.length ? and(...conditions) : undefined)
+      .orderBy(desc(supportTickets.updatedAt));
+  }
+
+  async updateSupportTicket(
+    id: string,
+    updates: Partial<SupportTicket>,
+  ): Promise<SupportTicket | undefined> {
+    const [updated] = await db
+      .update(supportTickets)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(supportTickets.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getSupportMessages(ticketId: string): Promise<SupportMessage[]> {
+    return db
+      .select()
+      .from(supportMessages)
+      .where(eq(supportMessages.ticketId, ticketId))
+      .orderBy(asc(supportMessages.createdAt));
+  }
+
+  async createSupportMessage(
+    message: InsertSupportMessage,
+  ): Promise<SupportMessage> {
+    const [created] = await db.insert(supportMessages).values(message).returning();
+    return created;
   }
 }
 

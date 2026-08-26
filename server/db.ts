@@ -171,6 +171,41 @@ export async function initializeDatabase() {
     );
   `);
 
+    // Support ticket tables
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "support_tickets" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "ticket_number" varchar NOT NULL UNIQUE,
+        "requester_id" varchar NOT NULL,
+        "subject" varchar(200) NOT NULL,
+        "description" text NOT NULL,
+        "category" varchar(50) NOT NULL DEFAULT 'General',
+        "priority" varchar(20) NOT NULL DEFAULT 'normal',
+        "status" varchar(30) NOT NULL DEFAULT 'open',
+        "assigned_to_id" varchar,
+        "created_at" timestamp DEFAULT now(),
+        "updated_at" timestamp DEFAULT now(),
+        "closed_at" timestamp
+      );
+      CREATE INDEX IF NOT EXISTS "support_tickets_requester_idx"
+        ON "support_tickets"("requester_id");
+      CREATE INDEX IF NOT EXISTS "support_tickets_status_idx"
+        ON "support_tickets"("status");
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "support_messages" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "ticket_id" varchar NOT NULL,
+        "author_id" varchar NOT NULL,
+        "body" text NOT NULL,
+        "is_internal" boolean DEFAULT false,
+        "created_at" timestamp DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS "support_messages_ticket_idx"
+        ON "support_messages"("ticket_id", "created_at");
+    `);
+
     console.log("✅ Database schema initialized successfully");
   } catch (error) {
     console.error("⚠️ Database initialization error:", error);

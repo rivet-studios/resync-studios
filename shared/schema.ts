@@ -562,6 +562,52 @@ export const insertStaffNoteSchema = createInsertSchema(staffNotes).omit({
   updatedAt: true,
 });
 
+// Support tickets and threaded replies
+export const supportTickets = pgTable("support_tickets", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  ticketNumber: varchar("ticket_number").notNull().unique(),
+  requesterId: varchar("requester_id").notNull(),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  description: text("description").notNull(),
+  category: varchar("category", { length: 50 }).notNull().default("General"),
+  priority: varchar("priority", { length: 20 }).notNull().default("normal"),
+  status: varchar("status", { length: 30 }).notNull().default("open"),
+  assignedToId: varchar("assigned_to_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  closedAt: timestamp("closed_at"),
+});
+
+export const supportMessages = pgTable("support_messages", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  ticketId: varchar("ticket_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  body: text("body").notNull(),
+  isInternal: boolean("is_internal").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  closedAt: true,
+});
+
+export const insertSupportMessageSchema = createInsertSchema(supportMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
+export type SupportMessage = typeof supportMessages.$inferSelect;
+export type InsertSupportMessage = z.infer<typeof insertSupportMessageSchema>;
+
 export const changelogEntries = pgTable("changelog_entries", {
   id: varchar("id")
     .primaryKey()

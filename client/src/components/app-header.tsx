@@ -45,6 +45,7 @@ import {
   Mail,
   Trophy,
   UserPlus,
+  Headset,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoSvg from "@assets/logo.svg";
@@ -235,6 +236,14 @@ export function AppHeader() {
                   </Link>
                 </DropdownMenuItem>
               ))}
+                {showModCP && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/support/team" className="cursor-pointer">
+                      <Headset className="mr-2 h-4 w-4" />
+                      <span>Team Support</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
 
