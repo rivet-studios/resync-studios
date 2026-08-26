@@ -14,7 +14,7 @@
 4. Configure:
    - **Name:** `resync-studios` (or your preferred name)
    - **Environment:** `Node`
-   - **Build Command:** `npm run build`
+   - **Build Command:** `npm run build:render`
    - **Start Command:** `npm run start`
    - **Instance Type:** Free (starter)
 
@@ -28,7 +28,7 @@ DATABASE_URL=postgresql://user:password@host:5432/dbname
 DISCORD_CLIENT_ID=your_discord_client_id
 DISCORD_CLIENT_SECRET=your_discord_client_secret
 SESSION_SECRET=generate-a-random-string-here
-DISCORD_CALLBACK_URL=https://your-render-url.onrender.com/auth/discord/callback
+DISCORD_CALLBACK_URL=https://your-render-url.onrender.com/api/auth/discord/callback
 ```
 
 **To generate SESSION_SECRET:**
@@ -50,7 +50,7 @@ Option B: Use Render's PostgreSQL
 1. Go to Discord Developer Portal → Your App
 2. Under **OAuth2** → **Redirects**, add:
    ```
-   https://your-render-url.onrender.com/auth/discord/callback
+   https://your-render-url.onrender.com/api/auth/discord/callback
    ```
    Replace `your-render-url` with your actual Render URL
 

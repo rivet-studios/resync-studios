@@ -242,7 +242,7 @@ export default function StaffDirectory() {
                 >
                 careers page. 
               </a>
-             We're always looking for talented individuals to help
+              We're always looking for talented individuals to help
               grow our community.
           </p>
         </CardContent>

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build:tsx": "tsx script/build.ts",
+    "build:render": "node script/prepare-render-install.cjs && npm ci --include=dev --no-audit --no-fund && npm run build:tsx",
     "db:push": "drizzle-kit push",
     "build": "npm run build:tsx && npm run db:push",
     "start": "NODE_ENV=production node dist/index.cjs",
