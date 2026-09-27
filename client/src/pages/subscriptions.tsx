@@ -2,7 +2,17 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Loader2 } from "lucide-react";
+import {
+  Check,
+  Star,
+  Loader2,
+  Crown,
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+  CreditCard,
+  Zap,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -15,8 +25,9 @@ const tiers = [
     rating: "4.5",
     priceMonth: "9.99",
     priceYear: "99.99",
-    description:
-      "Your journey. Your control.",
+    description: "Your journey. Your control.",
+    icon: ShieldCheck,
+    accent: "bronze",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "Priority Staff Applications",
@@ -35,8 +46,9 @@ const tiers = [
     rating: "4.8",
     priceMonth: "14.99",
     priceYear: "149.99",
-    description:
-      "Earn more. Play elite.",
+    description: "Earn more. Play elite.",
+    icon: Sparkles,
+    accent: "diamond",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "High Priority Staff Applications",
@@ -59,8 +71,9 @@ const tiers = [
     priceMonth: "19.99",
     priceYear: "199.99",
     featured: true,
-    description:
-      "Enforce. Resist. Rule.",
+    description: "Enforce. Resist. Rule.",
+    icon: Crown,
+    accent: "founders",
     features: [
       "Exclusive Discord Role & Media Posting Permissions",
       "Urgent Priority Staff Applications",
@@ -83,6 +96,39 @@ const tiers = [
   },
 ];
 
+function TierIcon({
+  tier,
+}: {
+  tier: (typeof tiers)[number];
+}) {
+  const Icon = tier.icon;
+
+  return (
+    <div
+      className={`flex h-12 w-12 items-center justify-center rounded-xl border ${
+        tier.featured
+          ? "border-primary/20 bg-primary/10 text-primary"
+          : "border-border/60 bg-muted/30 text-muted-foreground"
+      }`}
+    >
+      <Icon className="h-5 w-5" />
+    </div>
+  );
+}
+
+function Rating({ rating }: { rating: string }) {
+  return (
+    <div className="flex items-center gap-1.5 text-[11px] font-medium">
+      <div className="flex items-center gap-0.5 text-yellow-500">
+        <Star className="h-3 w-3 fill-current" />
+        <span>{rating}</span>
+      </div>
+
+      <span className="text-muted-foreground">member rating</span>
+    </div>
+  );
+}
+
 export default function Subscriptions() {
   const [billingCycle, setBillingCycle] = useState<"month" | "year">("month");
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
@@ -97,20 +143,22 @@ export default function Subscriptions() {
     }
 
     setLoadingTier(tier.id);
+
     try {
-      // ✅ Now passes the 'interval' (month/year) to the backend
       const response = await apiRequest("POST", "/api/stripe/checkout", {
         tierId: tier.id,
         interval: billingCycle,
       });
+
       const data = await response.json();
 
       if (data.url) {
         window.location.href = data.url;
       } else {
         toast({
-          title: "Error",
-          description: "Failed to create checkout session. Please try again.",
+          title: "Checkout unavailable",
+          description:
+            "Failed to create checkout session. Please try again.",
           variant: "destructive",
         });
       }
@@ -127,140 +175,283 @@ export default function Subscriptions() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-500">
-      <div className="text-center space-y-4">
-        <h1
-          className="text-2xl font-bold tracking-tight"
-          data-testid="text-subscriptions-title"
-        >
-          Choose your plan
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Select the perfect subscription plan for your needs. Upgrade or
-          downgrade anytime.
-        </p>
+    <div className="min-h-screen bg-transparent text-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
+        {/* Header */}
+        <section className="mx-auto mb-12 max-w-3xl text-center">
+          <div className="mb-4 flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            <Crown className="h-3.5 w-3.5" />
+            RIVET Studios Membership
+          </div>
 
-        <div className="flex items-center justify-center pt-4">
-          <div className="bg-muted p-1 rounded-lg flex gap-1">
+          <h1
+            className="text-3xl font-bold tracking-tight md:text-4xl"
+            data-testid="text-subscriptions-title"
+          >
+            Choose your plan
+          </h1>
+
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Upgrade your RIVET experience with exclusive benefits, priority
+            support, progression boosts, and member-only perks.
+          </p>
+
+          {/* Billing Toggle */}
+          <div className="mt-7 inline-flex items-center rounded-xl border border-border/60 bg-muted/30 p-1">
             <Button
               variant={billingCycle === "month" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setBillingCycle("month")}
-              className="text-xs h-8 px-4"
+              className="h-8 px-5 text-xs"
               data-testid="button-billing-month"
             >
-              Month
+              Monthly
             </Button>
+
             <Button
               variant={billingCycle === "year" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setBillingCycle("year")}
-              className="text-xs h-8 px-4"
+              className="h-8 gap-1.5 px-5 text-xs"
               data-testid="button-billing-year"
             >
-              Year
+              Yearly
+              <Badge className="ml-0.5 border-0 bg-green-500/10 px-1.5 py-0 text-[9px] font-semibold text-green-500">
+                SAVE
+              </Badge>
             </Button>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        {tiers.map((tier) => (
-          <Card
-            key={tier.id}
-            className={`relative border-border/40 shadow-none rounded-xl overflow-visible flex flex-col ${
-              tier.featured ? "ring-2 ring-primary border-primary/20" : ""
-            }`}
-            data-testid={`card-tier-${tier.id}`}
-          >
-            {tier.featured && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground text-[10px] px-4 py-0.5 uppercase tracking-wider font-bold">
-                  Featured
-                </Badge>
-              </div>
-            )}
+        {/* Tier Cards */}
+        <section className="grid items-stretch gap-5 lg:grid-cols-3">
+          {tiers.map((tier) => {
+            const isLoading = loadingTier === tier.id;
+            const Icon = tier.icon;
 
-            <CardHeader className="text-center space-y-4 pt-10">
-              <div className="w-12 h-12 bg-muted rounded-full mx-auto flex items-center justify-center">
-                <Star className="w-6 h-6 text-foreground/60" />
-              </div>
-              <div className="space-y-1">
-                <CardTitle className="text-lg font-bold tracking-tight">
-                  {tier.name}
-                </CardTitle>
-                <div className="flex items-center justify-center gap-1 text-[11px] font-bold text-yellow-500">
-                  <span>{tier.rating}</span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 fill-current ${i < 5 ? "" : "text-muted"}`}
-                      />
-                    ))}
+            return (
+              <Card
+                key={tier.id}
+                className={`group relative flex h-full flex-col overflow-visible border-border/60 bg-card/70 transition-all duration-300 ${
+                  tier.featured
+                    ? "border-primary/30 shadow-lg shadow-primary/[0.04] lg:-translate-y-2"
+                    : "hover:-translate-y-0.5 hover:border-border hover:shadow-md"
+                }`}
+                data-testid={`card-tier-${tier.id}`}
+              >
+                {/* Featured label */}
+                {tier.featured && (
+                  <div className="absolute -top-3 left-1/2 z-10 -translate-x-1/2">
+                    <Badge className="border border-primary/20 bg-primary px-4 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground shadow-md">
+                      Featured
+                    </Badge>
                   </div>
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="flex-1 space-y-8 flex flex-col">
-              <p className="text-[13px] text-muted-foreground leading-relaxed text-center px-4">
-                {tier.description}
-              </p>
-
-              <div className="text-center space-y-1">
-                <div className="flex items-baseline justify-center gap-1">
-                  {/* ✅ Price swaps between priceMonth and priceYear based on toggle */}
-                  <span className="text-3xl font-semibold">
-                    ${billingCycle === "month" ? tier.priceMonth : tier.priceYear}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    / {billingCycle === "month" ? "month" : "year"}
-                  </span>
-                </div>
-                {/* Visual bonus for yearly selection */}
-                {billingCycle === "year" && (
-                  <Badge variant="outline" className="text-[10px] border-green-500/20 text-green-500 font-bold bg-green-500/5">
-                    Save ~20% Yearly
-                  </Badge>
                 )}
-              </div>
 
-              <div className="pt-2">
-                <Button
-                  className="w-full font-bold h-11"
-                  variant={tier.featured ? "default" : "outline"}
-                  onClick={() => handleSubscribe(tier)}
-                  disabled={loadingTier === tier.id}
-                  data-testid={`button-subscribe-${tier.id}`}
-                >
-                  {loadingTier === tier.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Redirecting to checkout...
-                    </>
-                  ) : (
-                    "Get Started"
-                  )}
-                </Button>
-              </div>
+                {/* Accent */}
+                <div
+                  className={`absolute inset-x-0 top-0 h-px ${
+                    tier.featured ? "bg-primary" : "bg-border/60"
+                  }`}
+                />
 
-              <div className="space-y-4 flex-1">
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Features Included
-                </h4>
-                <ul className="space-y-3">
-                  {tier.features.map((feature, i) => (
-                    <li key={i} className="flex gap-3 text-[12px] leading-snug">
-                      <Check className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <CardHeader className="p-6 pb-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <TierIcon tier={tier} />
+
+                    {tier.featured && (
+                      <div className="flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-primary">
+                        <Zap className="h-3 w-3" />
+                        Premium
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-2">
+                    <CardTitle className="text-lg font-bold tracking-tight">
+                      {tier.name}
+                    </CardTitle>
+
+                    <div className="mt-2">
+                      <Rating rating={tier.rating} />
+                    </div>
+                  </div>
+
+                  <p className="pt-1 text-sm leading-5 text-muted-foreground">
+                    {tier.description}
+                  </p>
+                </CardHeader>
+
+                <CardContent className="flex flex-1 flex-col px-6 pb-6">
+                  {/* Price */}
+                  <div className="rounded-xl border border-border/50 bg-muted/[0.15] p-4">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          {billingCycle === "month"
+                            ? "Monthly billing"
+                            : "Annual billing"}
+                        </p>
+
+                        <div className="mt-1 flex items-baseline gap-1">
+                          <span className="text-3xl font-bold tracking-tight">
+                            $
+                            {billingCycle === "month"
+                              ? tier.priceMonth
+                              : tier.priceYear}
+                          </span>
+
+                          <span className="text-xs text-muted-foreground">
+                            / {billingCycle === "month" ? "month" : "year"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <CreditCard className="mb-1 h-4 w-4 text-muted-foreground/50" />
+                    </div>
+
+                    {billingCycle === "year" && (
+                      <Badge
+                        variant="outline"
+                        className="mt-3 border-green-500/20 bg-green-500/5 text-[10px] font-semibold text-green-500"
+                      >
+                        Save ~20% with yearly billing
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Checkout */}
+                  <Button
+                    className={`mt-4 h-11 w-full font-semibold ${
+                      tier.featured
+                        ? "shadow-sm shadow-primary/10"
+                        : ""
+                    }`}
+                    variant={tier.featured ? "default" : "outline"}
+                    onClick={() => handleSubscribe(tier)}
+                    disabled={isLoading}
+                    data-testid={`button-subscribe-${tier.id}`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Redirecting to checkout...
+                      </>
+                    ) : (
+                      <>
+                        Get Started
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Features */}
+                  <div className="mt-7 flex-1">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h4 className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                        Features Included
+                      </h4>
+
+                      <span className="text-[10px] text-muted-foreground/60">
+                        {tier.features.length} benefits
+                      </span>
+                    </div>
+
+                    <ul className="space-y-3">
+                      {tier.features.map((feature, index) => {
+                        const highlighted =
+                          feature.startsWith("⭐") ||
+                          feature.startsWith("[IN-DEV]");
+
+                        return (
+                          <li
+                            key={index}
+                            className="flex gap-3 text-xs leading-5"
+                          >
+                            <span
+                              className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                                highlighted
+                                  ? "bg-primary/10 text-primary"
+                                  : "bg-green-500/10 text-green-500"
+                              }`}
+                            >
+                              <Check className="h-2.5 w-2.5" />
+                            </span>
+
+                            <span
+                              className={
+                                highlighted
+                                  ? "font-medium text-foreground"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {feature}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </section>
+
+        {/* Bottom information */}
+        <section className="mx-auto mt-12 max-w-4xl">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="border-border/60 bg-card/50">
+              <CardContent className="flex gap-3 p-5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium">Secure Checkout</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Payments are securely processed through Stripe.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 bg-card/50">
+              <CardContent className="flex gap-3 p-5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                  <Zap className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium">Instant Benefits</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Membership benefits are applied after successful checkout.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 bg-card/50">
+              <CardContent className="flex gap-3 p-5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium">RIVET Membership</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Manage your subscription through your RIVET account.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-muted-foreground/60">
+            Subscription pricing is shown in USD. Billing is handled securely
+            through the RIVET Studios checkout system.
+          </p>
+        </section>
       </div>
     </div>
   );

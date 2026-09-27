@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,10 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Copy,
-  CheckCircle,
+  CheckCircle2,
   Gift,
-  Link as LinkIcon,
+  Link2,
   Loader2,
+  ArrowRight,
+  Share2,
+  Sparkles,
+  CircleCheck,
 } from "lucide-react";
 
 export default function Referrals() {
@@ -35,170 +38,405 @@ export default function Referrals() {
     enabled: !!user,
   });
 
+  const referralCount = referralData?.referralCount || 0;
+  const pointsEarned = referralCount * 10;
+
+  const referralLink = referralData
+    ? `${window.location.origin}/signup?ref=${referralData.code}`
+    : "";
+
   const copyLink = () => {
-    const link = `${window.location.origin}/signup?ref=${referralData?.code}`;
-    navigator.clipboard.writeText(link);
+    if (!referralData) return;
+
+    navigator.clipboard.writeText(referralLink);
     setCopied(true);
+
     setTimeout(() => setCopied(false), 2000);
+
     toast({
-      title: "Copied!",
-      description: "Referral link copied to clipboard",
+      title: "Referral link copied",
+      description: "Your referral link is ready to share.",
     });
   };
 
   if (!user) {
     return (
-      <div className="container mx-auto max-w-3xl p-6 text-center py-20">
-        <Gift className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-xl font-semibold mb-2">
-          Sign in to get your referral link
-        </h2>
-        <p className="text-muted-foreground">
-          Earn reputation points by inviting friends.
-        </p>
+      <div className="container mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-24">
+        <Card className="overflow-hidden border-border/60">
+          <CardContent className="flex flex-col items-center px-6 py-12 text-center">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/[0.07]">
+              <Gift className="h-6 w-6 text-primary" />
+            </div>
+
+            <Badge
+              variant="outline"
+              className="mb-4 border-primary/20 bg-primary/5 text-primary"
+            >
+              RIVET Referrals
+            </Badge>
+
+            <h2 className="text-xl font-semibold tracking-tight">
+              Sign in to get your referral link
+            </h2>
+
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+              Invite friends to RIVET and earn reputation points when they
+              successfully create an account using your referral link.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-3xl p-4 md:p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold" data-testid="text-referrals-title">
-          Referral Program
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Invite friends and earn reputation points for every successful signup
-        </p>
-        <p className="text-sm text-muted-foreground mt-1 text-red-400">
-          The referral program is currently in development and may not work as
-          expected or at all.
-        </p>
+    <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
+      {/* Header */}
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-border/60 bg-card">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-transparent to-transparent" />
+
+        <div className="relative p-6 sm:p-8">
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-primary/20 bg-primary/5 text-primary"
+            >
+              <Gift className="h-3.5 w-3.5" />
+              Community Rewards
+            </Badge>
+
+            <Badge
+              variant="outline"
+              className="gap-1.5 text-muted-foreground"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              10 points / referral
+            </Badge>
+          </div>
+
+          <div className="max-w-3xl">
+            <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              RIVET STUDIOS / COMMUNITY
+            </p>
+
+            <h1
+              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              data-testid="text-referrals-title"
+            >
+              Referral Program
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Invite friends to RIVET and earn reputation points for every
+              successful signup made through your referral link.
+            </p>
+          </div>
+
+          {/* Development Notice */}
+          <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
+            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10">
+              <CircleCheck className="h-3.5 w-3.5 text-red-400" />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-red-400">
+                Development Notice
+              </p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                The referral program is currently in development and may not
+                work as expected or at all.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <LinkIcon className="w-5 h-5" />
-              Your Referral Link
-            </CardTitle>
-            <CardDescription>
-              Share this link with friends to earn 10 reputation points per
-              signup
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      {/* Stats */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2">
+        <Card
+          className="border-border/60 bg-card/70"
+          data-testid="card-referral-count"
+        >
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Successful Referrals
+                </p>
+
+                <p className="mt-2 text-3xl font-bold tracking-tight">
+                  {isLoading ? (
+                    <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
+                  ) : (
+                    referralCount
+                  )}
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Friends connected to your account
+                </p>
               </div>
-            ) : referralData ? (
-              <>
-                <div className="flex gap-2">
-                  <Input
-                    readOnly
-                    value={`${window.location.origin}/signup?ref=${referralData.code}`}
-                    className="font-mono text-sm"
-                    data-testid="input-referral-link"
-                  />
-                  <Button onClick={copyLink} data-testid="button-copy-referral">
-                    {copied ? (
-                      <CheckCircle className="w-4 h-4" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Referral code:{" "}
-                  <code className="bg-muted px-1 rounded">
-                    {referralData.code}
-                  </code>
-                </div>
-              </>
-            ) : null}
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/[0.07]">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card data-testid="card-referral-count">
-            <CardContent className="p-6 text-center">
-              <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
-              <p className="text-3xl font-bold">
-                {referralData?.referralCount || 0}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Friends Referred
-              </p>
-            </CardContent>
-          </Card>
-          <Card data-testid="card-referral-earnings">
-            <CardContent className="p-6 text-center">
-              <Gift className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-              <p className="text-3xl font-bold">
-                {(referralData?.referralCount || 0) * 10}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Points Earned
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <Card
+          className="border-border/60 bg-card/70"
+          data-testid="card-referral-earnings"
+        >
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Reputation Earned
+                </p>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">How it works</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex gap-4 items-start">
-                <Badge
-                  variant="secondary"
-                  className="rounded-full w-8 h-8 flex items-center justify-center shrink-0"
-                >
-                  1
-                </Badge>
-                <div>
-                  <p className="font-medium text-sm">Share your link</p>
-                  <p className="text-xs text-muted-foreground">
-                    Copy your referral link and share it with friends
-                  </p>
-                </div>
+                <p className="mt-2 text-3xl font-bold tracking-tight">
+                  {isLoading ? (
+                    <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
+                  ) : (
+                    pointsEarned
+                  )}
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  10 reputation points per successful signup
+                </p>
               </div>
-              <div className="flex gap-4 items-start">
-                <Badge
-                  variant="secondary"
-                  className="rounded-full w-8 h-8 flex items-center justify-center shrink-0"
-                >
-                  2
-                </Badge>
-                <div>
-                  <p className="font-medium text-sm">They sign up</p>
-                  <p className="text-xs text-muted-foreground">
-                    When they create an account using your link, they're linked
-                    to you
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4 items-start">
-                <Badge
-                  variant="secondary"
-                  className="rounded-full w-8 h-8 flex items-center justify-center shrink-0"
-                >
-                  3
-                </Badge>
-                <div>
-                  <p className="font-medium text-sm">Earn rewards</p>
-                  <p className="text-xs text-muted-foreground">
-                    You earn 10 reputation points for each successful referral
-                  </p>
-                </div>
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/[0.07]">
+                <Gift className="h-5 w-5 text-amber-400" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+        {/* Referral Link */}
+        <Card className="border-border/60">
+          <CardHeader className="border-b border-border/50">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/[0.07]">
+                <Link2 className="h-4 w-4 text-primary" />
+              </div>
+
+              <div>
+                <CardTitle className="text-base">
+                  Your Referral Link
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs leading-5">
+                  Share this link with friends to earn 10 reputation points per
+                  successful signup.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-5 p-5 sm:p-6">
+            {isLoading ? (
+              <div className="flex min-h-[90px] items-center justify-center">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generating your referral link...
+                </div>
+              </div>
+            ) : referralData ? (
+              <>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Referral URL
+                  </p>
+
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input
+                      readOnly
+                      value={referralLink}
+                      className="h-10 min-w-0 bg-muted/30 font-mono text-xs"
+                      data-testid="input-referral-link"
+                    />
+
+                    <Button
+                      onClick={copyLink}
+                      className="h-10 gap-2 sm:px-4"
+                      data-testid="button-copy-referral"
+                    >
+                      {copied ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 rounded-xl border border-border/50 bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-medium">Your referral code</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Share the link above rather than manually entering this
+                      code.
+                    </p>
+                  </div>
+
+                  <code className="w-fit rounded-md border border-border bg-background px-3 py-1.5 font-mono text-xs font-semibold">
+                    {referralData.code}
+                  </code>
+                </div>
+              </>
+            ) : (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                Your referral information could not be loaded.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Reward Summary */}
+        <Card className="border-border/60 bg-card/70">
+          <CardHeader>
+            <CardTitle className="text-base">Reward Summary</CardTitle>
+            <CardDescription className="text-xs">
+              Your current referral progress
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <div className="rounded-xl border border-primary/15 bg-primary/[0.04] p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10">
+                  <Gift className="h-4 w-4 text-primary" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold">
+                    {pointsEarned} reputation points
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Earned from {referralCount} referral
+                    {referralCount === 1 ? "" : "s"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
+                  Points per referral
+                </span>
+                <span className="font-semibold">10</span>
+              </div>
+
+              <div className="h-px bg-border/60" />
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
+                  Successful referrals
+                </span>
+                <span className="font-semibold">{referralCount}</span>
+              </div>
+
+              <div className="h-px bg-border/60" />
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
+                  Total points earned
+                </span>
+                <span className="font-semibold text-primary">
+                  {pointsEarned}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* How It Works */}
+      <Card className="mt-6 border-border/60">
+        <CardHeader className="border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/40">
+              <Share2 className="h-4 w-4 text-muted-foreground" />
+            </div>
+
+            <div>
+              <CardTitle className="text-base">How it works</CardTitle>
+              <CardDescription className="text-xs">
+                Three simple steps to earn referral rewards.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-5 sm:p-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="group relative rounded-xl border border-border/60 bg-muted/[0.12] p-5 transition-colors hover:border-primary/25 hover:bg-primary/[0.025]">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-mono text-xs font-bold text-primary">
+                  01
+                </div>
+
+                <ArrowRight className="h-4 w-4 text-muted-foreground/50 md:block" />
+              </div>
+
+              <h3 className="text-sm font-semibold">Share your link</h3>
+
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                Copy your referral link and share it with friends or members
+                of your community.
+              </p>
+            </div>
+
+            <div className="group relative rounded-xl border border-border/60 bg-muted/[0.12] p-5 transition-colors hover:border-primary/25 hover:bg-primary/[0.025]">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-mono text-xs font-bold text-primary">
+                  02
+                </div>
+
+                <ArrowRight className="h-4 w-4 text-muted-foreground/50 md:block" />
+              </div>
+
+              <h3 className="text-sm font-semibold">They sign up</h3>
+
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                When they create an account using your link, their signup is
+                connected to your referral.
+              </p>
+            </div>
+
+            <div className="group rounded-xl border border-border/60 bg-muted/[0.12] p-5 transition-colors hover:border-primary/25 hover:bg-primary/[0.025]">
+              <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-mono text-xs font-bold text-primary">
+                03
+              </div>
+
+              <h3 className="text-sm font-semibold">Earn rewards</h3>
+
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                You earn 10 reputation points for each successful referral.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Bottom Note */}
+      <div className="mt-6 flex items-center justify-center gap-2 text-center text-[11px] text-muted-foreground">
+        <Users className="h-3.5 w-3.5" />
+        <span>
+          Referrals help grow the RIVET community while rewarding participation.
+        </span>
+      </div>
     </div>
   );
 }
-
