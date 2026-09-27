@@ -1,12 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Archive,
   ArrowRight,
   CalendarDays,
@@ -24,6 +17,7 @@ const RS_PROJECTS = [
     location: "Los Angeles County, CA",
     notes:
       "Sundown is currently going through active quality-of-life improvements and bug fixes. Expected to be published NLT January 2027.",
+    image: "/images/projects/sundown.jpg",
   },
   {
     name: "Project Serrano",
@@ -33,6 +27,7 @@ const RS_PROJECTS = [
     location: "Serrano County, Rosewood",
     notes:
       "Our flagship roleplay experience, inspired by Project Ventura and Once Upon a Time in Rosewood.",
+    image: "/images/projects/serrano.jpg",
   },
   {
     name: "Fort Loredo: Reimagined",
@@ -42,6 +37,7 @@ const RS_PROJECTS = [
     location: "Loredo, TX",
     notes:
       "The project was discontinued after it was determined that the game did not meet studio standards and was not suitable for further adjustment. The game was originally acquired from Mountain Interactive.",
+    image: "/images/projects/loredo.jpg",
   },
   {
     name: "Los Angeles, California: Reimagined",
@@ -51,6 +47,7 @@ const RS_PROJECTS = [
     location: "Los Angeles, CA",
     notes:
       "The project was deprecated after becoming inconsistent for our development team and increasingly unstable.",
+    image: "/images/projects/los-angeles.jpg",
   },
 ];
 
@@ -59,7 +56,8 @@ const featuredProject = RS_PROJECTS.find(
 );
 
 const activeProjects = RS_PROJECTS.filter(
-  (project) => project.status === "active",
+  (project) =>
+    project.status === "active" && project.name !== featuredProject?.name,
 );
 
 const discontinuedProjects = RS_PROJECTS.filter(
@@ -68,270 +66,270 @@ const discontinuedProjects = RS_PROJECTS.filter(
 
 export default function Projects() {
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-14">
-      {/* Header */}
-      <section className="max-w-3xl mx-auto text-center space-y-5">
-        <Badge variant="outline" className="gap-2 px-3 py-1">
-          <Gamepad2 className="w-3.5 h-3.5" />
-          RIVET Studios™
-        </Badge>
+    <main className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        {/* Header */}
+        <section className="mb-10 sm:mb-14">
+          <div className="space-y-3">
+            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold uppercase tracking-tight leading-[0.9]">
+              OUR GAMES
+            </h1>
 
-        <div className="space-y-3">
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            Our Projects
-          </h1>
-
-          <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
-            Games, experiences, and projects currently being developed,
-            maintained, and archived by RIVET Studios.
-          </p>
-        </div>
-      </section>
-
-      {/* Featured Project */}
-      {featuredProject && (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                Featured Project
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold mt-1">
-                Project Serrano
-              </h2>
-            </div>
-
-            <Badge variant="secondary" className="hidden sm:flex">
-              In Development
-            </Badge>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl">
+              Games, experiences, and projects developed, maintained, and
+              archived by RIVET Studios™.
+            </p>
           </div>
+        </section>
 
-          <Card className="relative overflow-hidden rounded-3xl border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background shadow-sm">
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.12),transparent_40%)]" />
+        {/* Featured Project */}
+        {featuredProject && (
+          <section className="mb-12 sm:mb-16">
+            <article className="group relative overflow-hidden rounded-2xl border bg-background min-h-[480px] sm:min-h-[560px] lg:min-h-[620px]">
+              {/* Background image */}
+              <img
+                src={featuredProject.image}
+                alt={featuredProject.name}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+              />
 
-            <CardContent className="relative p-6 sm:p-8 lg:p-10">
-              <div className="grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-12 items-end">
-                <div className="space-y-7">
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>ROBLOX</Badge>
-                      <Badge variant="outline">In Development</Badge>
-                    </div>
+              {/* Image treatment */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-black/5" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
 
-                    <div className="space-y-3">
-                      <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-                        {featuredProject.name}
-                      </h3>
+              {/* Content */}
+              <div className="relative z-10 flex min-h-[480px] sm:min-h-[560px] lg:min-h-[620px] flex-col justify-end p-6 sm:p-8 lg:p-10">
+                <div className="max-w-4xl">
+                  {/* Metadata */}
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <Badge className="bg-white text-black hover:bg-white">
+                      {featuredProject.game}
+                    </Badge>
 
-                      <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                        {featuredProject.notes}
-                      </p>
-                    </div>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/10 text-white border-white/10 backdrop-blur-sm"
+                    >
+                      IN DEVELOPMENT
+                    </Badge>
+
+                    <span className="text-xs sm:text-sm text-white/60 uppercase tracking-wide">
+                      2026
+                    </span>
                   </div>
 
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="rounded-xl border bg-background/60 p-4">
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                        <Gamepad2 className="w-4 h-4" />
-                        <span className="text-xs font-medium uppercase tracking-wide">
-                          Platform
-                        </span>
-                      </div>
-                      <p className="font-semibold">{featuredProject.game}</p>
-                    </div>
+                  {/* Title */}
+                  <h2 className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold uppercase tracking-tight text-white leading-[0.9]">
+                    {featuredProject.name}
+                  </h2>
 
-                    <div className="rounded-xl border bg-background/60 p-4">
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-xs font-medium uppercase tracking-wide">
-                          Location
-                        </span>
-                      </div>
-                      <p className="font-semibold">
-                        {featuredProject.location}
-                      </p>
-                    </div>
+                  {/* Description */}
+                  <p className="mt-5 text-sm sm:text-base lg:text-lg text-white/75 max-w-2xl leading-relaxed">
+                    {featuredProject.notes}
+                  </p>
 
-                    <div className="rounded-xl border bg-background/60 p-4">
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                        <Users className="w-4 h-4" />
-                        <span className="text-xs font-medium uppercase tracking-wide">
-                          Project Manager
-                        </span>
-                      </div>
-                      <p className="font-semibold">
-                        {featuredProject.projectManager}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex lg:justify-end">
-                  <div className="rounded-2xl border bg-background/70 px-5 py-4 min-w-[190px]">
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                      Development Status
-                    </p>
+                  {/* Project information */}
+                  <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-xs sm:text-sm text-white/60">
                     <div className="flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
-                      <span className="font-semibold">In Development</span>
+                      <MapPin className="w-4 h-4" />
+                      <span>{featuredProject.location}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span>{featuredProject.projectManager}</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </section>
-      )}
+            </article>
+          </section>
+        )}
 
-      {/* Active Projects */}
-      <section className="space-y-5">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            Current Projects
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold mt-1">
-            Active Development
-          </h2>
-        </div>
+        {/* Current Projects */}
+        <section className="mb-16 sm:mb-20">
+          <div className="mb-6 sm:mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              STUDIO PORTFOLIO
+            </p>
 
-        <div className="grid md:grid-cols-2 gap-5">
-          {activeProjects.map((project) => (
-            <Card
-              key={project.name}
-              className="group rounded-2xl transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <CardTitle className="text-xl">
-                      {project.name}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {project.location}
-                    </CardDescription>
-                  </div>
-
-                  <Badge>{project.game}</Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-5">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {project.notes}
-                </p>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>{project.projectManager}</span>
-                  </div>
-
-                  <Badge variant="outline" className="gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Active
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Archive */}
-      {discontinuedProjects.length > 0 && (
-        <section className="space-y-5">
-          <div className="flex items-start gap-3">
-            <div className="mt-1 rounded-lg border p-2">
-              <Archive className="w-4 h-4 text-muted-foreground" />
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                Studio Archive
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold mt-1">
-                Discontinued Projects
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                Projects that are no longer actively developed or maintained
-                by RIVET Studios.
-              </p>
-            </div>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight mt-2">
+              Current Titles
+            </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-5">
-            {discontinuedProjects.map((project) => (
-              <Card
+          <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
+            {activeProjects.map((project) => (
+              <article
                 key={project.name}
-                className="rounded-2xl border-dashed opacity-75 transition-all duration-200 hover:opacity-100"
+                className="group overflow-hidden rounded-xl border bg-background transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {project.name}
-                      </CardTitle>
-                      <CardDescription className="mt-1 flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {project.location}
-                      </CardDescription>
-                    </div>
+                {/* Image */}
+                <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
 
-                    <Badge variant="outline" className="shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+                  <div className="absolute left-4 bottom-4 flex flex-wrap gap-2">
+                    <Badge className="bg-white text-black hover:bg-white">
                       {project.game}
                     </Badge>
+
+                    <Badge
+                      variant="secondary"
+                      className="bg-black/50 text-white border-white/10 backdrop-blur-sm"
+                    >
+                      ACTIVE
+                    </Badge>
                   </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="rounded-xl bg-muted/50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">
-                      Discontinuation Reason
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {project.notes}
-                    </p>
-                  </div>
-
-                  <Badge variant="secondary" className="gap-1.5">
-                    <Archive className="w-3.5 h-3.5" />
-                    Discontinued
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Footer CTA */}
-      <section className="pt-2">
-        <Card className="rounded-2xl overflow-hidden border-primary/15 bg-primary/[0.03]">
-          <CardContent className="p-7 sm:p-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-                  <CalendarDays className="w-4 h-4" />
-                  RIVET Studios
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-bold">
-                  More projects are on the way.
-                </h3>
+                {/* Content */}
+                <div className="p-5 sm:p-6">
+                  <h3 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-tight">
+                    {project.name}
+                  </h3>
 
-                <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
-                  Our portfolio continues to evolve as we develop new
-                  experiences, improve existing projects, and explore new
-                  ideas.
+                  <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{project.location}</span>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground leading-relaxed mt-4">
+                    {project.notes}
+                  </p>
+
+                  <div className="flex items-center justify-between gap-4 mt-6 pt-4 border-t">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{project.projectManager}</span>
+                    </div>
+
+                    <ArrowRight className="w-4 h-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* If there are no secondary active projects */}
+          {activeProjects.length === 0 && (
+            <div className="rounded-xl border border-dashed p-10 text-center">
+              <Gamepad2 className="w-6 h-6 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No additional active titles are currently listed.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Archive */}
+        {discontinuedProjects.length > 0 && (
+          <section className="mb-12 sm:mb-16">
+            <div className="mb-6 sm:mb-8 flex items-start gap-3">
+              <Archive className="w-5 h-5 mt-1 text-muted-foreground" />
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  STUDIO ARCHIVE
+                </p>
+
+                <h2 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight mt-2">
+                  Discontinued Titles
+                </h2>
+
+                <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
+                  Titles that are no longer actively developed or maintained
+                  by RIVET Studios™.
                 </p>
               </div>
-
-              <ArrowRight className="hidden sm:block w-6 h-6 text-muted-foreground shrink-0" />
             </div>
-          </CardContent>
-        </Card>
-      </section>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              {discontinuedProjects.map((project) => (
+                <article
+                  key={project.name}
+                  className="group overflow-hidden rounded-xl border bg-muted/10 opacity-80 hover:opacity-100 transition-opacity duration-300"
+                >
+                  <div className="relative aspect-[16/8] overflow-hidden bg-muted">
+                    <img
+                      src={project.image}
+                      alt={project.name}
+                      className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+                    />
+
+                    <div className="absolute inset-0 bg-black/45" />
+
+                    <div className="absolute left-4 bottom-4 flex gap-2">
+                      <Badge
+                        variant="secondary"
+                        className="bg-black/60 text-white border-white/10 backdrop-blur-sm"
+                      >
+                        {project.game}
+                      </Badge>
+
+                      <Badge
+                        variant="secondary"
+                        className="bg-black/60 text-white border-white/10 backdrop-blur-sm"
+                      >
+                        DISCONTINUED
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-tight">
+                      {project.name}
+                    </h3>
+
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>{project.location}</span>
+                    </div>
+
+                    <div className="mt-4 rounded-lg bg-muted/50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">
+                        Discontinuation Reason
+                      </p>
+
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {project.notes}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Bottom statement */}
+        <section className="border-t pt-8 sm:pt-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <CalendarDays className="w-4 h-4" />
+                RIVET Studios™
+              </div>
+
+              <h3 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight mt-3">
+                More games are on the way.
+              </h3>
+
+              <p className="text-sm text-muted-foreground max-w-xl mt-2 leading-relaxed">
+                Our portfolio continues to evolve as we develop new
+                experiences, improve existing projects, and explore new ideas.
+              </p>
+            </div>
+
+            <ArrowRight className="hidden sm:block w-6 h-6 text-muted-foreground" />
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

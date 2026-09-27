@@ -20,12 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/components/auth-provider";
 import { useNavigationLayout } from "@/hooks/use-navigation-layout";
 
-// @ts-ignore
-import NET from "vanta/dist/vanta.net.min";
-// @ts-ignore
-import * as THREE from "three";
-
-import Unauthorized from "@/pages/unauthorized"
+import Unauthorized from "@/pages/unauthorized";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -82,14 +77,14 @@ import FAQ from "@/pages/faq";
 import NotificationsPage from "@/pages/notifications";
 import ActivityFeedPage from "@/pages/activity-feed";
 import MessagesPage from "@/pages/messages";
-// import AchievementsPage from "@/pages/achievements";
-// import ReferralsPage from "@/pages/referrals";
+
 import { BanWall } from "@/components/ban-wall";
 import { OfflineGate } from "@/components/offline-gate";
-import Intercom from '@intercom/messenger-js-sdk';
+import Intercom from "@intercom/messenger-js-sdk";
 import Serrano from "@/pages/serrano";
 import ProjectSerranorules from "@/pages/project-serrano-rules";
-import { 
+
+import {
   House,
   ShoppingCart,
   Mail,
@@ -100,9 +95,7 @@ import {
   Search,
   MessageSquareText,
   LayoutList,
-  Copyright
-} from "lucide-react"
-
+} from "lucide-react";
 
 const ADMIN_RANKS = [
   "Gameplay Engineer",
@@ -123,9 +116,19 @@ const MOD_RANKS = [
 
 function hasRank(user: any, ranks: string[]): boolean {
   if (!user) return false;
-  if (ranks.includes(user.userRank || "")) return true;
-  if ((user.additionalRanks || []).some((r: string) => ranks.includes(r)))
+
+  if (ranks.includes(user.userRank || "")) {
     return true;
+  }
+
+  if (
+    (user.additionalRanks || []).some((r: string) =>
+      ranks.includes(r)
+    )
+  ) {
+    return true;
+  }
+
   return false;
 }
 
@@ -142,9 +145,18 @@ function canAccessAdminCP(user: any): boolean {
   );
 }
 
-function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
+function RouteErrorBoundary({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [pathname] = useLocation();
-  return <ErrorBoundary key={pathname}>{children}</ErrorBoundary>;
+
+  return (
+    <ErrorBoundary key={pathname}>
+      {children}
+    </ErrorBoundary>
+  );
 }
 
 function SiteFooter() {
@@ -152,22 +164,34 @@ function SiteFooter() {
     <footer className="border-t border-border/50 py-10 md:py-20 bg-[#000000eb]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
+
           <div className="col-span-2 md:col-span-1 space-y-6">
             <div className="flex items-center gap-2.5">
-              <img src="/footer.png" alt="RS" className="h-10 w-auto" />
-              <h3 className="font-semibold text-base">RIVET Studios™</h3>
+              <img
+                src="/footer.png"
+                alt="RS"
+                className="h-10 w-auto"
+              />
+
+              <h3 className="font-semibold text-base">
+                RIVET Studios™
+              </h3>
             </div>
+
             <p className="text-sm text-muted-foreground leading-relaxed">
               Building the future of digital experiences with innovative
               solutions and community-driven development.
             </p>
+
             <div className="space-y-2 text-sm text-muted-foreground font-medium">
               <p className="flex items-center gap-2">
-                <Mail className="h-4 w-4" /> {" "}
+                <Mail className="h-4 w-4" />
                 support@rivetstudiosus.com
               </p>
+
               <p className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> 101 Duke Street, Sunshine, VIC, 3020, Australia
+                <MapPin className="h-4 w-4" />
+                101 Duke Street, Sunshine, VIC, 3020, Australia
               </p>
             </div>
           </div>
@@ -176,30 +200,35 @@ function SiteFooter() {
             <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Navigation
             </h3>
+
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
                   href="/"
-                className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                <House className="h-4 w-4" /> Home
+                  <House className="h-4 w-4" />
+                  Home
                 </Link>
               </li>
+
               <li>
                 <Link
                   href="/forums"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-
-                  <MessageSquareText className="h-4 w-4" /> Forums
+                  <MessageSquareText className="h-4 w-4" />
+                  Forums
                 </Link>
               </li>
+
               <li>
                 <Link
                   href="/store"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <ShoppingCart className="h-4 w-4" /> Store
+                  <ShoppingCart className="h-4 w-4" />
+                  Store
                 </Link>
               </li>
             </ul>
@@ -209,21 +238,25 @@ function SiteFooter() {
             <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Support & Resources
             </h3>
+
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
                   href="/knowledge-base"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <HelpCircle className="h-4 w-4" /> Knowledge Base
+                  <HelpCircle className="h-4 w-4" />
+                  Knowledge Base
                 </Link>
               </li>
+
               <li>
                 <Link
                   href="/policies"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <Folder className="h-4 w-4" /> Policies
+                  <Folder className="h-4 w-4" />
+                  Policies
                 </Link>
               </li>
             </ul>
@@ -233,29 +266,35 @@ function SiteFooter() {
             <h3 className="font-medium text-sm tracking-wider uppercase opacity-50">
               Other
             </h3>
+
             <ul className="space-y-3 text-sm font-normal">
               <li>
                 <Link
                   href="/profile"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <CircleUser className="h-4 w-4" /> My Account
+                  <CircleUser className="h-4 w-4" />
+                  My Account
                 </Link>
               </li>
+
               <li>
                 <Link
                   href="/search"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <Search className="h-4 w-4" /> Search
+                  <Search className="h-4 w-4" />
+                  Search
                 </Link>
               </li>
+
               <li>
                 <Link
                   href="/team"
                   className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
-                  <LayoutList className="h-4 w-4" /> Staff Directory
+                  <LayoutList className="h-4 w-4" />
+                  Staff Directory
                 </Link>
               </li>
             </ul>
@@ -264,9 +303,10 @@ function SiteFooter() {
 
         <div className="border-t border-border/50 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground font-normal">
-          © 2026 RIVET Studios™, All rights reserved.
+            © 2026 RIVET Studios™, All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground font-normal flex items-center gap-1">
+
+          <p className="text-xs text-muted-foreground font-normal">
             Established 2017, publicly introduced 2022
           </p>
         </div>
@@ -274,33 +314,54 @@ function SiteFooter() {
     </footer>
   );
 }
-function SidebarLayout({ children }: { children: React.ReactNode }) {
+
+function SidebarLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProvider>
       <AppSidebar />
+
       <SidebarInset className="flex flex-col min-h-screen bg-transparent">
         <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4 backdrop-blur-lg bg-[#000000a6]">
           <SidebarTrigger className="-ml-1" />
         </header>
-        <main className="flex-1 w-full">{children}</main>
+
+        <main className="flex-1 w-full">
+          {children}
+        </main>
+
         <SiteFooter />
       </SidebarInset>
     </SidebarProvider>
   );
 }
 
-// Adjusted layout backgrounds below to support transparency overlays
-function HeaderLayout({ children }: { children: React.ReactNode }) {
+function HeaderLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col min-h-screen bg-transparent">
       <AppHeader />
-      <main className="flex-1 w-full">{children}</main>
+
+      <main className="flex-1 w-full">
+        {children}
+      </main>
+
       <SiteFooter />
     </div>
   );
 }
 
-function PublicLayout({ children }: { children: React.ReactNode }) {
+function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { layout } = useNavigationLayout();
 
   if (layout === "header") {
@@ -310,57 +371,25 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   return <SidebarLayout>{children}</SidebarLayout>;
 }
 
-  function Router() {
-    const { isLoading, user } = useAuth();
+function Router() {
+  const { isLoading, user } = useAuth();
 
-    // Vanta custom global background lifecycle effect
-    useEffect(() => {
-      let effect: any = null;
-      try {
-        const canvas = document.createElement("canvas");
-        const webglAvailable =
-          !!window.WebGLRenderingContext &&
-          !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
-
-        if (webglAvailable && document.querySelector("#vanta-bg")) {
-          effect = NET({
-            el: "#vanta-bg",
-            THREE: THREE,
-            mouseControls: true,
-            touchControls: true,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 1.00,
-            scaleMobile: 1.00,
-            color: 0x0084ff,           // Neon Blue Nodes
-            backgroundColor: 0x02060d, // Dark Matte Core Space
-            points: 12.00,
-            maxDistance: 22.00,
-            spacing: 15.00
-          });
-        }
-      } catch (error) {
-        // WebGL is unavailable in some preview sandboxes; keep the CSS background.
-        console.warn("Vanta background disabled because WebGL is unavailable.", error);
-      }
-      return () => {
-        if (effect) effect.destroy();
-      };
-    }, []);
-
-    // Intercom setup effect hook
-    useEffect(() => {
-      if (user) {
-        Intercom({
-          app_id: 'an81ghfo',
-          user_id: user.id,
-          username: user.username, 
-          email: user.email || undefined, 
-          created_at: user.createdAt ? Math.floor(new Date(user.createdAt).getTime() / 1000) : undefined,
-        });
-      }
-    }, [user]);
+  // Intercom setup
+  useEffect(() => {
+    if (user) {
+      Intercom({
+        app_id: "an81ghfo",
+        user_id: user.id,
+        username: user.username,
+        email: user.email || undefined,
+        created_at: user.createdAt
+          ? Math.floor(
+              new Date(user.createdAt).getTime() / 1000
+            )
+          : undefined,
+      });
+    }
+  }, [user]);
 
   const [pathname] = useLocation();
 
@@ -376,13 +405,22 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Standalone full-screen routes (no sidebar / header / footer)
+  // Standalone full-screen routes
+  // These routes intentionally do not use the standard
+  // sidebar/header/footer layout.
 
-  if (pathname === "/onboarding" || pathname.startsWith("/onboarding?")) {
+  if (
+    pathname === "/onboarding" ||
+    pathname.startsWith("/onboarding?")
+  ) {
     return (
       <RouteErrorBoundary>
         <ScrollToTop />
-        <Route path="/onboarding" component={Onboarding} />
+
+        <Route
+          path="/onboarding"
+          component={Onboarding}
+        />
       </RouteErrorBoundary>
     );
   }
@@ -392,92 +430,331 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <OfflineGate>
         <BanWall>
           <Switch>
+
+            {/* Homepage */}
             <Route path="/" component={Landing} />
+
+            {/* System / Authentication */}
             <Route path="/403" component={Unauthorized} />
             <Route path="/404" component={NotFound} />
+
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
-            <Route path="/forgot-password" component={ForgotPassword} />
-            <Route path="/reset-password" component={ResetPassword} />
-            <Route path="/magic-link" component={MagicLink} />
-            <Route path="/blog" component={Blog} />
-            <Route path="/blog/:id" component={Announcements} />
-            <Route path="/store" component={Store} />
-            <Route path="/store/category/:category" component={StoreCategory} />
-            <Route path="/store/product/:id" component={ProductDetail} />
-            <Route path="/store/subscriptions" component={Subscriptions} />
+            <Route
+              path="/forgot-password"
+              component={ForgotPassword}
+            />
+            <Route
+              path="/reset-password"
+              component={ResetPassword}
+            />
+            <Route
+              path="/magic-link"
+              component={MagicLink}
+            />
 
-            <Route path="/policies/legal" component={LegalPolicies} />
-            <Route path="/policies" component={Policies} />
-            <Route path="/policies/legal/subscriptions" component={SubscriptionAgreement} />
-            <Route path="/policies/legal/eu-uk-withdrawal" component={EUWithdrawal} />
-            <Route path="/forums" component={ForumHome} />
-            <Route path="/forums/category/:id" component={ForumCategory} />
-            <Route path="/forums/thread/:id/edit" component={EditThread} />
-            <Route path="/forums/thread/:id" component={ForumThread} />
+            {/* Blog / News */}
+            <Route path="/blog" component={Blog} />
+            <Route
+              path="/blog/:id"
+              component={Announcements}
+            />
+
+            {/* Store */}
+            <Route path="/store" component={Store} />
+
+            <Route
+              path="/store/category/:category"
+              component={StoreCategory}
+            />
+
+            <Route
+              path="/store/product/:id"
+              component={ProductDetail}
+            />
+
+            <Route
+              path="/store/subscriptions"
+              component={Subscriptions}
+            />
+
+            {/* Policies */}
+            <Route
+              path="/policies/legal"
+              component={LegalPolicies}
+            />
+
+            <Route
+              path="/policies"
+              component={Policies}
+            />
+
+            <Route
+              path="/policies/legal/subscriptions"
+              component={SubscriptionAgreement}
+            />
+
+            <Route
+              path="/policies/legal/eu-uk-withdrawal"
+              component={EUWithdrawal}
+            />
+
+            {/* Forums */}
+            <Route
+              path="/forums"
+              component={ForumHome}
+            />
+
+            <Route
+              path="/forums/category/:id"
+              component={ForumCategory}
+            />
+
+            <Route
+              path="/forums/thread/:id/edit"
+              component={EditThread}
+            />
+
+            <Route
+              path="/forums/thread/:id"
+              component={ForumThread}
+            />
+
             <Route path="/forums/new">
               {user ? <CreateThread /> : <Login />}
             </Route>
+
+            {/* Subscription redirects */}
             <Route path="/subscriptions">
               <Redirect to="/store/subscriptions" />
             </Route>
+
             <Route path="/vip">
               <Redirect to="/store/subscriptions" />
             </Route>
-            <Route path="/profile" component={UserProfile} />
-            <Route path="/profile/:id" component={UserProfile} />
-            <Route path="/settings/:tab" component={Settings} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/team" component={TeamDirectory} />
-            <Route path="/search" component={UserSearch} />
-            <Route path="/marketplace/:tab" component={Marketplace} />
-            <Route path="/marketplace" component={Marketplace} />
-            <Route path="/appeals" component={Appeals} />
-            <Route path="/my-cases" component={MyCases} />
+
+            {/* Profiles */}
+            <Route
+              path="/profile"
+              component={UserProfile}
+            />
+
+            <Route
+              path="/profile/:id"
+              component={UserProfile}
+            />
+
+            {/* Settings */}
+            <Route
+              path="/settings/:tab"
+              component={Settings}
+            />
+
+            <Route
+              path="/settings"
+              component={Settings}
+            />
+
+            {/* Community */}
+            <Route
+              path="/team"
+              component={TeamDirectory}
+            />
+
+            <Route
+              path="/search"
+              component={UserSearch}
+            />
+
+            <Route
+              path="/marketplace/:tab"
+              component={Marketplace}
+            />
+
+            <Route
+              path="/marketplace"
+              component={Marketplace}
+            />
+
+            <Route
+              path="/appeals"
+              component={Appeals}
+            />
+
+            <Route
+              path="/my-cases"
+              component={MyCases}
+            />
+
+            {/* Moderation */}
             <Route path="/modcp/case/:type/:id">
-              {canAccessModCP(user) ? <CaseDetail /> : <Unauthorized />}
+              {canAccessModCP(user) ? (
+                <CaseDetail />
+              ) : (
+                <Unauthorized />
+              )}
             </Route>
+
             <Route path="/modcp/:tab">
-              {canAccessModCP(user) ? <ModCP /> : <Unauthorized />}
+              {canAccessModCP(user) ? (
+                <ModCP />
+              ) : (
+                <Unauthorized />
+              )}
             </Route>
+
             <Route path="/modcp">
-              {canAccessModCP(user) ? <ModCP /> : <Unauthorized />}
+              {canAccessModCP(user) ? (
+                <ModCP />
+              ) : (
+                <Unauthorized />
+              )}
             </Route>
+
+            {/* Administration */}
             <Route path="/admincp/:tab">
-              {canAccessAdminCP(user) ? <AdminCP /> : <Unauthorized />}
+              {canAccessAdminCP(user) ? (
+                <AdminCP />
+              ) : (
+                <Unauthorized />
+              )}
             </Route>
+
             <Route path="/admincp">
-              {canAccessAdminCP(user) ? <AdminCP /> : <Unauthorized />}
+              {canAccessAdminCP(user) ? (
+                <AdminCP />
+              ) : (
+                <Unauthorized />
+              )}
             </Route>
-            <Route path="/policies/legal/guidelines" component={Guidelines} />
-            <Route path="/policies/legal/privacy" component={Privacy} />
-            <Route path="/policies/legal/terms" component={Terms} />
-            <Route path="/announcements" component={Announcements} />
-            <Route path="/projects" component={Projects} />
-             <Route path="/support/team">
-               {canAccessModCP(user) ? <SupportTeam /> : <Unauthorized />}
-             </Route>
-             <Route path="/support" component={Support} />
-            <Route path="/policies/legal/dmca" component={DMCA} />
-            <Route path="/serrano-rules" component={ProjectSerranorules} />
+
+            {/* Legal */}
+            <Route
+              path="/policies/legal/guidelines"
+              component={Guidelines}
+            />
+
+            <Route
+              path="/policies/legal/privacy"
+              component={Privacy}
+            />
+
+            <Route
+              path="/policies/legal/terms"
+              component={Terms}
+            />
+
+            <Route
+              path="/announcements"
+              component={Announcements}
+            />
+
+            {/* Titles / Projects */}
+            <Route
+              path="/titles"
+              component={Projects}
+            />
+
+            {/* Support */}
+            <Route path="/support/team">
+              {canAccessModCP(user) ? (
+                <SupportTeam />
+              ) : (
+                <Unauthorized />
+              )}
+            </Route>
+
+            <Route
+              path="/support"
+              component={Support}
+            />
+
+            {/* DMCA */}
+            <Route
+              path="/policies/legal/dmca"
+              component={DMCA}
+            />
+
+            {/* Staff */}
             <Route
               path="/policies/legal/staff-terms"
-              component={CommunityStaffAgreement} />
-            <Route path="/community-rules" component={CommunityRules} />
-            <Route path="/about" component={About} />
-            <Route path="/serrano" component={Serrano} />
-            <Route path="/onboarding/:tab" component={Onboarding} />
-            <Route path="/onboarding" component={Onboarding} />
-            <Route path="/status" component={Status} />
-            <Route path="/changelog" component={Changelog} />
-            <Route path="/gift-cards" component={GiftCards} />
-            <Route path="/knowledge-base" component={FAQ} />
-            <Route path="/notifications" component={NotificationsPage} />
-            <Route path="/activity" component={ActivityFeedPage} />
-           <Route path="/messages" component={MessagesPage} />               
+              component={CommunityStaffAgreement}
+            />
 
+            {/* Community Rules */}
+            <Route
+              path="/community-rules"
+              component={CommunityRules}
+            />
+
+            {/* About */}
+            <Route
+              path="/about"
+              component={About}
+            />
+
+            {/* Serrano */}
+            <Route
+              path="/serrano"
+              component={Serrano}
+            />
+
+            <Route
+              path="/serrano-rules"
+              component={ProjectSerranorules}
+            />
+
+            {/* Onboarding */}
+            <Route
+              path="/onboarding/:tab"
+              component={Onboarding}
+            />
+
+            <Route
+              path="/onboarding"
+              component={Onboarding}
+            />
+
+            {/* System */}
+            <Route
+              path="/status"
+              component={Status}
+            />
+
+            <Route
+              path="/changelog"
+              component={Changelog}
+            />
+
+            <Route
+              path="/gift-cards"
+              component={GiftCards}
+            />
+
+            <Route
+              path="/knowledge-base"
+              component={FAQ}
+            />
+
+            <Route
+              path="/notifications"
+              component={NotificationsPage}
+            />
+
+            <Route
+              path="/activity"
+              component={ActivityFeedPage}
+            />
+
+            <Route
+              path="/messages"
+              component={MessagesPage}
+            />
+
+            {/* Fallback */}
             <Route component={NotFound} />
+
           </Switch>
         </BanWall>
       </OfflineGate>
@@ -486,15 +763,23 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 }
 
 function AppInit() {
-  const savedFontSize = localStorage.getItem("resync-font-size");
-  if (savedFontSize === "small")
+  const savedFontSize =
+    localStorage.getItem("resync-font-size");
+
+  if (savedFontSize === "small") {
     document.documentElement.style.fontSize = "14px";
-  else if (savedFontSize === "large")
+  } else if (savedFontSize === "large") {
     document.documentElement.style.fontSize = "18px";
-  else document.documentElement.style.fontSize = "16px";
-  if (localStorage.getItem("resync-reduce-motion") === "true") {
+  } else {
+    document.documentElement.style.fontSize = "16px";
+  }
+
+  if (
+    localStorage.getItem("resync-reduce-motion") === "true"
+  ) {
     document.documentElement.classList.add("reduce-motion");
   }
+
   return null;
 }
 
@@ -502,16 +787,24 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="rivet-studios-theme">
+        <ThemeProvider
+          defaultTheme="dark"
+          storageKey="rivet-studios-theme"
+        >
           <TooltipProvider>
+
             <AppInit />
+
             <ScrollToTop />
+
             <WakeGateway>
               <RouteErrorBoundary>
                 <Router />
               </RouteErrorBoundary>
             </WakeGateway>
+
             <Toaster />
+
           </TooltipProvider>
         </ThemeProvider>
       </AuthProvider>
