@@ -169,6 +169,18 @@ export default function ModCP() {
     }
   }, []);
 
+
+  
+
+<div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+  <p className="text-sm text-orange-400">
+    This portal is currently undergoing maintenance and may not work as expected.
+  </p>
+</div>
+
+
+
   const staffRanks = [
     "Community Moderator",
     "Community Administrator",

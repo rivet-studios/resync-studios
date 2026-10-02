@@ -110,13 +110,6 @@ const ADMINCP_TAB_IDS = [
   "status",
 ];
 
-<div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
-  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-  <p className="text-sm text-orange-400">
-    This page is currently under active development and may not work as expected. As per Our <strong>Terms of Service</strong>, We are not responsible for any issues that may arise from using this feature and access to the Services is provided on an "as is" "as available" basis and We reserve the right to modify or discontinue this feature at any time without notice.
-  </p>
-</div>
-
 export default function AdminCP() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -178,6 +171,15 @@ export default function AdminCP() {
   const [bannerContent, setBannerContent] = useState("");
   const [quickViewUserId, setQuickViewUserId] = useState<string | null>(null);
 
+
+<div className="flex items-start gap-3 p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+  <p className="text-sm text-orange-400">
+    This portal is currently undergoing maintenance and may not work as expected.
+  </p>
+</div>
+
+  
   const adminRanks = [
     "Community Developer",
     "Gameplay Engineer",
