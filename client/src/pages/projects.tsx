@@ -17,7 +17,7 @@ const RS_PROJECTS = [
     location: "Los Angeles County, CA",
     notes:
       "Sundown is currently going through active quality-of-life improvements and bug fixes. Expected to be published NLT January 2027.",
-    image: "https://media.discordapp.net/attachments/1419115258655670325/1521361614224232488/Untitled_design.png?ex=6aba8c2a&is=6ab93aaa&hm=e03dba3f379629e99707cdd2de0ccd8bda235781b6d0f654691a67a7634dc3d1&animated=true",
+    image: "https://share.multcloud.link/share/e360147f-1613-451f-8abb-93e2b7141ba8",
   },
   {
     name: "Project Serrano",
@@ -27,7 +27,7 @@ const RS_PROJECTS = [
     location: "Serrano County, Rosewood",
     notes:
       "Our flagship roleplay experience, inspired by Project Ventura and Once Upon a Time in Rosewood.",
-    image: "https://media.discordapp.net/attachments/1531094694375850094/1553817875230494823/content.png?ex=6abaa129&is=6ab94fa9&hm=f0948e763c6936c36afb0646cca36ebc7b1277c01a58d6c49cdb424e3516da61&animated=true",
+    image: "https://share.multcloud.link/share/50f94762-2a12-4695-bc2a-2a0877fe2d7c",
   },
   {
     name: "Fort Loredo: Reimagined",
@@ -47,7 +47,7 @@ const RS_PROJECTS = [
     location: "Los Angeles, CA",
     notes:
       "The project was deprecated after becoming inconsistent for our development team and increasingly unstable.",
-    image: "https://v2.imgdownloader.com/v1/assets/e332c7d3-9ba8-4bf1-ae26-e1bd070720bb/84e05a81.png",
+    image: "https://share.multcloud.link/share/80142e08-d1c3-4c0c-bbfe-6dfc72b3ee23",
   },
 ];
 
